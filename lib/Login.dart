@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'constants.dart';
 
@@ -24,6 +25,64 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+
+  bool isVisibleLoginForm= true,_isLoading = false,isButtonDisabled = true;
+
+  Color _buttonColor = Colors.black;
+
+  final _formKey = GlobalKey<FormState>();
+
+  final passwordController = TextEditingController();
+
+  final emailController = TextEditingController();
+
+  final _emailFocusNode = FocusNode();
+  final _passwordFocusNode = FocusNode();
+
+  bool _obscureText = true;
+
+  bool remember_me = true;
+
+  late String email, password;
+
+  final requiredLength = 4; // the required length of the password
+
+
+
+  void _onPasswordChanged() {
+    // Check the length of the password
+    if (passwordController.text.length < requiredLength) {
+      // If the password is too short, update the button color to grey
+      setState(() {
+        _buttonColor = Colors.grey;
+        isButtonDisabled = true;
+      });
+    }
+    else
+    {
+      setState(() {
+        _buttonColor = Colors.black;
+        isButtonDisabled = false;
+      });
+    }
+  }
+
+
+  @override
+  void initState() {
+    super.initState();
+    passwordController.addListener(_onPasswordChanged);
+    /*resetemailController.addListener(_onResetEmailChanged);*/
+    /*usernameController.text = usernamee;
+    passwordController.text = passwordd;*/
+
+    _initSharedPreferences();
+  }
+
+  Future<void> _initSharedPreferences() async {
+
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +117,7 @@ class _LoginPageState extends State<LoginPage> {
                     )
                   ),
 
-                 /* Visibility(
+                  Visibility(
                       visible: isVisibleLoginForm,
                       child:Expanded(child:  Container(
                           padding: EdgeInsets.only(left: 32,right: 32,top : 70),
@@ -85,8 +144,8 @@ class _LoginPageState extends State<LoginPage> {
 
                                     Container(padding: EdgeInsets.only(top: 5),
                                       child: TextFormField(
-                                        controller: usernameController,
-                                        focusNode: _usernameFocusNode,
+                                        controller: emailController,
+                                        focusNode: _emailFocusNode,
                                         decoration: InputDecoration(
                                           labelText: 'Email Address',
                                           filled: true,
@@ -101,7 +160,7 @@ class _LoginPageState extends State<LoginPage> {
                                             color: Colors.black54, // Set the label text color to black
                                           ),
                                           focusedBorder: UnderlineInputBorder(
-                                            borderSide: BorderSide(color: Color(int.parse('0xFF30D5C8'))),
+                                            borderSide: BorderSide(color: Colors.black),
                                           ),
                                         ),
                                         style: TextStyle(
@@ -119,7 +178,7 @@ class _LoginPageState extends State<LoginPage> {
                                           }
                                           return null;
                                         },
-                                        onSaved: (value) => usernamee = value!,
+                                        onSaved: (value) => email = value!,
                                       ),),
 
                                     SizedBox(height: 16.0),
@@ -155,7 +214,7 @@ class _LoginPageState extends State<LoginPage> {
                                         ),
 
                                         focusedBorder: UnderlineInputBorder(
-                                          borderSide: BorderSide(color: Color(int.parse('0xFF30D5C8'))),
+                                          borderSide: BorderSide(color: Colors.black),
 
                                         ),
                                       ),
@@ -169,7 +228,7 @@ class _LoginPageState extends State<LoginPage> {
                                         }
                                         return null;
                                       },
-                                      onSaved: (value) => passwordd = value!,
+                                      onSaved: (value) => password = value!,
                                     ),
 
                                     SizedBox(height: 5), // Ad
@@ -181,19 +240,19 @@ class _LoginPageState extends State<LoginPage> {
                                           onTap: () {
                                             // Handle "Forgot Password" tap event here
                                             setState(() {
-                                              isVisibleLoginForm = false;
+                                              /*isVisibleLoginForm = false;*/
 
-                                              resetemailController.text = usernameController.text;
+                                              /*resetemailController.text = usernameController.text;*/
 
-                                              passwordController.clear();
-                                              isVisibleResetPassForm = true;
+                                              /*passwordController.clear();*/
+                                              /*isVisibleResetPassForm = true;*/
                                             });
                                           },
                                           child: Text(
                                             'Forgot Password?',
                                             style: TextStyle(
                                               color: Colors.black54,
-                                              *//*decoration: TextDecoration.underline,*//*
+                                              decoration: TextDecoration.underline,
                                             ),
                                           ),
                                         ),
@@ -206,7 +265,7 @@ class _LoginPageState extends State<LoginPage> {
 
                                           Checkbox(
                                             value: remember_me,
-                                            activeColor: Color(int.parse('0xFF30D5C8')),
+                                            activeColor: Colors.black,
                                             checkColor: Colors.white, // Optional: sets the color of the check icon
                                             onChanged: (bool? value) {
                                               setState(() {
@@ -244,7 +303,7 @@ class _LoginPageState extends State<LoginPage> {
                                           if (_formKey.currentState != null &&
                                               _formKey.currentState!.validate()) {
                                             _formKey.currentState!.save();
-                                            _login();
+                                            /*_login();*/
                                           }
                                         },
                                         child: Text('Login',
@@ -254,11 +313,11 @@ class _LoginPageState extends State<LoginPage> {
                                       ),
                                     ),
 
-                                    *//*SizedBox(height: 5),
+                                    /*SizedBox(height: 5),
 
                                     GestureDetector(onTap: ()
                                     {
-                                      *//**//*navigateToPDFView(context);*//**//*
+                                      navigateToPDFView(context);
                                     },
                                         child: Container(
                                             width: MediaQuery.of(context).size.width,
@@ -272,13 +331,13 @@ class _LoginPageState extends State<LoginPage> {
                                                       style: TextStyle(color: Colors.black54,
                                                           fontWeight: FontWeight.bold,
                                                           decoration: TextDecoration.underline))
-                                                ])))*//*]))
+                                                ])))*/]))
 
                       ),)
 
 
 
-                  ),*/
+                  ),
                   /*Visibility(
                       visible: isVisibleResetPassForm,
                       child:Expanded(child:Container(

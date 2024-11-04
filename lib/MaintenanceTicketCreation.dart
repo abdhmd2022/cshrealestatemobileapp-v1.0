@@ -33,8 +33,6 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
   @override
   void initState() {
     super.initState();
-
-
     _initSharedPreferences();
   }
 
@@ -86,6 +84,5 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                   _onCheckboxChanged(index);
                   },
                   );})
-
                 ]))
     );}}

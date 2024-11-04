@@ -104,21 +104,14 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                       ),),
                     ),
 
-
                     Container(
-
                       padding: EdgeInsets.all(20),
-
                       decoration: BoxDecoration(
                         color: Colors.black12,
-
-                          borderRadius: BorderRadius.circular(10)
-
+                        borderRadius: BorderRadius.circular(10)
                       ),
                       width: MediaQuery.of(context).size.width,
-
                       margin: EdgeInsets.only(left: 20,right: 20),
-
                         child:  Column(
                           children: [
 
@@ -341,7 +334,6 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                                   ))),
                         ]),
 
-
                     Container(
                       width: MediaQuery.of(context).size.width,
                       margin: EdgeInsets.only(left: 20,right: 20,top: 20,bottom: 80),
@@ -361,9 +353,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                               color: Colors.white
                           )),
                     ),)
-
                   ])
             )
             )
-
     );}}

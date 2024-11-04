@@ -3,29 +3,15 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'constants.dart';
 
-class Login extends StatelessWidget {
-  const Login({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: app_name,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.black),
-        useMaterial3: true,
-      ),
-      home: const LoginPage(title: app_name),
-    );}}
-
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key, required this.title});
+class Login extends StatefulWidget {
+  const Login({super.key, required this.title});
   final String title;
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<Login> createState() => _LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _LoginPageState extends State<Login> {
 
   bool isVisibleLoginForm= true,_isLoading = false,isButtonDisabled = false;
 

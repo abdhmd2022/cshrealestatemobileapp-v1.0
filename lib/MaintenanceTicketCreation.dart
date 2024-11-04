@@ -23,6 +23,8 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
     'Others'
   ]; // List of custom titles
 
+  TextEditingController _descriptionController = TextEditingController();
+
   // Function to handle checkbox selection
   void _onCheckboxChanged(int index) {
     setState(() {
@@ -83,6 +85,40 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                   onChanged: (bool? newValue) {
                   _onCheckboxChanged(index);
                   },
-                  );})
+                  );}),
+
+                  SizedBox(height: 10),
+
+                  Text("Description:"),
+
+                  SizedBox(height:2),
+
+                  Container(
+                      margin: EdgeInsets.only(
+                        top:10,
+                        bottom: 20,
+                      ),
+                      child: TextField(
+                          controller: _descriptionController,
+                          decoration: InputDecoration(
+                            hintText: 'Enter Description',
+                            contentPadding: EdgeInsets.all(15),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(4), // Set the border radius
+                              borderSide: BorderSide(
+                                color: Colors.black, // Set the border color
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color:  Colors.black, // Set the focused border color
+                              ),
+                            ),
+                          ),
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 15,
+                          ))),
+
                 ]))
     );}}

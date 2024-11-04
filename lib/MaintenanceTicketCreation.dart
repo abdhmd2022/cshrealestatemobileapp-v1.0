@@ -1,6 +1,6 @@
+import 'package:cshrealestatemobile/constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'constants.dart';
 
 class MaintenanceTicketCreation extends StatefulWidget
 {
@@ -11,7 +11,25 @@ class MaintenanceTicketCreation extends StatefulWidget
 
 
 class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreation> {
-]
+
+  int? selectedCheckboxIndex; // Holds the index of the selected checkbox
+  final List<String> checkboxtitles = [
+    'Electrical Works',
+    'A/C Works',
+    'Plumbing Works',
+    'Paint Works',
+    'Pest Control',
+    'Tile Works',
+    'Others'
+  ]; // List of custom titles
+
+  // Function to handle checkbox selection
+  void _onCheckboxChanged(int index) {
+    setState(() {
+      selectedCheckboxIndex = index;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -24,13 +42,12 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
 
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.black,
-          title: Text("Ticket Creation",
+          title: Text(app_name,
             style: TextStyle(
                 color: Colors.white
             ),),
@@ -51,8 +68,24 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
             child:    Column(
                 children: [
 
+                  Text("Ticket Creation"),
 
+                  SizedBox(height: 10,),
 
+                  Text("Create your maintenance ticket"),
+
+                  SizedBox(height: 10),
+
+                  ListView.builder(
+                  itemCount: checkboxtitles.length,
+                  itemBuilder: (context, index) {
+                  return CheckboxListTile(
+                  title: Text(checkboxtitles[index]), // Use custom title from the list
+                  value: selectedCheckboxIndex == index,
+                  onChanged: (bool? newValue) {
+                  _onCheckboxChanged(index);
+                  },
+                  );})
 
                 ]))
     );}}

@@ -1,3 +1,4 @@
+import 'package:cshrealestatemobile/MaintenanceTicketCreation.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'constants.dart';
@@ -26,7 +27,7 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
 
-  bool isVisibleLoginForm= true,_isLoading = false,isButtonDisabled = true;
+  bool isVisibleLoginForm= true,_isLoading = false,isButtonDisabled = false;
 
   Color _buttonColor = Colors.black;
 
@@ -302,6 +303,9 @@ class _LoginPageState extends State<LoginPage> {
                                               _formKey.currentState!.validate()) {
                                             _formKey.currentState!.save();
                                             /*_login();*/
+                                            Navigator.push(
+                                                context,
+                                                MaterialPageRoute(builder: (context) => MaintenanceTicketCreation()));
                                           }
                                         },
                                         child: Text('Login',

@@ -9,7 +9,7 @@ class Login extends StatelessWidget {
     return MaterialApp(
       title: app_name,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.black),
         useMaterial3: true,
       ),
       home: const LoginPage(title: app_name),
@@ -29,8 +29,11 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-          title: Text(widget.title),
+          backgroundColor: Colors.black,
+          title: Text(widget.title,
+          style: TextStyle(
+            color: Colors.white
+          ),),
         ),
         body: Center(
             child: Column(

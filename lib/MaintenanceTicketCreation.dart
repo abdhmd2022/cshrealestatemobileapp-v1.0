@@ -24,6 +24,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
   ]; // List of custom titles
 
   TextEditingController _descriptionController = TextEditingController();
+  TextEditingController _totalamountController = TextEditingController();
 
   // Function to handle checkbox selection
   void _onCheckboxChanged(int index) {
@@ -65,7 +66,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                   end: Alignment.bottomCenter
               ),
             ),*/
-            child:    Column(
+            child: Column(
                 children: [
 
                   Text("Ticket Creation"),
@@ -78,47 +79,105 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
 
                   ListView.builder(
                   itemCount: checkboxtitles.length,
+                      shrinkWrap: true,
+
                   itemBuilder: (context, index) {
                   return CheckboxListTile(
+                    activeColor: Colors.black,
                   title: Text(checkboxtitles[index]), // Use custom title from the list
                   value: selectedCheckboxIndex == index,
                   onChanged: (bool? newValue) {
                   _onCheckboxChanged(index);
                   },
+                    controlAffinity: ListTileControlAffinity.leading,
                   );}),
 
                   SizedBox(height: 10),
 
-                  Text("Description:"),
+                  Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children:[
 
-                  SizedBox(height:2),
+                    Text("Description:"),
 
-                  Container(
-                      margin: EdgeInsets.only(
-                        top:10,
-                        bottom: 20,
-                      ),
-                      child: TextField(
-                          controller: _descriptionController,
-                          decoration: InputDecoration(
-                            hintText: 'Enter Description',
-                            contentPadding: EdgeInsets.all(15),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(4), // Set the border radius
-                              borderSide: BorderSide(
-                                color: Colors.black, // Set the border color
+                    SizedBox(height:2),
+
+                    Container(
+                        margin: EdgeInsets.only(
+                            top:10,
+                            bottom: 20,
+                            left: 20,
+                            right: 20
+                        ),
+                        child: TextField(
+                            controller: _descriptionController,
+                            keyboardType: TextInputType.multiline,
+                            maxLines: null,
+
+                            decoration: InputDecoration(
+                              hintText: 'Enter Description',
+                              contentPadding: EdgeInsets.all(15),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10), // Set the border radius
+                                borderSide: BorderSide(
+                                  color: Colors.black, // Set the border color
+                                ),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  color:  Colors.black, // Set the focused border color
+                                ),
                               ),
                             ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                color:  Colors.black, // Set the focused border color
-                              ),
-                            ),
-                          ),
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 15,
-                          ))),
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 15,
+                            ))),
+                  ]),
 
+                  SizedBox(height: 10),
+
+                  Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children:[
+
+                        Text("Total Amount:"),
+
+                        SizedBox(height:2),
+
+                        Container(
+                            margin: EdgeInsets.only(
+                                top:10,
+                                bottom: 20,
+                                left: 20,
+                                right: 20
+                            ),
+                            child: TextField(
+                                controller: _totalamountController,
+                                keyboardType: TextInputType.multiline,
+                                maxLines: null,
+
+                                decoration: InputDecoration(
+                                  hintText: 'Enter Amount',
+                                  contentPadding: EdgeInsets.all(15),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10), // Set the border radius
+                                    borderSide: BorderSide(
+                                      color: Colors.black, // Set the border color
+                                    ),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color:  Colors.black, // Set the focused border color
+                                    ),
+                                  ),
+                                ),
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 15,
+                                ))),
+                      ])
                 ]))
     );}}

@@ -47,8 +47,6 @@ class _LoginPageState extends State<LoginPage> {
 
   final requiredLength = 4; // the required length of the password
 
-
-
   void _onPasswordChanged() {
     // Check the length of the password
     if (passwordController.text.length < requiredLength) {

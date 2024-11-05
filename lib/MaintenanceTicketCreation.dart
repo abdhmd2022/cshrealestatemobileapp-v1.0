@@ -106,17 +106,14 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
 
                     Card(
                         surfaceTintColor: Theme.of(context).colorScheme.surface,
-
                         elevation: 10,
                       margin: EdgeInsets.only(left: 20,right: 20),
                         child:  Container(
                             padding: EdgeInsets.all(20),
                             child:Column(
                           children: [
-
                             Container(
                               margin: EdgeInsets.only(bottom: 5,),
-
                               child:Row(
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 crossAxisAlignment: CrossAxisAlignment.start,

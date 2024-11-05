@@ -14,7 +14,6 @@ class _CreateInquiryPageState extends State<CreateInquiry> {
   void initState() {
     super.initState();
 
-
     _initSharedPreferences();
   }
 

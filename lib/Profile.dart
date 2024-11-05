@@ -298,14 +298,12 @@ class _ProfilePageState extends State<Profile> {
                                 style: TextStyle(
                                     fontWeight: FontWeight.normal,
                                     fontSize: 16
-
                                 ),),)
                             ],)
                           ,),
 
                         Container(
                           margin: EdgeInsets.only(bottom: 0,),
-
                           child:Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.start,

@@ -150,7 +150,6 @@ class _ProfilePageState extends State<Profile> {
                                     fontSize: 16
 
                                 ),),)
-
                             ],)
                           ,),
 
@@ -173,10 +172,8 @@ class _ProfilePageState extends State<Profile> {
                                     fontSize: 16
 
                                 ),),)
-
                             ],)
                           ,),
-
 
                         Container(
                           margin: EdgeInsets.only(bottom: 7.5,),
@@ -195,9 +192,7 @@ class _ProfilePageState extends State<Profile> {
                                 style: TextStyle(
                                     fontWeight: FontWeight.normal,
                                     fontSize: 16
-
                                 ),),)
-
                             ],)
                           ,),
 
@@ -218,9 +213,7 @@ class _ProfilePageState extends State<Profile> {
                                 style: TextStyle(
                                     fontWeight: FontWeight.normal,
                                     fontSize: 16
-
                                 ),),)
-
                             ],)
                           ,),
 
@@ -243,7 +236,6 @@ class _ProfilePageState extends State<Profile> {
                                     fontSize: 16
 
                                 ),),)
-
                             ],)
                           ,),
 
@@ -270,7 +262,6 @@ class _ProfilePageState extends State<Profile> {
                             ],)
                           ,),
 
-
                         Container(
                           margin: EdgeInsets.only(bottom: 7.5,),
 
@@ -288,12 +279,9 @@ class _ProfilePageState extends State<Profile> {
                                 style: TextStyle(
                                     fontWeight: FontWeight.normal,
                                     fontSize: 16
-
                                 ),),)
-
                             ],)
                           ,),
-
 
                         Container(
                           margin: EdgeInsets.only(bottom: 7.5,),
@@ -314,7 +302,6 @@ class _ProfilePageState extends State<Profile> {
                                     fontSize: 16
 
                                 ),),)
-
                             ],)
                           ,),
 
@@ -337,22 +324,11 @@ class _ProfilePageState extends State<Profile> {
                                     fontSize: 16
 
                                 ),),)
-
                             ],)
-                          ,),
-
-
-
-
+                        ),
                       ],
                     ),
                   )
-
-
-
-
               )) ,
         )
-
-
     );}}

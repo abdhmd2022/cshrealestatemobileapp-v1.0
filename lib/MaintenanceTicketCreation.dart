@@ -104,28 +104,89 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                       ),),
                     ),
 
-                    Container(
-                      padding: EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        color: Colors.black12,
-                        borderRadius: BorderRadius.circular(10)
-                      ),
-                      width: MediaQuery.of(context).size.width,
+                    Card(
+                        surfaceTintColor: Theme.of(context).colorScheme.surface,
+
+                        elevation: 10,
                       margin: EdgeInsets.only(left: 20,right: 20),
-                        child:  Column(
+                        child:  Container(
+                            padding: EdgeInsets.all(20),
+                            child:Column(
                           children: [
 
-                          Container(
-                            margin: EdgeInsets.only(bottom: 5,),
+                            Container(
+                              margin: EdgeInsets.only(bottom: 5,),
 
-                            child:Row(
+                              child:Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text("Name: ",
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16
+                                    ),),
+
+                                  Flexible(child: Text('value',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.normal,
+                                        fontSize: 16
+
+                                    ),),)
+                                ],)
+                              ,),
+
+                            Container(
+                              margin: EdgeInsets.only(bottom: 5),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text("Apartment No: ",
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16
+
+                                    ),),
+
+                                  Flexible(child: Text('value',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.normal,
+                                        fontSize: 16
+
+                                    ),))
+                                ],),),
+
+                            Container(margin: EdgeInsets.only(bottom: 5),
+
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text("Maintenance: ",
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16
+
+                                    ),),
+
+                                  Flexible(child: Text('value',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.normal,
+                                        fontSize: 16
+
+                                    ),),)
+                                ],),),
+
+                            Container(child: Row(
                               mainAxisAlignment: MainAxisAlignment.start,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text("Name: ",
+                                Text("Building Name: ",
                                   style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 16
+
                                   ),),
 
                                 Flexible(child: Text('value',
@@ -134,70 +195,10 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                                       fontSize: 16
 
                                   ),),)
-                              ],)
-                      ,),
-
-                          Container(
-                              margin: EdgeInsets.only(bottom: 5),
-                              child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text("Apartment No: ",
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16
-
-                                  ),),
-
-                                Flexible(child: Text('value',
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.normal,
-                                      fontSize: 16
-
-                                  ),))
-                              ],),),
-
-                          Container(margin: EdgeInsets.only(bottom: 5),
-
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                            Text("Maintenance: ",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16
-
-                              ),),
-
-                            Flexible(child: Text('value',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.normal,
-                                  fontSize: 16
-
-                              ),),)
-                          ],),),
-
-                          Container(child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                              Text("Building Name: ",
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16
-
-                                ),),
-
-                              Flexible(child: Text('value',
-                                style: TextStyle(
-                                    fontWeight: FontWeight.normal,
-                                    fontSize: 16
-
-                                ),),)
-                            ],),)
-                        ],)
+                              ],),)
+                          ],))
+                      
+                      
                       ),
 
                     Container(

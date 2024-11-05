@@ -292,7 +292,7 @@ class _LoginPageState extends State<Login> {
                                             /*_login();*/
                                             Navigator.push(
                                                 context,
-                                                MaterialPageRoute(builder: (context) => Profile()));
+                                                MaterialPageRoute(builder: (context) => MaintenanceTicketCreation()));
 
                                           }
                                         },

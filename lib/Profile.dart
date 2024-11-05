@@ -51,7 +51,7 @@ class _ProfilePageState extends State<Profile> {
               child: Card(
                   margin: EdgeInsets.only(left: 20,right: 20,top: 30,bottom: 30),
                   surfaceTintColor: Theme.of(context).colorScheme.surface,
-                  elevation: 8,
+                  elevation: 10,
 
                   child: Container(
 

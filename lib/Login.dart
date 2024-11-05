@@ -1,6 +1,7 @@
 import 'package:cshrealestatemobile/MaintenanceTicketCreation.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'Profile.dart';
 import 'constants.dart';
 
 class Login extends StatefulWidget {
@@ -291,7 +292,8 @@ class _LoginPageState extends State<Login> {
                                             /*_login();*/
                                             Navigator.push(
                                                 context,
-                                                MaterialPageRoute(builder: (context) => MaintenanceTicketCreation()));
+                                                MaterialPageRoute(builder: (context) => Profile()));
+
                                           }
                                         },
                                         child: Text('Login',

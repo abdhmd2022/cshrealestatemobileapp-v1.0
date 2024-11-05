@@ -291,7 +291,6 @@ class _LoginPageState extends State<Login> {
                                             Navigator.push(
                                                 context,
                                                 MaterialPageRoute(builder: (context) => MaintenanceTicketCreation()));
-
                                           }
                                         },
                                         child: Text('Login',

@@ -27,7 +27,6 @@ class _CreateInquiryPageState extends State<CreateInquiry> {
   final areaFocusNode = FocusNode();
   final descriptionFocusNode = FocusNode();
 
-
   late String selectedEmirate,selectedasignedto;
 
   List<String> emirate = [
@@ -44,8 +43,6 @@ class _CreateInquiryPageState extends State<CreateInquiry> {
     'Self',
 
   ];
-
-
 
   @override
   void initState() {
@@ -77,7 +74,6 @@ class _CreateInquiryPageState extends State<CreateInquiry> {
               surfaceTintColor: Theme.of(context).colorScheme.surface,
               elevation: 20,
               child: Container(
-                
                 padding: EdgeInsets.all(20),
                 child: Form(
                     key: _formKey,

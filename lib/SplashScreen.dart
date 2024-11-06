@@ -1,6 +1,5 @@
 import'dart:async';
 import 'package:cshrealestatemobile/CreateInquiry.dart';
-import 'package:cshrealestatemobile/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -62,7 +61,7 @@ class _SplashScreenState extends State<SplashScreen> {
               right: 0,
               child: Center(
                   child: Text(
-                      "© 2024 $app_name. All Rights Reserved.",
+                      "© 2024 Chaturvedi Software House LLC. All Rights Reserved.",
                       style: TextStyle(
                         color: Colors.black54, // You can adjust the color here
                         fontSize: 12, // You can adjust the font size here

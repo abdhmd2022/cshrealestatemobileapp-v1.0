@@ -331,7 +331,12 @@ class _CreateInquiryPageState extends State<CreateInquiry> {
                               ),
                               onPressed: () {
                                 {
+                                  if (_formKey.currentState != null &&
+                                      _formKey.currentState!.validate()) {
+                                    _formKey.currentState!.save();
 
+
+                                  }
                                 }
                               },
                               child: Text('Create',

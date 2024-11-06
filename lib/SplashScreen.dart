@@ -2,7 +2,6 @@ import'dart:async';
 import 'package:cshrealestatemobile/CreateInquiry.dart';
 import 'package:cshrealestatemobile/constants.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

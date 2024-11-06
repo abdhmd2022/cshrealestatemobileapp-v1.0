@@ -120,7 +120,6 @@ class _CreateInquiryPageState extends State<CreateInquiry> {
 
                           TextFormField(
                             controller: customercontactnocontroller,
-
                             focusNode: customercontactnoFocusNode,
                             keyboardType: TextInputType.number,
                             decoration: InputDecoration(
@@ -149,7 +148,7 @@ class _CreateInquiryPageState extends State<CreateInquiry> {
                             {
                               if (value == null || value.isEmpty)
                               {
-                                return 'Please enter customer contact number';
+                                return 'Please enter customer contact no.';
                               }
                               return null;
                             },

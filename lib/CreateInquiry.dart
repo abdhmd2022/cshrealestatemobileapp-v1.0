@@ -41,7 +41,6 @@ class _CreateInquiryPageState extends State<CreateInquiry> {
 
   List<String> asignedto = [
     'Self',
-
   ];
 
   @override

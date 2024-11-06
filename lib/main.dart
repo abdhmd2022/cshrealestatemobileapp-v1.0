@@ -1,3 +1,4 @@
+import 'package:cshrealestatemobile/CreateInquiry.dart';
 import 'package:flutter/material.dart';
 import 'Login.dart';
 import 'constants.dart';
@@ -16,5 +17,5 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.black),
         useMaterial3: true,
       ),
-      home: const Login(title: app_name,),
+      home: CreateInquiry(),
     );}}

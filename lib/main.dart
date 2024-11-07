@@ -1,5 +1,3 @@
-import 'package:cshrealestatemobile/CreateInquiry.dart';
-import 'package:cshrealestatemobile/SplashScreen.dart';
 import 'package:flutter/material.dart';
 import 'Login.dart';
 import 'constants.dart';

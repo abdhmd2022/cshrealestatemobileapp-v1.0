@@ -1,3 +1,4 @@
+/*
 import'dart:async';
 import 'package:cshrealestatemobile/CreateInquiry.dart';
 import 'package:flutter/material.dart';
@@ -65,4 +66,4 @@ class _SplashScreenState extends State<SplashScreen> {
                       style: TextStyle(
                         color: Colors.black54, // You can adjust the color here
                         fontSize: 12, // You can adjust the font size here
-                      ))))]));}}
+                      ))))]));}}*/

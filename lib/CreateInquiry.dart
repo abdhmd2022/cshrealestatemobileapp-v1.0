@@ -334,8 +334,6 @@ class _CreateInquiryPageState extends State<CreateInquiry> {
                                   if (_formKey.currentState != null &&
                                       _formKey.currentState!.validate()) {
                                     _formKey.currentState!.save();
-
-
                                   }
                                 }
                               },

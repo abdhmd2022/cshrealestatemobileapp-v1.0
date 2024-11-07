@@ -12,7 +12,6 @@ class MaintenanceTicketCreation extends StatefulWidget
   _MaintenanceTicketCreationPageState createState() => _MaintenanceTicketCreationPageState();
 }
 
-
 class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreation> {
 
   int? selectedCheckboxIndex; // Holds the index of the selected checkbox

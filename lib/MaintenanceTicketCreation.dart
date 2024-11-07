@@ -183,19 +183,15 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                                   style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 16
-
                                   ),),
 
                                 Flexible(child: Text('value',
                                   style: TextStyle(
                                       fontWeight: FontWeight.normal,
                                       fontSize: 16
-
                                   ),),)
                               ],),)
                           ],))
-                      
-                      
                       ),
 
                     Container(

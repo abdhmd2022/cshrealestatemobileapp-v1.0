@@ -125,9 +125,7 @@ class _LoginPageState extends State<Login> {
                           child:Form(
                               key: _formKey,
                               child: ListView(
-
                                   children: [
-
                                     Container(padding: EdgeInsets.only(top: 5),
                                       child: TextFormField(
                                         controller: emailController,

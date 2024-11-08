@@ -335,7 +335,6 @@ class _LoginPageState extends State<Login> {
                                 ),
                               ],
 
-
                               borderRadius: BorderRadius.only(
                                   topLeft: Radius.circular(50),
                                   topRight: Radius.circular(50)

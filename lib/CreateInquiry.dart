@@ -52,7 +52,6 @@ class _CreateInquiryPageState extends State<CreateInquiry> {
 
   Future<void> _initSharedPreferences() async {
 
-
   }
 
   @override
@@ -221,7 +220,6 @@ class _CreateInquiryPageState extends State<CreateInquiry> {
 
                           TextFormField(
                             controller: areacontroller,
-
                             focusNode: areaFocusNode,
                             keyboardType: TextInputType.multiline,
                             maxLines: null,
@@ -268,7 +266,6 @@ class _CreateInquiryPageState extends State<CreateInquiry> {
                             onSelected: (String? asignedto) {
                               setState(() {
                                 selectedasignedto = asignedto!;
-
                               });
                             },
                             dropdownMenuEntries:
@@ -281,7 +278,6 @@ class _CreateInquiryPageState extends State<CreateInquiry> {
                           ),
 
                           SizedBox(height: 16.0),
-
 
                           Container(padding: EdgeInsets.only(top: 5),
                             child: TextFormField(
@@ -316,8 +312,7 @@ class _CreateInquiryPageState extends State<CreateInquiry> {
                                   return 'Please enter description';
                                 }
                                 return null;
-                              },
-                            ),),
+                              })),
 
                           Container(
                             width: MediaQuery.of(context).size.width,
@@ -335,14 +330,12 @@ class _CreateInquiryPageState extends State<CreateInquiry> {
                                   {
                                     _formKey.currentState!.save();
                                   }
-                                }
-                              },
+                                }},
                               child: Text('Create',
                                   style: TextStyle(
                                       color: Colors.white
                                   )),
-                            ),)
-                        ])),),
-            )
-        ),
-    );}}
+                            )
+                          )
+                        ]
+                    ))))));}}

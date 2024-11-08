@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'constants.dart';
 
 class CreateInquiry extends StatefulWidget {
 
@@ -62,7 +61,7 @@ class _CreateInquiryPageState extends State<CreateInquiry> {
           title: Text('Create Inquiry',
             style: TextStyle(
                 color: Colors.white
-            ),),
+            )),
         ),
         body: Container(
             height: MediaQuery.of(context).size.height,
@@ -127,19 +126,15 @@ class _CreateInquiryPageState extends State<CreateInquiry> {
                                 borderSide: BorderSide(
                                   color: Colors.black12,
                                 ),
-
                               ),
                               labelText: 'Customer Contact No',
                               filled: true,
-
                               fillColor: Colors.white,
                               labelStyle: TextStyle(
                                 color: Colors.black54, // Set the label text color to black
                               ),
-
                               focusedBorder: UnderlineInputBorder(
                                 borderSide: BorderSide(color: Colors.black),
-
                               ),
                             ),
 
@@ -204,7 +199,6 @@ class _CreateInquiryPageState extends State<CreateInquiry> {
                             onSelected: (String? emirate) {
                               setState(() {
                                 selectedEmirate = emirate!;
-
                               });
                             },
                             dropdownMenuEntries:
@@ -239,7 +233,6 @@ class _CreateInquiryPageState extends State<CreateInquiry> {
 
                               focusedBorder: UnderlineInputBorder(
                                 borderSide: BorderSide(color: Colors.black),
-
                               ),
                             ),
 

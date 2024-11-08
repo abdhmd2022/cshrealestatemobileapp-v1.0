@@ -315,7 +315,6 @@ class _CreateInquiryPageState extends State<CreateInquiry> {
                                 {
                                   return 'Please enter description';
                                 }
-
                                 return null;
                               },
                             ),),
@@ -332,7 +331,8 @@ class _CreateInquiryPageState extends State<CreateInquiry> {
                               onPressed: () {
                                 {
                                   if (_formKey.currentState != null &&
-                                      _formKey.currentState!.validate()) {
+                                      _formKey.currentState!.validate())
+                                  {
                                     _formKey.currentState!.save();
                                   }
                                 }

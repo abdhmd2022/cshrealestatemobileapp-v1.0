@@ -58,9 +58,6 @@ class _LoginPageState extends State<Login> {
   void initState() {
     super.initState();
     passwordController.addListener(_onPasswordChanged);
-    /*resetemailController.addListener(_onResetEmailChanged);*/
-    /*usernameController.text = usernamee;
-    passwordController.text = passwordd;*/
 
     _initSharedPreferences();
   }

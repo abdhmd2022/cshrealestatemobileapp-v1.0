@@ -55,7 +55,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
       ),
       builder: (BuildContext context) {
         return Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.only(left: 16,top: 20,right: 20,bottom: 50),
           child: Wrap(
             children: [
               Row(
@@ -70,48 +70,48 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                       children: [
                         Container(
                           decoration: BoxDecoration(
-                            color: Colors.blue,
-                            shape: BoxShape.circle,
+                            color: Colors.white, // Set the background color
+                            shape: BoxShape.circle, // Make it round
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black26,
-                                blurRadius: 8,
-                                offset: Offset(4, 4),
+                                color: Colors.black26, // Shadow color
+                                blurRadius: 8, // Shadow blur
+                                offset: Offset(4, 4), // Shadow position
                               ),
                             ],
                           ),
                           padding: EdgeInsets.all(16),
-                          child: Icon(Icons.photo_library, size: 40, color: Colors.white),
+                          child: Icon(Icons.upload, size: 40, color: Colors.blueAccent),
                         ),
                         SizedBox(height: 8),
-                        Text('Pick from Device'),
+                        Text('Upload'),
                       ],
                     ),
                   ),
                   GestureDetector(
                     onTap: () {
                       Navigator.pop(context);
-                      _pickImages(ImageSource.camera); // Open camera to capture images
+                      _pickImages(ImageSource.gallery); // Open gallery to pick multiple images
                     },
                     child: Column(
                       children: [
                         Container(
                           decoration: BoxDecoration(
-                            color: Colors.blue,
-                            shape: BoxShape.circle,
+                            color: Colors.white, // Set the background color
+                            shape: BoxShape.circle, // Make it round
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black26,
-                                blurRadius: 8,
-                                offset: Offset(4, 4),
+                                color: Colors.black26, // Shadow color
+                                blurRadius: 8, // Shadow blur
+                                offset: Offset(4, 4), // Shadow position
                               ),
                             ],
                           ),
                           padding: EdgeInsets.all(16),
-                          child: Icon(Icons.camera_alt, size: 40, color: Colors.white),
+                          child: Icon(Icons.camera_alt, size: 40, color: Colors.blueAccent),
                         ),
                         SizedBox(height: 8),
-                        Text('Capture with Camera'),
+                        Text('Capture'),
                       ],
                     ),
                   ),
@@ -123,8 +123,6 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
       },
     );
   }
-
-
 
   /*void _showAttachmentOptions() {
     showModalBottomSheet(
@@ -555,10 +553,6 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                 SizedBox(height: 10),
                 // Plus icon to add more images
 
-
-
-
-
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     shape: CircleBorder(), // Makes the button round
@@ -573,8 +567,6 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                     color: Colors.blueAccent, // Icon color
                   ),
                 ),
-
-
               ],
             )
           else

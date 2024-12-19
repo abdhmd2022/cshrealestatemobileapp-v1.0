@@ -295,7 +295,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                     ),*/
 
                     Card(
-                        surfaceTintColor: Theme.of(context).colorScheme.surface,
+                        surfaceTintColor: Colors.blueGrey,
                         elevation: 10,
                       margin: EdgeInsets.only(left: 20,right: 20, top: 20),
                         child:  Container(

@@ -60,6 +60,16 @@ class _CreateInquiryPageState extends State<CreateInquiry> {
     return Scaffold(
         appBar: AppBar(
           backgroundColor: appbar_color,
+
+          leading: GestureDetector(
+            onTap: ()
+            {
+              /*Navigator.of(context).pop();*/
+            },
+            child: Icon(
+              Icons.arrow_back,
+              color: Colors.white,
+            ),),
           title: Text('Create Inquiry',
             style: TextStyle(
                 color: Colors.white

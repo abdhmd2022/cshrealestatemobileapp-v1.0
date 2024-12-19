@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:cshrealestatemobile/AddUser.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'Sidebar.dart';
@@ -501,7 +502,10 @@ class _UserReportPageState extends State<UsersReport> with TickerProviderStateMi
                         right: 30,
                         child: ElevatedButton(
                           onPressed: () {
-                            // Navigate to the CreateUser screen or perform your desired action.
+                            Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(builder: (context) => AddUser()),
+                                  );
                           },
                           style: ElevatedButton.styleFrom(
                             shape: CircleBorder(), // Makes the button circular

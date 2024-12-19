@@ -292,7 +292,7 @@ class _LoginPageState extends State<Login> {
 
                                           Navigator.push(
                                               context,
-                                              MaterialPageRoute(builder: (context) => CreateInquiry()));
+                                              MaterialPageRoute(builder: (context) => SalesDashboard()));
                                         },
                                         child: Text('Login',
                                             style: TextStyle(

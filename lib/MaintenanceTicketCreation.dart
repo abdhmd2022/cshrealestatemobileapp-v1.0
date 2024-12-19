@@ -16,7 +16,6 @@ class MaintenanceTicketCreation extends StatefulWidget
 
 class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreation> {
 
-
   String? selectedMaintenanceType; // To store the selected dropdown value
   final List<String> maintenance_types_list = [
     'Electrical Works',
@@ -25,7 +24,8 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
     'Paint Works',
     'Pest Control',
     'Tile Works',
-    'Others'];
+    'Others'
+  ];
 
   TextEditingController _descriptionController = TextEditingController();
   TextEditingController _totalamountController = TextEditingController();
@@ -200,7 +200,6 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
     );
   }*/
 
-
   @override
   void initState() {
     super.initState();
@@ -210,7 +209,6 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
   Future<void> _initSharedPreferences() async {
 
     selectedMaintenanceType = maintenance_types_list.first;
-
   }
 
   @override
@@ -287,7 +285,6 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-
                                   Column(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
@@ -330,7 +327,6 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-
                                   Column(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
@@ -366,14 +362,10 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                                   ),
                                 ],)
                               ,),
-
-
                           ],))
                       ),
 
-
                     Container(
-
                       margin: EdgeInsets.only(left: 20,right: 20,top: 30),
                       child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -403,7 +395,6 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                             ],
                           ),
                         ),
-
 
                         Container(
                           padding: EdgeInsets.symmetric(horizontal: 12),
@@ -437,15 +428,10 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                       ],
                     ),),
 
-
-
-
-
                     Column(
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children:[
-
 
                           Container(
                             margin: EdgeInsets.only( top:0,
@@ -485,7 +471,6 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                                   keyboardType: TextInputType.multiline,
                                   maxLength: 500, // Limit input to 500 characters
                                   maxLines: 3, // A
-
                                   decoration: InputDecoration(
                                     hintText: 'Enter Description',
                                     contentPadding: EdgeInsets.all(15),
@@ -588,8 +573,6 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
 
         ],
       ),),
-
-
                         ]),
 
                   /*  SizedBox(height: 10),

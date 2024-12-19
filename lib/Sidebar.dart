@@ -6,7 +6,9 @@ import 'constants.dart';
 
 class Sidebar extends StatelessWidget {
   final bool isDashEnable,isRolesVisible,isUserEnable ,isRolesEnable,isUserVisible;
+/*
   bool isSalesEntryVisible = false,isSalesEntryEnable = true,isReceiptEntryVisible = false,isReceiptEntryEnable = true;
+*/
   String? Username = "", Email = "",SalesEntryHolder = '',username_prefs ='',password_prefs = '',ReceiptEntryHolder = '';
 
   String socketId = ''; // To store the socket ID.

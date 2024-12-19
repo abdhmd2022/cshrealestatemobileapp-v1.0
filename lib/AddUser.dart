@@ -25,6 +25,9 @@ class _AddUserPageState extends State<AddUser> with TickerProviderStateMixin {
       _isFocused_email = false,
       _isFocus_name = false;
 
+  final _formKey = GlobalKey<FormState>();
+
+
 
   List<dynamic> myData_roles = [
     {'role_name': 'Sales'},
@@ -542,7 +545,7 @@ class _AddUserPageState extends State<AddUser> with TickerProviderStateMixin {
                       left: 20,
                       top: 20,
                       right: 30,
-                      bottom: 25,
+                      bottom: 20,
                     ),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
@@ -573,364 +576,373 @@ class _AddUserPageState extends State<AddUser> with TickerProviderStateMixin {
                   ),
 
                   Container(
-                    margin: EdgeInsets.only( top:15,
-                        bottom: 0,
-                        left: 20,
-                        right: 20),
-                    child: Row(
-                      children: [
-                        Text("Name:",
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16
 
-                            )
-                        ),
-                        SizedBox(width: 2),
-                        Text(
-                          '*', // Red asterisk for required field
-                          style: TextStyle(
-                            fontSize: 20,
-                            color: Colors.red, // Red color for the asterisk
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                      height: MediaQuery.of(context).size.height,
 
-                  Padding(
+                      child:  Form(
+                          key: _formKey,
+                          child: ListView(
+                              children: [
 
-                      padding: EdgeInsets.only(top:0,left: 20,right: 20,bottom: 0),
+                                Container(
+                                  margin: EdgeInsets.only( top:15,
+                                      bottom: 0,
+                                      left: 20,
+                                      right: 20),
+                                  child: Row(
+                                    children: [
+                                      Text("Name:",
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 16
 
-                      child: TextFormField(
-                        controller: controller_name,
-
-                        keyboardType: TextInputType.name,
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return 'Please enter name';
-                          }
-
-                          return null;
-                        },
-                        decoration: InputDecoration(
-                          hintText: 'Enter Name',
-                          contentPadding: EdgeInsets.all(15),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10), // Set the border radius
-                            borderSide: BorderSide(
-                              color: Colors.black, // Set the border color
-                            ),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide(
-                              color:  Colors.black, // Set the focused border color
-                            ),
-                          ),
-                        ),
-                        onChanged: (value) {
-                          setState(() {
-                            _isFocus_name = true;
-                            _isFocused_email = false;
-                            _isFocused_password = false;
-
-                          });
-                        },
-                        onFieldSubmitted: (value) {
-                          setState(() {
-                            _isFocus_name = false;
-                            _isFocused_email = false;
-                            _isFocused_password = false;
-                          });
-                        },
-                        onTap: () {
-                          setState(() {
-                            _isFocus_name = true;
-                            _isFocused_email = false;
-                            _isFocused_password = false;
-                          });
-                        },
-                        onEditingComplete: () {
-                          setState(() {
-                            _isFocus_name = false;
-                            _isFocused_email = false;
-                            _isFocused_password = false;
-                          });
-                        },
-
-                      )),
-
-                  Container(
-                    margin: EdgeInsets.only( top:15,
-                        bottom: 0,
-                        left: 20,
-                        right: 20),
-                    child: Row(
-                      children: [
-                        Text("Email Address:",
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16
-
-                            )
-                        ),
-                        SizedBox(width: 2),
-                        Text(
-                          '*', // Red asterisk for required field
-                          style: TextStyle(
-                            fontSize: 20,
-                            color: Colors.red, // Red color for the asterisk
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  Padding(
-
-                      padding: EdgeInsets.only(top:0,left: 20,right: 20,bottom: 0),
-
-                      child: TextFormField(
-                        controller: controller_email,
-                        keyboardType: TextInputType.emailAddress,
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return 'Please enter an email';
-                          }
-                          if (!isValidEmail(value)) {
-                            return 'Please enter a valid email';
-                          }
-                          return null;
-                        },
-                        decoration: InputDecoration(
-                          hintText: 'Enter Email Address',
-                          contentPadding: EdgeInsets.all(15),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10), // Set the border radius
-                            borderSide: BorderSide(
-                              color: Colors.black, // Set the border color
-                            ),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide(
-                              color:  Colors.black, // Set the focused border color
-                              
-                            ),
-                          ),
-                        ),
-                        onChanged: (value) {
-                          setState(() {
-                            _isFocused_email = true;
-                            _isFocus_name = false;
-                            _isFocused_password = false;
-                          });
-                        },
-                        onFieldSubmitted: (value) {
-                          setState(() {
-                            _isFocused_email = false;
-                            _isFocus_name = false;
-                            _isFocused_password = false;
-                          });
-                        },
-                        onTap: () {
-                          setState(() {
-                            _isFocused_email = true;
-                            _isFocus_name = false;
-                            _isFocused_password = false;
-
-                          });
-                        },
-                        onEditingComplete: () {
-                          setState(() {
-                            _isFocused_email = false;
-                            _isFocus_name = false;
-                            _isFocused_password = false;
-                          });
-                        },
-
-                      )),
-
-                  Container(
-                    margin: EdgeInsets.only( top:15,
-                        bottom: 0,
-                        left: 20,
-                        right: 20),
-                    child: Row(
-                      children: [
-                        Text("Password:",
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16
-
-                            )
-                        ),
-                        SizedBox(width: 2),
-                        Text(
-                          '*', // Red asterisk for required field
-                          style: TextStyle(
-                            fontSize: 20,
-                            color: Colors.red, // Red color for the asterisk
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  Padding(padding: EdgeInsets.only(top:0,left: 20,right: 20,bottom: 0),
-
-                      child: TextFormField(
-                        controller: controller_password,
-                        obscureText: _obscureText,
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return 'Please enter a password';
-                          }
-                          if (value.length < 4) {
-                            return 'Password must be at least 4 characters';
-                          }
-                          return null;
-                        },
-                        decoration: InputDecoration(
-                          hintText: 'Enter Password',
-                          contentPadding: EdgeInsets.all(15),
-
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              _obscureText ? Icons.visibility_off : Icons.visibility,
-                              color: _isFocused_password ? appbar_color : Colors.black,
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                _obscureText = !_obscureText;
-                              });
-                            },
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10), // Set the border radius
-                            borderSide: BorderSide(
-                              color: Colors.black, // Set the border color
-                            ),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide(
-                              color:  Colors.black, // Set the focused border color
-                            ),
-                          ),
-                          labelStyle: TextStyle(
-                            color: _isFocused_password ? appbar_color : Colors.black,
-                          ),
-                        ),
-                        onChanged: (value) {
-                          setState(() {
-                            _isFocused_password = true;
-                            _isFocus_name = false;
-                            _isFocused_email = false;
-                          });
-                        },
-                        onFieldSubmitted: (value) {
-                          setState(() {
-                            _isFocused_password = false;
-                            _isFocus_name = false;
-                            _isFocused_email = false;
-                          });
-                        },
-                        onTap: () {
-                          setState(() {
-                            _isFocused_password = true;
-                            _isFocus_name = false;
-                            _isFocused_email = false;
-                          });
-                        },
-                        onEditingComplete: () {
-                          setState(() {
-                            _isFocused_password = false;
-                            _isFocus_name = false;
-                            _isFocused_email = false;
-                          });
-                        },
-                      )
-
-
-                  ),
-
-                  Container(
-                    child: Column(
-
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(padding: EdgeInsets.only(top: 15,left:20),
-
-                          child:Row(
-                            children: [
-                              Text("Select Role:",
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16
-
-                                  )
-                              ),
-                              SizedBox(width: 2),
-                              Text(
-                                '*', // Red asterisk for required field
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  color: Colors.red, // Red color for the asterisk
+                                          )
+                                      ),
+                                      SizedBox(width: 2),
+                                      Text(
+                                        '*', // Red asterisk for required field
+                                        style: TextStyle(
+                                          fontSize: 20,
+                                          color: Colors.red, // Red color for the asterisk
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ),
-                        ),
 
-                        Padding(
-                          padding: EdgeInsets.only(top:0,left:20,right:20,bottom :0),
+                                Padding(
 
-                          child: DropdownButtonFormField<dynamic>(
-                            decoration: InputDecoration(
+                                    padding: EdgeInsets.only(top:0,left: 20,right: 20,bottom: 0),
 
-                              border: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.black),
-                                borderRadius: BorderRadius.circular(5.0),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: appbar_color),
-                                borderRadius: BorderRadius.circular(5.0),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(5.0),
-                                borderSide: BorderSide(color: Colors.black),
-                              ),
-                              contentPadding: EdgeInsets.symmetric(horizontal: 10),
-                            ),
+                                    child: TextFormField(
+                                      controller: controller_name,
+
+                                      keyboardType: TextInputType.name,
+                                      validator: (value) {
+                                        if (value!.isEmpty) {
+                                          return 'Name is required';
+                                        }
+
+                                        return null;
+                                      },
+                                      decoration: InputDecoration(
+                                        hintText: 'Enter Name',
+                                        contentPadding: EdgeInsets.all(15),
+                                        border: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(10), // Set the border radius
+                                          borderSide: BorderSide(
+                                            color: Colors.black, // Set the border color
+                                          ),
+                                        ),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(10),
+                                          borderSide: BorderSide(
+                                            color:  Colors.black, // Set the focused border color
+                                          ),
+                                        ),
+                                      ),
+                                      onChanged: (value) {
+                                        setState(() {
+                                          _isFocus_name = true;
+                                          _isFocused_email = false;
+                                          _isFocused_password = false;
+
+                                        });
+                                      },
+                                      onFieldSubmitted: (value) {
+                                        setState(() {
+                                          _isFocus_name = false;
+                                          _isFocused_email = false;
+                                          _isFocused_password = false;
+                                        });
+                                      },
+                                      onTap: () {
+                                        setState(() {
+                                          _isFocus_name = true;
+                                          _isFocused_email = false;
+                                          _isFocused_password = false;
+                                        });
+                                      },
+                                      onEditingComplete: () {
+                                        setState(() {
+                                          _isFocus_name = false;
+                                          _isFocused_email = false;
+                                          _isFocused_password = false;
+                                        });
+                                      },
+
+                                    )),
+
+                                Container(
+                                  margin: EdgeInsets.only( top:15,
+                                      bottom: 0,
+                                      left: 20,
+                                      right: 20),
+                                  child: Row(
+                                    children: [
+                                      Text("Email Address:",
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 16
+
+                                          )
+                                      ),
+                                      SizedBox(width: 2),
+                                      Text(
+                                        '*', // Red asterisk for required field
+                                        style: TextStyle(
+                                          fontSize: 20,
+                                          color: Colors.red, // Red color for the asterisk
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+
+                                Padding(
+
+                                    padding: EdgeInsets.only(top:0,left: 20,right: 20,bottom: 0),
+
+                                    child: TextFormField(
+                                      controller: controller_email,
+                                      keyboardType: TextInputType.emailAddress,
+                                      validator: (value) {
+                                        if (value!.isEmpty) {
+                                          return 'Email is required';
+                                        }
+                                        if (!isValidEmail(value)) {
+                                          return 'Please enter a valid email';
+                                        }
+                                        return null;
+                                      },
+                                      decoration: InputDecoration(
+                                        hintText: 'Enter Email Address',
+                                        contentPadding: EdgeInsets.all(15),
+                                        border: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(10), // Set the border radius
+                                          borderSide: BorderSide(
+                                            color: Colors.black, // Set the border color
+                                          ),
+                                        ),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(10),
+                                          borderSide: BorderSide(
+                                            color:  Colors.black, // Set the focused border color
+
+                                          ),
+                                        ),
+                                      ),
+                                      onChanged: (value) {
+                                        setState(() {
+                                          _isFocused_email = true;
+                                          _isFocus_name = false;
+                                          _isFocused_password = false;
+                                        });
+                                      },
+                                      onFieldSubmitted: (value) {
+                                        setState(() {
+                                          _isFocused_email = false;
+                                          _isFocus_name = false;
+                                          _isFocused_password = false;
+                                        });
+                                      },
+                                      onTap: () {
+                                        setState(() {
+                                          _isFocused_email = true;
+                                          _isFocus_name = false;
+                                          _isFocused_password = false;
+
+                                        });
+                                      },
+                                      onEditingComplete: () {
+                                        setState(() {
+                                          _isFocused_email = false;
+                                          _isFocus_name = false;
+                                          _isFocused_password = false;
+                                        });
+                                      },
+
+                                    )),
+
+                                Container(
+                                  margin: EdgeInsets.only( top:15,
+                                      bottom: 0,
+                                      left: 20,
+                                      right: 20),
+                                  child: Row(
+                                    children: [
+                                      Text("Password:",
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 16
+
+                                          )
+                                      ),
+                                      SizedBox(width: 2),
+                                      Text(
+                                        '*', // Red asterisk for required field
+                                        style: TextStyle(
+                                          fontSize: 20,
+                                          color: Colors.red, // Red color for the asterisk
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+
+                                Padding(padding: EdgeInsets.only(top:0,left: 20,right: 20,bottom: 0),
+
+                                    child: TextFormField(
+                                      controller: controller_password,
+                                      obscureText: _obscureText,
+                                      validator: (value) {
+                                        if (value!.isEmpty) {
+                                          return 'Password is required';
+                                        }
+                                        if (value.length < 4) {
+                                          return 'Password must be at least 4 characters';
+                                        }
+                                        return null;
+                                      },
+                                      decoration: InputDecoration(
+                                        hintText: 'Enter Password',
+                                        contentPadding: EdgeInsets.all(15),
+
+                                        suffixIcon: IconButton(
+                                          icon: Icon(
+                                            _obscureText ? Icons.visibility_off : Icons.visibility,
+                                            color: _isFocused_password ? appbar_color : Colors.black,
+                                          ),
+                                          onPressed: () {
+                                            setState(() {
+                                              _obscureText = !_obscureText;
+                                            });
+                                          },
+                                        ),
+                                        border: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(10), // Set the border radius
+                                          borderSide: BorderSide(
+                                            color: Colors.black, // Set the border color
+                                          ),
+                                        ),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(10),
+                                          borderSide: BorderSide(
+                                            color:  Colors.black, // Set the focused border color
+                                          ),
+                                        ),
+                                        labelStyle: TextStyle(
+                                          color: _isFocused_password ? appbar_color : Colors.black,
+                                        ),
+                                      ),
+                                      onChanged: (value) {
+                                        setState(() {
+                                          _isFocused_password = true;
+                                          _isFocus_name = false;
+                                          _isFocused_email = false;
+                                        });
+                                      },
+                                      onFieldSubmitted: (value) {
+                                        setState(() {
+                                          _isFocused_password = false;
+                                          _isFocus_name = false;
+                                          _isFocused_email = false;
+                                        });
+                                      },
+                                      onTap: () {
+                                        setState(() {
+                                          _isFocused_password = true;
+                                          _isFocus_name = false;
+                                          _isFocused_email = false;
+                                        });
+                                      },
+                                      onEditingComplete: () {
+                                        setState(() {
+                                          _isFocused_password = false;
+                                          _isFocus_name = false;
+                                          _isFocused_email = false;
+                                        });
+                                      },
+                                    )
 
 
-                            hint: Text('Role Name'), // Add a hint
-                            value: _selectedrole,
-                            items: myData_roles.map((item) {
-                              return DropdownMenuItem<dynamic>(
-                                value: item,
-                                child: Text(item['role_name']),
-                              );
-                            }).toList(),
-                            onChanged: (value) async {
-                              _selectedrole = value!;
-                            },
+                                ),
 
-                            onTap: ()
-                            {
-                              setState(() {
-                                _isFocused_email = false;
-                                _isFocus_name = false;
-                                _isFocused_password = false;
-                              });
+                                Container(
+                                  child: Column(
 
-                            },
-                          ),
-                        ),
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Padding(padding: EdgeInsets.only(top: 15,left:20),
 
-                        /*Padding(padding: EdgeInsets.only(top: 10,left:20),
+                                        child:Row(
+                                          children: [
+                                            Text("Select Role:",
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 16
+
+                                                )
+                                            ),
+                                            SizedBox(width: 2),
+                                            Text(
+                                              '*', // Red asterisk for required field
+                                              style: TextStyle(
+                                                fontSize: 20,
+                                                color: Colors.red, // Red color for the asterisk
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+
+                                      Padding(
+                                        padding: EdgeInsets.only(top:0,left:20,right:20,bottom :0),
+
+                                        child: DropdownButtonFormField<dynamic>(
+                                          decoration: InputDecoration(
+
+                                            border: OutlineInputBorder(
+                                              borderSide: BorderSide(color: Colors.black),
+                                              borderRadius: BorderRadius.circular(5.0),
+                                            ),
+                                            focusedBorder: OutlineInputBorder(
+                                              borderSide: BorderSide(color: appbar_color),
+                                              borderRadius: BorderRadius.circular(5.0),
+                                            ),
+                                            enabledBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(5.0),
+                                              borderSide: BorderSide(color: Colors.black),
+                                            ),
+                                            contentPadding: EdgeInsets.symmetric(horizontal: 10),
+                                          ),
+
+
+                                          hint: Text('Role Name'), // Add a hint
+                                          value: _selectedrole,
+                                          items: myData_roles.map((item) {
+                                            return DropdownMenuItem<dynamic>(
+                                              value: item,
+                                              child: Text(item['role_name']),
+                                            );
+                                          }).toList(),
+                                          onChanged: (value) async {
+                                            _selectedrole = value!;
+                                          },
+
+                                          onTap: ()
+                                          {
+                                            setState(() {
+                                              _isFocused_email = false;
+                                              _isFocus_name = false;
+                                              _isFocused_password = false;
+                                            });
+
+                                          },
+                                        ),
+                                      ),
+
+                                      /*Padding(padding: EdgeInsets.only(top: 10,left:20),
 
                           child:Text(
                             'Allowed Companies',
@@ -940,7 +952,7 @@ class _AddUserPageState extends State<AddUser> with TickerProviderStateMixin {
                             ),)
                           ,),*/
 
-                       /* Padding(
+                                      /* Padding(
                           padding: EdgeInsets.only(top:5,left:20,right:20,bottom :0),
 
                           child: Column(
@@ -966,135 +978,92 @@ class _AddUserPageState extends State<AddUser> with TickerProviderStateMixin {
                             ],
                           ),
                         ),*/
-                      ],
-                    ),
-                  ),
-
-                  Padding(padding: EdgeInsets.only(left: 20,right: 20,top: 40,bottom: 50),
-
-                    child: Container(
-
-
-                      child: Row(
-
-                        mainAxisAlignment:MainAxisAlignment.center,
-
-                        crossAxisAlignment: CrossAxisAlignment.center,
-
-                        children: [
-
-
-
-                        ElevatedButton(
-
-                          style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white, // Button background color
-                        shadowColor: Colors.black.withOpacity(0.75), // Shadow color
-                        foregroundColor: Colors.black,
-                        elevation: 5, // Elevation value
-
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(5), // Rounded corners
-                          side: BorderSide(
-                            color: Colors.black, // Border color
-                            width: 1.5, // Border width
-                          ),
-
-                        ),
-                      ),
-                          onPressed: () {
-                            setState(() {
-                               controller_email.clear();
-                              controller_name.clear();
-                              controller_password.clear();
-                               _selectedrole - myData_roles.first;
-                            });
-                          },
-                          child: Text('Clear'),
-                        ),
-
-                        SizedBox(width: 30,),
-                        ElevatedButton(
-
-                          style: ElevatedButton.styleFrom(
-                            foregroundColor: Colors.white,
-                            backgroundColor: appbar_color, // Set the text color
-                            padding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 18.0), // Set the button padding
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(5.0), // Set the button border radius
-                            ),
-                          ),
-                          onPressed: () {
-                            setState(() {
-                              String fetched_email = controller_email.text;
-                              String fetched_name = controller_name.text;
-                              String fetched_password = controller_password.text;
-                              String fetched_role = _selectedrole["role_name"];
-
-                              if(fetched_name.isEmpty)
-                              {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text("Enter Name"),
+                                    ],
                                   ),
-                                );
-                              }
-                              else if (fetched_email.isEmpty)
-                              {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text("Enter Email Address"),
-                                  ),
-                                );
-                              }
-                              else if (fetched_password.isEmpty)
-                              {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text("Enter Password"),
-                                  ),
-                                );
-                              }
-                              else
-                              {
-                                if (isValidEmail(fetched_email)) {
-                                  if(fetched_password.length < 4)
-                                  {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text("Password must be at least 4 characters"),
-                                      ),
-                                    );
-                                  }
+                                ),
 
-                                  else
-                                  {
-                                    setState(() {
-                                      _isFocused_email = false;
-                                      _isFocus_name = false;
-                                      _isFocused_password = false;
-                                    });
-                                    /*userRegistration(serial_no!,fetched_email,fetched_password,fetched_role,fetched_name);*/
-                                  }
-                                }
-                                else
-                                {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text("Enter Valid Email Address"),
-                                    ),
-                                  );
-                                }
-                              }
-                            });
-                          },
-                          child: Text('Register'),
-                        ),
+                                Padding(padding: EdgeInsets.only(left: 20,right: 20,top: 40,bottom: 50),
+                                  child: Container(
+                                      child: Row(
+                                        mainAxisAlignment:MainAxisAlignment.center,
+                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        children: [
+                                          ElevatedButton(
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor: Colors.white, // Button background color
+                                              foregroundColor: Colors.black,
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.circular(5), // Rounded corners
+                                                side: BorderSide(
+                                                  color: Colors.grey, // Border color
+                                                  width: 0.5, // Border width
+                                                ),
+                                              ),
+                                            ),
+                                            onPressed: () {
+                                              setState(() {
 
-                      ],)
+                                                _formKey.currentState?.reset();
+                                                _selectedrole = myData_roles.first;
+
+                                                /*print(_selectedrole['role_name']);*/
+
+                                                controller_email.clear();
+                                                controller_name.clear();
+                                                controller_password.clear();
 
 
-                    ),)
+
+                                              });
+                                            },
+                                            child: Text('Clear'),
+                                          ),
+
+                                          SizedBox(width: 20,),
+                                          ElevatedButton(
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor: appbar_color, // Button background color
+                                              foregroundColor: Colors.white,
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.circular(5), // Rounded corners
+                                                side: BorderSide(
+                                                  color: Colors.grey, // Border color
+                                                  width: 0.5, // Border width
+                                                ),
+                                              ),
+                                            ),
+                                            onPressed: () {
+
+                                              if (_formKey.currentState != null &&
+                                                  _formKey.currentState!.validate()) {
+                                                _formKey.currentState!.save();
+
+                                                String fetched_email = controller_email.text;
+                                                String fetched_name = controller_name.text;
+                                                String fetched_password = controller_password.text;
+                                                String fetched_role = _selectedrole["role_name"];
+
+                                                setState(() {
+                                                  _isFocused_email = false;
+                                                  _isFocus_name = false;
+                                                  _isFocused_password = false;
+                                                });
+                                                /*userRegistration(serial_no!,fetched_email,fetched_password,fetched_role,fetched_name);*/
+
+
+                                              }},
+                                            child: Text('Register'),
+                                          ),
+
+                                        ],)
+
+
+                                  ),)
+
+                              ]))
+                  )
+
+
                 ],
               ),)
           ],

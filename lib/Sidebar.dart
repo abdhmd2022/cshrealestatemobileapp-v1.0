@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'RolesReport.dart';
 import 'UsersReport.dart';
 import 'constants.dart';
 
@@ -176,10 +177,10 @@ class Sidebar extends StatelessWidget {
                     enabled: isRolesEnable,
                     onTap: ()
                     {
-                      /*Navigator.pushReplacement(
+                      Navigator.pushReplacement(
                         context,
-                        MaterialPageRoute(builder: (context) => RolesView()),          // navigate to roles screen
-                      );*/
+                        MaterialPageRoute(builder: (context) => RolesReport()),          // navigate to roles screen
+                      );
                     },
                   )
               ),

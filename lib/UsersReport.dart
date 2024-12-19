@@ -127,7 +127,7 @@ class _UserReportPageState extends State<UsersReport> with TickerProviderStateMi
             content: SingleChildScrollView(
               child: ListBody(
                 children: <Widget>[
-                  Text('Do you really want to Delete User'),
+                  Text('Do you really want to Delete'),
                 ],
               ),
             ),

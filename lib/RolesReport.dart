@@ -314,7 +314,7 @@ class _RolesReportPageState extends State<RolesReport> with TickerProviderStateM
                           children: [
                             Flexible(
                               child: Text(
-                                company!,
+                                'Roles',
                                 style: TextStyle(
                                     color: Colors.white
                                 ),

@@ -1,3 +1,4 @@
+import 'package:cshrealestatemobile/SalesDashboard.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -31,7 +32,10 @@ class _ProfilePageState extends State<Profile> {
 
             onTap: ()
             {
-              Navigator.of(context).pop();
+              Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => SalesDashboard()),
+                    );
 
             },
             child: Icon(

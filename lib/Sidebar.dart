@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'package:cshrealestatemobile/MaintenanceTicketCreation.dart';
+import 'package:cshrealestatemobile/Profile.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'RolesReport.dart';
@@ -103,16 +105,16 @@ class Sidebar extends StatelessWidget {
                 },
               ),
               ListTile(
-                title: Text('Companies'),
-                leading: Icon(Icons.business,
+                title: Text('Maintenance Ticket'),
+                leading: Icon(Icons.hardware,
                   color: Colors.black,
                 ),
                 onTap: () async {
-                  /*Navigator.pushReplacement
+                  Navigator.pushReplacement
                     (
                     context,
-                    MaterialPageRoute(builder: (context) => SerialSelect()), // navigate to company and serial select screen
-                  );*/
+                    MaterialPageRoute(builder: (context) => MaintenanceTicketCreation()), // navigate to company and serial select screen
+                  );
                   // navigate to companies screen
                 },
               ),
@@ -200,6 +202,19 @@ class Sidebar extends StatelessWidget {
                           MaterialPageRoute(builder: (context) => UsersReport()),          // navigate to users screen
                         );
                       })),
+
+              ListTile(
+                  title: Text('Profile'),
+                  leading: Icon(Icons.info_outline,
+                    color: Colors.black,
+                  ),
+                  enabled: true,
+                  onTap: () {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => Profile()),          // navigate to users screen
+                    );
+                  }),
 
               /*ListTile(
                   title: Text('Settings'),

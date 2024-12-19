@@ -7,6 +7,8 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:image_picker/image_picker.dart';
 
+import 'Sidebar.dart';
+
 class MaintenanceTicketCreation extends StatefulWidget
 {
   const MaintenanceTicketCreation({Key? key}) : super(key: key);
@@ -14,7 +16,7 @@ class MaintenanceTicketCreation extends StatefulWidget
   _MaintenanceTicketCreationPageState createState() => _MaintenanceTicketCreationPageState();
 }
 
-class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreation> {
+class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreation> with TickerProviderStateMixin {
 
   String? selectedMaintenanceType; // To store the selected dropdown value
   final List<String> maintenance_types_list = [
@@ -29,6 +31,19 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
 
   TextEditingController _descriptionController = TextEditingController();
   TextEditingController _totalamountController = TextEditingController();
+
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  bool isDashEnable = true,
+      isRolesVisible = true,
+      isUserEnable = true,
+      isUserVisible = true,
+      isRolesEnable = true,
+      _isLoading = false,
+      isVisibleNoRoleFound = false;
+
+  String name = "",email = "";
+
 
   List<File> _attachment = []; // List to store selected images
   final ImagePicker _picker = ImagePicker();
@@ -214,24 +229,34 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
         appBar: AppBar(
           backgroundColor: appbar_color,
+          automaticallyImplyLeading: false,
 
-          leading: GestureDetector(
-            onTap: ()
-            {
-              Navigator.of(context).pop();
-            },
-            child: Icon(
-            Icons.arrow_back,
-            color: Colors.white,
-          ),),
+          leading: IconButton(
+            icon: Icon(Icons.menu,color: Colors.white),
+      onPressed: () {
+        _scaffoldKey.currentState!.openDrawer();
+      },
+    ),
 
           title: Text('Maintenance Ticket',
             style: TextStyle(
                 color: Colors.white
             ),),
         ),
+
+        drawer: Sidebar(
+            isDashEnable: isDashEnable,
+            isRolesVisible: isRolesVisible,
+            isRolesEnable: isRolesEnable,
+            isUserEnable: isUserEnable,
+            isUserVisible: isUserVisible,
+            Username: name,
+            Email: email,
+            tickerProvider: this),
+
         body: Container(
             height: MediaQuery.of(context).size.height,
             width: MediaQuery.of(context).size.width,

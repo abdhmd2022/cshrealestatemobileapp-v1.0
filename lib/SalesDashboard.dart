@@ -115,7 +115,7 @@ class _SalesDashboardPageState extends State<SalesDashboard> with TickerProvider
                         children: [
                           Flexible(
                             child: Text(
-                              company!,
+                              company_name,
                               style: TextStyle(
                                   color: Colors.white
                               ),

@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'UsersReport.dart';
 import 'constants.dart';
 
 
@@ -58,7 +59,7 @@ class Sidebar extends StatelessWidget {
                               child: SizedBox(
                                 height: 50.0,
                                 width: 50,
-                                child: Image.asset('assets/icon.png'),
+                                child: Icon(Icons.person),
                               ),
                             ),
                             SizedBox(width: 10.0),
@@ -193,27 +194,27 @@ class Sidebar extends StatelessWidget {
                       ),
                       enabled: isUserEnable,
                       onTap: () {
-                        /*Navigator.pushReplacement(
+                        Navigator.pushReplacement(
                           context,
-                          MaterialPageRoute(builder: (context) => UserView()),          // navigate to users screen
-                        );*/
+                          MaterialPageRoute(builder: (context) => UsersReport()),          // navigate to users screen
+                        );
                       })),
 
-              ListTile(
+              /*ListTile(
                   title: Text('Settings'),
                   leading: Icon(Icons.settings,
                     color: Colors.black,
                   ),
                   onTap: () {
                     Navigator.pop(context); // Close the dialog
-                    /*Navigator.pushReplacement(
+                    *//*Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(builder: (context) => Settings()),         // navigate to settings screen
-                    );*/
-                  }),
+                    );*//*
+                  }),*/
               Divider(),
               ListTile(
-                title: Text('Version 3.0.2'),
+                title: Text('Version 1.0'),
                 leading: Icon(Icons.build,
                   color: Colors.black,
                 ),

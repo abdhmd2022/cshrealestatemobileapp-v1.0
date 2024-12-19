@@ -27,13 +27,13 @@ class UserModel {
   }
 }
 
-class UserReport extends StatefulWidget {
-  const UserReport({Key? key}) : super(key: key);
+class UsersReport extends StatefulWidget {
+  const UsersReport({Key? key}) : super(key: key);
   @override
   _UserReportPageState createState() => _UserReportPageState();
 }
 
-class _UserReportPageState extends State<UserReport> with TickerProviderStateMixin {
+class _UserReportPageState extends State<UsersReport> with TickerProviderStateMixin {
   bool isDashEnable = true,
       isRolesVisible = true,
       isUserEnable = false,
@@ -44,7 +44,23 @@ class _UserReportPageState extends State<UserReport> with TickerProviderStateMix
 
   String user_email_fetched = "";
 
-  final List<UserModel> users = [];
+  final List<UserModel> users = [
+    UserModel(
+      role_name: 'Accountant',
+      name: 'John Doe',
+      email: 'johndoe@example.com',
+    ),
+    UserModel(
+      role_name: 'Sales',
+      name: 'Jane Smith',
+      email: 'janesmith@example.com',
+    ),
+    UserModel(
+      role_name: 'Manager',
+      name: 'Bob Johnson',
+      email: 'bobjohnson@example.com',
+    ),
+  ];
 
   String name = "",email = "";
 
@@ -59,7 +75,7 @@ class _UserReportPageState extends State<UserReport> with TickerProviderStateMix
   Future<void> _initSharedPreferences() async {
     prefs = await SharedPreferences.getInstance();
 
-    setState(()
+    /*setState(()
     {
       hostname = prefs.getString('hostname');
       company  = prefs.getString('company_name');
@@ -87,7 +103,7 @@ class _UserReportPageState extends State<UserReport> with TickerProviderStateMix
         isRolesVisible = false;
         isUserVisible = false;
       }
-    });
+    });*/
     /*fetchUsers(serial_no!);*/
   }
 
@@ -318,7 +334,7 @@ class _UserReportPageState extends State<UserReport> with TickerProviderStateMix
                             children: [
                               Flexible(
                                 child: Text(
-                                  company!,
+                                  'Users',
                                   style: TextStyle(
                                       color: Colors.white
                                   ),
@@ -327,12 +343,11 @@ class _UserReportPageState extends State<UserReport> with TickerProviderStateMix
                                 ),
                               ),
                               SizedBox(width: 10), // Add some spacing between text and image
-                              Image.asset(
-                                'assets/ic_launcher_edit_items_criteria_img.png',
-                                height: 50,
-                                width: 45,
+                              Icon(
+
+                                Icons.edit
                               )]))),
-                backgroundColor: Color(0xFF30D5C8),
+                backgroundColor: Colors.black,
                 automaticallyImplyLeading: false,
                 leading: IconButton(
                     icon: Icon(Icons.menu,color: Colors.white),
@@ -391,10 +406,9 @@ class _UserReportPageState extends State<UserReport> with TickerProviderStateMix
                                                       Padding(padding: EdgeInsets.only(top: 10),
                                                           child: Row(
                                                               children : [
-                                                                Image.asset(
-                                                                  'assets/ic_launcher_email_img.png',
-                                                                  width: 20,
-                                                                  height: 20,
+                                                                Icon(
+
+                                                                  Icons.email
                                                                 ),
                                                                 SizedBox(width: 10),
                                                                 Flexible(child: SingleChildScrollView(
@@ -405,58 +419,70 @@ class _UserReportPageState extends State<UserReport> with TickerProviderStateMix
                                                       Padding(padding: EdgeInsets.only(top:10),
                                                           child: Row(
                                                               children : [
-                                                                Image.asset(
-                                                                  'assets/ic_launcher_group_img.png',
-                                                                  width: 20,
-                                                                  height: 20,
+                                                                Icon(
+
+                                                                  Icons.group
                                                                 ),
                                                                 SizedBox(width: 10),
                                                                 Flexible(child: SingleChildScrollView(
                                                                   scrollDirection: Axis.horizontal,
                                                                   child: Text(card.role_name),
                                                                 ),)
-                                                              ]))]),
+                                                              ])),
 
-                                                trailing: Container(
-                                                    height: double.infinity,
-                                                    child: Column(
-                                                        mainAxisSize: MainAxisSize.min,
-                                                        crossAxisAlignment: CrossAxisAlignment.center,
-                                                        children: [
-                                                          Expanded(
-                                                              child: Column(
-                                                                  mainAxisAlignment: MainAxisAlignment.center,
-                                                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                                                  children: [
-                                                                    GestureDetector(
-                                                                        onTap: () {
-                                                                          String rolename = card.role_name;
-                                                                          String full_name = card.name;
-                                                                          String email_address = card.email;
-                                                                          /*Navigator.pushReplacement(
-                                                                            context,
-                                                                            MaterialPageRoute(builder: (context) => ModifyUser(
-                                                                                email_address: email_address,user_name: full_name,rolename: rolename
-                                                                            )),
-                                                                          );*/},
-                                                                        child: Padding(
-                                                                            padding: EdgeInsets.only(right: 0),
-                                                                            child: Image.asset(
-                                                                              'assets/ic_launcher_edit_items_criteria_imgg.png',
-                                                                              width: 20,
-                                                                              height: 20,
-                                                                            ))),
-                                                                    SizedBox(height: 15),
-                                                                    GestureDetector(
-                                                                        onTap: () {
-                                                                          user_email_fetched = card.email;
-                                                                          /*_showConfirmationDialogAndNavigate(context);*/
-                                                                        },
-                                                                        child: Image.asset(
-                                                                          'assets/ic_launcher_delete.png',
-                                                                          width: 20,
-                                                                          height: 20,
-                                                                        ))]))]))))));})),
+
+                                        Padding(
+                                          padding: EdgeInsets.only(top: 20, bottom: 0),
+                                          child: Row(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            crossAxisAlignment: CrossAxisAlignment.center,
+                                            children: [
+                                              ElevatedButton.icon(
+                                                onPressed: () {
+                                                  String rolename = card.role_name;
+                                                  String full_name = card.name;
+                                                  String email_address = card.email;
+                                                  // Navigate to the ModifyUser screen or perform your desired action.
+                                                },
+                                                icon: Icon(Icons.edit, color: Colors.black),
+                                                label: Text(
+                                                  'Edit',
+                                                  style: TextStyle(color: Colors.black),
+                                                ),
+                                                style: ElevatedButton.styleFrom(
+                                                  backgroundColor: Colors.white, // Button background color
+                                                  shadowColor: Colors.black.withOpacity(0.75), // Shadow color
+                                                  elevation: 5, // Elevation value
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius: BorderRadius.circular(20), // Rounded corners
+                                                  ),
+                                                ),
+                                              ),
+                                              SizedBox(width: 10), // Spacing between buttons
+                                              ElevatedButton.icon(
+                                                onPressed: () {
+                                                  user_email_fetched = card.email;
+                                                  // Show confirmation dialog or perform your desired action.
+                                                },
+                                                icon: Icon(Icons.delete, color: Colors.red),
+                                                label: Text(
+                                                  'Delete',
+                                                  style: TextStyle(color: Colors.red),
+                                                ),
+                                                style: ElevatedButton.styleFrom(
+                                                  backgroundColor: Colors.white, // Button background color
+                                                  shadowColor: Colors.black.withOpacity(0.75), // Shadow color
+                                                  elevation: 5, // Elevation value
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius: BorderRadius.circular(20), // Rounded corners
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        )
+                                        ]),
+                                               ))));})),
                       Visibility(
                         visible: _isLoading,
                         child: Center(
@@ -481,5 +507,8 @@ class _UserReportPageState extends State<UserReport> with TickerProviderStateMix
                                     MaterialPageRoute(builder: (context) => CreateUser()),
                                   );*/
                                 },
-                                child: Image.asset('assets/ic_launcher_add_role.png'),
+                                child: Icon(
+
+                                  Icons.add
+                                ),
                               )))]))));}}

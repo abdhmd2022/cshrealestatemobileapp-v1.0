@@ -124,10 +124,9 @@ class _SalesDashboardPageState extends State<SalesDashboard> with TickerProvider
                             ),
                           ),
                           SizedBox(width: 10), // Add some spacing between text and image
-                          Image.asset(
-                            'assets/ic_launcher_edit_items_criteria_img.png',
-                            height: 50,
-                            width: 45,
+                          Icon(
+
+                            Icons.ice_skating
                           )]))),
                   backgroundColor: Colors.black,
                   automaticallyImplyLeading: false,

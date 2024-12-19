@@ -1,4 +1,5 @@
 import 'package:cshrealestatemobile/MaintenanceTicketCreation.dart';
+import 'package:cshrealestatemobile/SalesDashboard.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -286,7 +287,7 @@ class _LoginPageState extends State<Login> {
 
                                           Navigator.push(
                                               context,
-                                              MaterialPageRoute(builder: (context) => MaintenanceTicketCreation()));
+                                              MaterialPageRoute(builder: (context) => SalesDashboard()));
                                         },
                                         child: Text('Login',
                                             style: TextStyle(

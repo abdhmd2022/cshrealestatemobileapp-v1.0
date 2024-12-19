@@ -477,6 +477,20 @@ class _ModifyUserPageState extends State<ModifyUser> with TickerProviderStateMix
       child:Scaffold(
         key: _scaffoldKey,
         appBar: AppBar(
+
+          leading: GestureDetector(
+            onTap: ()
+            {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => UsersReport()),
+              );
+            },
+            child: Icon(
+              Icons.arrow_back,
+              color: Colors.white,
+            ),),
+
           title: GestureDetector(
             onTap: () {
               /*Navigator.pushReplacement(
@@ -490,7 +504,7 @@ class _ModifyUserPageState extends State<ModifyUser> with TickerProviderStateMix
                 children: [
                   Flexible(
                     child: Text(
-                      'Add Users',
+                      'Modify Users',
                       style: TextStyle(
                           color: Colors.white
                       ),
@@ -510,13 +524,7 @@ class _ModifyUserPageState extends State<ModifyUser> with TickerProviderStateMix
           ),
           backgroundColor: appbar_color,
           automaticallyImplyLeading: false,
-          leading: IconButton(
-            icon: Icon(Icons.menu,
-                color: Colors.white),
-            onPressed: () {
-              _scaffoldKey.currentState!.openDrawer();
-            },
-          ),
+
         ),
         drawer: Sidebar(
             isDashEnable: isDashEnable,

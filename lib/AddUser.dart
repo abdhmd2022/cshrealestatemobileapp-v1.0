@@ -477,6 +477,19 @@ class _AddUserPageState extends State<AddUser> with TickerProviderStateMixin {
       child:Scaffold(
         key: _scaffoldKey,
         appBar: AppBar(
+
+          leading: GestureDetector(
+            onTap: ()
+            {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => UsersReport()),
+              );
+            },
+            child: Icon(
+              Icons.arrow_back,
+              color: Colors.white,
+            ),),
           title: GestureDetector(
             onTap: () {
               /*Navigator.pushReplacement(
@@ -510,13 +523,7 @@ class _AddUserPageState extends State<AddUser> with TickerProviderStateMixin {
           ),
           backgroundColor: appbar_color,
           automaticallyImplyLeading: false,
-          leading: IconButton(
-            icon: Icon(Icons.menu,
-                color: Colors.white),
-            onPressed: () {
-              _scaffoldKey.currentState!.openDrawer();
-            },
-          ),
+
         ),
         drawer: Sidebar(
             isDashEnable: isDashEnable,

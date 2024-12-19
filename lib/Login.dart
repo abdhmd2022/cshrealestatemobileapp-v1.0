@@ -5,7 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 
-import 'Profile.dart';
+import 'TenantProfile.dart';
 import 'constants.dart';
 
 class Login extends StatefulWidget {

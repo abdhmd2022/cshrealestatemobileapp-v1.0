@@ -618,16 +618,13 @@ class _AddUserPageState extends State<AddUser> with TickerProviderStateMixin {
                                 Padding(
 
                                     padding: EdgeInsets.only(top:0,left: 20,right: 20,bottom: 0),
-
                                     child: TextFormField(
                                       controller: controller_name,
-
                                       keyboardType: TextInputType.name,
                                       validator: (value) {
                                         if (value!.isEmpty) {
                                           return 'Name is required';
                                         }
-
                                         return null;
                                       },
                                       decoration: InputDecoration(

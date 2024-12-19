@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:cshrealestatemobile/MaintenanceTicketCreation.dart';
-import 'package:cshrealestatemobile/Profile.dart';
+import 'package:cshrealestatemobile/SalesProfile.dart';
+import 'package:cshrealestatemobile/TenantProfile.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'RolesReport.dart';
@@ -212,7 +213,7 @@ class Sidebar extends StatelessWidget {
                   onTap: () {
                     Navigator.pushReplacement(
                       context,
-                      MaterialPageRoute(builder: (context) => Profile()),          // navigate to users screen
+                      MaterialPageRoute(builder: (context) => SalesProfileScreen()),          // navigate to users screen
                     );
                   }),
 

@@ -539,25 +539,68 @@ class _AddUserPageState extends State<AddUser> with TickerProviderStateMixin {
                   Container(
                     width: double.infinity,
                     margin: EdgeInsets.only(
-                      left: 35,
+                      left: 20,
                       top: 20,
                       right: 30,
                       bottom: 25,
                     ),
-                    child: Text(
-                      'User Registration',
-                      textAlign: TextAlign.start,
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 30,
-                        fontWeight: FontWeight.bold,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+
+                      children: [Text(
+                        'User Registration',
+                        textAlign: TextAlign.start,
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 30,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
+
+                        SizedBox(height: 5,),
+                        Text(
+                          'Create your users for the app',
+                          textAlign: TextAlign.start,
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 15,
+                            fontWeight: FontWeight.normal,
+                          ),
+                        ),
+                      ],
+                    )
+                  ),
+
+                  Container(
+                    margin: EdgeInsets.only( top:15,
+                        bottom: 0,
+                        left: 20,
+                        right: 20),
+                    child: Row(
+                      children: [
+                        Text("Name:",
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16
+
+                            )
+                        ),
+                        SizedBox(width: 2),
+                        Text(
+                          '*', // Red asterisk for required field
+                          style: TextStyle(
+                            fontSize: 20,
+                            color: Colors.red, // Red color for the asterisk
+                          ),
+                        ),
+                      ],
                     ),
                   ),
 
                   Padding(
 
-                      padding: EdgeInsets.only(top:20,left: 20,right: 20,bottom: 0),
+                      padding: EdgeInsets.only(top:0,left: 20,right: 20,bottom: 0),
 
                       child: TextFormField(
                         controller: controller_name,
@@ -571,23 +614,19 @@ class _AddUserPageState extends State<AddUser> with TickerProviderStateMixin {
                           return null;
                         },
                         decoration: InputDecoration(
-                          labelText: 'Name',
-                          hintText: 'Enter name',
+                          hintText: 'Enter Name',
+                          contentPadding: EdgeInsets.all(15),
                           border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(5.0),
+                            borderRadius: BorderRadius.circular(10), // Set the border radius
+                            borderSide: BorderSide(
+                              color: Colors.black, // Set the border color
+                            ),
                           ),
                           focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(5.0),
-                            borderSide: BorderSide(color: _isFocus_name ? appbar_color : Colors.black),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(5.0),
-                            borderSide: BorderSide(color: Colors.black),
-                          ),
-                          labelStyle: TextStyle(color: _isFocus_name ? appbar_color : Colors.black),
-                          prefixIcon: Icon(
-                            Icons.person_2_outlined,
-                            color: _isFocus_name ? appbar_color : Colors.black,
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(
+                              color:  Colors.black, // Set the focused border color
+                            ),
                           ),
                         ),
                         onChanged: (value) {
@@ -622,9 +661,35 @@ class _AddUserPageState extends State<AddUser> with TickerProviderStateMixin {
 
                       )),
 
+                  Container(
+                    margin: EdgeInsets.only( top:15,
+                        bottom: 0,
+                        left: 20,
+                        right: 20),
+                    child: Row(
+                      children: [
+                        Text("Email Address:",
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16
+
+                            )
+                        ),
+                        SizedBox(width: 2),
+                        Text(
+                          '*', // Red asterisk for required field
+                          style: TextStyle(
+                            fontSize: 20,
+                            color: Colors.red, // Red color for the asterisk
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
                   Padding(
 
-                      padding: EdgeInsets.only(top:20,left: 20,right: 20,bottom: 0),
+                      padding: EdgeInsets.only(top:0,left: 20,right: 20,bottom: 0),
 
                       child: TextFormField(
                         controller: controller_email,
@@ -639,23 +704,20 @@ class _AddUserPageState extends State<AddUser> with TickerProviderStateMixin {
                           return null;
                         },
                         decoration: InputDecoration(
-                          labelText: 'Email Address',
-                          hintText: 'Enter email',
+                          hintText: 'Enter Email Address',
+                          contentPadding: EdgeInsets.all(15),
                           border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(5.0),
+                            borderRadius: BorderRadius.circular(10), // Set the border radius
+                            borderSide: BorderSide(
+                              color: Colors.black, // Set the border color
+                            ),
                           ),
                           focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(5.0),
-                            borderSide: BorderSide(color: _isFocused_email ? appbar_color : Colors.black),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(5.0),
-                            borderSide: BorderSide(color: Colors.black),
-                          ),
-                          labelStyle: TextStyle(color: _isFocused_email ? appbar_color : Colors.black),
-                          prefixIcon: Icon(
-                            Icons.email,
-                            color: _isFocused_email ? appbar_color : Colors.black,
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(
+                              color:  Colors.black, // Set the focused border color
+                              
+                            ),
                           ),
                         ),
                         onChanged: (value) {
@@ -690,7 +752,33 @@ class _AddUserPageState extends State<AddUser> with TickerProviderStateMixin {
 
                       )),
 
-                  Padding(padding: EdgeInsets.only(top:20,left: 20,right: 20,bottom: 0),
+                  Container(
+                    margin: EdgeInsets.only( top:15,
+                        bottom: 0,
+                        left: 20,
+                        right: 20),
+                    child: Row(
+                      children: [
+                        Text("Password:",
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16
+
+                            )
+                        ),
+                        SizedBox(width: 2),
+                        Text(
+                          '*', // Red asterisk for required field
+                          style: TextStyle(
+                            fontSize: 20,
+                            color: Colors.red, // Red color for the asterisk
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  Padding(padding: EdgeInsets.only(top:0,left: 20,right: 20,bottom: 0),
 
                       child: TextFormField(
                         controller: controller_password,
@@ -705,12 +793,9 @@ class _AddUserPageState extends State<AddUser> with TickerProviderStateMixin {
                           return null;
                         },
                         decoration: InputDecoration(
-                          labelText: 'Password',
-                          hintText: 'Enter password',
-                          prefixIcon: Icon(
-                            Icons.lock,
-                            color: _isFocused_password ? appbar_color : Colors.black,
-                          ),
+                          hintText: 'Enter Password',
+                          contentPadding: EdgeInsets.all(15),
+
                           suffixIcon: IconButton(
                             icon: Icon(
                               _obscureText ? Icons.visibility_off : Icons.visibility,
@@ -723,17 +808,16 @@ class _AddUserPageState extends State<AddUser> with TickerProviderStateMixin {
                             },
                           ),
                           border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(5.0),
-                            borderSide: BorderSide(color:Colors.black),
-
+                            borderRadius: BorderRadius.circular(10), // Set the border radius
+                            borderSide: BorderSide(
+                              color: Colors.black, // Set the border color
+                            ),
                           ),
                           focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(5.0),
-                            borderSide: BorderSide(color: appbar_color),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(5.0),
-                            borderSide: BorderSide(color: Colors.black),
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(
+                              color:  Colors.black, // Set the focused border color
+                            ),
                           ),
                           labelStyle: TextStyle(
                             color: _isFocused_password ? appbar_color : Colors.black,
@@ -777,18 +861,31 @@ class _AddUserPageState extends State<AddUser> with TickerProviderStateMixin {
 
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Padding(padding: EdgeInsets.only(top: 10,left:20),
+                        Padding(padding: EdgeInsets.only(top: 15,left:20),
 
-                          child:Text(
-                            'Select Role',
-                            style: TextStyle(
+                          child:Row(
+                            children: [
+                              Text("Select Role:",
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16
 
-                                fontWeight: FontWeight.bold
-                            ),)
-                          ,),
+                                  )
+                              ),
+                              SizedBox(width: 2),
+                              Text(
+                                '*', // Red asterisk for required field
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  color: Colors.red, // Red color for the asterisk
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
 
                         Padding(
-                          padding: EdgeInsets.only(top:5,left:20,right:20,bottom :0),
+                          padding: EdgeInsets.only(top:0,left:20,right:20,bottom :0),
 
                           child: DropdownButtonFormField<dynamic>(
                             decoration: InputDecoration(
@@ -878,82 +975,125 @@ class _AddUserPageState extends State<AddUser> with TickerProviderStateMixin {
                     child: Container(
 
 
-                      child: ElevatedButton(
+                      child: Row(
 
-                        style: ElevatedButton.styleFrom(
-                          foregroundColor: Colors.white,
-                          backgroundColor: appbar_color, // Set the text color
-                          padding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 18.0), // Set the button padding
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(5.0), // Set the button border radius
+                        mainAxisAlignment:MainAxisAlignment.center,
+
+                        crossAxisAlignment: CrossAxisAlignment.center,
+
+                        children: [
+
+
+
+                        ElevatedButton(
+
+                          style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white, // Button background color
+                        shadowColor: Colors.black.withOpacity(0.75), // Shadow color
+                        foregroundColor: Colors.black,
+                        elevation: 5, // Elevation value
+
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(5), // Rounded corners
+                          side: BorderSide(
+                            color: Colors.black, // Border color
+                            width: 1.5, // Border width
                           ),
+
                         ),
-                        onPressed: () {
-                          setState(() {
-                            String fetched_email = controller_email.text;
-                            String fetched_name = controller_name.text;
-                            String fetched_password = controller_password.text;
-                            String fetched_role = _selectedrole["role_name"];
+                      ),
+                          onPressed: () {
+                            setState(() {
+                               controller_email.clear();
+                              controller_name.clear();
+                              controller_password.clear();
+                               _selectedrole - myData_roles.first;
+                            });
+                          },
+                          child: Text('Clear'),
+                        ),
 
-                            if(fetched_name.isEmpty)
-                            {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text("Enter Name"),
-                                ),
-                              );
-                            }
-                            else if (fetched_email.isEmpty)
-                            {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text("Enter Email Address"),
-                                ),
-                              );
-                            }
-                            else if (fetched_password.isEmpty)
-                            {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text("Enter Password"),
-                                ),
-                              );
-                            }
-                            else
-                            {
-                              if (isValidEmail(fetched_email)) {
-                                if(fetched_password.length < 4)
-                                {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text("Password must be at least 4 characters"),
-                                    ),
-                                  );
-                                }
+                        SizedBox(width: 30,),
+                        ElevatedButton(
 
-                                else
-                                {
-                                  setState(() {
-                                    _isFocused_email = false;
-                                    _isFocus_name = false;
-                                    _isFocused_password = false;
-                                  });
-                                  /*userRegistration(serial_no!,fetched_email,fetched_password,fetched_role,fetched_name);*/
-                                }
-                              }
-                              else
+                          style: ElevatedButton.styleFrom(
+                            foregroundColor: Colors.white,
+                            backgroundColor: appbar_color, // Set the text color
+                            padding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 18.0), // Set the button padding
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5.0), // Set the button border radius
+                            ),
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              String fetched_email = controller_email.text;
+                              String fetched_name = controller_name.text;
+                              String fetched_password = controller_password.text;
+                              String fetched_role = _selectedrole["role_name"];
+
+                              if(fetched_name.isEmpty)
                               {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
-                                    content: Text("Enter Valid Email Address"),
+                                    content: Text("Enter Name"),
                                   ),
                                 );
                               }
-                            }
-                          });
-                        },
-                        child: Text('REGISTER'),
-                      ),
+                              else if (fetched_email.isEmpty)
+                              {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text("Enter Email Address"),
+                                  ),
+                                );
+                              }
+                              else if (fetched_password.isEmpty)
+                              {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text("Enter Password"),
+                                  ),
+                                );
+                              }
+                              else
+                              {
+                                if (isValidEmail(fetched_email)) {
+                                  if(fetched_password.length < 4)
+                                  {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text("Password must be at least 4 characters"),
+                                      ),
+                                    );
+                                  }
+
+                                  else
+                                  {
+                                    setState(() {
+                                      _isFocused_email = false;
+                                      _isFocus_name = false;
+                                      _isFocused_password = false;
+                                    });
+                                    /*userRegistration(serial_no!,fetched_email,fetched_password,fetched_role,fetched_name);*/
+                                  }
+                                }
+                                else
+                                {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text("Enter Valid Email Address"),
+                                    ),
+                                  );
+                                }
+                              }
+                            });
+                          },
+                          child: Text('Register'),
+                        ),
+
+                      ],)
+
+
                     ),)
                 ],
               ),)

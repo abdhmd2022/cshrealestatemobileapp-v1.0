@@ -7,14 +7,14 @@ import 'constants.dart';
 import 'package:http/http.dart' as http;
 
 
-class AddUser extends StatefulWidget
+class ModifyUser extends StatefulWidget
 {
-  const AddUser({Key? key}) : super(key: key);
+  const ModifyUser({Key? key}) : super(key: key);
   @override
-  _AddUserPageState createState() => _AddUserPageState();
+  _ModifyUserPageState createState() => _ModifyUserPageState();
 }
 
-class _AddUserPageState extends State<AddUser> with TickerProviderStateMixin {
+class _ModifyUserPageState extends State<ModifyUser> with TickerProviderStateMixin {
   bool isDashEnable = true,
       isRolesVisible = true,
       isUserEnable = true,
@@ -501,8 +501,8 @@ class _AddUserPageState extends State<AddUser> with TickerProviderStateMixin {
                   SizedBox(width: 10), // Add some spacing between text and image
                   Icon(
 
-                    Icons.edit,
-                    color: appbar_color
+                      Icons.edit,
+                      color: appbar_color
                   )
                 ],
               ),
@@ -540,39 +540,39 @@ class _AddUserPageState extends State<AddUser> with TickerProviderStateMixin {
               child: Column(
                 children: [
                   Container(
-                    width: double.infinity,
-                    margin: EdgeInsets.only(
-                      left: 20,
-                      top: 20,
-                      right: 30,
-                      bottom: 20,
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-
-                      children: [Text(
-                        'User Registration',
-                        textAlign: TextAlign.start,
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 30,
-                          fontWeight: FontWeight.bold,
-                        ),
+                      width: double.infinity,
+                      margin: EdgeInsets.only(
+                        left: 20,
+                        top: 20,
+                        right: 30,
+                        bottom: 20,
                       ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
 
-                        SizedBox(height: 5,),
-                        Text(
-                          'Create your users for the app',
+                        children: [Text(
+                          'User Modification',
                           textAlign: TextAlign.start,
                           style: TextStyle(
                             color: Colors.black,
-                            fontSize: 15,
-                            fontWeight: FontWeight.normal,
+                            fontSize: 30,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
-                      ],
-                    )
+
+                          SizedBox(height: 5,),
+                          Text(
+                            'Modify your users for the app',
+                            textAlign: TextAlign.start,
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 15,
+                              fontWeight: FontWeight.normal,
+                            ),
+                          ),
+                        ],
+                      )
                   ),
 
                   Container(
@@ -1050,7 +1050,7 @@ class _AddUserPageState extends State<AddUser> with TickerProviderStateMixin {
 
 
                                               }},
-                                            child: Text('Register'),
+                                            child: Text('Modify'),
                                           ),
 
                                         ],)

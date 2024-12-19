@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:cshrealestatemobile/AddUser.dart';
+import 'package:cshrealestatemobile/ModifyUser.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'Sidebar.dart';
@@ -450,7 +451,10 @@ class _UserReportPageState extends State<UsersReport> with TickerProviderStateMi
                                                   String rolename = card.role_name;
                                                   String full_name = card.name;
                                                   String email_address = card.email;
-                                                  // Navigate to the ModifyUser screen or perform your desired action.
+                                                  Navigator.pushReplacement(
+                                                    context,
+                                                    MaterialPageRoute(builder: (context) => ModifyUser()),
+                                                  );
                                                 },
                                                 icon: Icon(Icons.edit, color: Colors.black),
                                                 label: Text(

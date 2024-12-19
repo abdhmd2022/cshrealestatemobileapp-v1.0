@@ -909,14 +909,14 @@ class _AddUserPageState extends State<AddUser> with TickerProviderStateMixin {
 
                                             border: OutlineInputBorder(
                                               borderSide: BorderSide(color: Colors.black),
-                                              borderRadius: BorderRadius.circular(5.0),
+                                              borderRadius: BorderRadius.circular(10.0),
                                             ),
                                             focusedBorder: OutlineInputBorder(
                                               borderSide: BorderSide(color: appbar_color),
-                                              borderRadius: BorderRadius.circular(5.0),
+                                              borderRadius: BorderRadius.circular(10.0),
                                             ),
                                             enabledBorder: OutlineInputBorder(
-                                              borderRadius: BorderRadius.circular(5.0),
+                                              borderRadius: BorderRadius.circular(10.0),
                                               borderSide: BorderSide(color: Colors.black),
                                             ),
                                             contentPadding: EdgeInsets.symmetric(horizontal: 10),

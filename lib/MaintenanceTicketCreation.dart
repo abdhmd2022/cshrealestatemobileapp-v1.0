@@ -215,7 +215,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          backgroundColor: Colors.black,
+          backgroundColor: appbar_color,
 
           leading: GestureDetector(
             onTap: ()
@@ -635,7 +635,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                       margin: EdgeInsets.only(left: 20,right: 20,top: 20,bottom: 80),
                       child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.black,
+                        backgroundColor: appbar_color,
                         elevation: 5, // Adjust the elevation to make it look elevated
                         shadowColor: Colors.black.withOpacity(0.5), // Optional: adjust the shadow color
                       ),

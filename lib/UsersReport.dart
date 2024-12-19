@@ -345,9 +345,10 @@ class _UserReportPageState extends State<UsersReport> with TickerProviderStateMi
                               SizedBox(width: 10), // Add some spacing between text and image
                               Icon(
 
-                                Icons.edit
+                                Icons.edit,
+                                color: appbar_color,
                               )]))),
-                backgroundColor: Colors.black,
+                backgroundColor: appbar_color,
                 automaticallyImplyLeading: false,
                 leading: IconButton(
                     icon: Icon(Icons.menu,color: Colors.white),
@@ -398,6 +399,12 @@ class _UserReportPageState extends State<UsersReport> with TickerProviderStateMi
                                                     children: [
                                                       Row(
                                                           children : [
+
+                                                            Icon(
+
+                                                                Icons.person
+                                                            ),
+                                                            SizedBox(width: 10),
                                                             Flexible(child: SingleChildScrollView(
                                                               scrollDirection: Axis.horizontal,
                                                               child: Text(card.name),
@@ -408,7 +415,7 @@ class _UserReportPageState extends State<UsersReport> with TickerProviderStateMi
                                                               children : [
                                                                 Icon(
 
-                                                                  Icons.email
+                                                                  Icons.email_outlined
                                                                 ),
                                                                 SizedBox(width: 10),
                                                                 Flexible(child: SingleChildScrollView(
@@ -490,25 +497,24 @@ class _UserReportPageState extends State<UsersReport> with TickerProviderStateMi
                         ),
                       ),
                       Positioned(
-                          bottom: 40,
-                          right: 30,
-                          child: Container(
-                              width: 60,
-                              height: 60,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                              ),
-                              child: GestureDetector
-                                (
-                                onTap: ()
-                                {
-                                  /*Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(builder: (context) => CreateUser()),
-                                  );*/
-                                },
-                                child: Icon(
-
-                                  Icons.add
-                                ),
-                              )))]))));}}
+                        bottom: 40,
+                        right: 30,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            // Navigate to the CreateUser screen or perform your desired action.
+                          },
+                          style: ElevatedButton.styleFrom(
+                            shape: CircleBorder(), // Makes the button circular
+                            padding: EdgeInsets.all(16), // Adjust padding to control button size
+                            backgroundColor: Colors.blueGrey, // Button background color
+                            shadowColor: Colors.black.withOpacity(1.0), // Shadow color
+                            elevation: 6, // Shadow intensity
+                          ),
+                          child: Icon(
+                            Icons.add,
+                            color: Colors.white, // Icon color
+                            size: 35, // Icon size
+                          ),
+                        ),
+                      ),
+                    ]))));}}

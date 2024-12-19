@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import 'constants.dart';
+
 class CreateInquiry extends StatefulWidget {
 
   @override
@@ -57,7 +59,7 @@ class _CreateInquiryPageState extends State<CreateInquiry> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          backgroundColor: Colors.black,
+          backgroundColor: appbar_color,
           title: Text('Create Inquiry',
             style: TextStyle(
                 color: Colors.white
@@ -312,7 +314,7 @@ class _CreateInquiryPageState extends State<CreateInquiry> {
                             margin: EdgeInsets.only(left: 20,right: 20,top: 30,bottom: 10),
                             child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.black,
+                                backgroundColor: appbar_color,
                                 elevation: 5, // Adjust the elevation to make it look elevated
                                 shadowColor: Colors.black.withOpacity(0.5), // Optional: adjust the shadow color
                               ),

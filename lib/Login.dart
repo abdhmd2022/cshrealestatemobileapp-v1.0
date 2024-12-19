@@ -1,7 +1,12 @@
+import 'package:cshrealestatemobile/CreateInquiry.dart';
 import 'package:cshrealestatemobile/MaintenanceTicketCreation.dart';
 import 'package:cshrealestatemobile/SalesDashboard.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
+
+import 'Profile.dart';
+import 'constants.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key, required this.title});
@@ -15,7 +20,7 @@ class _LoginPageState extends State<Login> {
 
   bool isVisibleLoginForm= true,_isLoading = false,isButtonDisabled = false;
 
-  Color _buttonColor = Colors.black;
+  Color _buttonColor = appbar_color;
 
   final _formKey = GlobalKey<FormState>();
 
@@ -46,7 +51,7 @@ class _LoginPageState extends State<Login> {
     else
     {
       setState(() {
-        _buttonColor = Colors.black;
+        _buttonColor = appbar_color;
         isButtonDisabled = false;
       });
     }
@@ -69,7 +74,7 @@ class _LoginPageState extends State<Login> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          backgroundColor: Colors.black,
+          backgroundColor: appbar_color,
           title: Text(widget.title,
           style: TextStyle(
             color: Colors.white
@@ -243,7 +248,7 @@ class _LoginPageState extends State<Login> {
 
                                           Checkbox(
                                             value: remember_me,
-                                            activeColor: Colors.black,
+                                            activeColor: appbar_color,
                                             checkColor: Colors.white, // Optional: sets the color of the check icon
                                             onChanged: (bool? value) {
                                               setState(() {
@@ -287,7 +292,7 @@ class _LoginPageState extends State<Login> {
 
                                           Navigator.push(
                                               context,
-                                              MaterialPageRoute(builder: (context) => SalesDashboard()));
+                                              MaterialPageRoute(builder: (context) => CreateInquiry()));
                                         },
                                         child: Text('Login',
                                             style: TextStyle(

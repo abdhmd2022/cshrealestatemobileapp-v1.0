@@ -26,7 +26,7 @@ class _ProfilePageState extends State<Profile> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          backgroundColor: Colors.black,
+          backgroundColor: appbar_color,
           leading: GestureDetector(
 
             onTap: ()

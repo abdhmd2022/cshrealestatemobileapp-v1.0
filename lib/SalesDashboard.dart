@@ -126,9 +126,10 @@ class _SalesDashboardPageState extends State<SalesDashboard> with TickerProvider
                           SizedBox(width: 10), // Add some spacing between text and image
                           Icon(
 
-                            Icons.ice_skating
+                            Icons.edit,
+                            color : appbar_color
                           )]))),
-                  backgroundColor: Colors.black,
+                  backgroundColor: appbar_color,
                   automaticallyImplyLeading: false,
                   leading: IconButton(
                     icon: Icon(Icons.menu,

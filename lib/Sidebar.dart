@@ -221,7 +221,7 @@ class Sidebar extends StatelessWidget {
                   }),
 
               ListTile(
-                  title: Text('Create Sales Inquiry'),
+                  title: Text('Sales Inquiry'),
                   leading: Icon(Icons.note_add_outlined,
                     color: Colors.black,
                   ),

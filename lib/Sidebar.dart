@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:cshrealestatemobile/CreateInquiry.dart';
 import 'package:cshrealestatemobile/MaintenanceTicketCreation.dart';
 import 'package:cshrealestatemobile/SalesProfile.dart';
 import 'package:cshrealestatemobile/TenantProfile.dart';
@@ -204,6 +205,7 @@ class Sidebar extends StatelessWidget {
                         );
                       })),
 
+
               ListTile(
                   title: Text('Profile'),
                   leading: Icon(Icons.info_outline,
@@ -213,7 +215,22 @@ class Sidebar extends StatelessWidget {
                   onTap: () {
                     Navigator.pushReplacement(
                       context,
-                      MaterialPageRoute(builder: (context) => SalesProfileScreen()),          // navigate to users screen
+
+                      MaterialPageRoute(builder: (context) => TenantProfile()),          // navigate to users screen
+                    );
+                  }),
+
+              ListTile(
+                  title: Text('Create Sales Inquiry'),
+                  leading: Icon(Icons.note_add_outlined,
+                    color: Colors.black,
+                  ),
+                  enabled: true,
+                  onTap: () {
+                    Navigator.pushReplacement(
+                      context,
+
+                      MaterialPageRoute(builder: (context) => CreateInquiry()),          // navigate to users screen
                     );
                   }),
 

@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import 'SalesDashboard.dart';
 import 'constants.dart';
 
 class CreateInquiry extends StatefulWidget {
@@ -57,10 +58,8 @@ class _CreateInquiryPageState extends State<CreateInquiry> {
   }
 
   Future<void> _initSharedPreferences() async {
-
     selectedEmirate = emirate.first;
     selectedasignedto = asignedto.first;
-
   }
 
   @override
@@ -72,13 +71,16 @@ class _CreateInquiryPageState extends State<CreateInquiry> {
           leading: GestureDetector(
             onTap: ()
             {
-              /*Navigator.of(context).pop();*/
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => SalesDashboard()),
+              );
             },
             child: Icon(
               Icons.arrow_back,
               color: Colors.white,
             ),),
-          title: Text('Create Inquiry',
+          title: Text('Inquiry',
             style: TextStyle(
                 color: Colors.white
             )),
@@ -91,7 +93,6 @@ class _CreateInquiryPageState extends State<CreateInquiry> {
                 child: CircularProgressIndicator.adaptive(),
               ),
             ),
-
             SingleChildScrollView(
               child: Column(
                 children: [
@@ -106,7 +107,6 @@ class _CreateInquiryPageState extends State<CreateInquiry> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
-
                         children: [
                           Text(
                           'Create Inquiry',
@@ -133,13 +133,11 @@ class _CreateInquiryPageState extends State<CreateInquiry> {
                   ),
 
                   Container(
-
                       height: MediaQuery.of(context).size.height,
                       child:  Form(
                           key: _formKey,
                           child: ListView(
                               physics: NeverScrollableScrollPhysics(),
-                              
                               children: [
                                 Container(
                                   margin: EdgeInsets.only( top:15,

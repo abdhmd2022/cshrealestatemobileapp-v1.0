@@ -191,7 +191,6 @@ class Sidebar extends StatelessWidget {
 
               Visibility(
                   visible: isUserVisible,
-
                   child: ListTile(
                       title: Text('Users'),
                       leading: Icon(Icons.person,
@@ -204,7 +203,6 @@ class Sidebar extends StatelessWidget {
                           MaterialPageRoute(builder: (context) => UsersReport()),          // navigate to users screen
                         );
                       })),
-
 
               ListTile(
                   title: Text('Profile'),

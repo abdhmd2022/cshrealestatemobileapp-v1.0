@@ -102,34 +102,19 @@ class _SalesDashboardPageState extends State<SalesDashboard> with TickerProvider
             child: Scaffold(
                 key: _scaffoldKey,
                 appBar: AppBar(
-                  title: GestureDetector(
-                    onTap: () {
-                     /* Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(builder: (context) => SerialSelect()),
-                      );*/
-                    },
-                    child: Center(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Flexible(
-                            child: Text(
-                              company_name,
-                              style: TextStyle(
-                                  color: Colors.white
-                              ),
-                              overflow: TextOverflow.ellipsis, // Truncate text if it overflows
-                              maxLines: 1, // Display only one line of text
-                            ),
-                          ),
-                          SizedBox(width: 10), // Add some spacing between text and image
-                          Icon(
-
-                            Icons.edit,
-                            color : appbar_color
-                          )]))),
+                  title:  Flexible(
+                    child: Text(
+                      company_name,
+                      style: TextStyle(
+                          color: Colors.white
+                      ),
+                      overflow: TextOverflow.ellipsis, // Truncate text if it overflows
+                      maxLines: 1, // Display only one line of text
+                    ),
+                  ),
                   backgroundColor: appbar_color,
+                  centerTitle: true,
+
                   automaticallyImplyLeading: false,
                   leading: IconButton(
                     icon: Icon(Icons.menu,

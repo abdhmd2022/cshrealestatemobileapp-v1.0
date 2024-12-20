@@ -1,11 +1,6 @@
-import 'package:cshrealestatemobile/CreateInquiry.dart';
-import 'package:cshrealestatemobile/MaintenanceTicketCreation.dart';
 import 'package:cshrealestatemobile/SalesDashboard.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
-
-import 'TenantProfile.dart';
 import 'constants.dart';
 
 class Login extends StatefulWidget {
@@ -68,7 +63,6 @@ class _LoginPageState extends State<Login> {
   Future<void> _initSharedPreferences() async {
 
   }
-
 
   @override
   Widget build(BuildContext context) {

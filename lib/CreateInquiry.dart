@@ -393,10 +393,6 @@ class _CreateInquiryPageState extends State<CreateInquiry> {
 
                                 ),
 
-
-
-
-
                                 Container(
                                   child: Column(
 
@@ -675,7 +671,6 @@ class _CreateInquiryPageState extends State<CreateInquiry> {
                                         if (value!.isEmpty) {
                                           return 'Description is required';
                                         }
-
                                         return null;
                                       },
                                       decoration: InputDecoration(
@@ -724,11 +719,7 @@ class _CreateInquiryPageState extends State<CreateInquiry> {
                                         });
                                       },
                                     )
-
-
                                 ),
-
-
 
                                 Padding(padding: EdgeInsets.only(left: 20,right: 20,top: 40,bottom: 50),
                                   child: Container(
@@ -755,7 +746,6 @@ class _CreateInquiryPageState extends State<CreateInquiry> {
                                                 selectedasignedto = asignedto.first;
                                                 selectedEmirate = emirate.first;
 
-
                                                 /*print(_selectedrole['role_name']);*/
 
                                                 customernamecontroller.clear();
@@ -763,9 +753,6 @@ class _CreateInquiryPageState extends State<CreateInquiry> {
                                                 unittypecontroller.clear();
                                                 areacontroller.clear();
                                                 descriptioncontroller.clear();
-
-
-
 
                                               });
                                             },
@@ -791,28 +778,19 @@ class _CreateInquiryPageState extends State<CreateInquiry> {
                                                   _formKey.currentState!.validate()) {
                                                 _formKey.currentState!.save();
 
-
-
                                                 setState(() {
                                                   _isFocused_email = false;
                                                   _isFocus_name = false;
                                                 });
                                                 /*userRegistration(serial_no!,fetched_email,fetched_password,fetched_role,fetched_name);*/
 
-
                                               }},
                                             child: Text('Create'),
                                           ),
-
                                         ],)
-
-
                                   ),)
-
                               ]))
                   )
-
-
                 ],
               ),)
           ],

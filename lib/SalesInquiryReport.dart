@@ -83,15 +83,7 @@ class _SalesInquiryReportPageState extends State<SalesInquiryReport> with Ticker
 
   String? hostname = "", company = "",company_lowercase = "",serial_no= "",username= "",HttpURL= "",SecuritybtnAcessHolder= "";
 
-  late AnimationController _animationController;
-  late ScrollController _scrollController = ScrollController();
 
-  @override
-  void dispose() {
-    _animationController.dispose();
-    _scrollController.dispose();
-    super.dispose();
-  }
 
   Future<void> _initSharedPreferences() async {
     prefs = await SharedPreferences.getInstance();
@@ -99,17 +91,6 @@ class _SalesInquiryReportPageState extends State<SalesInquiryReport> with Ticker
     // Initialize ScrollController
 
 
-    // Initialize AnimationController
-    _animationController = AnimationController(
-      vsync: this,
-      duration: Duration(seconds: 1),
-    )..addListener(() {
-      // On each animation tick, update the scroll position
-      _scrollController.jumpTo(_animationController.value); // Adjust 200 based on the width you want to animate
-    });
-
-    // Start the animation automatically when the screen loads
-    _animationController.repeat(reverse: true); // Bounce effect (repeat and reverse)
 
 
     /*setState(()
@@ -526,7 +507,6 @@ class _SalesInquiryReportPageState extends State<SalesInquiryReport> with Ticker
 
 
                                                     SingleChildScrollView(
-                                                        controller: _scrollController,
                                                       scrollDirection: Axis.horizontal,
                                                       child: Padding(
                                                         padding: EdgeInsets.only(top: 20, bottom: 10,left:5,right:5),

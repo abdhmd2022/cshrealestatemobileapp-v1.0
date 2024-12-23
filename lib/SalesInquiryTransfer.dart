@@ -7,6 +7,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:image_picker/image_picker.dart';
 
+import 'SalesInquiryReport.dart';
 import 'Sidebar.dart';
 
 class SalesInquiryTransfer extends StatefulWidget
@@ -232,12 +233,18 @@ class _SalesInquiryTransferPageState extends State<SalesInquiryTransfer> with Ti
           backgroundColor: appbar_color,
           automaticallyImplyLeading: false,
 
-          leading: IconButton(
-            icon: Icon(Icons.menu,color: Colors.white),
-            onPressed: () {
-              _scaffoldKey.currentState!.openDrawer();
+          leading: GestureDetector(
+            onTap: ()
+            {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => SalesInquiryReport()),
+              );
             },
-          ),
+            child: Icon(
+              Icons.arrow_back,
+              color: Colors.white,
+            ),),
 
           title: Text('Inquiry Transfer',
             style: TextStyle(

@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 import 'SalesDashboard.dart';
 import 'constants.dart';
 
-class CreateInquiry extends StatefulWidget {
+class CreateSalesInquiry extends StatefulWidget {
 
   @override
-  State<CreateInquiry> createState() => _CreateInquiryPageState();
+  State<CreateSalesInquiry> createState() => _CreateSaleInquiryPageState();
 }
 
-class _CreateInquiryPageState extends State<CreateInquiry> {
+class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
   final _formKey = GlobalKey<FormState>();
 

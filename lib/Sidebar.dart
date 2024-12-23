@@ -1,6 +1,7 @@
 import 'dart:io';
-import 'package:cshrealestatemobile/CreateInquiry.dart';
+import 'package:cshrealestatemobile/CreateSalesInquiry.dart';
 import 'package:cshrealestatemobile/MaintenanceTicketCreation.dart';
+import 'package:cshrealestatemobile/SalesInquiryReport.dart';
 import 'package:cshrealestatemobile/SalesProfile.dart';
 import 'package:cshrealestatemobile/TenantProfile.dart';
 import 'package:flutter/material.dart';
@@ -228,7 +229,7 @@ class Sidebar extends StatelessWidget {
                     Navigator.pushReplacement(
                       context,
 
-                      MaterialPageRoute(builder: (context) => CreateInquiry()),          // navigate to users screen
+                      MaterialPageRoute(builder: (context) => SalesInquiryReport()),          // navigate to users screen
                     );
                   }),
 

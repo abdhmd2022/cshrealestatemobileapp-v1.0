@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:cshrealestatemobile/AddUser.dart';
 import 'package:cshrealestatemobile/CreateSalesInquiry.dart';
 import 'package:cshrealestatemobile/ModifyUser.dart';
+import 'package:cshrealestatemobile/SalesInquiryTransfer.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'Sidebar.dart';
@@ -586,7 +587,10 @@ class _SalesInquiryReportPageState extends State<SalesInquiryReport> with Ticker
                                                                 SizedBox(width: 10),
                                                                 ElevatedButton.icon(
                                                                   onPressed: () {
-                                                                    // Action for transfer button
+                                                                    Navigator.pushReplacement(
+                                                                      context,
+                                                                      MaterialPageRoute(builder: (context) => SalesInquiryTransfer()),
+                                                                    );
                                                                   },
                                                                   icon: Icon(Icons.swap_horiz, color: Colors.black),
                                                                   label: Text(

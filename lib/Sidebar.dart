@@ -172,7 +172,7 @@ class Sidebar extends StatelessWidget {
                   },
                 )
             ),*/
-              Visibility(
+              /*Visibility(
                   visible: isRolesVisible,
                   child:  ListTile(
                     title: Text('Roles'),
@@ -203,7 +203,7 @@ class Sidebar extends StatelessWidget {
                           context,
                           MaterialPageRoute(builder: (context) => UsersReport()),          // navigate to users screen
                         );
-                      })),
+                      })),*/
 
               ListTile(
                   title: Text('Profile'),

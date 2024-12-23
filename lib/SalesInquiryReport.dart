@@ -104,7 +104,7 @@ class _SalesInquiryReportPageState extends State<SalesInquiryReport> with Ticker
       duration: Duration(seconds: 1),
     )..addListener(() {
       // On each animation tick, update the scroll position
-      _scrollController.jumpTo(_animationController.value * 200); // Adjust 200 based on the width you want to animate
+      _scrollController.jumpTo(_animationController.value); // Adjust 200 based on the width you want to animate
     });
 
     // Start the animation automatically when the screen loads
@@ -504,7 +504,7 @@ class _SalesInquiryReportPageState extends State<SalesInquiryReport> with Ticker
                                                           Container(
                                                             width: 10, // Circle width
                                                             height: 10, // Circle height
-                                                            margin: EdgeInsets.only(right: 10,top:2), // Spacing between circle and text
+                                                            margin: EdgeInsets.only(right: 10,top:1), // Spacing between circle and text
                                                             decoration: BoxDecoration(
                                                               shape: BoxShape.circle,
                                                               color: card.status.toLowerCase() == 'closed'
@@ -528,7 +528,7 @@ class _SalesInquiryReportPageState extends State<SalesInquiryReport> with Ticker
                                                         controller: _scrollController,
                                                       scrollDirection: Axis.horizontal,
                                                       child: Padding(
-                                                        padding: EdgeInsets.only(top: 20, bottom: 0),
+                                                        padding: EdgeInsets.only(top: 20, bottom: 10,left:5,right:5),
                                                         child: Row(
                                                           mainAxisAlignment: MainAxisAlignment.center,
                                                           crossAxisAlignment: CrossAxisAlignment.center,
@@ -543,7 +543,7 @@ class _SalesInquiryReportPageState extends State<SalesInquiryReport> with Ticker
                                                               },
                                                               icon: Icon(Icons.edit, color: Colors.black),
                                                               label: Text(
-                                                                'Edit',
+                                                                'Follow up',
                                                                 style: TextStyle(color: Colors.black),
                                                               ),
                                                               style: ElevatedButton.styleFrom(
@@ -580,27 +580,32 @@ class _SalesInquiryReportPageState extends State<SalesInquiryReport> with Ticker
                                                               ),
                                                             ),
 
-                                                            SizedBox(width: 10),
+
                                                             if (card.status.toLowerCase() == 'in progress') // Show only for 'In Progress'
-                                                              ElevatedButton.icon(
-                                                                onPressed: () {
-                                                                  // Action for transfer button
-                                                                },
-                                                                icon: Icon(Icons.swap_horiz, color: Colors.black),
-                                                                label: Text(
-                                                                  'Transfer',
-                                                                  style: TextStyle(color: Colors.black),
-                                                                ),
-                                                                style: ElevatedButton.styleFrom(
-                                                                  backgroundColor: Colors.white, // Button background color
-                                                                  shadowColor: Colors.black.withOpacity(0.75), // Shadow color
-                                                                  elevation: 5, // Elevation value
-                                                                  shape: RoundedRectangleBorder(
-                                                                    borderRadius: BorderRadius.circular(20), // Rounded corners
+                                                              Row(children:[
+                                                                SizedBox(width: 10),
+                                                                ElevatedButton.icon(
+                                                                  onPressed: () {
+                                                                    // Action for transfer button
+                                                                  },
+                                                                  icon: Icon(Icons.swap_horiz, color: Colors.black),
+                                                                  label: Text(
+                                                                    'Transfer',
+                                                                    style: TextStyle(color: Colors.black),
+                                                                  ),
+                                                                  style: ElevatedButton.styleFrom(
+                                                                    backgroundColor: Colors.white, // Button background color
+                                                                    shadowColor: Colors.black.withOpacity(0.75), // Shadow color
+                                                                    elevation: 5, // Elevation value
+                                                                    shape: RoundedRectangleBorder(
+                                                                      borderRadius: BorderRadius.circular(20), // Rounded corners
+                                                                    ),
                                                                   ),
                                                                 ),
-                                                              ),
+                                                              ]),
                                                             // Spacing between buttons
+
+                                                            SizedBox(width: 10),
                                                             ElevatedButton.icon(
                                                               onPressed: () {
 

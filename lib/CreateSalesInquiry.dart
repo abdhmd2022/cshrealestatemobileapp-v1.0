@@ -356,7 +356,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                       });
                     },
                     decoration: InputDecoration(
-                      labelText: 'Search Emirates',
+                      labelText: 'Search Emirate(s)',
                       prefixIcon: Icon(Icons.search),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
@@ -405,7 +405,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                           updateSelectedAreasString();
 
 
-                          updateEmiratesSelection();  // Update Emirates selection text
+                          /*updateEmiratesSelection();  // Update Emirates selection text*/
                           updateAreasSelection();     // Update Areas based on Emirates selection
                         });
                       },
@@ -418,6 +418,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                   child: ListView(
                     children: filteredEmirates.map((emirate) {
                       return CheckboxListTile(
+                        activeColor: Colors.blueGrey,
                         title: Text(emirate['label']),
                         value: emirate['isSelected'],
                         onChanged: (bool? value) {
@@ -534,6 +535,9 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
         return StatefulBuilder(
           builder: (context, setState) {
+            // Check if all areas are selected
+            bool isAllAreasSelected = filteredAreas.every((area) => area['isSelected']);
+
             return Column(
               children: [
                 SizedBox(height: 10),
@@ -573,11 +577,14 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
                 SizedBox(height: 15),
 
+                // "Select All" checkbox
                 CheckboxListTile(
                   title: Text('Select All'),
+                  activeColor: Colors.blueGrey,
                   value: isAllAreasSelected,
                   onChanged: (bool? value) {
                     setState(() {
+                      // Update all areas to the selected value
                       isAllAreasSelected = value!;
                       filteredAreas.forEach((area) {
                         area['isSelected'] = isAllAreasSelected;
@@ -588,8 +595,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                 ),
 
                 SizedBox(height: 15),
-
-
 
                 // Display filtered areas with their corresponding emirates
                 Expanded(
@@ -604,6 +609,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                       });
 
                       return CheckboxListTile(
+                        activeColor: Colors.blueGrey,
                         title: Text('${area['label']} - $emirate'), // Display area and emirate
                         value: area['isSelected'],
                         onChanged: (bool? value) {
@@ -614,7 +620,8 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                             } else {
                               selectedAreas.remove('${area['label']} - $emirate');  // Remove area with emirate
                             }
-                            // Update the displayed areas
+                            // Update the "Select All" checkbox based on individual selections
+                            isAllAreasSelected = filteredAreas.every((area) => area['isSelected']);
                             updateSelectedAreasString();
                           });
                         },
@@ -1192,47 +1199,47 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                         padding: EdgeInsets.only(top: 0, left: 20, right: 20, bottom: 0),
                                         child: GestureDetector(
                                           onTap: () => _openEmirateDropdown(context), // Open the custom dropdown
-                                          child: TextFormField(
-                                            controller: TextEditingController(text: selectedEmirates),
-                                            decoration: InputDecoration(
-                                              hintText: 'Select Emirate',
-                                              contentPadding: EdgeInsets.all(15),
-                                              fillColor: isEmirateSelected ? Colors.transparent : Colors.transparent, // Set to black if selected
-                                              filled: true, // Ensure the field is filled but transparent or black based on isSelected
-                                              border: OutlineInputBorder(
-                                                borderRadius: BorderRadius.circular(10),
-                                                borderSide: BorderSide(color: Colors.black), // Black border
-                                              ),
-                                              enabledBorder: OutlineInputBorder(
-                                                borderRadius: BorderRadius.circular(10),
-                                                borderSide: BorderSide(color: Colors.black), // Black border when enabled
-                                              ),
-                                              disabledBorder: OutlineInputBorder(
-                                                borderRadius: BorderRadius.circular(10),
-                                                borderSide: BorderSide(color: Colors.black), // Black border when disabled
-                                              ),
-                                              focusedBorder: OutlineInputBorder(
-                                                borderRadius: BorderRadius.circular(10),
-                                                borderSide: BorderSide(color: Colors.black), // Black focused border
-                                              ),
-                                              labelStyle: TextStyle(color: Colors.black),
-                                              hintStyle: TextStyle(color: Colors.black), // Hint text color (white for better contrast)
+                                          child: Container(
+                                            width: double.infinity, // Make the container expand to full width
+                                            padding: EdgeInsets.all(15),
+                                            decoration: BoxDecoration(
+                                              borderRadius: BorderRadius.circular(10),
+                                              color: Colors.transparent, // Set it to transparent
+                                              border: Border.all(color: Colors.black), // Black border
                                             ),
-
-
-
-                                            enabled: false, //// Disable direct editing
-                                            validator: (value) {
-                                              // If no unit type is selected, show error
-                                              bool isAnySelected = emirates.any((unit) => unit['isSelected']);
-                                              if (!isAnySelected) {
-                                                return 'Emirate is required';
-                                              }
-                                              return null; // No error
-                                            },
+                                            child: Row(
+                                              mainAxisAlignment: MainAxisAlignment.spaceBetween, // Space between text and icon
+                                              children: [
+                                                // Column to display selected emirates
+                                                Expanded(
+                                                  child: selectedEmirates.isNotEmpty
+                                                      ? Column(
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                    children: selectedEmirates.split(', ').map((emirate) {
+                                                      return Text(
+                                                        emirate, // Display each emirate on a new line
+                                                        style: TextStyle(fontSize: 16, color: Colors.grey),
+                                                      );
+                                                    }).toList(),
+                                                  )
+                                                      : Text(
+                                                    'Select Emirate', // Placeholder text when no emirates are selected
+                                                    style: TextStyle(fontSize: 16, color: Colors.grey),
+                                                  ),
+                                                ),
+                                                // Down arrow icon
+                                                Icon(
+                                                  Icons.arrow_drop_down,
+                                                  color: Colors.grey, // Adjust the color of the arrow
+                                                ),
+                                              ],
+                                            ),
                                           ),
                                         ),
-                                      ),
+                                      )
+
+
+
 
 
 
@@ -1330,13 +1337,24 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                         color: Colors.transparent, // Set it to transparent as per your requirement
                                         border: Border.all(color: Colors.black), // Black border
                                       ),
-                                      child: Text(
-                                        selectedAreasString.isNotEmpty ? selectedAreasString : 'Select Area(s)', // Display selected areas or a placeholder
-                                        style: TextStyle(fontSize: 16, color: Colors.black), // Text style for readability
+                                      child: selectedAreasString.isNotEmpty
+                                          ? Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: selectedAreasString.split(', ').map((areaEmirate) {
+                                          return Text(
+                                            areaEmirate, // Display each area-emirate pair
+                                            style: TextStyle(fontSize: 16, color: Colors.grey), // Text style for readability
+                                          );
+                                        }).toList(),
+                                      )
+                                          : Text(
+                                        'Select Area(s)', // Placeholder text when no areas are selected
+                                        style: TextStyle(fontSize: 16, color: Colors.grey),
                                       ),
                                     ),
                                   ),
                                 ),
+
 
 
 

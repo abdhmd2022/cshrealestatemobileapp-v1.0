@@ -333,7 +333,7 @@ class _SalesInquiryReportPageState extends State<SalesInquiryReport> with Ticker
             appBar: AppBar(
                 title: Flexible(
                   child: Text(
-                    'Users',
+                    'Inquiries',
                     style: TextStyle(
                         color: Colors.white
                     ),
@@ -409,7 +409,7 @@ class _SalesInquiryReportPageState extends State<SalesInquiryReport> with Ticker
                                                             children : [
                                                               Icon(
 
-                                                                  Icons.email_outlined
+                                                                  Icons.apartment
                                                               ),
                                                               SizedBox(width: 10),
                                                               Flexible(child: SingleChildScrollView(
@@ -422,7 +422,8 @@ class _SalesInquiryReportPageState extends State<SalesInquiryReport> with Ticker
                                                             children : [
                                                               Icon(
 
-                                                                  Icons.group
+                                                                  Icons.location_on
+
                                                               ),
                                                               SizedBox(width: 10),
                                                               Flexible(child: SingleChildScrollView(
@@ -431,58 +432,153 @@ class _SalesInquiryReportPageState extends State<SalesInquiryReport> with Ticker
                                                               ),)
                                                             ])),
 
+                                                    Padding(padding: EdgeInsets.only(top:10),
+                                                        child: Row(
+                                                            children : [
+                                                              Icon(
+
+                                                                  Icons.public
+
+                                                              ),
+                                                              SizedBox(width: 10),
+                                                              Flexible(child: SingleChildScrollView(
+                                                                scrollDirection: Axis.horizontal,
+                                                                child: Text(card.emirate),
+                                                              ),)
+                                                            ])),
+
+
 
                                                     Padding(
-                                                      padding: EdgeInsets.only(top: 20, bottom: 0),
+                                                      padding: EdgeInsets.only(top: 10),
                                                       child: Row(
-                                                        mainAxisAlignment: MainAxisAlignment.center,
-                                                        crossAxisAlignment: CrossAxisAlignment.center,
                                                         children: [
-                                                          ElevatedButton.icon(
-                                                            onPressed: () {
+                                                          Icon(
 
-                                                              Navigator.pushReplacement(
-                                                                context,
-                                                                MaterialPageRoute(builder: (context) => ModifyUser()),
-                                                              );
-                                                            },
-                                                            icon: Icon(Icons.edit, color: Colors.black),
-                                                            label: Text(
-                                                              'Edit',
-                                                              style: TextStyle(color: Colors.black),
-                                                            ),
-                                                            style: ElevatedButton.styleFrom(
-                                                              backgroundColor: Colors.white, // Button background color
-                                                              shadowColor: Colors.black.withOpacity(0.75), // Shadow color
-                                                              elevation: 5, // Elevation value
-                                                              shape: RoundedRectangleBorder(
-                                                                borderRadius: BorderRadius.circular(20), // Rounded corners
+                                                              Icons.assignment
+
+                                                          ),
+                                                          SizedBox(width: 10),
+
+                                                          Flexible(
+                                                            child: SingleChildScrollView(
+                                                              scrollDirection: Axis.horizontal,
+                                                              child: Text(
+                                                                card.status,
+                                                                style: TextStyle(
+                                                                  color: Colors.black,
+                                                                  fontWeight: FontWeight.normal,
+                                                                ),
                                                               ),
                                                             ),
                                                           ),
-                                                          SizedBox(width: 10), // Spacing between buttons
-                                                          ElevatedButton.icon(
-                                                            onPressed: () {
 
-                                                              // Show confirmation dialog or perform your desired action.
-                                                            },
-                                                            icon: Icon(Icons.delete, color: Colors.red),
-                                                            label: Text(
-                                                              'Delete',
-                                                              style: TextStyle(color: Colors.red),
-                                                            ),
-                                                            style: ElevatedButton.styleFrom(
-                                                              backgroundColor: Colors.white, // Button background color
-                                                              shadowColor: Colors.black.withOpacity(0.75), // Shadow color
-                                                              elevation: 5, // Elevation value
-                                                              shape: RoundedRectangleBorder(
-                                                                borderRadius: BorderRadius.circular(20), // Rounded corners
-                                                              ),
+                                                          SizedBox(width: 5),
+
+                                                          Container(
+                                                            width: 10, // Circle width
+                                                            height: 10, // Circle height
+                                                            margin: EdgeInsets.only(right: 10,top:2), // Spacing between circle and text
+                                                            decoration: BoxDecoration(
+                                                              shape: BoxShape.circle,
+                                                              color: card.status.toLowerCase() == 'closed'
+                                                                  ? Colors.green
+                                                                  : card.status.toLowerCase() == 'in progress'
+                                                                  ? Colors.orange
+                                                                  : Colors.black, // Default color for other statuses
                                                             ),
                                                           ),
                                                         ],
                                                       ),
+                                                    ),
+
+
+
+
+
+
+
+                                                    SingleChildScrollView(
+
+                                                      scrollDirection: Axis.horizontal,
+                                                      child: Padding(
+                                                        padding: EdgeInsets.only(top: 20, bottom: 0),
+                                                        child: Row(
+                                                          mainAxisAlignment: MainAxisAlignment.center,
+                                                          crossAxisAlignment: CrossAxisAlignment.center,
+                                                          children: [
+                                                            ElevatedButton.icon(
+                                                              onPressed: () {
+
+                                                                Navigator.pushReplacement(
+                                                                  context,
+                                                                  MaterialPageRoute(builder: (context) => ModifyUser()),
+                                                                );
+                                                              },
+                                                              icon: Icon(Icons.edit, color: Colors.black),
+                                                              label: Text(
+                                                                'Edit',
+                                                                style: TextStyle(color: Colors.black),
+                                                              ),
+                                                              style: ElevatedButton.styleFrom(
+                                                                backgroundColor: Colors.white, // Button background color
+                                                                shadowColor: Colors.black.withOpacity(0.75), // Shadow color
+                                                                elevation: 5, // Elevation value
+                                                                shape: RoundedRectangleBorder(
+                                                                  borderRadius: BorderRadius.circular(20), // Rounded corners
+                                                                ),
+                                                              ),
+                                                            ),
+                                                            SizedBox(width: 10),
+
+                                                            ElevatedButton.icon(
+                                                              onPressed: () {
+
+                                                                Navigator.pushReplacement(
+                                                                  context,
+                                                                  MaterialPageRoute(builder: (context) => ModifyUser()),
+                                                                );
+                                                              },
+                                                              icon: Icon(Icons.remove_red_eye, color: Colors.black),
+                                                              label: Text(
+                                                                'View',
+                                                                style: TextStyle(color: Colors.black),
+                                                              ),
+                                                              style: ElevatedButton.styleFrom(
+                                                                backgroundColor: Colors.white, // Button background color
+                                                                shadowColor: Colors.black.withOpacity(0.75), // Shadow color
+                                                                elevation: 5, // Elevation value
+                                                                shape: RoundedRectangleBorder(
+                                                                  borderRadius: BorderRadius.circular(20), // Rounded corners
+                                                                ),
+                                                              ),
+                                                            ),
+                                                            // Spacing between buttons
+                                                            ElevatedButton.icon(
+                                                              onPressed: () {
+
+                                                                // Show confirmation dialog or perform your desired action.
+                                                              },
+                                                              icon: Icon(Icons.delete, color: Colors.red),
+                                                              label: Text(
+                                                                'Delete',
+                                                                style: TextStyle(color: Colors.red),
+                                                              ),
+                                                              style: ElevatedButton.styleFrom(
+                                                                backgroundColor: Colors.white, // Button background color
+                                                                shadowColor: Colors.black.withOpacity(0.75), // Shadow color
+                                                                elevation: 5, // Elevation value
+                                                                shape: RoundedRectangleBorder(
+                                                                  borderRadius: BorderRadius.circular(20), // Rounded corners
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      )
+
                                                     )
+
                                                   ]),
                                             ))));})),
                       Visibility(

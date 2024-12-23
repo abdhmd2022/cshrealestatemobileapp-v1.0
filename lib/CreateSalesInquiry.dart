@@ -511,7 +511,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
 
   }
-
   // Area Dropdown based on selected emirates
   void _openAreaDropdown(BuildContext context) async {
     // List to store areas to display based on selected Emirates

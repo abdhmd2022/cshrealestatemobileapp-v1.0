@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:cshrealestatemobile/AddUser.dart';
 import 'package:cshrealestatemobile/CreateSalesInquiry.dart';
+import 'package:cshrealestatemobile/FollowupSalesInquiry.dart';
 import 'package:cshrealestatemobile/ModifyUser.dart';
 import 'package:cshrealestatemobile/SalesInquiryTransfer.dart';
 import 'package:flutter/material.dart';
@@ -58,9 +59,9 @@ class _SalesInquiryReportPageState extends State<SalesInquiryReport> with Ticker
   final List<InquiryModel> salesinquiry = [
     InquiryModel(
       customer_name: 'Ali',
-      unit_type: '1 bhk',
-      area: 'Bur Dubai',
-      emirate: 'Dubai',
+      unit_type: '1BHK, 3BHK',
+      area: 'Bur Dubai, Al Khan',
+      emirate: 'Dubai, Sharjah',
       status: 'Closed'
     ),
     InquiryModel(
@@ -513,9 +514,16 @@ class _SalesInquiryReportPageState extends State<SalesInquiryReport> with Ticker
                                                             ElevatedButton.icon(
                                                               onPressed: () {
 
+                                                                String name = card.customer_name;
+                                                                List<String> emiratesList = card.emirate.split(',').map((e) => e.trim()).toList();
+                                                                List<String> areaList = card.area.split(',').map((e) => e.trim()).toList();
+                                                                List<String> unittype = card.unit_type.split(',').map((e) => e.trim()).toList();
+
+                                                                String contactno = "+971 500000000";
+                                                                String email = "saadan@ca-eim.com";
                                                                 Navigator.pushReplacement(
                                                                   context,
-                                                                  MaterialPageRoute(builder: (context) => ModifyUser()),
+                                                                  MaterialPageRoute(builder: (context) => FollowupSalesInquiry(name: name, unittype: unittype, existingAreaList: areaList, existingEmirateList: emiratesList, contactno: contactno, email: email)),
                                                                 );
                                                               },
                                                               icon: Icon(Icons.edit, color: Colors.black),

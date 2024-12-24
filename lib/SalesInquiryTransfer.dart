@@ -40,7 +40,6 @@ class _SalesInquiryTransferPageState extends State<SalesInquiryTransfer> with Ti
 
   final _formKey = GlobalKey<FormState>();
 
-
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   bool isDashEnable = true,
@@ -52,7 +51,6 @@ class _SalesInquiryTransferPageState extends State<SalesInquiryTransfer> with Ti
       isVisibleNoRoleFound = false;
 
   String name = "",email = "";
-
 
   /*List<File> _attachment = []; // List to store selected images
   final ImagePicker _picker = ImagePicker();*/

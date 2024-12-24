@@ -82,6 +82,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
       {'label': 'Jumeirah', 'isSelected': false},
       {'label': 'Bur Dubai', 'isSelected': false},
       {'label': 'Dubai Marina', 'isSelected': false},
+      {'label': 'Al Qusais', 'isSelected': false},
     ],
     'Abu Dhabi': [
       {'label': 'Al Ain', 'isSelected': false},

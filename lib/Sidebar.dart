@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:cshrealestatemobile/AvailableUnitsReport.dart';
 import 'package:cshrealestatemobile/CreateSalesInquiry.dart';
 import 'package:cshrealestatemobile/MaintenanceTicketCreation.dart';
 import 'package:cshrealestatemobile/SalesInquiryReport.dart';
@@ -230,6 +231,20 @@ class Sidebar extends StatelessWidget {
                       context,
 
                       MaterialPageRoute(builder: (context) => SalesInquiryReport()),          // navigate to users screen
+                    );
+                  }),
+
+              ListTile(
+                  title: Text('Available Units'),
+                  leading: Icon(Icons.layers,
+                    color: Colors.black,
+                  ),
+                  enabled: true,
+                  onTap: () {
+                    Navigator.pushReplacement(
+                      context,
+
+                      MaterialPageRoute(builder: (context) => AvailableUnitsReport()),          // navigate to users screen
                     );
                   }),
 

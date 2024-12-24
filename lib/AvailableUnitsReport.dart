@@ -7,12 +7,14 @@ import 'constants.dart';
 
 class AvailableUnits {
   final String unitno;
+  final String unittype;
   final String building_name;
   final String area;
   final String emirate;
 
   AvailableUnits({
     required this.unitno,
+    required this.unittype,
     required this.building_name,
     required this.area,
     required this.emirate
@@ -22,7 +24,8 @@ class AvailableUnits {
   {
     return AvailableUnits
       (
-        unitno: json['unitno'],
+      unitno: json['unitno'],
+        unittype: json['unittype'],
         building_name: json['building_name'],
         area: json['area'],
         emirate: json['emirate'],
@@ -49,13 +52,15 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
 
   final List<AvailableUnits> units = [
     AvailableUnits(
-      unitno: '101',
+      unitno: "101",
+      unittype: '1BHK',
       building_name: 'Al Khaleej Center',
       area: 'Bur Dubai',
       emirate: 'Dubai'
     ),
     AvailableUnits(
-        unitno: '402',
+        unitno: "402",
+        unittype: '2BHK',
         building_name: 'Musalla Tower',
         area: 'Bur Dubai',
         emirate: 'Dubai'
@@ -392,7 +397,7 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
                                                           SizedBox(width: 10),
                                                           Flexible(child: SingleChildScrollView(
                                                             scrollDirection: Axis.horizontal,
-                                                            child: Text(card.unitno),
+                                                            child: Text(card.unittype),
                                                           ))]),
 
                                                     Padding(padding: EdgeInsets.only(top: 10),
@@ -445,7 +450,19 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
                                                         children: [
                                                           ElevatedButton.icon(
                                                             onPressed: () {
+                                                              String unitno = card.unitno;
+                                                              String unittype = card.unittype;
+                                                              String area = card.area;
+                                                              String emirate = card.emirate;
+                                                              String rent = "AED 50,000";
+                                                              String parking = "1 included";
+                                                              String balcony = "Yes";
+                                                              String bathooms = "2";
+                                                              String building = card.building_name;
 
+                                                              showDialog(
+                                                                context: context,
+                                                                builder: (context) => AvailableUnitsDialog(unitno: unitno, area: area, emirate: emirate, unittype: unittype, rent: rent, parking: parking, balcony: balcony, bathrooms: bathooms,building_name: building,));
 
                                                             },
                                                             icon: Icon(Icons.remove_red_eye, color: Colors.black),
@@ -498,3 +515,178 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
                         ),
                       ),*/
                     ]))));}}
+
+
+class AvailableUnitsDialog extends StatelessWidget {
+  final String unitno;
+  final String building_name;
+  final String area;
+  final String emirate;
+  final String unittype;
+  final String rent;
+  final String parking;
+  final String balcony;
+  final String bathrooms;
+
+  const AvailableUnitsDialog({Key? key,
+    required this.unitno,
+    required this.area,
+    required this.building_name,
+    required this.emirate,
+    required this.unittype,
+    required this.rent,
+    required this.parking,
+    required this.balcony,
+    required this.bathrooms
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title:Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Row(
+            children: [
+
+              /*Icon(
+                Icons.home
+              ),
+              SizedBox(width: 5,),*/
+              Text("${unitno}",
+                style: TextStyle(
+                    fontSize: 20,
+                  fontWeight: FontWeight.bold
+                ),
+              ),
+            ],
+          )
+        ],
+      ),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+              children : [
+
+                Icon(
+                    Icons.home
+                ),
+                SizedBox(width: 10),
+                Flexible(child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Text(unittype),
+                ))]),
+
+          Padding(padding: EdgeInsets.only(top: 10),
+              child: Row(
+                  children : [
+                    Icon(
+
+                        Icons.business
+                    ),
+                    SizedBox(width: 10),
+                    Flexible(child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Text(building_name),
+                    ))])),
+
+          Padding(padding: EdgeInsets.only(top: 10),
+              child: Row(
+                  children : [
+                    Icon(
+
+                        Icons.location_on
+                    ),
+                    SizedBox(width: 10),
+                    Flexible(child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Text(area),
+                    ))])),
+
+          Padding(padding: EdgeInsets.only(top: 10),
+              child: Row(
+                  children : [
+                    Icon(
+
+                        Icons.public
+                    ),
+                    SizedBox(width: 10),
+                    Flexible(child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Text(emirate),
+                    ))])),
+
+          Padding(padding: EdgeInsets.only(top: 10),
+              child: Row(
+                  children : [
+                    Icon(
+
+                        Icons.payment
+                    ),
+                    SizedBox(width: 10),
+                    Flexible(child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Text(rent),
+                    ))])),
+
+          Padding(padding: EdgeInsets.only(top:10),
+              child: Row(
+                  children : [
+                    Icon(
+
+                        Icons.local_parking
+
+                    ),
+                    SizedBox(width: 10),
+                    Flexible(child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Text(parking),
+                    ),)
+                  ])),
+
+          Padding(padding: EdgeInsets.only(top:10),
+              child: Row(
+                  children : [
+                    Icon(
+
+                        Icons.deck
+
+                    ),
+                    SizedBox(width: 10),
+                    Flexible(child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Text('Balcony: $balcony'),
+                    ),)
+                  ])),
+
+          Padding(padding: EdgeInsets.only(top:10),
+              child: Row(
+                  children : [
+                    Icon(
+
+                        Icons.bathtub
+
+                    ),
+                    SizedBox(width: 10),
+                    Flexible(child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Text('Bathrooms: $bathrooms'),
+                    ),)
+                  ])),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text("Close",
+            style: TextStyle(
+                color: Colors.blueGrey
+            ),),
+        ),
+      ],
+    );
+  }
+}

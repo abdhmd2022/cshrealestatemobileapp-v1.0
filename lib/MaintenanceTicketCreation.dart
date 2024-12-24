@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:multi_select_flutter/multi_select_flutter.dart';
 
 import 'Sidebar.dart';
 
@@ -18,7 +19,8 @@ class MaintenanceTicketCreation extends StatefulWidget
 
 class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreation> with TickerProviderStateMixin {
 
-  String? selectedMaintenanceType; // To store the selected dropdown value
+  List<String> selectedMaintenanceTypes = [];
+
   final List<String> maintenance_types_list = [
     'Electrical Works',
     'A/C Works',
@@ -43,6 +45,20 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
       isVisibleNoRoleFound = false;
 
   String name = "",email = "";
+
+  bool selectAll = false;
+
+  // Function to toggle Select All option
+  void toggleSelectAll() {
+    setState(() {
+      selectAll = !selectAll;
+      if (selectAll) {
+        selectedMaintenanceTypes = List<String>.from(maintenance_types_list);
+      } else {
+        selectedMaintenanceTypes.clear();
+      }
+    });
+  }
 
 
   List<File> _attachment = []; // List to store selected images
@@ -222,8 +238,6 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
   }
 
   Future<void> _initSharedPreferences() async {
-
-    selectedMaintenanceType = maintenance_types_list.first;
   }
 
   @override
@@ -423,6 +437,53 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
 
                         Container(
                           padding: EdgeInsets.symmetric(horizontal: 12),
+                          margin: EdgeInsets.only(left: 0, right: 0, bottom: 20),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: Colors.black, width: 0.75),
+                          ),
+                          child: MultiSelectDialogField(
+                            items: maintenance_types_list
+                                .map((type) => MultiSelectItem<String>(type, type))
+                                .toList(),
+                            initialValue: selectedMaintenanceTypes,
+                            title: Text("Maintenance Type(s)"),
+                            searchable: true,
+                            selectedColor: Colors.blueGrey,
+                            confirmText: Text(
+                              "Confirm",
+                              style: TextStyle(color: Colors.blueGrey), // Custom confirm button text color
+                            ),
+                            cancelText: Text(
+                              "Cancel",
+                              style: TextStyle(color: Colors.blueGrey), // Custom cancel button text color
+                            ),
+                            buttonIcon: Icon(Icons.arrow_drop_down, color: Colors.black54),
+                            buttonText: Text(
+                              "Select Maintenance Type(s)",
+                              style: TextStyle(color: Colors.black54, fontSize: 16),
+                            ),
+                            onConfirm: (values) {
+                              setState(() {
+                                selectedMaintenanceTypes = List<String>.from(values);
+                              });
+                            },
+                            chipDisplay: MultiSelectChipDisplay(
+                              onTap: (value) {
+                                setState(() {
+                                  selectedMaintenanceTypes.remove(value);
+                                });
+                              },
+                            ),
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.transparent),
+                            ),
+                            // We manage Select All outside of MultiSelectDialogField
+                          ),
+                        )
+                        /* Container(
+                          padding: EdgeInsets.symmetric(horizontal: 12),
                           margin: EdgeInsets.only(left: 00,right: 0,bottom: 20),
                           decoration: BoxDecoration(
                             color: Colors.white,
@@ -449,7 +510,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                             },
                             icon: Icon(Icons.arrow_drop_down, color: Colors.grey),
                           ),
-                        ),
+                        ),*/
                       ],
                     ),),
 

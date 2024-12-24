@@ -455,16 +455,12 @@ class _SalesInquiryReportPageState extends State<SalesInquiryReport> with Ticker
                                                               ),)
                                                             ])),
 
-
-
                                                     Padding(
                                                       padding: EdgeInsets.only(top: 10),
                                                       child: Row(
                                                         children: [
                                                           Icon(
-
                                                               Icons.assignment
-
                                                           ),
                                                           SizedBox(width: 10),
 

@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:cshrealestatemobile/constants.dart';
 import 'package:flutter/animation.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
@@ -12,7 +13,19 @@ import 'Sidebar.dart';
 
 class SalesInquiryTransfer extends StatefulWidget
 {
-  const SalesInquiryTransfer({Key? key}) : super(key: key);
+  final String name;
+  final String unittype;
+  final String area;
+  final String emirate;
+
+  const SalesInquiryTransfer({
+    Key? key,
+    required this.name,
+    required this.unittype,
+    required this.area,
+    required this.emirate,
+  }) : super(key: key);
+
   @override
   _SalesInquiryTransferPageState createState() => _SalesInquiryTransferPageState();
 }
@@ -310,7 +323,7 @@ class _SalesInquiryTransferPageState extends State<SalesInquiryTransfer> with Ti
                                                   ),
                                                   SizedBox(height: 2), // Add space between icon and text
                                                   Text(
-                                                    'Name',
+                                                    widget.name,
                                                     style: TextStyle(fontSize: 16,
                                                         color: Colors.black54),
                                                   ),
@@ -327,7 +340,7 @@ class _SalesInquiryTransferPageState extends State<SalesInquiryTransfer> with Ti
                                                   ),
                                                   SizedBox(height: 2), // Add space between icon and text
                                                   Text(
-                                                    'Area',
+                                                    widget.area,
                                                     style: TextStyle(fontSize: 16,
                                                         color: Colors.black54),
                                                   ),
@@ -347,12 +360,12 @@ class _SalesInquiryTransferPageState extends State<SalesInquiryTransfer> with Ti
                                                 mainAxisSize: MainAxisSize.min,
                                                 children: [
                                                   Icon(
-                                                    Icons.home_filled,
+                                                    Icons.apartment,
                                                     color: Colors.black54,
                                                   ),
                                                   SizedBox(height: 2), // Add space between icon and text
                                                   Text(
-                                                    'Unit No',
+                                                    widget.unittype,
                                                     style: TextStyle(fontSize: 16,
                                                         color: Colors.black54),
                                                   ),
@@ -365,12 +378,12 @@ class _SalesInquiryTransferPageState extends State<SalesInquiryTransfer> with Ti
                                                 mainAxisSize: MainAxisSize.min,
                                                 children: [
                                                   Icon(
-                                                    Icons.apartment,
+                                                    Icons.public,
                                                     color: Colors.black54,
                                                   ),
                                                   SizedBox(height: 2), // Add space between icon and text
                                                   Text(
-                                                    'Building',
+                                                    widget.emirate,
                                                     style: TextStyle(fontSize: 16,
                                                         color: Colors.black54),
                                                   ),

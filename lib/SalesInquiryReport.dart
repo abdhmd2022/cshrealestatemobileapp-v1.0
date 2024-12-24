@@ -537,9 +537,27 @@ class _SalesInquiryReportPageState extends State<SalesInquiryReport> with Ticker
                                                             ElevatedButton.icon(
                                                               onPressed: () {
 
-                                                                Navigator.pushReplacement(
-                                                                  context,
-                                                                  MaterialPageRoute(builder: (context) => ModifyUser()),
+                                                                // showing view dialog
+
+                                                                String customername = card.customer_name;
+                                                                String unittype = card.unit_type;
+                                                                String area = card.area;
+                                                                String emirate = card.emirate;
+                                                                String status = card.status;
+                                                                String description = "This is description";
+                                                                String contactno = "+971 500000000";
+                                                                String email = "saadan@ca-eim.com";
+
+                                                                showDialog(
+                                                                  context: context,
+                                                                  builder: (context) => InquiryDetailsDialog(customername: customername,
+                                                                    unittype: unittype,
+                                                                    area: area,
+                                                                    emirate: emirate,
+                                                                    status: status,
+                                                                  description: description,
+                                                                  contactno: contactno,
+                                                                  email: email,),
                                                                 );
                                                               },
                                                               icon: Icon(Icons.remove_red_eye, color: Colors.black),
@@ -563,9 +581,15 @@ class _SalesInquiryReportPageState extends State<SalesInquiryReport> with Ticker
                                                                 SizedBox(width: 10),
                                                                 ElevatedButton.icon(
                                                                   onPressed: () {
+
+                                                                    String name = card.customer_name;
+                                                                    String unittype = card.unit_type;
+                                                                    String area = card.area;
+                                                                    String emirate = card.emirate;
+
                                                                     Navigator.pushReplacement(
                                                                       context,
-                                                                      MaterialPageRoute(builder: (context) => SalesInquiryTransfer()),
+                                                                      MaterialPageRoute(builder: (context) => SalesInquiryTransfer(name: name,area: area,unittype : unittype,emirate: emirate,)),
                                                                     );
                                                                   },
                                                                   icon: Icon(Icons.swap_horiz, color: Colors.black),
@@ -644,3 +668,161 @@ class _SalesInquiryReportPageState extends State<SalesInquiryReport> with Ticker
                         ),
                       ),
                     ]))));}}
+
+class InquiryDetailsDialog extends StatelessWidget {
+  final String customername;
+  final String unittype;
+  final String area;
+  final String emirate;
+  final String status;
+  final String description;
+  final String contactno;
+  final String email;
+
+  const InquiryDetailsDialog({Key? key, required this.customername,
+    required this.unittype,
+    required this.area,
+    required this.emirate,
+    required this.status,
+  required this.description,
+    required this.email,
+    required this.contactno
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title:Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text("${status}",
+            style: TextStyle(
+              fontSize: 16
+            ),
+          ),
+
+          SizedBox(width: 5,),
+          Padding(padding: EdgeInsets.only(top: 1),
+          child: CircleAvatar(
+            radius: 5,
+            backgroundColor: status == "In Progress" ? Colors.orange : Colors.green,
+
+          ),)
+
+        ],
+      ),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+              children : [
+
+                Icon(
+
+                    Icons.person
+                ),
+                SizedBox(width: 10),
+                Flexible(child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Text(customername),
+                ))]),
+
+          Padding(padding: EdgeInsets.only(top: 10),
+              child: Row(
+                  children : [
+                    Icon(
+
+                        Icons.phone
+                    ),
+                    SizedBox(width: 10),
+                    Flexible(child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Text(contactno),
+                    ))])),
+
+          Padding(padding: EdgeInsets.only(top: 10),
+              child: Row(
+                  children : [
+                    Icon(
+
+                        Icons.email_outlined
+                    ),
+                    SizedBox(width: 10),
+                    Flexible(child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Text(email),
+                    ))])),
+
+          Padding(padding: EdgeInsets.only(top: 10),
+              child: Row(
+                  children : [
+                    Icon(
+
+                        Icons.apartment
+                    ),
+                    SizedBox(width: 10),
+                    Flexible(child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Text(unittype),
+                    ))])),
+
+          Padding(padding: EdgeInsets.only(top:10),
+              child: Row(
+                  children : [
+                    Icon(
+
+                        Icons.location_on
+
+                    ),
+                    SizedBox(width: 10),
+                    Flexible(child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Text(area),
+                    ),)
+                  ])),
+
+          Padding(padding: EdgeInsets.only(top:10),
+              child: Row(
+                  children : [
+                    Icon(
+
+                        Icons.public
+
+                    ),
+                    SizedBox(width: 10),
+                    Flexible(child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Text(emirate),
+                    ),)
+                  ])),
+
+          Padding(padding: EdgeInsets.only(top:10),
+              child: Row(
+                  children : [
+                    Icon(
+
+                        Icons.description_outlined
+
+                    ),
+                    SizedBox(width: 10),
+                    Flexible(child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Text(description),
+                    ),)
+                  ])),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text("Close",
+          style: TextStyle(
+            color: Colors.blueGrey
+          ),),
+        ),
+      ],
+    );
+  }
+}

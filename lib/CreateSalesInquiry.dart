@@ -88,15 +88,18 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
       {'label': 'Al Ain', 'isSelected': false},
       {'label': 'Al Dhafra', 'isSelected': false},
       {'label': 'Abu Dhabi City', 'isSelected': false},
+      {'label': 'Bani Yas', 'isSelected': false},
     ],
     'Sharjah': [
       {'label': 'Al Qasba', 'isSelected': false},
       {'label': 'Al Khan', 'isSelected': false},
       {'label': 'Al Nahda', 'isSelected': false},
+      {'label': 'Al Majaz', 'isSelected': false},
     ],
     'Ajman': [
       {'label': 'Ajman City', 'isSelected': false},
       {'label': 'Al Nuaimiya', 'isSelected': false},
+      {'label': 'Rashidiya', 'isSelected': false},
     ],
     'Fujairah': [
       {'label': 'Fujairah City', 'isSelected': false},

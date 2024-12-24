@@ -130,15 +130,18 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
       {'label': 'Al Ain', 'isSelected': false},
       {'label': 'Al Dhafra', 'isSelected': false},
       {'label': 'Abu Dhabi City', 'isSelected': false},
+      {'label': 'Bani Yas', 'isSelected': false},
     ],
     'Sharjah': [
       {'label': 'Al Qasba', 'isSelected': false},
       {'label': 'Al Khan', 'isSelected': false},
       {'label': 'Al Nahda', 'isSelected': false},
+      {'label': 'Al Majaz', 'isSelected': false},
     ],
     'Ajman': [
       {'label': 'Ajman City', 'isSelected': false},
       {'label': 'Al Nuaimiya', 'isSelected': false},
+      {'label': 'Rashidiya', 'isSelected': false},
     ],
     'Fujairah': [
       {'label': 'Fujairah City', 'isSelected': false},
@@ -153,6 +156,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
       {'label': 'Al Salama', 'isSelected': false},
     ],
   };
+
 
   String selectedUnitType = "Select Unit Types";
   String selectedEmirates = "Select Emirate";

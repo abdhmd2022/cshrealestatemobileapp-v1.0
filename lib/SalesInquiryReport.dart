@@ -1,14 +1,16 @@
-import 'dart:convert';
-import 'package:cshrealestatemobile/AddUser.dart';
 import 'package:cshrealestatemobile/CreateSalesInquiry.dart';
 import 'package:cshrealestatemobile/FollowupSalesInquiry.dart';
-import 'package:cshrealestatemobile/ModifyUser.dart';
 import 'package:cshrealestatemobile/SalesInquiryTransfer.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+
 import 'Sidebar.dart';
-import 'constants.dart';
-import 'package:http/http.dart' as http;
+
+class SalesInquiryReport extends StatefulWidget {
+  @override
+  _SalesInquiryReportState createState() =>
+      _SalesInquiryReportState();
+}
 
 class InquiryModel {
   final String customer_name;
@@ -16,13 +18,23 @@ class InquiryModel {
   final String area;
   final String emirate;
   final String status;
+  final String inquiry_no;
+  final String creation_date;
+  final String description;
+  final String contactno;
+  final String email;
 
   InquiryModel({
     required this.customer_name,
     required this.unit_type,
     required this.area,
     required this.emirate,
-    required this.status
+    required this.status,
+    required this.inquiry_no,
+    required this.creation_date,
+    required this.description,
+    required this.contactno,
+    required this.email,
 
   });
 
@@ -30,807 +42,398 @@ class InquiryModel {
   {
     return InquiryModel
       (
-        customer_name: json['customer_name'],
-        unit_type: json['unit_type'],
-        area: json['area'],
-        emirate: json['emirate'],
-        status: json['status'],
+      customer_name: json['customer_name'],
+      unit_type: json['unit_type'],
+      area: json['area'],
+      emirate: json['emirate'],
+      status: json['status'],
+      inquiry_no: json['inquiry_no'],
+      creation_date: json['creation_date'],
+      description: json['description'],
+      contactno: json['contactno'],
+      email: json['email'],
+
     );
   }
 }
 
-class SalesInquiryReport extends StatefulWidget {
-  const SalesInquiryReport({Key? key}) : super(key: key);
-  @override
-  _SalesInquiryReportPageState createState() => _SalesInquiryReportPageState();
-}
-
-class _SalesInquiryReportPageState extends State<SalesInquiryReport> with TickerProviderStateMixin {
-  bool isDashEnable = true,
-      isRolesVisible = true,
-      isUserEnable = false,
-      isUserVisible = true,
-      isRolesEnable = true,
-      _isLoading = false,
-      isVisibleNoUserFound = false;
-
-  String user_email_fetched = "";
+class _SalesInquiryReportState
+    extends State<SalesInquiryReport> with TickerProviderStateMixin {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   final List<InquiryModel> salesinquiry = [
     InquiryModel(
-      customer_name: 'Ali',
-      unit_type: '1BHK, 3BHK',
-      area: 'Bur Dubai, Al Khan',
-      emirate: 'Dubai, Sharjah',
-      status: 'Closed'
+        customer_name: 'Ali',
+        unit_type: '1BHK, 3BHK',
+        area: 'Bur Dubai, Al Khan',
+        emirate: 'Dubai, Sharjah',
+        status: 'Closed',
+        inquiry_no: "INQ-001",
+        creation_date: "20-12-2024",
+        description: "This is description",
+        contactno: "+971 500000000",
+        email: "saadan@ca-eim.com"
+
     ),
     InquiryModel(
         customer_name: 'Saadan',
         unit_type: 'Studio',
         area: 'Al Qusais',
         emirate: 'Dubai',
-        status: 'In Progress'
+        status: 'In Progress',
+        inquiry_no: "INQ-002",
+        creation_date: "22-12-2024",
+        description: "This is description",
+        contactno: "+971 500000000",
+        email: "saadan@ca-eim.com"
     ),
 
   ];
 
-  String name = "",email = "";
-
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-
-  late GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey;
-
-  late SharedPreferences prefs;
-
-  String? hostname = "", company = "",company_lowercase = "",serial_no= "",username= "",HttpURL= "",SecuritybtnAcessHolder= "";
-
-
-
-  Future<void> _initSharedPreferences() async {
-    prefs = await SharedPreferences.getInstance();
-
-    // Initialize ScrollController
-
-
-
-
-    /*setState(()
-    {
-      hostname = prefs.getString('hostname');
-      company  = prefs.getString('company_name');
-      company_lowercase = company!.replaceAll(' ', '').toLowerCase();
-      serial_no = prefs.getString('serial_no');
-      username = prefs.getString('username');
-
-      SecuritybtnAcessHolder = prefs.getString('secbtnaccess');
-
-      String? email_nav = prefs.getString('email_nav');
-      String? name_nav = prefs.getString('name_nav');
-
-      if (email_nav!=null && name_nav!= null)
-      {
-        name = name_nav;
-        email = email_nav;
-      }
-      if(SecuritybtnAcessHolder == "True")
-      {
-        isRolesVisible = true;
-        isUserVisible = true;
-      }
-      else
-      {
-        isRolesVisible = false;
-        isUserVisible = false;
-      }
-    });*/
-    /*fetchUsers(serial_no!);*/
-  }
-
-  /*Future<void> _showConfirmationDialogAndNavigate(BuildContext context) async {
-    await showDialog<void>(
-      context: context,
-      barrierDismissible: false, // user must tap button to close dialog
-      builder: (BuildContext context) {
-        return ScaleTransition(
-          scale: CurvedAnimation(
-            parent: AnimationController(
-              duration: const Duration(milliseconds: 500),
-              vsync: this,
-            )..forward(),
-            curve: Curves.fastOutSlowIn,
-          ),
-          child: AlertDialog(
-            title: Text('Removal Confirmation'),
-            content: SingleChildScrollView(
-              child: ListBody(
-                children: <Widget>[
-                  Text('Do you really want to Delete'),
-                ],
-              ),
-            ),
-            actions: <Widget>[
-
-              TextButton(
-                child: Text(
-                  'No',
-                  style: TextStyle(
-                    color: Color(0xFF30D5C8), // Change the text color here
-                  ),
-                ),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-
-              TextButton(
-                child: Text(
-                  'Yes',
-                  style: TextStyle(
-                    color: Color(0xFF30D5C8), // Change the text color here
-                  ),
-                ),
-                onPressed: () async {
-                  Navigator.of(context).pop();
-                  userdelete(serial_no!,user_email_fetched);
-                },
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }*/
-
-  /*Future<void> userdelete(String selectedserial,String email) async {
-    setState(() {
-      _isLoading = true;
-    });
-    final url = Uri.parse('$BASE_URL_config/api/login/deleteUser');
-
-    Map<String,String> headers = {
-      'Authorization' : 'Bearer $authTokenBase',
-      "Content-Type": "application/json"
-    };
-
-    var body = jsonEncode({
-      'serialno': selectedserial,
-      'username' : email
-    });
-
-    final response = await http.post(
-        url,
-        body: body,
-        headers:headers
-    );
-
-    if (response.statusCode == 200)
-    {
-      final responsee = response.body;
-      if (responsee != null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(responsee),
-          ),
-        );
-        setState(()
-        {
-          _isLoading = true;
-          fetchUsers(serial_no!);
-        }
-        );
-      }
-      else
-      {
-        throw Exception('Failed to fetch data');
-      }
-    }
-    else
-    {
-      Map<String, dynamic> data = json.decode(response.body);
-      String error = '';
-
-      if (data.containsKey('error')) {
-        setState(() {
-          error = data['error'];
-        });
-      }
-      else {
-        error = "Something went wrong!!!";
-      }
-      Fluttertoast.showToast(msg: error);
-    }
-    setState(() {
-      _isLoading = false;
-    });
-  }*/
-
-  /*Future<void> fetchUsers(String selectedserial) async {
-    setState(() {
-      _isLoading = true;
-    });
-    final url = Uri.parse('$BASE_URL_config/api/login/getRole');
-
-    Map<String,String> headers = {
-      'Authorization' : 'Bearer $authTokenBase',
-      "Content-Type": "application/json"
-    };
-
-    var body = jsonEncode({
-      'serialno': selectedserial,
-    });
-
-    final response = await http.post(
-        url,
-        body: body,
-        headers:headers
-    );
-
-    if (response.statusCode == 200)
-    {
-      users.clear();
-      try
-      {
-        final List<dynamic> jsonList = json.decode(response.body);
-
-        if (jsonList != null)
-        {
-          isVisibleNoUserFound = false;
-
-          users.addAll(jsonList.map((json) => UserModel.fromJson(json)).toList());
-          users.sort(compareDataObjects);
-        }
-        else
-        {
-          throw Exception('Error in data fetching');
-        }
-        setState(()
-        {
-          if(users.isEmpty)
-          {
-            isVisibleNoUserFound = true;
-          }
-          _isLoading = false;
-        });
-      }
-      catch (e)
-      {
-        print(e);
-      }
-    }
-
-    setState(()
-    {
-      if(users.isEmpty)
-      {
-        isVisibleNoUserFound = true;
-      }
-      _isLoading = false;
-    });
-  }*/
+  List<bool> _expandedinquirys = [];
 
   @override
-  void initState()
-  {
+  void initState() {
     super.initState();
-    _scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
-    _initSharedPreferences();
-  }
-
-  Future<void> _refresh() async
-  {
-    setState(() {
-      /*fetchUsers(serial_no!);*/
-    });
-  }
-
-  int compareDataObjects(InquiryModel a, InquiryModel b) {
-    return a.customer_name.compareTo(b.customer_name);
+    // Initialize all inquirys to be collapsed by default
+    _expandedinquirys = List.generate(salesinquiry.length, (index) => false);
   }
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-        onWillPop: () async {
-          /*Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => Dashboard()),
-          );*/
-          return true;
-        },
-        child:Scaffold(
-            key: _scaffoldKey,
-            appBar: AppBar(
-                title: Flexible(
-                  child: Text(
-                    'Inquiries',
-                    style: TextStyle(
-                        color: Colors.white
-                    ),
-                    overflow: TextOverflow.ellipsis, // Truncate text if it overflows
-                    maxLines: 1, // Display only one line of text
-                  ),
-                ),
-                backgroundColor: appbar_color,
-                automaticallyImplyLeading: false,
-                centerTitle: true,
-                leading: IconButton(
-                    icon: Icon(Icons.menu,color: Colors.white),
-                    onPressed: () {
-                      _scaffoldKey.currentState!.openDrawer();
-                    })),
-            drawer: Sidebar
-              (
-                isDashEnable: isDashEnable,
-                isRolesVisible: isRolesVisible,
-                isRolesEnable: isRolesEnable,
-                isUserEnable: isUserEnable,
-                isUserVisible: isUserVisible,
-                Username: name,
-                Email: email,
-                tickerProvider: this
-            ),
-            body: RefreshIndicator(
-                onRefresh: _refresh,
-                child:Stack(
-                    children: [
-                      Visibility(
-                          visible: isVisibleNoUserFound,
-                          child:  Container(
-                              padding: EdgeInsets.only(top: 20.0),
-                              child: Center(
-                                  child: Text(
-                                      'No User Found',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 24.0,
-                                      ))))),
+    return Scaffold(
+      key: _scaffoldKey,
+      backgroundColor: const Color(0xFFF2F4F8),
+      appBar: AppBar(
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.menu,
+              color: Colors.white),
+          onPressed: () {
+            _scaffoldKey.currentState!.openDrawer();
+          },
+        ),
 
-                      Container(
-                          child: ListView.builder(
-                              itemCount: salesinquiry.length,
-                              itemBuilder: (context, index) {
-                                final card = salesinquiry[index];
-                                return Container(
-                                    margin: EdgeInsets.all(0),
-                                    child: Card(
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(10),
-                                        ),
-                                        child: Padding(padding: EdgeInsets.all(10),
-                                            child: ListTile(
-                                              title:Column(
-                                                  children: [
-                                                    Row(
-                                                        children : [
+        backgroundColor: Colors.blueGrey,
+        centerTitle: true,
+        title: Text(
+          'Inquiries',
+          style: TextStyle(
+            fontWeight: FontWeight.normal,
+            fontSize: 20.0,
+            color: Colors.white,
+          ),
+        ),
+      ),
+      drawer: Sidebar(
+          isDashEnable: true,
+          isRolesVisible: true,
+          isRolesEnable: true,
+          isUserEnable: true,
+          isUserVisible: true,
+          Username: "",
+          Email: "",
+          tickerProvider: this),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        child: ListView.builder(
+          itemCount: salesinquiry.length,
+          itemBuilder: (context, index) {
+            final inquiry = salesinquiry[index];
+            return _buildinquiryCard(inquiry, index);
+          },
+        ),
+      ),
+      floatingActionButton: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.blueGrey, Colors.blueGrey],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(30.0),
+        ),
+        child: FloatingActionButton.extended(
+          onPressed: () {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => CreateSalesInquiry()),
 
-                                                          Icon(
-
-                                                              Icons.person
-                                                          ),
-                                                          SizedBox(width: 10),
-                                                          Flexible(child: SingleChildScrollView(
-                                                            scrollDirection: Axis.horizontal,
-                                                            child: Text(card.customer_name),
-                                                          ))]),
-
-                                                    Padding(padding: EdgeInsets.only(top: 10),
-                                                        child: Row(
-                                                            children : [
-                                                              Icon(
-
-                                                                  Icons.apartment
-                                                              ),
-                                                              SizedBox(width: 10),
-                                                              Flexible(child: SingleChildScrollView(
-                                                                scrollDirection: Axis.horizontal,
-                                                                child: Text(card.unit_type),
-                                                              ))])),
-
-                                                    Padding(padding: EdgeInsets.only(top:10),
-                                                        child: Row(
-                                                            children : [
-                                                              Icon(
-
-                                                                  Icons.location_on
-
-                                                              ),
-                                                              SizedBox(width: 10),
-                                                              Flexible(child: SingleChildScrollView(
-                                                                scrollDirection: Axis.horizontal,
-                                                                child: Text(card.area),
-                                                              ),)
-                                                            ])),
-
-                                                    Padding(padding: EdgeInsets.only(top:10),
-                                                        child: Row(
-                                                            children : [
-                                                              Icon(
-
-                                                                  Icons.public
-
-                                                              ),
-                                                              SizedBox(width: 10),
-                                                              Flexible(child: SingleChildScrollView(
-                                                                scrollDirection: Axis.horizontal,
-                                                                child: Text(card.emirate),
-                                                              ),)
-                                                            ])),
-
-                                                    Padding(
-                                                      padding: EdgeInsets.only(top: 10),
-                                                      child: Row(
-                                                        children: [
-                                                          Icon(
-                                                              Icons.assignment
-                                                          ),
-                                                          SizedBox(width: 10),
-
-                                                          Flexible(
-                                                            child: SingleChildScrollView(
-                                                              scrollDirection: Axis.horizontal,
-                                                              child: Text(
-                                                                card.status,
-                                                                style: TextStyle(
-                                                                  color: Colors.black,
-                                                                  fontWeight: FontWeight.normal,
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          ),
-
-                                                          SizedBox(width: 5),
-
-                                                          Container(
-                                                            width: 10, // Circle width
-                                                            height: 10, // Circle height
-                                                            margin: EdgeInsets.only(right: 10,top:1), // Spacing between circle and text
-                                                            decoration: BoxDecoration(
-                                                              shape: BoxShape.circle,
-                                                              color: card.status.toLowerCase() == 'closed'
-                                                                  ? Colors.green
-                                                                  : card.status.toLowerCase() == 'in progress'
-                                                                  ? Colors.orange
-                                                                  : Colors.black, // Default color for other statuses
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
-
-
-
-
-
-
-
-                                                    SingleChildScrollView(
-                                                      scrollDirection: Axis.horizontal,
-                                                      child: Padding(
-                                                        padding: EdgeInsets.only(top: 20, bottom: 10,left:5,right:5),
-                                                        child: Row(
-                                                          mainAxisAlignment: MainAxisAlignment.center,
-                                                          crossAxisAlignment: CrossAxisAlignment.center,
-                                                          children: [
-                                                            ElevatedButton.icon(
-                                                              onPressed: () {
-
-                                                                String name = card.customer_name;
-                                                                List<String> emiratesList = card.emirate.split(',').map((e) => e.trim()).toList();
-                                                                List<String> areaList = card.area.split(',').map((e) => e.trim()).toList();
-                                                                List<String> unittype = card.unit_type.split(',').map((e) => e.trim()).toList();
-
-                                                                String contactno = "+971 500000000";
-                                                                String email = "saadan@ca-eim.com";
-                                                                Navigator.pushReplacement(
-                                                                  context,
-                                                                  MaterialPageRoute(builder: (context) => FollowupSalesInquiry(name: name, unittype: unittype, existingAreaList: areaList, existingEmirateList: emiratesList, contactno: contactno, email: email)),
-                                                                );
-                                                              },
-                                                              icon: Icon(Icons.edit, color: Colors.black),
-                                                              label: Text(
-                                                                'Follow up',
-                                                                style: TextStyle(color: Colors.black),
-                                                              ),
-                                                              style: ElevatedButton.styleFrom(
-                                                                backgroundColor: Colors.white, // Button background color
-                                                                shadowColor: Colors.black.withOpacity(0.75), // Shadow color
-                                                                elevation: 5, // Elevation value
-                                                                shape: RoundedRectangleBorder(
-                                                                  borderRadius: BorderRadius.circular(20), // Rounded corners
-                                                                ),
-                                                              ),
-                                                            ),
-                                                            SizedBox(width: 10),
-
-                                                            ElevatedButton.icon(
-                                                              onPressed: () {
-
-                                                                // showing view dialog
-
-                                                                String customername = card.customer_name;
-                                                                String unittype = card.unit_type;
-                                                                String area = card.area;
-                                                                String emirate = card.emirate;
-                                                                String status = card.status;
-                                                                String description = "This is description";
-                                                                String contactno = "+971 500000000";
-                                                                String email = "saadan@ca-eim.com";
-
-                                                                showDialog(
-                                                                  context: context,
-                                                                  builder: (context) => InquiryDetailsDialog(customername: customername,
-                                                                    unittype: unittype,
-                                                                    area: area,
-                                                                    emirate: emirate,
-                                                                    status: status,
-                                                                  description: description,
-                                                                  contactno: contactno,
-                                                                  email: email,),
-                                                                );
-                                                              },
-                                                              icon: Icon(Icons.remove_red_eye, color: Colors.black),
-                                                              label: Text(
-                                                                'View',
-                                                                style: TextStyle(color: Colors.black),
-                                                              ),
-                                                              style: ElevatedButton.styleFrom(
-                                                                backgroundColor: Colors.white, // Button background color
-                                                                shadowColor: Colors.black.withOpacity(0.75), // Shadow color
-                                                                elevation: 5, // Elevation value
-                                                                shape: RoundedRectangleBorder(
-                                                                  borderRadius: BorderRadius.circular(20), // Rounded corners
-                                                                ),
-                                                              ),
-                                                            ),
-
-
-                                                            if (card.status.toLowerCase() == 'in progress') // Show only for 'In Progress'
-                                                              Row(children:[
-                                                                SizedBox(width: 10),
-                                                                ElevatedButton.icon(
-                                                                  onPressed: () {
-
-                                                                    String name = card.customer_name;
-                                                                    String unittype = card.unit_type;
-                                                                    String area = card.area;
-                                                                    String emirate = card.emirate;
-
-                                                                    Navigator.pushReplacement(
-                                                                      context,
-                                                                      MaterialPageRoute(builder: (context) => SalesInquiryTransfer(name: name,area: area,unittype : unittype,emirate: emirate,)),
-                                                                    );
-                                                                  },
-                                                                  icon: Icon(Icons.swap_horiz, color: Colors.black),
-                                                                  label: Text(
-                                                                    'Transfer',
-                                                                    style: TextStyle(color: Colors.black),
-                                                                  ),
-                                                                  style: ElevatedButton.styleFrom(
-                                                                    backgroundColor: Colors.white, // Button background color
-                                                                    shadowColor: Colors.black.withOpacity(0.75), // Shadow color
-                                                                    elevation: 5, // Elevation value
-                                                                    shape: RoundedRectangleBorder(
-                                                                      borderRadius: BorderRadius.circular(20), // Rounded corners
-                                                                    ),
-                                                                  ),
-                                                                ),
-                                                              ]),
-                                                            // Spacing between buttons
-
-                                                            SizedBox(width: 10),
-                                                            ElevatedButton.icon(
-                                                              onPressed: () {
-
-                                                                // Show confirmation dialog or perform your desired action.
-                                                              },
-                                                              icon: Icon(Icons.delete, color: Colors.red),
-                                                              label: Text(
-                                                                'Delete',
-                                                                style: TextStyle(color: Colors.red),
-                                                              ),
-                                                              style: ElevatedButton.styleFrom(
-                                                                backgroundColor: Colors.white, // Button background color
-                                                                shadowColor: Colors.black.withOpacity(0.75), // Shadow color
-                                                                elevation: 5, // Elevation value
-                                                                shape: RoundedRectangleBorder(
-                                                                  borderRadius: BorderRadius.circular(20), // Rounded corners
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      )
-
-                                                    )
-
-                                                  ]),
-                                            ))));})),
-                      Visibility(
-                        visible: _isLoading,
-                        child: Center(
-                          child: CircularProgressIndicator.adaptive(),
-                        ),
-                      ),
-                      Positioned(
-                        bottom: 40,
-                        right: 30,
-                        child: ElevatedButton(
-                          onPressed: () {
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(builder: (context) => CreateSalesInquiry()),
-                            );
-                          },
-                          style: ElevatedButton.styleFrom(
-                            shape: CircleBorder(), // Makes the button circular
-                            padding: EdgeInsets.all(16), // Adjust padding to control button size
-                            backgroundColor: Colors.blueGrey, // Button background color
-                            shadowColor: Colors.black.withOpacity(1.0), // Shadow color
-                            elevation: 6, // Shadow intensity
-                          ),
-                          child: Icon(
-                            Icons.add,
-                            color: Colors.white, // Icon color
-                            size: 35, // Icon size
-                          ),
-                        ),
-                      ),
-                    ]))));}}
-
-class InquiryDetailsDialog extends StatelessWidget {
-  final String customername;
-  final String unittype;
-  final String area;
-  final String emirate;
-  final String status;
-  final String description;
-  final String contactno;
-  final String email;
-
-  const InquiryDetailsDialog({Key? key, required this.customername,
-    required this.unittype,
-    required this.area,
-    required this.emirate,
-    required this.status,
-  required this.description,
-    required this.email,
-    required this.contactno
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      title:Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Text("${status}",
+            );
+          },
+          label: Text(
+            'New Inquiry',
             style: TextStyle(
-              fontSize: 16
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
             ),
           ),
-
-          SizedBox(width: 5,),
-          Padding(padding: EdgeInsets.only(top: 1),
-          child: CircleAvatar(
-            radius: 5,
-            backgroundColor: status == "In Progress" ? Colors.orange : Colors.green,
-
-          ),)
-
-        ],
-      ),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-              children : [
-
-                Icon(
-
-                    Icons.person
-                ),
-                SizedBox(width: 10),
-                Flexible(child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Text(customername),
-                ))]),
-
-          Padding(padding: EdgeInsets.only(top: 10),
-              child: Row(
-                  children : [
-                    Icon(
-
-                        Icons.phone
-                    ),
-                    SizedBox(width: 10),
-                    Flexible(child: SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Text(contactno),
-                    ))])),
-
-          Padding(padding: EdgeInsets.only(top: 10),
-              child: Row(
-                  children : [
-                    Icon(
-
-                        Icons.email_outlined
-                    ),
-                    SizedBox(width: 10),
-                    Flexible(child: SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Text(email),
-                    ))])),
-
-          Padding(padding: EdgeInsets.only(top: 10),
-              child: Row(
-                  children : [
-                    Icon(
-
-                        Icons.apartment
-                    ),
-                    SizedBox(width: 10),
-                    Flexible(child: SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Text(unittype),
-                    ))])),
-
-          Padding(padding: EdgeInsets.only(top:10),
-              child: Row(
-                  children : [
-                    Icon(
-
-                        Icons.location_on
-
-                    ),
-                    SizedBox(width: 10),
-                    Flexible(child: SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Text(area),
-                    ),)
-                  ])),
-
-          Padding(padding: EdgeInsets.only(top:10),
-              child: Row(
-                  children : [
-                    Icon(
-
-                        Icons.public
-
-                    ),
-                    SizedBox(width: 10),
-                    Flexible(child: SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Text(emirate),
-                    ),)
-                  ])),
-
-          Padding(padding: EdgeInsets.only(top:10),
-              child: Row(
-                  children : [
-                    Icon(
-
-                        Icons.description_outlined
-
-                    ),
-                    SizedBox(width: 10),
-                    Flexible(child: SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Text(description),
-                    ),)
-                  ])),
-        ],
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: Text("Close",
-          style: TextStyle(
-            color: Colors.blueGrey
-          ),),
+          icon: Icon(Icons.add, color: Colors.white),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
         ),
+      ),
+    );
+  }
+
+  Widget _buildinquiryCard(InquiryModel inquiry, int index) {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _expandedinquirys[index] = !_expandedinquirys[index];
+        });
+      },
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 10.0),
+        padding: const EdgeInsets.all(16.0),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16.0),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.2),
+              blurRadius: 10.0,
+              offset: Offset(0, 5),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildinquiryHeader(inquiry),
+            Divider(color: Colors.grey[300]),
+            _buildinquiryDetails(inquiry),
+
+            _buildDecentActionButtons(inquiry),
+
+            if (_expandedinquirys[index])
+              _buildExpandedinquiryView(inquiry),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildinquiryHeader(InquiryModel inquiry) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Row(
+          children: [
+            Icon(Icons.confirmation_number, color: Colors.teal, size: 24.0),
+            SizedBox(width: 8.0),
+            Text(
+              inquiry.inquiry_no,
+              style: TextStyle(
+                fontSize: 18.0,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+        _getStatusBadge(inquiry.status),
       ],
     );
   }
+
+  Widget _buildinquiryDetails(InquiryModel inquiry) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildInfoRow('Name:', inquiry.customer_name),
+        _buildInfoRow('Unit Type:', inquiry.unit_type),
+        _buildInfoRow('Area:', inquiry.area),
+        _buildInfoRow('Date:', inquiry.creation_date),
+      ],
+    );
+  }
+
+  Widget _buildInfoRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      child: Row(
+        children: [
+          Text(
+            label,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.grey[700],
+            ),
+          ),
+          SizedBox(width: 8.0),
+          Expanded(
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child:Text(
+                  value,
+                  style: TextStyle(
+                    color: Colors.black87,
+                  ),
+
+                ) ,
+              )
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _getStatusBadge(String status) {
+    Color color;
+    switch (status) {
+      case 'In Progress':
+        color = Colors.orange;
+        break;
+      case 'Closed':
+        color = Colors.green;
+        break;
+      default:
+        color = Colors.grey;
+    }
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.2),
+        borderRadius: BorderRadius.circular(16.0),
+      ),
+      child: Text(
+        status,
+        style: TextStyle(
+          color: color,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildExpandedinquiryView(InquiryModel inquiry) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 10.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildInfoRow('Emirate:', inquiry.emirate),
+          _buildInfoRow('Description:', inquiry.description),
+
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDecentActionButtons(InquiryModel inquiry) {
+    return SingleChildScrollView(scrollDirection: Axis.horizontal,
+    child: Expanded(child:Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        _buildDecentButton(
+          'Follow Up',
+          Icons.schedule,
+          Colors.blue,
+              () {
+
+            String name = inquiry.customer_name;
+            List<String> emiratesList = inquiry.emirate.split(',').map((e) => e.trim()).toList();
+            List<String> areaList = inquiry.area.split(',').map((e) => e.trim()).toList();
+            List<String> unittype = inquiry.unit_type.split(',').map((e) => e.trim()).toList();
+            String contactno = inquiry.contactno;
+            String email = inquiry.email;
+
+
+            Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) =>
+                    FollowupSalesInquiry(name: name, unittype: unittype, existingAreaList: areaList, existingEmirateList: emiratesList, contactno: contactno, email: email)));
+          },
+        ),
+        SizedBox(width:5),
+        Row(children: [
+
+
+          if(inquiry.status == 'In Progress')
+            _buildDecentButton(
+              'Transfer',
+              Icons.swap_horiz,
+              Colors.orange,
+                  () {
+
+                String name = inquiry.customer_name;
+                String emirate = inquiry.emirate;
+                String area = inquiry.area;
+                String unittype = inquiry.unit_type;
+                String contactno = inquiry.contactno;
+                String email = inquiry.email;
+
+
+                Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) =>
+                        SalesInquiryTransfer(name: name, unittype: unittype, area: area, emirate: emirate)));
+              },
+            ),
+
+          SizedBox(width:5)
+        ],),
+
+
+
+        _buildDecentButton(
+          'Delete',
+          Icons.delete,
+          Colors.red,
+              () {
+            // Delete action
+            // Add your delete functionality here
+          },
+        ),
+      ],
+    ) )
+      );
+
+  }
+
+  Widget _buildDecentButton(
+      String label, IconData icon, Color color, VoidCallback onPressed) {
+    return InkWell(
+      onTap: onPressed,
+      borderRadius: BorderRadius.circular(30.0),
+      splashColor: color.withOpacity(0.2),
+      highlightColor: color.withOpacity(0.1),
+      child: Container(
+        margin: EdgeInsets.only(top: 10.0),
+        padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(30.0),
+          color: Colors.white,
+          border: Border.all(
+            color: color.withOpacity(0.3),
+            width: 1.5,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: color.withOpacity(0.1),
+              blurRadius: 8.0,
+              offset: Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Icon(icon, color: color),
+            SizedBox(width: 8.0),
+            Text(
+              label,
+              style: TextStyle(
+                color: color,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
 }
+

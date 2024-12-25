@@ -28,7 +28,7 @@ class SalesInquiryTransfer extends StatefulWidget
 
 class _SalesInquiryTransferPageState extends State<SalesInquiryTransfer> with TickerProviderStateMixin {
 
-  String? selectedTransferTo; // To store the selected dropdown value
+  String? selectedTransferTo; // To store the selec// ted dropdown value
   final List<String> transfer_to_list = [
     'Saadan',
     'Padam',

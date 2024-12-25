@@ -2,6 +2,8 @@ import 'dart:io';
 import 'package:cshrealestatemobile/AvailableUnitsReport.dart';
 import 'package:cshrealestatemobile/CreateSalesInquiry.dart';
 import 'package:cshrealestatemobile/MaintenanceTicketCreation.dart';
+import 'package:cshrealestatemobile/MaintenanceTicketReport.dart';
+import 'package:cshrealestatemobile/SalesDashboard.dart';
 import 'package:cshrealestatemobile/SalesInquiryReport.dart';
 import 'package:cshrealestatemobile/SalesProfile.dart';
 import 'package:cshrealestatemobile/TenantProfile.dart';
@@ -102,10 +104,12 @@ class Sidebar extends StatelessWidget {
                 enabled: isDashEnable, // disable the item based on the parameter
 
                 onTap: () {
-                  /*Navigator.pushReplacement(
+                  Navigator.pushReplacement
+
+                    (
                     context,
-                    MaterialPageRoute(builder: (context) => Dashboard()), // navigate to dashboard screen
-                  );*/
+                    MaterialPageRoute(builder: (context) => SalesDashboard()), // navigate to company and serial select screen
+                  );
                 },
               ),
               ListTile(
@@ -115,10 +119,12 @@ class Sidebar extends StatelessWidget {
                 ),
                 onTap: () async {
                   Navigator.pushReplacement
+
                     (
                     context,
-                    MaterialPageRoute(builder: (context) => MaintenanceTicketCreation()), // navigate to company and serial select screen
+                    MaterialPageRoute(builder: (context) => MaintenanceTicketReport()), // navigate to company and serial select screen
                   );
+
                   // navigate to companies screen
                 },
               ),

@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:cshrealestatemobile/MaintenanceTicketReport.dart';
 import 'package:cshrealestatemobile/constants.dart';
 import 'package:flutter/animation.dart';
 import 'package:flutter/cupertino.dart';
@@ -248,12 +249,18 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
           backgroundColor: appbar_color,
           automaticallyImplyLeading: false,
 
-          leading: IconButton(
-            icon: Icon(Icons.menu,color: Colors.white),
-      onPressed: () {
-        _scaffoldKey.currentState!.openDrawer();
-      },
-    ),
+          leading: GestureDetector(
+            onTap: ()
+            {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => MaintenanceTicketReport()),
+              );
+            },
+            child: Icon(
+              Icons.arrow_back,
+              color: Colors.white,
+            ),),
 
           title: Text('Maintenance Ticket',
             style: TextStyle(

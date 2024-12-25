@@ -1734,7 +1734,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                               /*userRegistration(serial_no!,fetched_email,fetched_password,fetched_role,fetched_name);*/
 
                                             }},
-                                          child: Text('Create'),
+                                          child: Text('Submit'),
                                         ),
                                       ],)
                                 ),)

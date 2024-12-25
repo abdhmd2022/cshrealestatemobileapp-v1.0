@@ -3,6 +3,7 @@ import 'package:cshrealestatemobile/FollowupSalesInquiry.dart';
 import 'package:cshrealestatemobile/SalesInquiryTransfer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 import 'Sidebar.dart';
 
@@ -204,7 +205,86 @@ class _SalesInquiryReportState
             Divider(color: Colors.grey[300]),
             _buildinquiryDetails(inquiry),
 
-            _buildDecentActionButtons(inquiry),
+
+
+            Container(
+              width: MediaQuery.of(context).size.width,
+              child: Center(
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        _buildDecentButton(
+                          'Follow Up',
+                          Icons.schedule,
+                          Colors.blue,
+                              () {
+
+                            String name = inquiry.customer_name;
+                            List<String> emiratesList = inquiry.emirate.split(',').map((e) => e.trim()).toList();
+                            List<String> areaList = inquiry.area.split(',').map((e) => e.trim()).toList();
+                            List<String> unittype = inquiry.unit_type.split(',').map((e) => e.trim()).toList();
+                            String contactno = inquiry.contactno;
+                            String email = inquiry.email;
+
+
+                            Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(builder: (context) =>
+                                    FollowupSalesInquiry(name: name, unittype: unittype, existingAreaList: areaList, existingEmirateList: emiratesList, contactno: contactno, email: email)));
+                          },
+                        ),
+                        SizedBox(width:5),
+                        Row(children: [
+
+
+                          if(inquiry.status == 'In Progress')
+                            _buildDecentButton(
+                              'Transfer',
+                              Icons.swap_horiz,
+                              Colors.orange,
+                                  () {
+
+                                String name = inquiry.customer_name;
+                                String emirate = inquiry.emirate;
+                                String area = inquiry.area;
+                                String unittype = inquiry.unit_type;
+                                String contactno = inquiry.contactno;
+                                String email = inquiry.email;
+
+
+                                Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(builder: (context) =>
+                                        SalesInquiryTransfer(name: name, unittype: unittype, area: area, emirate: emirate)));
+                              },
+                            ),
+
+
+                          SizedBox(width:5)
+                        ],),
+
+
+
+                        _buildDecentButton(
+                          'Delete',
+                          Icons.delete,
+                          Colors.red,
+                              () {
+                            // Delete action
+                            // Add your delete functionality here
+                          },
+                        ),
+                      ],
+                    ),
+                )
+              )
+
+
+            ),
+
 
             if (_expandedinquirys[index])
               _buildExpandedinquiryView(inquiry),
@@ -214,12 +294,14 @@ class _SalesInquiryReportState
     );
   }
 
+
   Widget _buildinquiryHeader(InquiryModel inquiry) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Row(
           children: [
+
             Icon(Icons.confirmation_number, color: Colors.teal, size: 24.0),
             SizedBox(width: 8.0),
             Text(
@@ -321,77 +403,7 @@ class _SalesInquiryReportState
     );
   }
 
-  Widget _buildDecentActionButtons(InquiryModel inquiry) {
-    return SingleChildScrollView(scrollDirection: Axis.horizontal,
-    child: Expanded(child:Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        _buildDecentButton(
-          'Follow Up',
-          Icons.schedule,
-          Colors.blue,
-              () {
 
-            String name = inquiry.customer_name;
-            List<String> emiratesList = inquiry.emirate.split(',').map((e) => e.trim()).toList();
-            List<String> areaList = inquiry.area.split(',').map((e) => e.trim()).toList();
-            List<String> unittype = inquiry.unit_type.split(',').map((e) => e.trim()).toList();
-            String contactno = inquiry.contactno;
-            String email = inquiry.email;
-
-
-            Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) =>
-                    FollowupSalesInquiry(name: name, unittype: unittype, existingAreaList: areaList, existingEmirateList: emiratesList, contactno: contactno, email: email)));
-          },
-        ),
-        SizedBox(width:5),
-        Row(children: [
-
-
-          if(inquiry.status == 'In Progress')
-            _buildDecentButton(
-              'Transfer',
-              Icons.swap_horiz,
-              Colors.orange,
-                  () {
-
-                String name = inquiry.customer_name;
-                String emirate = inquiry.emirate;
-                String area = inquiry.area;
-                String unittype = inquiry.unit_type;
-                String contactno = inquiry.contactno;
-                String email = inquiry.email;
-
-
-                Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) =>
-                        SalesInquiryTransfer(name: name, unittype: unittype, area: area, emirate: emirate)));
-              },
-            ),
-
-          SizedBox(width:5)
-        ],),
-
-
-
-        _buildDecentButton(
-          'Delete',
-          Icons.delete,
-          Colors.red,
-              () {
-            // Delete action
-            // Add your delete functionality here
-          },
-        ),
-      ],
-    ) )
-      );
-
-  }
 
   Widget _buildDecentButton(
       String label, IconData icon, Color color, VoidCallback onPressed) {

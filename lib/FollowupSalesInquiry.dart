@@ -58,6 +58,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
 
   bool isAllEmiratesSelected = false;
 
+
   bool isAllAreasSelected = false;
 
   String? selectedEmirate;
@@ -239,11 +240,6 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
     });
   }
 
-
-
-
-
-
   void _openUnitTypeDropdown(BuildContext context) async {
 
 
@@ -389,8 +385,6 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
       });
     }
   }
-
-
 
   void _openEmirateDropdown(BuildContext context) async {
     final selectedItems = await showModalBottomSheet<List<String>>(
@@ -576,9 +570,8 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
         selectedEmiratesList.clear();
       });
     }
-
-
   }
+
   // Area Dropdown based on selected emirates
   void _openAreaDropdown(BuildContext context) async {
     // List to store areas to display based on selected Emirates
@@ -752,11 +745,6 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
     }
   }
 
-
-
-
-
-
   @override
   void initState() {
     super.initState();
@@ -855,7 +843,8 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                         key: _formKey,
 
                         child: ListView(
-                          physics: NeverScrollableScrollPhysics(),
+                          /*physics: NeverScrollableScrollPhysics(),*/
+
                             children: [
                               Container(
                                 margin: EdgeInsets.only( top:15,
@@ -1694,13 +1683,48 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                               _formKey.currentState?.reset();
                                               selectedasignedto = asignedto.first;
 
-
                                               /*print(_selectedrole['role_name']);*/
 
-                                              customernamecontroller.clear();
-                                              customercontactnocontroller.clear();
-                                              unittypecontroller.clear();
-                                              areacontroller.clear();
+                                              for (var emirate in emirates) {
+                                                emirate['isSelected'] = false;
+                                              }
+
+                                              // If no emirates are selected, clear all areas
+                                              if (emirates.every((emirate) => !emirate['isSelected'])) {
+
+                                                selectedAreas.clear();
+                                                selectedAreasString = "Select Area";
+
+                                                // Reset all area states
+                                                areas.forEach((key, areaList) {
+                                                  for (var area in areaList) {
+                                                    area['isSelected'] = false;
+                                                  }
+                                                });
+                                              }
+
+                                              isAllEmiratesSelected = false;
+
+                                              // Update the selected Emirates text field
+                                              selectedEmirates = emirates
+                                                  .where((emirate) => emirate['isSelected'])
+                                                  .map((emirate) => emirate['label'])
+                                                  .join(', ') ?? "Select Emirate";
+
+                                              selectedEmiratesList.clear();
+
+                                              updateSelectedAreasString();
+
+                                              for (var unit in unitTypes) {
+                                                unit['isSelected'] = false;
+                                              }
+
+                                              selectedUnitType = "Select Unit Types";  // Reset if no selection
+                                              isUnitSelected = false;  // Mark as not selected
+
+
+
+                                              /*updateEmiratesSelection();  // Update Emirates selection text*/
                                               remarksController.clear();
 
                                             });

@@ -326,6 +326,7 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
         },
         child:Scaffold(
             key: _scaffoldKey,
+            backgroundColor: const Color(0xFFF2F4F8),
             appBar: AppBar(
                 title: Flexible(
                   child: Text(
@@ -380,7 +381,7 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
                               itemBuilder: (context, index) {
                                 final card = units[index];
                                 return Container(
-                                    margin: const EdgeInsets.symmetric(vertical: 10.0),
+                                    margin: const EdgeInsets.only(bottom: 10.0),
                                     padding: const EdgeInsets.all(16.0),
                                     decoration: BoxDecoration(
                                       color: Colors.white,

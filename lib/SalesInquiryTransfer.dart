@@ -295,7 +295,8 @@ class _SalesInquiryTransferPageState extends State<SalesInquiryTransfer> with Ti
                             Stack(
                               children: [
                                 Card(
-                                  surfaceTintColor: Colors.blueGrey,
+                                  color: Colors.white,
+                                  surfaceTintColor: Colors.white,
                                   elevation: 10,
                                   margin: EdgeInsets.only(left: 20, right: 20, top: 20),
                                   child: Container(
@@ -323,7 +324,7 @@ class _SalesInquiryTransferPageState extends State<SalesInquiryTransfer> with Ti
                                                   ),
                                                   SizedBox(height: 2), // Space between icon and text
                                                   Text(
-                                                    "Name",
+                                                    "Saadan",
                                                     style: TextStyle(fontSize: 16, color: Colors.blueGrey),
                                                   ),
                                                 ],
@@ -341,7 +342,7 @@ class _SalesInquiryTransferPageState extends State<SalesInquiryTransfer> with Ti
                                                   ),
                                                   SizedBox(height: 2), // Space between icon and text
                                                   Text(
-                                                    "Building",
+                                                    "Al Khaleej Center",
                                                     style: TextStyle(fontSize: 16, color: Colors.blueGrey),
                                                   ),
                                                 ],
@@ -369,7 +370,7 @@ class _SalesInquiryTransferPageState extends State<SalesInquiryTransfer> with Ti
                                                   ),
                                                   SizedBox(height: 2), // Space between icon and text
                                                   Text(
-                                                    'Unit No',
+                                                    '101',
                                                     style: TextStyle(fontSize: 16, color: Colors.blueGrey),
                                                   ),
                                                 ],
@@ -388,7 +389,7 @@ class _SalesInquiryTransferPageState extends State<SalesInquiryTransfer> with Ti
                                                   ),
                                                   SizedBox(height: 2), // Space between icon and text
                                                   Text(
-                                                    "Emirate",
+                                                    "Dubai",
                                                     style: TextStyle(fontSize: 16, color: Colors.blueGrey),
                                                   ),
                                                 ],

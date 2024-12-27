@@ -735,381 +735,386 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
               ),
             ),
             SingleChildScrollView(
-              child: Column(
-                children: [
-                  Container(
-                      width: double.infinity,
-                      margin: EdgeInsets.only(
-                        left: 20,
-                        top: 20,
-                        right: 30,
-                        bottom: 20,
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                          'Create Inquiry',
-                          textAlign: TextAlign.start,
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 30,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+              child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
 
-                          SizedBox(height: 5,),
-                          Text(
-                            'Create your sales inquiry',
-                            textAlign: TextAlign.start,
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 15,
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                        ],
-                      )
                   ),
+                child: Column(
+                  children: [
+                    Container(
+                        width: double.infinity,
+                        margin: EdgeInsets.only(
+                          left: 20,
+                          top: 20,
+                          right: 30,
+                          bottom: 20,
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Create Inquiry',
+                              textAlign: TextAlign.start,
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 30,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
 
-                  Container(
-                      height: MediaQuery.of(context).size.height,
-                      child:  Form(
-                          key: _formKey,
-                          child: ListView(
+                            SizedBox(height: 5,),
+                            Text(
+                              'Create your sales inquiry',
+                              textAlign: TextAlign.start,
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 15,
+                                fontWeight: FontWeight.normal,
+                              ),
+                            ),
+                          ],
+                        )
+                    ),
+
+                    Container(
+                        height: MediaQuery.of(context).size.height,
+                        child:  Form(
+                            key: _formKey,
+                            child: ListView(
                               /*physics: NeverScrollableScrollPhysics(),*/
-                              children: [
-                                Container(
-                                  margin: EdgeInsets.only( top:15,
-                                      bottom: 0,
-                                      left: 20,
-                                      right: 20),
-                                  child: Row(
-                                    children: [
-                                      Text("Name:",
+                                children: [
+                                  Container(
+                                    margin: EdgeInsets.only( top:15,
+                                        bottom: 0,
+                                        left: 20,
+                                        right: 20),
+                                    child: Row(
+                                      children: [
+                                        Text("Name:",
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 16
+
+                                            )
+                                        ),
+                                        SizedBox(width: 2),
+                                        Text(
+                                          '*', // Red asterisk for required field
                                           style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 16
-
-                                          )
-                                      ),
-                                      SizedBox(width: 2),
-                                      Text(
-                                        '*', // Red asterisk for required field
-                                        style: TextStyle(
-                                          fontSize: 20,
-                                          color: Colors.red, // Red color for the asterisk
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-
-                                Padding(
-
-                                    padding: EdgeInsets.only(top:0,left: 20,right: 20,bottom: 0),
-                                    child: TextFormField(
-                                      controller: customernamecontroller,
-                                      keyboardType: TextInputType.name,
-                                      validator: (value) {
-                                        if (value!.isEmpty) {
-                                          return 'Name is required';
-                                        }
-                                        return null;
-                                      },
-                                      decoration: InputDecoration(
-                                        hintText: 'Enter Name',
-                                        contentPadding: EdgeInsets.all(15),
-                                        border: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(10), // Set the border radius
-                                          borderSide: BorderSide(
-                                            color: Colors.black, // Set the border color
+                                            fontSize: 20,
+                                            color: Colors.red, // Red color for the asterisk
                                           ),
                                         ),
-                                        focusedBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(10),
-                                          borderSide: BorderSide(
-                                            color:  Colors.black, // Set the focused border color
-                                          ),
-                                        ),
-                                      ),
-                                      onChanged: (value) {
-                                        setState(() {
-                                          _isFocus_name = true;
-                                          _isFocused_email = false;
-
-                                        });
-                                      },
-                                      onFieldSubmitted: (value) {
-                                        setState(() {
-                                          _isFocus_name = false;
-                                          _isFocused_email = false;
-                                        });
-                                      },
-                                      onTap: () {
-                                        setState(() {
-                                          _isFocus_name = true;
-                                          _isFocused_email = false;
-                                        });
-                                      },
-                                      onEditingComplete: () {
-                                        setState(() {
-                                          _isFocus_name = false;
-                                          _isFocused_email = false;
-                                        });
-                                      },
-
-                                    )),
-
-                                Container(
-                                  margin: EdgeInsets.only( top:15,
-                                      bottom: 0,
-                                      left: 20,
-                                      right: 20),
-                                  child: Row(
-                                    children: [
-                                      Text("Contact No.",
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 16
-
-                                          )
-                                      ),
-                                      SizedBox(width: 2),
-                                      Text(
-                                        '*', // Red asterisk for required field
-                                        style: TextStyle(
-                                          fontSize: 20,
-                                          color: Colors.red, // Red color for the asterisk
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-
-                                Padding(
-
-                                    padding: EdgeInsets.only(top:0,left: 20,right: 20,bottom: 0),
-
-                                    child: TextFormField(
-                                      controller: customercontactnocontroller,
-                                      keyboardType: TextInputType.number,
-                                      validator: (value) {
-                                        if (value!.isEmpty) {
-                                          return 'Contact No. is required';
-                                        }
-
-                                        return null;
-                                      },
-                                      decoration: InputDecoration(
-                                        hintText: 'Enter Contact No',
-                                        contentPadding: EdgeInsets.all(15),
-                                        border: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(10), // Set the border radius
-                                          borderSide: BorderSide(
-                                            color: Colors.black, // Set the border color
-                                          ),
-                                        ),
-                                        focusedBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(10),
-                                          borderSide: BorderSide(
-                                            color:  Colors.black, // Set the focused border color
-
-                                          ),
-                                        ),
-                                      ),
-                                      onChanged: (value) {
-                                        setState(() {
-                                          _isFocused_email = true;
-                                          _isFocus_name = false;
-                                        });
-                                      },
-                                      onFieldSubmitted: (value) {
-                                        setState(() {
-                                          _isFocused_email = false;
-                                          _isFocus_name = false;
-                                        });
-                                      },
-                                      onTap: () {
-                                        setState(() {
-                                          _isFocused_email = true;
-                                          _isFocus_name = false;
-
-                                        });
-                                      },
-                                      onEditingComplete: () {
-                                        setState(() {
-                                          _isFocused_email = false;
-                                          _isFocus_name = false;
-                                        });
-                                      },
-
-                                    )),
-
-
-                                Container(
-                                  margin: EdgeInsets.only( top:15,
-                                      bottom: 0,
-                                      left: 20,
-                                      right: 20),
-                                  child: Row(
-                                    children: [
-                                      Text("Email Address",
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 16
-
-                                          )
-                                      ),
-                                      SizedBox(width: 2),
-                                      Text(
-                                        '*', // Red asterisk for required field
-                                        style: TextStyle(
-                                          fontSize: 20,
-                                          color: Colors.red, // Red color for the asterisk
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-
-                                Padding(
-
-                                    padding: EdgeInsets.only(top:0,left: 20,right: 20,bottom: 0),
-
-                                    child: TextFormField(
-                                      controller: emailcontroller,
-                                      keyboardType: TextInputType.emailAddress,
-                                      validator: (value) {
-                                        if (value!.isEmpty) {
-                                          return 'Email Address is required';
-                                        }
-                                        if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value))
-                                        {
-                                          return 'Please enter a valid email address';
-                                        }
-
-                                        return null;
-                                      },
-                                      decoration: InputDecoration(
-                                        hintText: 'Enter Email Address',
-                                        contentPadding: EdgeInsets.all(15),
-                                        border: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(10), // Set the border radius
-                                          borderSide: BorderSide(
-                                            color: Colors.black, // Set the border color
-                                          ),
-                                        ),
-                                        focusedBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(10),
-                                          borderSide: BorderSide(
-                                            color:  Colors.black, // Set the focused border color
-
-                                          ),
-                                        ),
-                                      ),
-                                      onChanged: (value) {
-                                        setState(() {
-                                          _isFocused_email = true;
-                                          _isFocus_name = false;
-                                        });
-                                      },
-                                      onFieldSubmitted: (value) {
-                                        setState(() {
-                                          _isFocused_email = false;
-                                          _isFocus_name = false;
-                                        });
-                                      },
-                                      onTap: () {
-                                        setState(() {
-                                          _isFocused_email = true;
-                                          _isFocus_name = false;
-
-                                        });
-                                      },
-                                      onEditingComplete: () {
-                                        setState(() {
-                                          _isFocused_email = false;
-                                          _isFocus_name = false;
-                                        });
-                                      },
-
-                                    )),
-
-                                Container(
-                                  margin: EdgeInsets.only( top:15,
-                                      bottom: 0,
-                                      left: 20,
-                                      right: 20),
-                                  child: Row(
-                                    children: [
-                                      Text("Unit Type:",
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 16
-
-                                          )
-                                      ),
-                                      SizedBox(width: 2),
-                                      Text(
-                                        '*', // Red asterisk for required field
-                                        style: TextStyle(
-                                          fontSize: 20,
-                                          color: Colors.red, // Red color for the asterisk
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-
-                                Padding(
-                                  padding: EdgeInsets.only(top: 0, left: 20, right: 20, bottom: 0),
-                                  child: GestureDetector(
-                                    onTap: () => _openUnitTypeDropdown(context), // Open the custom dropdown
-                                    child: TextFormField(
-                                      controller: TextEditingController(text: selectedUnitType),
-                                      decoration: InputDecoration(
-                                        hintText: 'Select Unit Type(s)',
-                                        contentPadding: EdgeInsets.all(15),
-                                        fillColor: isUnitSelected ? Colors.transparent : Colors.transparent, // Set to black if selected
-                                        filled: true, // Ensure the field is filled but transparent or black based on isSelected
-                                        border: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(10),
-                                          borderSide: BorderSide(color: Colors.black), // Black border
-                                        ),
-                                        enabledBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(10),
-                                          borderSide: BorderSide(color: Colors.black), // Black border when enabled
-                                        ),
-                                        disabledBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(10),
-                                          borderSide: BorderSide(color: Colors.black), // Black border when disabled
-                                        ),
-                                        focusedBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(10),
-                                          borderSide: BorderSide(color: Colors.black), // Black focused border
-                                        ),
-                                        labelStyle: TextStyle(color: Colors.black),
-                                        hintStyle: TextStyle(color: Colors.black), // Hint text color (white for better contrast)
-                                      ),
-
-
-
-                                      enabled: false, //// Disable direct editing
-                                      validator: (value) {
-                                        // If no unit type is selected, show error
-                                        bool isAnySelected = unitTypes.any((unit) => unit['isSelected']);
-                                        if (!isAnySelected) {
-                                          return 'Unit type is required';
-                                        }
-                                        return null; // No error
-                                      },
+                                      ],
                                     ),
                                   ),
-                                ),
 
-                                /*Padding(padding: EdgeInsets.only(top:0,left: 20,right: 20,bottom: 0),
+                                  Padding(
+
+                                      padding: EdgeInsets.only(top:0,left: 20,right: 20,bottom: 0),
+                                      child: TextFormField(
+                                        controller: customernamecontroller,
+                                        keyboardType: TextInputType.name,
+                                        validator: (value) {
+                                          if (value!.isEmpty) {
+                                            return 'Name is required';
+                                          }
+                                          return null;
+                                        },
+                                        decoration: InputDecoration(
+                                          hintText: 'Enter Name',
+                                          contentPadding: EdgeInsets.all(15),
+                                          border: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(10), // Set the border radius
+                                            borderSide: BorderSide(
+                                              color: Colors.black, // Set the border color
+                                            ),
+                                          ),
+                                          focusedBorder: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(10),
+                                            borderSide: BorderSide(
+                                              color:  Colors.black, // Set the focused border color
+                                            ),
+                                          ),
+                                        ),
+                                        onChanged: (value) {
+                                          setState(() {
+                                            _isFocus_name = true;
+                                            _isFocused_email = false;
+
+                                          });
+                                        },
+                                        onFieldSubmitted: (value) {
+                                          setState(() {
+                                            _isFocus_name = false;
+                                            _isFocused_email = false;
+                                          });
+                                        },
+                                        onTap: () {
+                                          setState(() {
+                                            _isFocus_name = true;
+                                            _isFocused_email = false;
+                                          });
+                                        },
+                                        onEditingComplete: () {
+                                          setState(() {
+                                            _isFocus_name = false;
+                                            _isFocused_email = false;
+                                          });
+                                        },
+
+                                      )),
+
+                                  Container(
+                                    margin: EdgeInsets.only( top:15,
+                                        bottom: 0,
+                                        left: 20,
+                                        right: 20),
+                                    child: Row(
+                                      children: [
+                                        Text("Contact No.",
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 16
+
+                                            )
+                                        ),
+                                        SizedBox(width: 2),
+                                        Text(
+                                          '*', // Red asterisk for required field
+                                          style: TextStyle(
+                                            fontSize: 20,
+                                            color: Colors.red, // Red color for the asterisk
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+
+                                  Padding(
+
+                                      padding: EdgeInsets.only(top:0,left: 20,right: 20,bottom: 0),
+
+                                      child: TextFormField(
+                                        controller: customercontactnocontroller,
+                                        keyboardType: TextInputType.number,
+                                        validator: (value) {
+                                          if (value!.isEmpty) {
+                                            return 'Contact No. is required';
+                                          }
+
+                                          return null;
+                                        },
+                                        decoration: InputDecoration(
+                                          hintText: 'Enter Contact No',
+                                          contentPadding: EdgeInsets.all(15),
+                                          border: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(10), // Set the border radius
+                                            borderSide: BorderSide(
+                                              color: Colors.black, // Set the border color
+                                            ),
+                                          ),
+                                          focusedBorder: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(10),
+                                            borderSide: BorderSide(
+                                              color:  Colors.black, // Set the focused border color
+
+                                            ),
+                                          ),
+                                        ),
+                                        onChanged: (value) {
+                                          setState(() {
+                                            _isFocused_email = true;
+                                            _isFocus_name = false;
+                                          });
+                                        },
+                                        onFieldSubmitted: (value) {
+                                          setState(() {
+                                            _isFocused_email = false;
+                                            _isFocus_name = false;
+                                          });
+                                        },
+                                        onTap: () {
+                                          setState(() {
+                                            _isFocused_email = true;
+                                            _isFocus_name = false;
+
+                                          });
+                                        },
+                                        onEditingComplete: () {
+                                          setState(() {
+                                            _isFocused_email = false;
+                                            _isFocus_name = false;
+                                          });
+                                        },
+
+                                      )),
+
+
+                                  Container(
+                                    margin: EdgeInsets.only( top:15,
+                                        bottom: 0,
+                                        left: 20,
+                                        right: 20),
+                                    child: Row(
+                                      children: [
+                                        Text("Email Address",
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 16
+
+                                            )
+                                        ),
+                                        SizedBox(width: 2),
+                                        Text(
+                                          '*', // Red asterisk for required field
+                                          style: TextStyle(
+                                            fontSize: 20,
+                                            color: Colors.red, // Red color for the asterisk
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+
+                                  Padding(
+
+                                      padding: EdgeInsets.only(top:0,left: 20,right: 20,bottom: 0),
+
+                                      child: TextFormField(
+                                        controller: emailcontroller,
+                                        keyboardType: TextInputType.emailAddress,
+                                        validator: (value) {
+                                          if (value!.isEmpty) {
+                                            return 'Email Address is required';
+                                          }
+                                          if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value))
+                                          {
+                                            return 'Please enter a valid email address';
+                                          }
+
+                                          return null;
+                                        },
+                                        decoration: InputDecoration(
+                                          hintText: 'Enter Email Address',
+                                          contentPadding: EdgeInsets.all(15),
+                                          border: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(10), // Set the border radius
+                                            borderSide: BorderSide(
+                                              color: Colors.black, // Set the border color
+                                            ),
+                                          ),
+                                          focusedBorder: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(10),
+                                            borderSide: BorderSide(
+                                              color:  Colors.black, // Set the focused border color
+
+                                            ),
+                                          ),
+                                        ),
+                                        onChanged: (value) {
+                                          setState(() {
+                                            _isFocused_email = true;
+                                            _isFocus_name = false;
+                                          });
+                                        },
+                                        onFieldSubmitted: (value) {
+                                          setState(() {
+                                            _isFocused_email = false;
+                                            _isFocus_name = false;
+                                          });
+                                        },
+                                        onTap: () {
+                                          setState(() {
+                                            _isFocused_email = true;
+                                            _isFocus_name = false;
+
+                                          });
+                                        },
+                                        onEditingComplete: () {
+                                          setState(() {
+                                            _isFocused_email = false;
+                                            _isFocus_name = false;
+                                          });
+                                        },
+
+                                      )),
+
+                                  Container(
+                                    margin: EdgeInsets.only( top:15,
+                                        bottom: 0,
+                                        left: 20,
+                                        right: 20),
+                                    child: Row(
+                                      children: [
+                                        Text("Unit Type:",
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 16
+
+                                            )
+                                        ),
+                                        SizedBox(width: 2),
+                                        Text(
+                                          '*', // Red asterisk for required field
+                                          style: TextStyle(
+                                            fontSize: 20,
+                                            color: Colors.red, // Red color for the asterisk
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+
+                                  Padding(
+                                    padding: EdgeInsets.only(top: 0, left: 20, right: 20, bottom: 0),
+                                    child: GestureDetector(
+                                      onTap: () => _openUnitTypeDropdown(context), // Open the custom dropdown
+                                      child: TextFormField(
+                                        controller: TextEditingController(text: selectedUnitType),
+                                        decoration: InputDecoration(
+                                          hintText: 'Select Unit Type(s)',
+                                          contentPadding: EdgeInsets.all(15),
+                                          fillColor: isUnitSelected ? Colors.transparent : Colors.transparent, // Set to black if selected
+                                          filled: true, // Ensure the field is filled but transparent or black based on isSelected
+                                          border: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(10),
+                                            borderSide: BorderSide(color: Colors.black), // Black border
+                                          ),
+                                          enabledBorder: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(10),
+                                            borderSide: BorderSide(color: Colors.black), // Black border when enabled
+                                          ),
+                                          disabledBorder: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(10),
+                                            borderSide: BorderSide(color: Colors.black), // Black border when disabled
+                                          ),
+                                          focusedBorder: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(10),
+                                            borderSide: BorderSide(color: Colors.black), // Black focused border
+                                          ),
+                                          labelStyle: TextStyle(color: Colors.black),
+                                          hintStyle: TextStyle(color: Colors.black), // Hint text color (white for better contrast)
+                                        ),
+
+
+
+                                        enabled: false, //// Disable direct editing
+                                        validator: (value) {
+                                          // If no unit type is selected, show error
+                                          bool isAnySelected = unitTypes.any((unit) => unit['isSelected']);
+                                          if (!isAnySelected) {
+                                            return 'Unit type is required';
+                                          }
+                                          return null; // No error
+                                        },
+                                      ),
+                                    ),
+                                  ),
+
+                                  /*Padding(padding: EdgeInsets.only(top:0,left: 20,right: 20,bottom: 0),
 
                                     child: TextFormField(
                                       controller: unittypecontroller,
@@ -1170,83 +1175,83 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
                                 ),*/
 
-                                Container(
-                                  child: Column(
+                                  Container(
+                                    child: Column(
 
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Padding(padding: EdgeInsets.only(top: 15,left:20),
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Padding(padding: EdgeInsets.only(top: 15,left:20),
 
-                                        child:Row(
-                                          children: [
-                                            Text("Select Emirate:",
-                                                style: TextStyle(
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 16
+                                          child:Row(
+                                            children: [
+                                              Text("Select Emirate:",
+                                                  style: TextStyle(
+                                                      fontWeight: FontWeight.bold,
+                                                      fontSize: 16
 
-                                                )
-                                            ),
-                                            SizedBox(width: 2),
-                                            Text(
-                                              '*', // Red asterisk for required field
-                                              style: TextStyle(
-                                                fontSize: 20,
-                                                color: Colors.red, // Red color for the asterisk
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-
-                                      Padding(
-                                        padding: EdgeInsets.only(top: 0, left: 20, right: 20, bottom: 0),
-                                        child: GestureDetector(
-                                          onTap: () => _openEmirateDropdown(context), // Open the custom dropdown
-                                          child: Container(
-                                            width: double.infinity, // Make the container expand to full width
-                                            padding: EdgeInsets.all(15),
-                                            decoration: BoxDecoration(
-                                              borderRadius: BorderRadius.circular(10),
-                                              color: Colors.transparent, // Set it to transparent
-                                              border: Border.all(color: Colors.black), // Black border
-                                            ),
-                                            child: Row(
-                                              mainAxisAlignment: MainAxisAlignment.spaceBetween, // Space between text and icon
-                                              children: [
-                                                // Column to display selected emirates
-                                                Expanded(
-                                                  child: selectedEmirates.isNotEmpty
-                                                      ? Column(
-                                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                                    children: selectedEmirates.split(', ').map((emirate) {
-                                                      return Text(
-                                                        emirate, // Display each emirate on a new line
-                                                        style: TextStyle(fontSize: 16, color: Colors.grey),
-                                                      );
-                                                    }).toList(),
                                                   )
-                                                      : Text(
-                                                    'Select Emirate', // Placeholder text when no emirates are selected
-                                                    style: TextStyle(fontSize: 16, color: Colors.grey),
-                                                  ),
+                                              ),
+                                              SizedBox(width: 2),
+                                              Text(
+                                                '*', // Red asterisk for required field
+                                                style: TextStyle(
+                                                  fontSize: 20,
+                                                  color: Colors.red, // Red color for the asterisk
                                                 ),
-                                                // Down arrow icon
-                                                Icon(
-                                                  Icons.arrow_drop_down,
-                                                  color: Colors.grey, // Adjust the color of the arrow
-                                                ),
-                                              ],
-                                            ),
+                                              ),
+                                            ],
                                           ),
                                         ),
-                                      )
+
+                                        Padding(
+                                          padding: EdgeInsets.only(top: 0, left: 20, right: 20, bottom: 0),
+                                          child: GestureDetector(
+                                            onTap: () => _openEmirateDropdown(context), // Open the custom dropdown
+                                            child: Container(
+                                              width: double.infinity, // Make the container expand to full width
+                                              padding: EdgeInsets.all(15),
+                                              decoration: BoxDecoration(
+                                                borderRadius: BorderRadius.circular(10),
+                                                color: Colors.transparent, // Set it to transparent
+                                                border: Border.all(color: Colors.black), // Black border
+                                              ),
+                                              child: Row(
+                                                mainAxisAlignment: MainAxisAlignment.spaceBetween, // Space between text and icon
+                                                children: [
+                                                  // Column to display selected emirates
+                                                  Expanded(
+                                                    child: selectedEmirates.isNotEmpty
+                                                        ? Column(
+                                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                                      children: selectedEmirates.split(', ').map((emirate) {
+                                                        return Text(
+                                                          emirate, // Display each emirate on a new line
+                                                          style: TextStyle(fontSize: 16, color: Colors.grey),
+                                                        );
+                                                      }).toList(),
+                                                    )
+                                                        : Text(
+                                                      'Select Emirate', // Placeholder text when no emirates are selected
+                                                      style: TextStyle(fontSize: 16, color: Colors.grey),
+                                                    ),
+                                                  ),
+                                                  // Down arrow icon
+                                                  Icon(
+                                                    Icons.arrow_drop_down,
+                                                    color: Colors.grey, // Adjust the color of the arrow
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        )
 
 
 
 
 
 
-                                      /*Padding(
+                                        /*Padding(
                                         padding: EdgeInsets.only(top:0,left:20,right:20,bottom :0),
 
                                         child: DropdownButtonFormField<dynamic>(
@@ -1297,71 +1302,71 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                       ),*/
 
 
-                                    ],
+                                      ],
+                                    ),
                                   ),
-                                ),
 
-                                Container(
-                                  margin: EdgeInsets.only( top:15,
-                                      bottom: 0,
-                                      left: 20,
-                                      right: 20),
-                                  child: Row(
-                                    children: [
-                                      Text("Area:",
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 16
+                                  Container(
+                                    margin: EdgeInsets.only( top:15,
+                                        bottom: 0,
+                                        left: 20,
+                                        right: 20),
+                                    child: Row(
+                                      children: [
+                                        Text("Area:",
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 16
 
-                                          )
-                                      ),
-                                      SizedBox(width: 2),
-                                      Text(
-                                        '*', // Red asterisk for required field
-                                        style: TextStyle(
-                                          fontSize: 20,
-                                          color: Colors.red, // Red color for the asterisk
+                                            )
                                         ),
-                                      ),
-                                    ],
+                                        SizedBox(width: 2),
+                                        Text(
+                                          '*', // Red asterisk for required field
+                                          style: TextStyle(
+                                            fontSize: 20,
+                                            color: Colors.red, // Red color for the asterisk
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                ),
 
-                                Padding(
-                                  padding: EdgeInsets.only(top: 0, left: 20, right: 20, bottom: 0),
-                                  child: GestureDetector(
-                                    onTap: selectedEmiratesList.isNotEmpty
-                                        ? () => _openAreaDropdown(context) // Open the custom dropdown
-                                        : null, // Disable if no emirates are selected
-                                    child: Container(
-                                      padding: EdgeInsets.all(15),
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(10),
-                                        color: Colors.transparent, // Set it to transparent as per your requirement
-                                        border: Border.all(color: Colors.black), // Black border
-                                      ),
-                                      child: selectedAreasString.isNotEmpty
-                                          ? Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: selectedAreasString.split(', ').map((areaEmirate) {
-                                          return Text(
-                                            areaEmirate, // Display each area-emirate pair
-                                            style: TextStyle(fontSize: 16, color: Colors.grey), // Text style for readability
-                                          );
-                                        }).toList(),
-                                      )
-                                          : Text(
-                                        'Select Area(s)', // Placeholder text when no areas are selected
-                                        style: TextStyle(fontSize: 16, color: Colors.grey),
+                                  Padding(
+                                    padding: EdgeInsets.only(top: 0, left: 20, right: 20, bottom: 0),
+                                    child: GestureDetector(
+                                      onTap: selectedEmiratesList.isNotEmpty
+                                          ? () => _openAreaDropdown(context) // Open the custom dropdown
+                                          : null, // Disable if no emirates are selected
+                                      child: Container(
+                                        padding: EdgeInsets.all(15),
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(10),
+                                          color: Colors.transparent, // Set it to transparent as per your requirement
+                                          border: Border.all(color: Colors.black), // Black border
+                                        ),
+                                        child: selectedAreasString.isNotEmpty
+                                            ? Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: selectedAreasString.split(', ').map((areaEmirate) {
+                                            return Text(
+                                              areaEmirate, // Display each area-emirate pair
+                                              style: TextStyle(fontSize: 16, color: Colors.grey), // Text style for readability
+                                            );
+                                          }).toList(),
+                                        )
+                                            : Text(
+                                          'Select Area(s)', // Placeholder text when no areas are selected
+                                          style: TextStyle(fontSize: 16, color: Colors.grey),
+                                        ),
                                       ),
                                     ),
                                   ),
-                                ),
 
 
 
 
-                                /*Padding(padding: EdgeInsets.only(top:0,left: 20,right: 20,bottom: 0),
+                                  /*Padding(padding: EdgeInsets.only(top:0,left: 20,right: 20,bottom: 0),
 
                                     child: TextFormField(
                                       controller: areacontroller,
@@ -1423,248 +1428,249 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                 ),*/
 
 
-                                Container(
-                                  child: Column(
+                                  Container(
+                                    child: Column(
 
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Padding(padding: EdgeInsets.only(top: 15,left:20),
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Padding(padding: EdgeInsets.only(top: 15,left:20),
 
-                                        child:Row(
-                                          children: [
-                                            Text("Assigned To:",
+                                          child:Row(
+                                            children: [
+                                              Text("Assigned To:",
+                                                  style: TextStyle(
+                                                      fontWeight: FontWeight.bold,
+                                                      fontSize: 16
+
+                                                  )
+                                              ),
+                                              SizedBox(width: 2),
+                                              Text(
+                                                '*', // Red asterisk for required field
                                                 style: TextStyle(
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 16
-
-                                                )
-                                            ),
-                                            SizedBox(width: 2),
-                                            Text(
-                                              '*', // Red asterisk for required field
-                                              style: TextStyle(
-                                                fontSize: 20,
-                                                color: Colors.red, // Red color for the asterisk
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-
-                                      Padding(
-                                        padding: EdgeInsets.only(top:0,left:20,right:20,bottom :0),
-
-                                        child: DropdownButtonFormField<dynamic>(
-                                          decoration: InputDecoration(
-
-                                            border: OutlineInputBorder(
-                                              borderSide: BorderSide(color: Colors.black),
-                                              borderRadius: BorderRadius.circular(10.0),
-                                            ),
-                                            focusedBorder: OutlineInputBorder(
-                                              borderSide: BorderSide(color: appbar_color),
-                                              borderRadius: BorderRadius.circular(10.0),
-                                            ),
-                                            enabledBorder: OutlineInputBorder(
-                                              borderRadius: BorderRadius.circular(10.0),
-                                              borderSide: BorderSide(color: Colors.black),
-                                            ),
-                                            contentPadding: EdgeInsets.symmetric(horizontal: 10),
-                                          ),
-
-
-                                          hint: Text('Select Assigned To'), // Add a hint
-                                          value: selectedasignedto,
-                                          items: asignedto.map((item) {
-                                            return DropdownMenuItem<dynamic>(
-                                              value: item,
-                                              child: Text(item),
-                                            );
-                                          }).toList(),
-                                          onChanged: (value) async {
-                                            selectedasignedto = value!;
-                                          },
-
-                                          onTap: ()
-                                          {
-                                            setState(() {
-                                              _isFocused_email = false;
-                                              _isFocus_name = false;
-                                            });
-
-                                          },
-
-                                          validator: (value) {
-                                            if (value == null || value.isEmpty) {
-                                              return 'Assigned To is required'; // Error message
-                                            }
-                                            return null; // No error if a value is selected
-                                          },
-                                        ),
-                                      ),
-
-
-                                    ],
-                                  ),
-                                ),
-
-                                Container(
-                                  margin: EdgeInsets.only( top:15,
-                                      bottom: 0,
-                                      left: 20,
-                                      right: 20),
-                                  child: Row(
-                                    children: [
-                                      Text("Description:",
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 16
-
-                                          )
-                                      ),
-                                      SizedBox(width: 2),
-                                      Text(
-                                        '*', // Red asterisk for required field
-                                        style: TextStyle(
-                                          fontSize: 20,
-                                          color: Colors.red, // Red color for the asterisk
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-
-                                Padding(padding: EdgeInsets.only(top:0,left: 20,right: 20,bottom: 0),
-
-                                    child: TextFormField(
-                                      controller: descriptioncontroller,
-                                      validator: (value) {
-                                        if (value!.isEmpty) {
-                                          return 'Description is required';
-                                        }
-                                        return null;
-                                      },
-                                      decoration: InputDecoration(
-                                        hintText: 'Enter Description',
-                                        contentPadding: EdgeInsets.all(15),
-
-
-                                        border: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(10), // Set the border radius
-                                          borderSide: BorderSide(
-                                            color: Colors.black, // Set the border color
-                                          ),
-                                        ),
-                                        focusedBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(10),
-                                          borderSide: BorderSide(
-                                            color:  Colors.black, // Set the focused border color
-                                          ),
-                                        ),
-                                        labelStyle: TextStyle(
-                                          color: Colors.black,
-                                        ),
-                                      ),
-                                      onChanged: (value) {
-                                        setState(() {
-                                          _isFocus_name = false;
-                                          _isFocused_email = false;
-                                        });
-                                      },
-                                      onFieldSubmitted: (value) {
-                                        setState(() {
-                                          _isFocus_name = false;
-                                          _isFocused_email = false;
-                                        });
-                                      },
-                                      onTap: () {
-                                        setState(() {
-                                          _isFocus_name = false;
-                                          _isFocused_email = false;
-                                        });
-                                      },
-                                      onEditingComplete: () {
-                                        setState(() {
-                                          _isFocus_name = false;
-                                          _isFocused_email = false;
-                                        });
-                                      },
-                                    )
-                                ),
-
-                                Padding(padding: EdgeInsets.only(left: 20,right: 20,top: 40,bottom: 50),
-                                  child: Container(
-                                      child: Row(
-                                        mainAxisAlignment:MainAxisAlignment.center,
-                                        crossAxisAlignment: CrossAxisAlignment.center,
-                                        children: [
-                                          ElevatedButton(
-                                            style: ElevatedButton.styleFrom(
-                                              backgroundColor: Colors.white, // Button background color
-                                              foregroundColor: Colors.black,
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.circular(5), // Rounded corners
-                                                side: BorderSide(
-                                                  color: Colors.grey, // Border color
-                                                  width: 0.5, // Border width
+                                                  fontSize: 20,
+                                                  color: Colors.red, // Red color for the asterisk
                                                 ),
                                               ),
+                                            ],
+                                          ),
+                                        ),
+
+                                        Padding(
+                                          padding: EdgeInsets.only(top:0,left:20,right:20,bottom :0),
+
+                                          child: DropdownButtonFormField<dynamic>(
+                                            decoration: InputDecoration(
+
+                                              border: OutlineInputBorder(
+                                                borderSide: BorderSide(color: Colors.black),
+                                                borderRadius: BorderRadius.circular(10.0),
+                                              ),
+                                              focusedBorder: OutlineInputBorder(
+                                                borderSide: BorderSide(color: appbar_color),
+                                                borderRadius: BorderRadius.circular(10.0),
+                                              ),
+                                              enabledBorder: OutlineInputBorder(
+                                                borderRadius: BorderRadius.circular(10.0),
+                                                borderSide: BorderSide(color: Colors.black),
+                                              ),
+                                              contentPadding: EdgeInsets.symmetric(horizontal: 10),
                                             ),
-                                            onPressed: () {
-                                              setState(() {
-
-                                                _formKey.currentState?.reset();
-                                                selectedasignedto = asignedto.first;
 
 
-                                                /*print(_selectedrole['role_name']);*/
-
-                                                customernamecontroller.clear();
-                                                customercontactnocontroller.clear();
-                                                unittypecontroller.clear();
-                                                areacontroller.clear();
-                                                descriptioncontroller.clear();
-
-                                              });
+                                            hint: Text('Select Assigned To'), // Add a hint
+                                            value: selectedasignedto,
+                                            items: asignedto.map((item) {
+                                              return DropdownMenuItem<dynamic>(
+                                                value: item,
+                                                child: Text(item),
+                                              );
+                                            }).toList(),
+                                            onChanged: (value) async {
+                                              selectedasignedto = value!;
                                             },
-                                            child: Text('Clear'),
-                                          ),
 
-                                          SizedBox(width: 20,),
-                                          ElevatedButton(
-                                            style: ElevatedButton.styleFrom(
-                                              backgroundColor: appbar_color, // Button background color
-                                              foregroundColor: Colors.white,
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.circular(5), // Rounded corners
-                                                side: BorderSide(
-                                                  color: Colors.grey, // Border color
-                                                  width: 0.5, // Border width
+                                            onTap: ()
+                                            {
+                                              setState(() {
+                                                _isFocused_email = false;
+                                                _isFocus_name = false;
+                                              });
+
+                                            },
+
+                                            validator: (value) {
+                                              if (value == null || value.isEmpty) {
+                                                return 'Assigned To is required'; // Error message
+                                              }
+                                              return null; // No error if a value is selected
+                                            },
+                                          ),
+                                        ),
+
+
+                                      ],
+                                    ),
+                                  ),
+
+                                  Container(
+                                    margin: EdgeInsets.only( top:15,
+                                        bottom: 0,
+                                        left: 20,
+                                        right: 20),
+                                    child: Row(
+                                      children: [
+                                        Text("Description:",
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 16
+
+                                            )
+                                        ),
+                                        SizedBox(width: 2),
+                                        Text(
+                                          '*', // Red asterisk for required field
+                                          style: TextStyle(
+                                            fontSize: 20,
+                                            color: Colors.red, // Red color for the asterisk
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+
+                                  Padding(padding: EdgeInsets.only(top:0,left: 20,right: 20,bottom: 0),
+
+                                      child: TextFormField(
+                                        controller: descriptioncontroller,
+                                        validator: (value) {
+                                          if (value!.isEmpty) {
+                                            return 'Description is required';
+                                          }
+                                          return null;
+                                        },
+                                        decoration: InputDecoration(
+                                          hintText: 'Enter Description',
+                                          contentPadding: EdgeInsets.all(15),
+
+
+                                          border: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(10), // Set the border radius
+                                            borderSide: BorderSide(
+                                              color: Colors.black, // Set the border color
+                                            ),
+                                          ),
+                                          focusedBorder: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(10),
+                                            borderSide: BorderSide(
+                                              color:  Colors.black, // Set the focused border color
+                                            ),
+                                          ),
+                                          labelStyle: TextStyle(
+                                            color: Colors.black,
+                                          ),
+                                        ),
+                                        onChanged: (value) {
+                                          setState(() {
+                                            _isFocus_name = false;
+                                            _isFocused_email = false;
+                                          });
+                                        },
+                                        onFieldSubmitted: (value) {
+                                          setState(() {
+                                            _isFocus_name = false;
+                                            _isFocused_email = false;
+                                          });
+                                        },
+                                        onTap: () {
+                                          setState(() {
+                                            _isFocus_name = false;
+                                            _isFocused_email = false;
+                                          });
+                                        },
+                                        onEditingComplete: () {
+                                          setState(() {
+                                            _isFocus_name = false;
+                                            _isFocused_email = false;
+                                          });
+                                        },
+                                      )
+                                  ),
+
+                                  Padding(padding: EdgeInsets.only(left: 20,right: 20,top: 40,bottom: 50),
+                                    child: Container(
+                                        child: Row(
+                                          mainAxisAlignment:MainAxisAlignment.center,
+                                          crossAxisAlignment: CrossAxisAlignment.center,
+                                          children: [
+                                            ElevatedButton(
+                                              style: ElevatedButton.styleFrom(
+                                                backgroundColor: Colors.white, // Button background color
+                                                foregroundColor: Colors.black,
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius: BorderRadius.circular(5), // Rounded corners
+                                                  side: BorderSide(
+                                                    color: Colors.grey, // Border color
+                                                    width: 0.5, // Border width
+                                                  ),
                                                 ),
                                               ),
-                                            ),
-                                            onPressed: () {
-
-                                              if (_formKey.currentState != null &&
-                                                  _formKey.currentState!.validate()) {
-                                                _formKey.currentState!.save();
-
+                                              onPressed: () {
                                                 setState(() {
-                                                  _isFocused_email = false;
-                                                  _isFocus_name = false;
+
+                                                  _formKey.currentState?.reset();
+                                                  selectedasignedto = asignedto.first;
+
+
+                                                  /*print(_selectedrole['role_name']);*/
+
+                                                  customernamecontroller.clear();
+                                                  customercontactnocontroller.clear();
+                                                  unittypecontroller.clear();
+                                                  areacontroller.clear();
+                                                  descriptioncontroller.clear();
+
                                                 });
-                                                /*userRegistration(serial_no!,fetched_email,fetched_password,fetched_role,fetched_name);*/
+                                              },
+                                              child: Text('Clear'),
+                                            ),
 
-                                              }},
-                                            child: Text('Create'),
-                                          ),
-                                        ],)
-                                  ),)
-                              ]))
-                  )
+                                            SizedBox(width: 20,),
+                                            ElevatedButton(
+                                              style: ElevatedButton.styleFrom(
+                                                backgroundColor: appbar_color, // Button background color
+                                                foregroundColor: Colors.white,
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius: BorderRadius.circular(5), // Rounded corners
+                                                  side: BorderSide(
+                                                    color: Colors.grey, // Border color
+                                                    width: 0.5, // Border width
+                                                  ),
+                                                ),
+                                              ),
+                                              onPressed: () {
+
+                                                if (_formKey.currentState != null &&
+                                                    _formKey.currentState!.validate()) {
+                                                  _formKey.currentState!.save();
+
+                                                  setState(() {
+                                                    _isFocused_email = false;
+                                                    _isFocus_name = false;
+                                                  });
+                                                  /*userRegistration(serial_no!,fetched_email,fetched_password,fetched_role,fetched_name);*/
+
+                                                }},
+                                              child: Text('Create'),
+                                            ),
+                                          ],)
+                                    ),)
+                                ]))
+                    )
 
 
-                ],
+                  ],
+                )
               ),)
           ],
         ) ,);}}

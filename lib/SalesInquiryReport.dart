@@ -288,6 +288,48 @@ class _SalesInquiryReportState
 
             if (_expandedinquirys[index])
               _buildExpandedinquiryView(inquiry),
+
+
+
+            SizedBox(height: 30), // Top space before the toggle
+            Align(
+              alignment: Alignment.center,
+              child: GestureDetector(
+                onTap: () {
+                  setState(() {
+                    _expandedinquirys[index] = !_expandedinquirys[index];
+                  });
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(vertical: 0.0, horizontal: 20.0),
+                  decoration: BoxDecoration(
+                    color: Colors.transparent
+
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        _expandedinquirys[index] ? "View Less" : "View More",
+                        style: TextStyle(
+                          color: Colors.black26,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12.0,
+                        ),
+                      ),
+                      SizedBox(width: 10),
+                      Icon(
+                        _expandedinquirys[index] ? Icons.expand_less : Icons.expand_more,
+                        color: Colors.black26,
+                        size: 16,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            )
+
+
           ],
         ),
       ),

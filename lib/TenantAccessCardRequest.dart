@@ -8,18 +8,18 @@ import 'package:flutter/widgets.dart';
 import 'SalesInquiryReport.dart';
 import 'Sidebar.dart';
 
-class TenantmoveinoutRequest extends StatefulWidget
+class TenantAccessCardRequest extends StatefulWidget
 {
   @override
-  _TenantmoveinoutRequestPageState createState() => _TenantmoveinoutRequestPageState();
+  _TenantAccessCardRequestPageState createState() => _TenantAccessCardRequestPageState();
 }
 
-class _TenantmoveinoutRequestPageState extends State<TenantmoveinoutRequest> with TickerProviderStateMixin {
+class _TenantAccessCardRequestPageState extends State<TenantAccessCardRequest> with TickerProviderStateMixin {
 
   String? selectedType; // To store the selec// ted dropdown value
   final List<String> request_type = [
-    'Move In',
-    'Move Out',
+    'Parking Card',
+    'Building Access Card',
   ];
 
   TextEditingController _remarksController = TextEditingController();
@@ -239,7 +239,7 @@ class _TenantmoveinoutRequestPageState extends State<TenantmoveinoutRequest> wit
               color: Colors.white,
             ),),
 
-          title: Text('Move In/Out',
+          title: Text('Access Card Request',
             style: TextStyle(
                 color: Colors.white
             ),),

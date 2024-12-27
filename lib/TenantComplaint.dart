@@ -113,8 +113,11 @@ class _TenantComplaintPageState extends State<TenantComplaint> with TickerProvid
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
 
-                        Card(
-                            surfaceTintColor: Colors.blueGrey,
+
+                        Card
+                          (
+                          color: Colors.white,
+                            surfaceTintColor: Colors.white,
                             elevation: 10,
                             margin: EdgeInsets.only(left: 20,right: 20, top: 20),
                             child:  Container(

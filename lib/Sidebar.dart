@@ -4,6 +4,7 @@ import 'package:cshrealestatemobile/AvailableUnitsReport.dart';
 import 'package:cshrealestatemobile/MaintenanceTicketReport.dart';
 import 'package:cshrealestatemobile/SalesDashboard.dart';
 import 'package:cshrealestatemobile/SalesInquiryReport.dart';
+import 'package:cshrealestatemobile/TenantAccessCardRequest.dart';
 import 'package:cshrealestatemobile/TenantComplaint.dart';
 import 'package:cshrealestatemobile/TenantProfile.dart';
 import 'package:cshrealestatemobile/TenantmoveinoutRequest.dart';
@@ -276,6 +277,20 @@ class Sidebar extends StatelessWidget {
                       context,
 
                       MaterialPageRoute(builder: (context) => TenantmoveinoutRequest()),          // navigate to users screen
+                    );
+                  }),
+
+              ListTile(
+                  title: Text('Tenant Access Card Request'),
+                  leading: Icon(Icons.vpn_key ,
+                    color: Colors.black,
+                  ),
+                  enabled: true,
+                  onTap: () {
+                    Navigator.pushReplacement(
+                      context,
+
+                      MaterialPageRoute(builder: (context) => TenantAccessCardRequest()),          // navigate to users screen
                     );
                   }),
 

@@ -115,7 +115,8 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
   List<String> followuptype_list = [
     'Email',
     'Phone Call',
-    'Whatsapp'
+    'Whatsapp',
+    'Social Media'
   ];
   final List<String> qualifiedStatusList = [
     'Closed',
@@ -825,678 +826,683 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
             ),
           ),
           SingleChildScrollView(
-            child: Column(
-              children: [
-                Container(
-                    width: double.infinity,
-                    margin: EdgeInsets.only(
-                      left: 20,
-                      top: 20,
-                      right: 30,
-                      bottom: 20,
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Follow Up Inquiry',
-                          textAlign: TextAlign.start,
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 30,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+            child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
 
-                        SizedBox(height: 5,),
-                        Text(
-                          'Follow up your sales inquiry',
-                          textAlign: TextAlign.start,
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 15,
-                            fontWeight: FontWeight.normal,
-                          ),
-                        ),
-                      ],
-                    )
                 ),
+              child: Column(
+                children: [
+                  Container(
+                      width: double.infinity,
+                      margin: EdgeInsets.only(
+                        left: 20,
+                        top: 20,
+                        right: 30,
+                        bottom: 20,
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Follow Up Inquiry',
+                            textAlign: TextAlign.start,
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 30,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
 
-                Container(
-                    height: MediaQuery.of(context).size.height,
-                    child:  Form(
-                        key: _formKey,
+                          SizedBox(height: 5,),
+                          Text(
+                            'Follow up your sales inquiry',
+                            textAlign: TextAlign.start,
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 15,
+                              fontWeight: FontWeight.normal,
+                            ),
+                          ),
+                        ],
+                      )
+                  ),
 
-                        child: ListView(
-                          /*physics: NeverScrollableScrollPhysics(),*/
+                  Container(
+                      height: MediaQuery.of(context).size.height,
+                      child:  Form(
+                          key: _formKey,
 
-                            children: [
-                              Container(
-                                margin: EdgeInsets.only( top:15,
-                                    bottom: 0,
-                                    left: 20,
-                                    right: 20),
-                                child: Row(
-                                  children: [
-                                    Text("Name:",
+                          child: ListView(
+                            /*physics: NeverScrollableScrollPhysics(),*/
+
+                              children: [
+                                Container(
+                                  margin: EdgeInsets.only( top:15,
+                                      bottom: 0,
+                                      left: 20,
+                                      right: 20),
+                                  child: Row(
+                                    children: [
+                                      Text("Name:",
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 16
+
+                                          )
+                                      ),
+                                      SizedBox(width: 2),
+                                      Text(
+                                        '*', // Red asterisk for required field
                                         style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 16
-
-                                        )
-                                    ),
-                                    SizedBox(width: 2),
-                                    Text(
-                                      '*', // Red asterisk for required field
-                                      style: TextStyle(
-                                        fontSize: 20,
-                                        color: Colors.red, // Red color for the asterisk
+                                          fontSize: 20,
+                                          color: Colors.red, // Red color for the asterisk
+                                        ),
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
-                              ),
 
-                              Padding(
+                                Padding(
 
-                                  padding: EdgeInsets.only(top:0,left: 20,right: 20,bottom: 0),
-                                  child: TextFormField(
-                                    controller: customernamecontroller,
-                                    keyboardType: TextInputType.name,
-                                    enabled: false,
-                                    validator: (value) {
-                                      if (value!.isEmpty) {
-                                        return 'Name is required';
-                                      }
-                                      return null;
-                                    },
-                                    decoration: InputDecoration(
-                                      hintText: 'Enter Name',
-                                      contentPadding: EdgeInsets.all(15),
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(10), // Set the border radius
-                                        borderSide: BorderSide(
-                                          color: Colors.black, // Set the border color
-                                        ),
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(10),
-                                        borderSide: BorderSide(
-                                          color:  Colors.black, // Set the focused border color
-                                        ),
-                                      ),
-                                    ),
-                                    onChanged: (value) {
-                                      setState(() {
-                                        _isFocus_name = true;
-                                        _isFocused_email = false;
-
-                                      });
-                                    },
-                                    onFieldSubmitted: (value) {
-                                      setState(() {
-                                        _isFocus_name = false;
-                                        _isFocused_email = false;
-                                      });
-                                    },
-                                    onTap: () {
-                                      setState(() {
-                                        _isFocus_name = true;
-                                        _isFocused_email = false;
-                                      });
-                                    },
-                                    onEditingComplete: () {
-                                      setState(() {
-                                        _isFocus_name = false;
-                                        _isFocused_email = false;
-                                      });
-                                    },
-
-                                  )),
-
-                              Container(
-                                margin: EdgeInsets.only( top:15,
-                                    bottom: 0,
-                                    left: 20,
-                                    right: 20),
-                                child: Row(
-                                  children: [
-                                    Text("Contact No.",
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 16
-
-                                        )
-                                    ),
-                                    SizedBox(width: 2),
-                                    Text(
-                                      '*', // Red asterisk for required field
-                                      style: TextStyle(
-                                        fontSize: 20,
-                                        color: Colors.red, // Red color for the asterisk
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-
-                              Padding(
-
-                                  padding: EdgeInsets.only(top:0,left: 20,right: 20,bottom: 0),
-
-                                  child: TextFormField(
-                                    controller: customercontactnocontroller,
-                                    enabled: false,
-                                    keyboardType: TextInputType.number,
-                                    validator: (value) {
-                                      if (value!.isEmpty) {
-                                        return 'Contact No. is required';
-                                      }
-
-                                      return null;
-                                    },
-                                    decoration: InputDecoration(
-                                      hintText: 'Enter Contact No',
-                                      contentPadding: EdgeInsets.all(15),
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(10), // Set the border radius
-                                        borderSide: BorderSide(
-                                          color: Colors.black, // Set the border color
-                                        ),
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(10),
-                                        borderSide: BorderSide(
-                                          color:  Colors.black, // Set the focused border color
-
-                                        ),
-                                      ),
-                                    ),
-                                    onChanged: (value) {
-                                      setState(() {
-                                        _isFocused_email = true;
-                                        _isFocus_name = false;
-                                      });
-                                    },
-                                    onFieldSubmitted: (value) {
-                                      setState(() {
-                                        _isFocused_email = false;
-                                        _isFocus_name = false;
-                                      });
-                                    },
-                                    onTap: () {
-                                      setState(() {
-                                        _isFocused_email = true;
-                                        _isFocus_name = false;
-
-                                      });
-                                    },
-                                    onEditingComplete: () {
-                                      setState(() {
-                                        _isFocused_email = false;
-                                        _isFocus_name = false;
-                                      });
-                                    },
-
-                                  )),
-
-                              Container(
-                                margin: EdgeInsets.only( top:15,
-                                    bottom: 0,
-                                    left: 20,
-                                    right: 20),
-                                child: Row(
-                                  children: [
-                                    Text("Email Address",
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 16
-
-                                        )
-                                    ),
-                                    SizedBox(width: 2),
-                                    Text(
-                                      '*', // Red asterisk for required field
-                                      style: TextStyle(
-                                        fontSize: 20,
-                                        color: Colors.red, // Red color for the asterisk
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-
-                              Padding(
-
-                                  padding: EdgeInsets.only(top:0,left: 20,right: 20,bottom: 0),
-                                  child: TextFormField(
-                                    controller: emailcontroller,
-                                    enabled: false,
-                                    keyboardType: TextInputType.emailAddress,
-                                    validator: (value) {
-                                      if (value!.isEmpty) {
-                                        return 'Email Address is required';
-                                      }
-                                      if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value))
-                                      {
-                                        return 'Please enter a valid email address';
-                                      }
-
-                                      return null;
-                                    },
-                                    decoration: InputDecoration(
-                                      hintText: 'Enter Email Address',
-                                      contentPadding: EdgeInsets.all(15),
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(10), // Set the border radius
-                                        borderSide: BorderSide(
-                                          color: Colors.black, // Set the border color
-                                        ),
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(10),
-                                        borderSide: BorderSide(
-                                          color:  Colors.black, // Set the focused border color
-
-                                        ),
-                                      ),
-                                    ),
-                                    onChanged: (value) {
-                                      setState(() {
-                                        _isFocused_email = true;
-                                        _isFocus_name = false;
-                                      });
-                                    },
-                                    onFieldSubmitted: (value) {
-                                      setState(() {
-                                        _isFocused_email = false;
-                                        _isFocus_name = false;
-                                      });
-                                    },
-                                    onTap: () {
-                                      setState(() {
-                                        _isFocused_email = true;
-                                        _isFocus_name = false;
-
-                                      });
-                                    },
-                                    onEditingComplete: () {
-                                      setState(() {
-                                        _isFocused_email = false;
-                                        _isFocus_name = false;
-                                      });
-                                    },
-
-                                  )),
-
-                              Container(
-                                child: Column(
-
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Padding(padding: EdgeInsets.only(top: 15,left:20),
-
-                                      child:Row(
-                                        children: [
-                                          Text("Next Follow-Up:",
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 16
-
-                                              )
+                                    padding: EdgeInsets.only(top:0,left: 20,right: 20,bottom: 0),
+                                    child: TextFormField(
+                                      controller: customernamecontroller,
+                                      keyboardType: TextInputType.name,
+                                      enabled: false,
+                                      validator: (value) {
+                                        if (value!.isEmpty) {
+                                          return 'Name is required';
+                                        }
+                                        return null;
+                                      },
+                                      decoration: InputDecoration(
+                                        hintText: 'Enter Name',
+                                        contentPadding: EdgeInsets.all(15),
+                                        border: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(10), // Set the border radius
+                                          borderSide: BorderSide(
+                                            color: Colors.black, // Set the border color
                                           ),
-                                          SizedBox(width: 2),
-                                          Text(
-                                            '*', // Red asterisk for required field
-                                            style: TextStyle(
-                                              fontSize: 20,
-                                              color: Colors.red, // Red color for the asterisk
+                                        ),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(10),
+                                          borderSide: BorderSide(
+                                            color:  Colors.black, // Set the focused border color
+                                          ),
+                                        ),
+                                      ),
+                                      onChanged: (value) {
+                                        setState(() {
+                                          _isFocus_name = true;
+                                          _isFocused_email = false;
+
+                                        });
+                                      },
+                                      onFieldSubmitted: (value) {
+                                        setState(() {
+                                          _isFocus_name = false;
+                                          _isFocused_email = false;
+                                        });
+                                      },
+                                      onTap: () {
+                                        setState(() {
+                                          _isFocus_name = true;
+                                          _isFocused_email = false;
+                                        });
+                                      },
+                                      onEditingComplete: () {
+                                        setState(() {
+                                          _isFocus_name = false;
+                                          _isFocused_email = false;
+                                        });
+                                      },
+
+                                    )),
+
+                                Container(
+                                  margin: EdgeInsets.only( top:15,
+                                      bottom: 0,
+                                      left: 20,
+                                      right: 20),
+                                  child: Row(
+                                    children: [
+                                      Text("Contact No.",
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 16
+
+                                          )
+                                      ),
+                                      SizedBox(width: 2),
+                                      Text(
+                                        '*', // Red asterisk for required field
+                                        style: TextStyle(
+                                          fontSize: 20,
+                                          color: Colors.red, // Red color for the asterisk
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+
+                                Padding(
+
+                                    padding: EdgeInsets.only(top:0,left: 20,right: 20,bottom: 0),
+
+                                    child: TextFormField(
+                                      controller: customercontactnocontroller,
+                                      enabled: false,
+                                      keyboardType: TextInputType.number,
+                                      validator: (value) {
+                                        if (value!.isEmpty) {
+                                          return 'Contact No. is required';
+                                        }
+
+                                        return null;
+                                      },
+                                      decoration: InputDecoration(
+                                        hintText: 'Enter Contact No',
+                                        contentPadding: EdgeInsets.all(15),
+                                        border: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(10), // Set the border radius
+                                          borderSide: BorderSide(
+                                            color: Colors.black, // Set the border color
+                                          ),
+                                        ),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(10),
+                                          borderSide: BorderSide(
+                                            color:  Colors.black, // Set the focused border color
+
+                                          ),
+                                        ),
+                                      ),
+                                      onChanged: (value) {
+                                        setState(() {
+                                          _isFocused_email = true;
+                                          _isFocus_name = false;
+                                        });
+                                      },
+                                      onFieldSubmitted: (value) {
+                                        setState(() {
+                                          _isFocused_email = false;
+                                          _isFocus_name = false;
+                                        });
+                                      },
+                                      onTap: () {
+                                        setState(() {
+                                          _isFocused_email = true;
+                                          _isFocus_name = false;
+
+                                        });
+                                      },
+                                      onEditingComplete: () {
+                                        setState(() {
+                                          _isFocused_email = false;
+                                          _isFocus_name = false;
+                                        });
+                                      },
+
+                                    )),
+
+                                Container(
+                                  margin: EdgeInsets.only( top:15,
+                                      bottom: 0,
+                                      left: 20,
+                                      right: 20),
+                                  child: Row(
+                                    children: [
+                                      Text("Email Address",
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 16
+
+                                          )
+                                      ),
+                                      SizedBox(width: 2),
+                                      Text(
+                                        '*', // Red asterisk for required field
+                                        style: TextStyle(
+                                          fontSize: 20,
+                                          color: Colors.red, // Red color for the asterisk
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+
+                                Padding(
+
+                                    padding: EdgeInsets.only(top:0,left: 20,right: 20,bottom: 0),
+                                    child: TextFormField(
+                                      controller: emailcontroller,
+                                      enabled: false,
+                                      keyboardType: TextInputType.emailAddress,
+                                      validator: (value) {
+                                        if (value!.isEmpty) {
+                                          return 'Email Address is required';
+                                        }
+                                        if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value))
+                                        {
+                                          return 'Please enter a valid email address';
+                                        }
+
+                                        return null;
+                                      },
+                                      decoration: InputDecoration(
+                                        hintText: 'Enter Email Address',
+                                        contentPadding: EdgeInsets.all(15),
+                                        border: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(10), // Set the border radius
+                                          borderSide: BorderSide(
+                                            color: Colors.black, // Set the border color
+                                          ),
+                                        ),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(10),
+                                          borderSide: BorderSide(
+                                            color:  Colors.black, // Set the focused border color
+
+                                          ),
+                                        ),
+                                      ),
+                                      onChanged: (value) {
+                                        setState(() {
+                                          _isFocused_email = true;
+                                          _isFocus_name = false;
+                                        });
+                                      },
+                                      onFieldSubmitted: (value) {
+                                        setState(() {
+                                          _isFocused_email = false;
+                                          _isFocus_name = false;
+                                        });
+                                      },
+                                      onTap: () {
+                                        setState(() {
+                                          _isFocused_email = true;
+                                          _isFocus_name = false;
+
+                                        });
+                                      },
+                                      onEditingComplete: () {
+                                        setState(() {
+                                          _isFocused_email = false;
+                                          _isFocus_name = false;
+                                        });
+                                      },
+
+                                    )),
+
+                                Container(
+                                  child: Column(
+
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Padding(padding: EdgeInsets.only(top: 15,left:20),
+
+                                        child:Row(
+                                          children: [
+                                            Text("Next Follow-Up:",
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 16
+
+                                                )
                                             ),
-                                          ),
-                                        ],
+                                            SizedBox(width: 2),
+                                            Text(
+                                              '*', // Red asterisk for required field
+                                              style: TextStyle(
+                                                fontSize: 20,
+                                                color: Colors.red, // Red color for the asterisk
+                                              ),
+                                            ),
+                                          ],
+                                        ),
                                       ),
-                                    ),
 
-                                    Padding(
-                                      padding: EdgeInsets.only(top: 0, left: 20, right: 20),
-                                      child: GestureDetector(
-                                        onTap: () async {
-                                          DateTime? pickedDate = await showDatePicker(
-                                            context: context,
+                                      Padding(
+                                        padding: EdgeInsets.only(top: 0, left: 20, right: 20),
+                                        child: GestureDetector(
+                                          onTap: () async {
+                                            DateTime? pickedDate = await showDatePicker(
+                                              context: context,
 
-                                            initialDate: nextFollowUpDate ?? DateTime.now(),
-                                            firstDate: DateTime.now(), // Restrict past dates
-                                            lastDate: DateTime(2100),
-                                            builder: (BuildContext context, Widget? child) {
-                                              return Theme(
-                                                data: ThemeData.light().copyWith(
-                                                  colorScheme: ColorScheme.light(
-                                                    primary: Colors.blueGrey, // Header background and selected date color
-                                                    onPrimary: Colors.white, // Header text color
-                                                    onSurface: Colors.blueGrey, // Calendar text color
-                                                  ),
-                                                  textButtonTheme: TextButtonThemeData(
-                                                    style: TextButton.styleFrom(
-                                                      foregroundColor: Colors.blueGrey, // Button text color
+                                              initialDate: nextFollowUpDate ?? DateTime.now(),
+                                              firstDate: DateTime.now(), // Restrict past dates
+                                              lastDate: DateTime(2100),
+                                              builder: (BuildContext context, Widget? child) {
+                                                return Theme(
+                                                  data: ThemeData.light().copyWith(
+                                                    colorScheme: ColorScheme.light(
+                                                      primary: Colors.blueGrey, // Header background and selected date color
+                                                      onPrimary: Colors.white, // Header text color
+                                                      onSurface: Colors.blueGrey, // Calendar text color
+                                                    ),
+                                                    textButtonTheme: TextButtonThemeData(
+                                                      style: TextButton.styleFrom(
+                                                        foregroundColor: Colors.blueGrey, // Button text color
+                                                      ),
                                                     ),
                                                   ),
-                                                ),
-                                                child: child!,
-                                              );
-                                            },
-                                          );
+                                                  child: child!,
+                                                );
+                                              },
+                                            );
 
-                                          if (pickedDate != null) {
-                                            setState(() {
-                                              nextFollowUpDate = pickedDate; // Save selected date
-                                            });
-                                          }
-                                        },
-                                        child: Container(
-                                          padding: EdgeInsets.symmetric(vertical: 15, horizontal: 10),
-                                          decoration: BoxDecoration(
-                                            border: Border.all(color: Colors.black),
-                                            borderRadius: BorderRadius.circular(10),
-                                          ),
-                                          child: Row(
-                                            mainAxisAlignment: MainAxisAlignment.start,
-                                            children: [
-                                              Icon(Icons.calendar_today, color: Colors.grey),
-                                              SizedBox(width: 10,),
-                                              Text(
-                                                nextFollowUpDate != null
-                                                    ? "${nextFollowUpDate!.day}-${nextFollowUpDate!.month}-${nextFollowUpDate!.year}"
-                                                    : "Select Next Follow-Up Date",
-                                                style: TextStyle(fontSize: 16, color: Colors.black54),
-                                              ),
-
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-
-
-                                  ],
-                                ),
-                              ), // next follow up date
-
-                              Container(
-                                child: Column(
-
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Padding(padding: EdgeInsets.only(top: 15,left:20),
-
-                                      child:Row(
-                                        children: [
-                                          Text("Follow-Up Type:",
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 16
-
-                                              )
-                                          ),
-                                          SizedBox(width: 2),
-                                          Text(
-                                            '*', // Red asterisk for required field
-                                            style: TextStyle(
-                                              fontSize: 20,
-                                              color: Colors.red, // Red color for the asterisk
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-
-                                    Padding(
-                                      padding: EdgeInsets.only(top:0,left:20,right:20,bottom :0),
-
-                                      child: DropdownButtonFormField<dynamic>(
-                                        decoration: InputDecoration(
-
-                                          border: OutlineInputBorder(
-                                            borderSide: BorderSide(color: Colors.black),
-                                            borderRadius: BorderRadius.circular(10.0),
-                                          ),
-                                          focusedBorder: OutlineInputBorder(
-                                            borderSide: BorderSide(color: appbar_color),
-                                            borderRadius: BorderRadius.circular(10.0),
-                                          ),
-                                          enabledBorder: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(10.0),
-                                            borderSide: BorderSide(color: Colors.black),
-                                          ),
-                                          contentPadding: EdgeInsets.symmetric(horizontal: 10),
-                                        ),
-
-
-                                        hint: Text('Select Follow-Up Type'), // Add a hint
-                                        value: selectedfollowup_type,
-                                        items: followuptype_list.map((item) {
-                                          return DropdownMenuItem<dynamic>(
-                                            value: item,
-                                            child: Text(item),
-                                          );
-                                        }).toList(),
-                                        onChanged: (value) async {
-                                          selectedfollowup_type = value!;
-                                        },
-
-                                        onTap: ()
-                                        {
-                                          setState(() {
-                                            _isFocused_email = false;
-                                            _isFocus_name = false;
-                                          });
-
-                                        },
-
-                                        validator: (value) {
-                                          if (value == null || value.isEmpty) {
-                                            return 'Follow-Up Type is required'; // Error message
-                                          }
-                                          return null; // No error if a value is selected
-                                        },
-                                      ),
-                                    ),
-
-
-                                  ],
-                                ),
-                              ), // follow up type
-
-                              Container(
-                                child: Column(
-
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Padding(padding: EdgeInsets.only(top: 15,left:20),
-
-                                      child:Row(
-                                        children: [
-                                          Text("Status:",
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 16
-
-                                              )
-                                          ),
-                                          SizedBox(width: 2),
-                                          Text(
-                                            '*', // Red asterisk for required field
-                                            style: TextStyle(
-                                              fontSize: 20,
-                                              color: Colors.red, // Red color for the asterisk
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-
-                                    Padding(
-                                      padding: EdgeInsets.only(top:0,left:20,right:20,bottom :0),
-
-                                      child: Column(
-                                        mainAxisAlignment: MainAxisAlignment.start,
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          // Switch for isQualified
-                                          Row(
-                                            mainAxisAlignment: MainAxisAlignment.start,
-                                            crossAxisAlignment: CrossAxisAlignment.center,
-                                            children: [
-                                              Text('is Qualified:', style: TextStyle(fontSize: 14,fontWeight: FontWeight.bold)),
-                                              Transform.scale(
-                                                scale: 1.0,
-                                                child: Switch(
-                                                  value: isQualified,
-                                                  activeColor: Colors.blueGrey,
-                                                  inactiveThumbColor: Colors.grey,
-                                                  inactiveTrackColor: Colors.white,
-                                                  onChanged: (value) {
-                                                    setState(() {
-                                                      isQualified = value;
-                                                      selectedfollowup_status = null; // Reset dropdown value
-                                                    });
-                                                  },
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                          SizedBox(height: 10), // Spacing between dropdown and switch
-
-                                          DropdownButtonFormField<String>(
-                                            value: selectedfollowup_status,
-                                            decoration: InputDecoration(
-                                              hintText: 'Select Status',
-                                              border: OutlineInputBorder(
-                                                borderSide: BorderSide(color: Colors.black),
-                                                borderRadius: BorderRadius.circular(10.0),
-                                              ),
-                                              focusedBorder: OutlineInputBorder(
-                                                borderSide: BorderSide(color: appbar_color),
-                                                borderRadius: BorderRadius.circular(10.0),
-                                              ),
-                                              enabledBorder: OutlineInputBorder(
-                                                borderRadius: BorderRadius.circular(10.0),
-                                                borderSide: BorderSide(color: Colors.black),
-                                              ),
-                                              contentPadding: EdgeInsets.symmetric(horizontal: 10),
-
-                                            ),
-                                            validator: (value) {
-                                              if (value == null || value.isEmpty) {
-                                                return 'Status is required'; // Error message
-                                              }
-                                              return null; // No error if a value is selected
-                                            },
-                                            dropdownColor: Colors.white,
-                                            icon: Icon(Icons.arrow_drop_down, color: Colors.blueGrey),
-                                            items: (isQualified
-                                                ? qualifiedStatusList
-                                                : followupstatus_list)
-                                                .map((status) => DropdownMenuItem<String>(
-                                              value: status,
-                                              child: Text(
-                                                status,
-                                                style: TextStyle(color: Colors.black87),
-                                              ),
-                                            ))
-                                                .toList(),
-                                            onChanged: (value) {
+                                            if (pickedDate != null) {
                                               setState(() {
-                                                selectedfollowup_status = value;
+                                                nextFollowUpDate = pickedDate; // Save selected date
                                               });
-                                            },
+                                            }
+                                          },
+                                          child: Container(
+                                            padding: EdgeInsets.symmetric(vertical: 15, horizontal: 10),
+                                            decoration: BoxDecoration(
+                                              border: Border.all(color: Colors.black),
+                                              borderRadius: BorderRadius.circular(10),
+                                            ),
+                                            child: Row(
+                                              mainAxisAlignment: MainAxisAlignment.start,
+                                              children: [
+                                                Icon(Icons.calendar_today, color: Colors.grey),
+                                                SizedBox(width: 10,),
+                                                Text(
+                                                  nextFollowUpDate != null
+                                                      ? "${nextFollowUpDate!.day}-${nextFollowUpDate!.month}-${nextFollowUpDate!.year}"
+                                                      : "Select Next Follow-Up Date",
+                                                  style: TextStyle(fontSize: 16, color: Colors.black54),
+                                                ),
+
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+
+
+                                    ],
+                                  ),
+                                ), // next follow up date
+
+                                Container(
+                                  child: Column(
+
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Padding(padding: EdgeInsets.only(top: 15,left:20),
+
+                                        child:Row(
+                                          children: [
+                                            Text("Follow-Up Type:",
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 16
+
+                                                )
+                                            ),
+                                            SizedBox(width: 2),
+                                            Text(
+                                              '*', // Red asterisk for required field
+                                              style: TextStyle(
+                                                fontSize: 20,
+                                                color: Colors.red, // Red color for the asterisk
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+
+                                      Padding(
+                                        padding: EdgeInsets.only(top:0,left:20,right:20,bottom :0),
+
+                                        child: DropdownButtonFormField<dynamic>(
+                                          decoration: InputDecoration(
+
+                                            border: OutlineInputBorder(
+                                              borderSide: BorderSide(color: Colors.black),
+                                              borderRadius: BorderRadius.circular(10.0),
+                                            ),
+                                            focusedBorder: OutlineInputBorder(
+                                              borderSide: BorderSide(color: appbar_color),
+                                              borderRadius: BorderRadius.circular(10.0),
+                                            ),
+                                            enabledBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(10.0),
+                                              borderSide: BorderSide(color: Colors.black),
+                                            ),
+                                            contentPadding: EdgeInsets.symmetric(horizontal: 10),
                                           ),
 
-                                        ],
+
+                                          hint: Text('Select Follow-Up Type'), // Add a hint
+                                          value: selectedfollowup_type,
+                                          items: followuptype_list.map((item) {
+                                            return DropdownMenuItem<dynamic>(
+                                              value: item,
+                                              child: Text(item),
+                                            );
+                                          }).toList(),
+                                          onChanged: (value) async {
+                                            selectedfollowup_type = value!;
+                                          },
+
+                                          onTap: ()
+                                          {
+                                            setState(() {
+                                              _isFocused_email = false;
+                                              _isFocus_name = false;
+                                            });
+
+                                          },
+
+                                          validator: (value) {
+                                            if (value == null || value.isEmpty) {
+                                              return 'Follow-Up Type is required'; // Error message
+                                            }
+                                            return null; // No error if a value is selected
+                                          },
+                                        ),
                                       ),
 
 
-
-
+                                    ],
                                   ),
-                                ]),
-                              ),
+                                ), // follow up type
+
+                                Container(
+                                  child: Column(
+
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Padding(padding: EdgeInsets.only(top: 15,left:20),
+
+                                          child:Row(
+                                            children: [
+                                              Text("Status:",
+                                                  style: TextStyle(
+                                                      fontWeight: FontWeight.bold,
+                                                      fontSize: 16
+
+                                                  )
+                                              ),
+                                              SizedBox(width: 2),
+                                              Text(
+                                                '*', // Red asterisk for required field
+                                                style: TextStyle(
+                                                  fontSize: 20,
+                                                  color: Colors.red, // Red color for the asterisk
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+
+                                        Padding(
+                                          padding: EdgeInsets.only(top:0,left:20,right:20,bottom :0),
+
+                                          child: Column(
+                                            mainAxisAlignment: MainAxisAlignment.start,
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              // Switch for isQualified
+                                              Row(
+                                                mainAxisAlignment: MainAxisAlignment.start,
+                                                crossAxisAlignment: CrossAxisAlignment.center,
+                                                children: [
+                                                  Text('is Qualified:', style: TextStyle(fontSize: 14,fontWeight: FontWeight.bold)),
+                                                  Transform.scale(
+                                                    scale: 1.0,
+                                                    child: Switch(
+                                                      value: isQualified,
+                                                      activeColor: Colors.blueGrey,
+                                                      inactiveThumbColor: Colors.grey,
+                                                      inactiveTrackColor: Colors.white,
+                                                      onChanged: (value) {
+                                                        setState(() {
+                                                          isQualified = value;
+                                                          selectedfollowup_status = null; // Reset dropdown value
+                                                        });
+                                                      },
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              SizedBox(height: 10), // Spacing between dropdown and switch
+
+                                              DropdownButtonFormField<String>(
+                                                value: selectedfollowup_status,
+                                                decoration: InputDecoration(
+                                                  hintText: 'Select Status',
+                                                  border: OutlineInputBorder(
+                                                    borderSide: BorderSide(color: Colors.black),
+                                                    borderRadius: BorderRadius.circular(10.0),
+                                                  ),
+                                                  focusedBorder: OutlineInputBorder(
+                                                    borderSide: BorderSide(color: appbar_color),
+                                                    borderRadius: BorderRadius.circular(10.0),
+                                                  ),
+                                                  enabledBorder: OutlineInputBorder(
+                                                    borderRadius: BorderRadius.circular(10.0),
+                                                    borderSide: BorderSide(color: Colors.black),
+                                                  ),
+                                                  contentPadding: EdgeInsets.symmetric(horizontal: 10),
+
+                                                ),
+                                                validator: (value) {
+                                                  if (value == null || value.isEmpty) {
+                                                    return 'Status is required'; // Error message
+                                                  }
+                                                  return null; // No error if a value is selected
+                                                },
+                                                dropdownColor: Colors.white,
+                                                icon: Icon(Icons.arrow_drop_down, color: Colors.blueGrey),
+                                                items: (isQualified
+                                                    ? qualifiedStatusList
+                                                    : followupstatus_list)
+                                                    .map((status) => DropdownMenuItem<String>(
+                                                  value: status,
+                                                  child: Text(
+                                                    status,
+                                                    style: TextStyle(color: Colors.black87),
+                                                  ),
+                                                ))
+                                                    .toList(),
+                                                onChanged: (value) {
+                                                  setState(() {
+                                                    selectedfollowup_status = value;
+                                                  });
+                                                },
+                                              ),
+
+                                            ],
+                                          ),
 
 
 
-                              Container(
-                                margin: EdgeInsets.only( top:15,
-                                    bottom: 0,
-                                    left: 20,
-                                    right: 20),
-                                child: Row(
-                                  children: [
-                                    Text("Unit Type:",
+
+                                        ),
+                                      ]),
+                                ),
+
+
+
+                                Container(
+                                  margin: EdgeInsets.only( top:15,
+                                      bottom: 0,
+                                      left: 20,
+                                      right: 20),
+                                  child: Row(
+                                    children: [
+                                      Text("Unit Type:",
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 16
+
+                                          )
+                                      ),
+                                      SizedBox(width: 2),
+                                      Text(
+                                        '*', // Red asterisk for required field
                                         style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 16
+                                          fontSize: 20,
+                                          color: Colors.red, // Red color for the asterisk
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),  // unit type
 
-                                        )
+                                Padding(
+                                  padding: EdgeInsets.only(top: 0, left: 20, right: 20, bottom: 0),
+                                  child: GestureDetector(
+                                    onTap: () => _openUnitTypeDropdown(context), // Open the custom dropdown
+                                    child: TextFormField(
+                                      controller: TextEditingController(text: selectedUnitType),
+                                      decoration: InputDecoration(
+                                        hintText: 'Select Unit Type(s)',
+                                        contentPadding: EdgeInsets.all(15),
+                                        fillColor: isUnitSelected ? Colors.transparent : Colors.transparent, // Set to black if selected
+                                        filled: true, // Ensure the field is filled but transparent or black based on isSelected
+                                        border: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(10),
+                                          borderSide: BorderSide(color: Colors.black), // Black border
+                                        ),
+                                        enabledBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(10),
+                                          borderSide: BorderSide(color: Colors.black), // Black border when enabled
+                                        ),
+                                        disabledBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(10),
+                                          borderSide: BorderSide(color: Colors.black), // Black border when disabled
+                                        ),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(10),
+                                          borderSide: BorderSide(color: Colors.black), // Black focused border
+                                        ),
+                                        labelStyle: TextStyle(color: Colors.black),
+                                        hintStyle: TextStyle(color: Colors.black), // Hint text color (white for better contrast)
+                                      ),
+
+
+
+                                      enabled: false, //// Disable direct editing
+                                      validator: (value) {
+                                        // If no unit type is selected, show error
+                                        bool isAnySelected = unitTypes.any((unit) => unit['isSelected']);
+                                        if (!isAnySelected) {
+                                          return 'Unit type is required';
+                                        }
+                                        return null; // No error
+                                      },
                                     ),
-                                    SizedBox(width: 2),
-                                    Text(
-                                      '*', // Red asterisk for required field
-                                      style: TextStyle(
-                                        fontSize: 20,
-                                        color: Colors.red, // Red color for the asterisk
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),  // unit type
-
-                              Padding(
-                                padding: EdgeInsets.only(top: 0, left: 20, right: 20, bottom: 0),
-                                child: GestureDetector(
-                                  onTap: () => _openUnitTypeDropdown(context), // Open the custom dropdown
-                                  child: TextFormField(
-                                    controller: TextEditingController(text: selectedUnitType),
-                                    decoration: InputDecoration(
-                                      hintText: 'Select Unit Type(s)',
-                                      contentPadding: EdgeInsets.all(15),
-                                      fillColor: isUnitSelected ? Colors.transparent : Colors.transparent, // Set to black if selected
-                                      filled: true, // Ensure the field is filled but transparent or black based on isSelected
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(10),
-                                        borderSide: BorderSide(color: Colors.black), // Black border
-                                      ),
-                                      enabledBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(10),
-                                        borderSide: BorderSide(color: Colors.black), // Black border when enabled
-                                      ),
-                                      disabledBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(10),
-                                        borderSide: BorderSide(color: Colors.black), // Black border when disabled
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(10),
-                                        borderSide: BorderSide(color: Colors.black), // Black focused border
-                                      ),
-                                      labelStyle: TextStyle(color: Colors.black),
-                                      hintStyle: TextStyle(color: Colors.black), // Hint text color (white for better contrast)
-                                    ),
-
-
-
-                                    enabled: false, //// Disable direct editing
-                                    validator: (value) {
-                                      // If no unit type is selected, show error
-                                      bool isAnySelected = unitTypes.any((unit) => unit['isSelected']);
-                                      if (!isAnySelected) {
-                                        return 'Unit type is required';
-                                      }
-                                      return null; // No error
-                                    },
                                   ),
                                 ),
-                              ),
 
-                              /*Padding(padding: EdgeInsets.only(top:0,left: 20,right: 20,bottom: 0),
+                                /*Padding(padding: EdgeInsets.only(top:0,left: 20,right: 20,bottom: 0),
 
                                     child: TextFormField(
                                       controller: unittypecontroller,
@@ -1557,78 +1563,78 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
 
                                 ),*/
 
-                              Container(
-                                child: Column(
+                                Container(
+                                  child: Column(
 
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Padding(padding: EdgeInsets.only(top: 15,left:20),
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Padding(padding: EdgeInsets.only(top: 15,left:20),
 
-                                      child:Row(
-                                        children: [
-                                          Text("Select Emirate:",
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 16
+                                        child:Row(
+                                          children: [
+                                            Text("Select Emirate:",
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 16
 
-                                              )
-                                          ),
-                                          SizedBox(width: 2),
-                                          Text(
-                                            '*', // Red asterisk for required field
-                                            style: TextStyle(
-                                              fontSize: 20,
-                                              color: Colors.red, // Red color for the asterisk
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-
-                                    Padding(
-                                      padding: EdgeInsets.only(top: 0, left: 20, right: 20, bottom: 0),
-                                      child: GestureDetector(
-                                        onTap: () => _openEmirateDropdown(context), // Open the custom dropdown
-                                        child: Container(
-                                          width: double.infinity, // Make the container expand to full width
-                                          padding: EdgeInsets.all(15),
-                                          decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.circular(10),
-                                            color: Colors.transparent, // Set it to transparent
-                                            border: Border.all(color: Colors.black), // Black border
-                                          ),
-                                          child: Row(
-                                            mainAxisAlignment: MainAxisAlignment.spaceBetween, // Space between text and icon
-                                            children: [
-                                              // Column to display selected emirates
-                                              Expanded(
-                                                child: selectedEmirates.isNotEmpty
-                                                    ? Column(
-                                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                                  children: selectedEmirates.split(', ').map((emirate) {
-                                                    return Text(
-                                                      emirate, // Display each emirate on a new line
-                                                      style: TextStyle(fontSize: 16, color: Colors.grey),
-                                                    );
-                                                  }).toList(),
                                                 )
-                                                    : Text(
-                                                  'Select Emirate', // Placeholder text when no emirates are selected
-                                                  style: TextStyle(fontSize: 16, color: Colors.grey),
-                                                ),
+                                            ),
+                                            SizedBox(width: 2),
+                                            Text(
+                                              '*', // Red asterisk for required field
+                                              style: TextStyle(
+                                                fontSize: 20,
+                                                color: Colors.red, // Red color for the asterisk
                                               ),
-                                              // Down arrow icon
-                                              Icon(
-                                                Icons.arrow_drop_down,
-                                                color: Colors.blueGrey, // Adjust the color of the arrow
-                                              ),
-                                            ],
-                                          ),
+                                            ),
+                                          ],
                                         ),
                                       ),
-                                    )
 
-                                    /*Padding(
+                                      Padding(
+                                        padding: EdgeInsets.only(top: 0, left: 20, right: 20, bottom: 0),
+                                        child: GestureDetector(
+                                          onTap: () => _openEmirateDropdown(context), // Open the custom dropdown
+                                          child: Container(
+                                            width: double.infinity, // Make the container expand to full width
+                                            padding: EdgeInsets.all(15),
+                                            decoration: BoxDecoration(
+                                              borderRadius: BorderRadius.circular(10),
+                                              color: Colors.transparent, // Set it to transparent
+                                              border: Border.all(color: Colors.black), // Black border
+                                            ),
+                                            child: Row(
+                                              mainAxisAlignment: MainAxisAlignment.spaceBetween, // Space between text and icon
+                                              children: [
+                                                // Column to display selected emirates
+                                                Expanded(
+                                                  child: selectedEmirates.isNotEmpty
+                                                      ? Column(
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                    children: selectedEmirates.split(', ').map((emirate) {
+                                                      return Text(
+                                                        emirate, // Display each emirate on a new line
+                                                        style: TextStyle(fontSize: 16, color: Colors.grey),
+                                                      );
+                                                    }).toList(),
+                                                  )
+                                                      : Text(
+                                                    'Select Emirate', // Placeholder text when no emirates are selected
+                                                    style: TextStyle(fontSize: 16, color: Colors.grey),
+                                                  ),
+                                                ),
+                                                // Down arrow icon
+                                                Icon(
+                                                  Icons.arrow_drop_down,
+                                                  color: Colors.blueGrey, // Adjust the color of the arrow
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      )
+
+                                      /*Padding(
                                         padding: EdgeInsets.only(top:0,left:20,right:20,bottom :0),
 
                                         child: DropdownButtonFormField<dynamic>(
@@ -1678,68 +1684,68 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                         ),
                                       ),*/
 
-                                  ],
+                                    ],
+                                  ),
                                 ),
-                              ),
 
-                              Container(
-                                margin: EdgeInsets.only( top:15,
-                                    bottom: 0,
-                                    left: 20,
-                                    right: 20),
-                                child: Row(
-                                  children: [
-                                    Text("Area:",
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 16
+                                Container(
+                                  margin: EdgeInsets.only( top:15,
+                                      bottom: 0,
+                                      left: 20,
+                                      right: 20),
+                                  child: Row(
+                                    children: [
+                                      Text("Area:",
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 16
 
-                                        )
-                                    ),
-                                    SizedBox(width: 2),
-                                    Text(
-                                      '*', // Red asterisk for required field
-                                      style: TextStyle(
-                                        fontSize: 20,
-                                        color: Colors.red, // Red color for the asterisk
+                                          )
                                       ),
-                                    ),
-                                  ],
+                                      SizedBox(width: 2),
+                                      Text(
+                                        '*', // Red asterisk for required field
+                                        style: TextStyle(
+                                          fontSize: 20,
+                                          color: Colors.red, // Red color for the asterisk
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ),
 
-                              Padding(
-                                padding: EdgeInsets.only(top: 0, left: 20, right: 20, bottom: 0),
-                                child: GestureDetector(
-                                  onTap: selectedEmiratesList.isNotEmpty
-                                      ? () => _openAreaDropdown(context) // Open the custom dropdown
-                                      : null, // Disable if no emirates are selected
-                                  child: Container(
-                                    padding: EdgeInsets.all(15),
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(10),
-                                      color: Colors.transparent, // Set it to transparent as per your requirement
-                                      border: Border.all(color: Colors.black), // Black border
-                                    ),
-                                    child: selectedAreasString.isNotEmpty
-                                        ? Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: selectedAreasString.split(', ').map((areaEmirate) {
-                                        return Text(
-                                          areaEmirate, // Display each area-emirate pair
-                                          style: TextStyle(fontSize: 16, color: Colors.grey), // Text style for readability
-                                        );
-                                      }).toList(),
-                                    )
-                                        : Text(
-                                      'Select Area(s)', // Placeholder text when no areas are selected
-                                      style: TextStyle(fontSize: 16, color: Colors.grey),
+                                Padding(
+                                  padding: EdgeInsets.only(top: 0, left: 20, right: 20, bottom: 0),
+                                  child: GestureDetector(
+                                    onTap: selectedEmiratesList.isNotEmpty
+                                        ? () => _openAreaDropdown(context) // Open the custom dropdown
+                                        : null, // Disable if no emirates are selected
+                                    child: Container(
+                                      padding: EdgeInsets.all(15),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(10),
+                                        color: Colors.transparent, // Set it to transparent as per your requirement
+                                        border: Border.all(color: Colors.black), // Black border
+                                      ),
+                                      child: selectedAreasString.isNotEmpty
+                                          ? Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: selectedAreasString.split(', ').map((areaEmirate) {
+                                          return Text(
+                                            areaEmirate, // Display each area-emirate pair
+                                            style: TextStyle(fontSize: 16, color: Colors.grey), // Text style for readability
+                                          );
+                                        }).toList(),
+                                      )
+                                          : Text(
+                                        'Select Area(s)', // Placeholder text when no areas are selected
+                                        style: TextStyle(fontSize: 16, color: Colors.grey),
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
 
-                              /*Padding(padding: EdgeInsets.only(top:0,left: 20,right: 20,bottom: 0),
+                                /*Padding(padding: EdgeInsets.only(top:0,left: 20,right: 20,bottom: 0),
 
                                     child: TextFormField(
                                       controller: areacontroller,
@@ -1801,7 +1807,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                 ),*/
 
 
-                              /*Container(
+                                /*Container(
                                 child: Column(
 
                                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -1886,204 +1892,207 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                 ),
                               ),*/
 
-                              Container(
-                                margin: EdgeInsets.only( top:15,
-                                    bottom: 0,
-                                    left: 20,
-                                    right: 20),
-                                child: Row(
-                                  children: [
-                                    Text("Follow-Up Remarks:",
+                                Container(
+                                  margin: EdgeInsets.only( top:15,
+                                      bottom: 0,
+                                      left: 20,
+                                      right: 20),
+                                  child: Row(
+                                    children: [
+                                      Text("Follow-Up Remarks:",
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 16
+
+                                          )
+                                      ),
+                                      SizedBox(width: 2),
+                                      Text(
+                                        '*', // Red asterisk for required field
                                         style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 16
-
-                                        )
-                                    ),
-                                    SizedBox(width: 2),
-                                    Text(
-                                      '*', // Red asterisk for required field
-                                      style: TextStyle(
-                                        fontSize: 20,
-                                        color: Colors.red, // Red color for the asterisk
+                                          fontSize: 20,
+                                          color: Colors.red, // Red color for the asterisk
+                                        ),
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
-                              ),
 
-                              Padding(padding: EdgeInsets.only(top:0,left: 20,right: 20,bottom: 0),
+                                Padding(padding: EdgeInsets.only(top:0,left: 20,right: 20,bottom: 0),
 
-                                  child: TextFormField(
-                                    controller: remarksController,
-                                    keyboardType: TextInputType.multiline,
-                                    maxLength: 500, // Limit input to 500 characters
-                                    validator: (value) {
-                                      if (value!.isEmpty) {
-                                        return 'Remarks are required';
-                                      }
-                                      return null;
-                                    },
-                                    decoration: InputDecoration(
-                                      hintText: 'Enter Remarks',
-                                      contentPadding: EdgeInsets.all(15),
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(10), // Set the border radius
-                                        borderSide: BorderSide(
-                                          color: Colors.black, // Set the border color
+                                    child: TextFormField(
+                                      controller: remarksController,
+                                      keyboardType: TextInputType.multiline,
+                                      maxLength: 500, // Limit input to 500 characters
+                                      maxLines: 3,
+                                      validator: (value) {
+                                        if (value!.isEmpty) {
+                                          return 'Remarks are required';
+                                        }
+                                        return null;
+                                      },
+                                      decoration: InputDecoration(
+                                        hintText: 'Enter Remarks',
+                                        contentPadding: EdgeInsets.all(15),
+                                        border: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(10), // Set the border radius
+                                          borderSide: BorderSide(
+                                            color: Colors.black, // Set the border color
+                                          ),
+                                        ),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(10),
+                                          borderSide: BorderSide(
+                                            color:  Colors.black, // Set the focused border color
+                                          ),
+                                        ),
+                                        labelStyle: TextStyle(
+                                          color: Colors.black,
                                         ),
                                       ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(10),
-                                        borderSide: BorderSide(
-                                          color:  Colors.black, // Set the focused border color
-                                        ),
-                                      ),
-                                      labelStyle: TextStyle(
-                                        color: Colors.black,
-                                      ),
-                                    ),
-                                    onChanged: (value) {
-                                      setState(() {
-                                        _isFocus_name = false;
-                                        _isFocused_email = false;
-                                      });
-                                    },
-                                    onFieldSubmitted: (value) {
-                                      setState(() {
-                                        _isFocus_name = false;
-                                        _isFocused_email = false;
-                                      });
-                                    },
-                                    onTap: () {
-                                      setState(() {
-                                        _isFocus_name = false;
-                                        _isFocused_email = false;
-                                      });
-                                    },
-                                    onEditingComplete: () {
-                                      setState(() {
-                                        _isFocus_name = false;
-                                        _isFocused_email = false;
-                                      });
-                                    },
-                                  )
-                              ),
+                                      onChanged: (value) {
+                                        setState(() {
+                                          _isFocus_name = false;
+                                          _isFocused_email = false;
+                                        });
+                                      },
+                                      onFieldSubmitted: (value) {
+                                        setState(() {
+                                          _isFocus_name = false;
+                                          _isFocused_email = false;
+                                        });
+                                      },
+                                      onTap: () {
+                                        setState(() {
+                                          _isFocus_name = false;
+                                          _isFocused_email = false;
+                                        });
+                                      },
+                                      onEditingComplete: () {
+                                        setState(() {
+                                          _isFocus_name = false;
+                                          _isFocused_email = false;
+                                        });
+                                      },
+                                    )
+                                ),
 
-                              Padding(padding: EdgeInsets.only(left: 20,right: 20,top: 40,bottom: 50),
-                                child: Container(
-                                    child: Row(
-                                      mainAxisAlignment:MainAxisAlignment.center,
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      children: [
-                                        ElevatedButton(
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor: Colors.white, // Button background color
-                                            foregroundColor: Colors.black,
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(5), // Rounded corners
-                                              side: BorderSide(
-                                                color: Colors.grey, // Border color
-                                                width: 0.5, // Border width
+                                Padding(padding: EdgeInsets.only(left: 20,right: 20,top: 40,bottom: 50),
+                                  child: Container(
+                                      child: Row(
+                                        mainAxisAlignment:MainAxisAlignment.center,
+                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        children: [
+                                          ElevatedButton(
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor: Colors.white, // Button background color
+                                              foregroundColor: Colors.black,
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.circular(5), // Rounded corners
+                                                side: BorderSide(
+                                                  color: Colors.grey, // Border color
+                                                  width: 0.5, // Border width
+                                                ),
                                               ),
                                             ),
-                                          ),
-                                          onPressed: () {
-                                            setState(() {
-
-                                              _formKey.currentState?.reset();
-                                              selectedfollowup_type = followuptype_list.first;
-
-                                              /*print(_selectedrole['role_name']);*/
-
-                                              for (var emirate in emirates) {
-                                                emirate['isSelected'] = false;
-                                              }
-
-                                              // If no emirates are selected, clear all areas
-                                              if (emirates.every((emirate) => !emirate['isSelected'])) {
-
-                                                selectedAreas.clear();
-                                                selectedAreasString = "Select Area";
-
-                                                // Reset all area states
-                                                areas.forEach((key, areaList) {
-                                                  for (var area in areaList) {
-                                                    area['isSelected'] = false;
-                                                  }
-                                                });
-                                              }
-
-                                              isAllEmiratesSelected = false;
-
-                                              // Update the selected Emirates text field
-                                              selectedEmirates = emirates
-                                                  .where((emirate) => emirate['isSelected'])
-                                                  .map((emirate) => emirate['label'])
-                                                  .join(', ') ?? "Select Emirate";
-
-                                              selectedEmiratesList.clear();
-
-                                              updateSelectedAreasString();
-
-                                              for (var unit in unitTypes) {
-                                                unit['isSelected'] = false;
-                                              }
-
-                                              selectedUnitType = "Select Unit Types";  // Reset if no selection
-                                              isUnitSelected = false;  // Mark as not selected
-
-                                              selectedfollowup_status = null;
-                                              nextFollowUpDate = null;
-                                              selectedfollowup_type = null;
-                                              isQualified = false;
-
-
-
-
-                                              /*updateEmiratesSelection();  // Update Emirates selection text*/
-                                              remarksController.clear();
-
-                                            });
-                                          },
-                                          child: Text('Clear'),
-                                        ),
-
-                                        SizedBox(width: 20,),
-                                        ElevatedButton(
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor: appbar_color, // Button background color
-                                            foregroundColor: Colors.white,
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(5), // Rounded corners
-                                              side: BorderSide(
-                                                color: Colors.grey, // Border color
-                                                width: 0.5, // Border width
-                                              ),
-                                            ),
-                                          ),
-                                          onPressed: () {
-
-                                            if (_formKey.currentState != null &&
-                                                _formKey.currentState!.validate()) {
-                                              _formKey.currentState!.save();
-
+                                            onPressed: () {
                                               setState(() {
-                                                _isFocused_email = false;
-                                                _isFocus_name = false;
+
+                                                _formKey.currentState?.reset();
+                                                selectedfollowup_type = followuptype_list.first;
+
+                                                /*print(_selectedrole['role_name']);*/
+
+                                                for (var emirate in emirates) {
+                                                  emirate['isSelected'] = false;
+                                                }
+
+                                                // If no emirates are selected, clear all areas
+                                                if (emirates.every((emirate) => !emirate['isSelected'])) {
+
+                                                  selectedAreas.clear();
+                                                  selectedAreasString = "Select Area";
+
+                                                  // Reset all area states
+                                                  areas.forEach((key, areaList) {
+                                                    for (var area in areaList) {
+                                                      area['isSelected'] = false;
+                                                    }
+                                                  });
+                                                }
+
+                                                isAllEmiratesSelected = false;
+
+                                                // Update the selected Emirates text field
+                                                selectedEmirates = emirates
+                                                    .where((emirate) => emirate['isSelected'])
+                                                    .map((emirate) => emirate['label'])
+                                                    .join(', ') ?? "Select Emirate";
+
+                                                selectedEmiratesList.clear();
+
+                                                updateSelectedAreasString();
+
+                                                for (var unit in unitTypes) {
+                                                  unit['isSelected'] = false;
+                                                }
+
+                                                selectedUnitType = "Select Unit Types";  // Reset if no selection
+                                                isUnitSelected = false;  // Mark as not selected
+
+                                                selectedfollowup_status = null;
+                                                nextFollowUpDate = null;
+                                                selectedfollowup_type = null;
+                                                isQualified = false;
+
+
+
+
+                                                /*updateEmiratesSelection();  // Update Emirates selection text*/
+                                                remarksController.clear();
+
                                               });
-                                              /*userRegistration(serial_no!,fetched_email,fetched_password,fetched_role,fetched_name);*/
+                                            },
+                                            child: Text('Clear'),
+                                          ),
 
-                                            }},
-                                          child: Text('Submit'),
-                                        ),
-                                      ],)
-                                ),)
-                            ]))
-                )
+                                          SizedBox(width: 20,),
+                                          ElevatedButton(
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor: appbar_color, // Button background color
+                                              foregroundColor: Colors.white,
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.circular(5), // Rounded corners
+                                                side: BorderSide(
+                                                  color: Colors.grey, // Border color
+                                                  width: 0.5, // Border width
+                                                ),
+                                              ),
+                                            ),
+                                            onPressed: () {
+
+                                              if (_formKey.currentState != null &&
+                                                  _formKey.currentState!.validate()) {
+                                                _formKey.currentState!.save();
+
+                                                setState(() {
+                                                  _isFocused_email = false;
+                                                  _isFocus_name = false;
+                                                });
+                                                /*userRegistration(serial_no!,fetched_email,fetched_password,fetched_role,fetched_name);*/
+
+                                              }},
+                                            child: Text('Submit'),
+                                          ),
+                                        ],)
+                                  ),)
+                              ]))
+                  )
 
 
-              ],
-            ),)
+                ],
+              )
+            )
+              ,)
         ],
       ) ,);}}

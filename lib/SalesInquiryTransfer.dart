@@ -430,7 +430,6 @@ class _SalesInquiryTransferPageState extends State<SalesInquiryTransfer> with Ti
                                             style: TextStyle(
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 16
-
                                             )
                                         ),
                                         SizedBox(width: 2),

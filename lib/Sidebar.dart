@@ -6,6 +6,7 @@ import 'package:cshrealestatemobile/SalesDashboard.dart';
 import 'package:cshrealestatemobile/SalesInquiryReport.dart';
 import 'package:cshrealestatemobile/TenantComplaint.dart';
 import 'package:cshrealestatemobile/TenantProfile.dart';
+import 'package:cshrealestatemobile/TenantmoveinoutRequest.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -261,6 +262,20 @@ class Sidebar extends StatelessWidget {
                       context,
 
                       MaterialPageRoute(builder: (context) => TenantComplaint()),          // navigate to users screen
+                    );
+                  }),
+
+              ListTile(
+                  title: Text('Tenant Move In/Out Request'),
+                  leading: Icon(Icons.transfer_within_a_station_outlined,
+                    color: Colors.black,
+                  ),
+                  enabled: true,
+                  onTap: () {
+                    Navigator.pushReplacement(
+                      context,
+
+                      MaterialPageRoute(builder: (context) => TenantmoveinoutRequest()),          // navigate to users screen
                     );
                   }),
 

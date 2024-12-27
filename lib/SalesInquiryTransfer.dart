@@ -292,100 +292,126 @@ class _SalesInquiryTransferPageState extends State<SalesInquiryTransfer> with Ti
                       child: ListView(
                           children: [
 
-                            Card(
-                                surfaceTintColor: Colors.blueGrey,
-                                elevation: 10,
-                                margin: EdgeInsets.only(left: 20,right: 20, top: 20),
-                                child:  Container(
+                            Stack(
+                              children: [
+                                Card(
+                                  surfaceTintColor: Colors.blueGrey,
+                                  elevation: 10,
+                                  margin: EdgeInsets.only(left: 20, right: 20, top: 20),
+                                  child: Container(
                                     padding: EdgeInsets.all(20),
-                                    child:Row(
+                                    child: Row(
                                       mainAxisAlignment: MainAxisAlignment.center,
                                       crossAxisAlignment: CrossAxisAlignment.center,
                                       children: [
                                         Container(
-                                          margin: EdgeInsets.only(bottom: 5,),
-                                          child:Column(
+                                          margin: EdgeInsets.only(bottom: 5),
+                                          child: Column(
                                             mainAxisAlignment: MainAxisAlignment.center,
                                             crossAxisAlignment: CrossAxisAlignment.center,
                                             children: [
                                               Column(
                                                 mainAxisSize: MainAxisSize.min,
                                                 children: [
-                                                  Icon(
-                                                    Icons.person,
-                                                    color: Colors.black54,
+                                                  Container(
+                                                    margin: EdgeInsets.all(8), // Add margin around the icon
+                                                    child: Icon(
+                                                      Icons.person,
+                                                      color: Colors.blueGrey,
+                                                      size: 30, // Adjust size for better look
+                                                    ),
                                                   ),
-                                                  SizedBox(height: 2), // Add space between icon and text
+                                                  SizedBox(height: 2), // Space between icon and text
                                                   Text(
-                                                    widget.name,
-                                                    style: TextStyle(fontSize: 16,
-                                                        color: Colors.black54),
+                                                    "Name",
+                                                    style: TextStyle(fontSize: 16, color: Colors.blueGrey),
                                                   ),
                                                 ],
                                               ),
-
-                                              SizedBox(height: 30,),
-
+                                              SizedBox(height: 30),
                                               Column(
                                                 children: [
-                                                  Icon(
-                                                    Icons.location_on,
-                                                    color: Colors.black54,
+                                                  Container(
+                                                    margin: EdgeInsets.all(8), // Add margin around the icon
+                                                    child: Icon(
+                                                      Icons.apartment,
+                                                      color: Colors.blueGrey,
+                                                      size: 30, // Adjust size for better look
+                                                    ),
                                                   ),
-                                                  SizedBox(height: 2), // Add space between icon and text
+                                                  SizedBox(height: 2), // Space between icon and text
                                                   Text(
-                                                    widget.area,
-                                                    style: TextStyle(fontSize: 16,
-                                                        color: Colors.black54),
+                                                    "Building",
+                                                    style: TextStyle(fontSize: 16, color: Colors.blueGrey),
                                                   ),
                                                 ],
                                               ),
-                                            ],)
-                                          ,),
-
-                                        SizedBox(width: MediaQuery.of(context).size.width/5,),
+                                            ],
+                                          ),
+                                        ),
+                                        SizedBox(width: MediaQuery.of(context).size.width / 5),
                                         Container(
-                                          margin: EdgeInsets.only(bottom: 5,),
-                                          child:Column(
+                                          margin: EdgeInsets.only(bottom: 5),
+                                          child: Column(
                                             mainAxisAlignment: MainAxisAlignment.center,
                                             crossAxisAlignment: CrossAxisAlignment.center,
                                             children: [
                                               Column(
                                                 mainAxisSize: MainAxisSize.min,
                                                 children: [
-                                                  Icon(
-                                                    Icons.apartment,
-                                                    color: Colors.black54,
+                                                  Container(
+                                                    margin: EdgeInsets.all(8), // Add margin around the icon
+                                                    child: Icon(
+                                                      Icons.home,
+                                                      color: Colors.blueGrey,
+                                                      size: 30, // Adjust size for better look
+                                                    ),
                                                   ),
-                                                  SizedBox(height: 2), // Add space between icon and text
+                                                  SizedBox(height: 2), // Space between icon and text
                                                   Text(
-                                                    widget.unittype,
-                                                    style: TextStyle(fontSize: 16,
-                                                        color: Colors.black54),
+                                                    'Unit No',
+                                                    style: TextStyle(fontSize: 16, color: Colors.blueGrey),
                                                   ),
                                                 ],
                                               ),
-
-                                              SizedBox(height: 30,),
-
+                                              SizedBox(height: 30),
                                               Column(
                                                 mainAxisSize: MainAxisSize.min,
                                                 children: [
-                                                  Icon(
-                                                    Icons.public,
-                                                    color: Colors.black54,
+                                                  Container(
+                                                    margin: EdgeInsets.all(8), // Add margin around the icon
+                                                    child: Icon(
+                                                      Icons.public,
+                                                      color: Colors.blueGrey,
+                                                      size: 30, // Adjust size for better look
+                                                    ),
                                                   ),
-                                                  SizedBox(height: 2), // Add space between icon and text
+                                                  SizedBox(height: 2), // Space between icon and text
                                                   Text(
-                                                    widget.emirate,
-                                                    style: TextStyle(fontSize: 16,
-                                                        color: Colors.black54),
+                                                    "Emirate",
+                                                    style: TextStyle(fontSize: 16, color: Colors.blueGrey),
                                                   ),
                                                 ],
                                               ),
-                                            ],)
-                                          ,),
-                                      ],))
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                Positioned(
+                                  top: 30,
+                                  right: 30,
+                                  child: IconButton(
+                                    icon: Icon(Icons.edit, color: Colors.blueGrey),
+                                    onPressed: () {
+                                      // Add your edit functionality here
+                                      print('Edit icon pressed');
+                                    },
+                                  ),
+                                ),
+                              ],
                             ),
 
                             Container(

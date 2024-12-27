@@ -27,8 +27,7 @@ class AvailableUnits {
         building_name: json['building_name'],
         area: json['area'],
         emirate: json['emirate'],
-    );
-  }
+    );}
 }
 
 class AvailableUnitsReport extends StatefulWidget {

@@ -93,18 +93,19 @@ class _TenantComplaintPageState extends State<TenantComplaint> with TickerProvid
             tickerProvider: this),
 
         body: Container(
+
             height: MediaQuery.of(context).size.height,
             width: MediaQuery.of(context).size.width,
-            /*decoration:BoxDecoration(
+            decoration:BoxDecoration(
               gradient: LinearGradient(
                   colors: [
-                    Color(0xFFD9FCF6),
+                    Colors.white,
                     Colors.white,
                   ],
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter
               ),
-            ),*/
+            ),
             child: SingleChildScrollView(
                 child: Form(
                   key: _formKey,
@@ -116,8 +117,8 @@ class _TenantComplaintPageState extends State<TenantComplaint> with TickerProvid
 
                         Card
                           (
-                          color: Colors.white,
-                            surfaceTintColor: Colors.white,
+
+                            surfaceTintColor: Colors.blueGrey,
                             elevation: 10,
                             margin: EdgeInsets.only(left: 20,right: 20, top: 20),
                             child:  Container(

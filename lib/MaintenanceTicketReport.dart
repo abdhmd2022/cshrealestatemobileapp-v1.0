@@ -117,7 +117,7 @@ class _MaintenanceTicketReportState
           ),
           icon: Icon(Icons.add, color: Colors.white),
           backgroundColor: Colors.transparent,
-          elevation: 0,
+          elevation: 8,
         ),
       ),
     );
@@ -150,10 +150,12 @@ class _MaintenanceTicketReportState
             _buildTicketHeader(ticket),
             Divider(color: Colors.grey[300]),
             _buildTicketDetails(ticket),
+
+
+
             if (_expandedTickets[index])
               _buildExpandedTicketView(ticket),
-
-            SizedBox(height: 30), // Top space before the toggle
+            SizedBox(height: 10), // Top space before the toggle
             Align(
               alignment: Alignment.center,
               child: GestureDetector(
@@ -189,7 +191,8 @@ class _MaintenanceTicketReportState
                   ),
                 ),
               ),
-            )
+            ),
+
           ],
         ),
       ),

@@ -373,117 +373,116 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
                                       ))))),
 
                       Container(
+
                           child: ListView.builder(
+
                               itemCount: units.length,
                               itemBuilder: (context, index) {
                                 final card = units[index];
                                 return Container(
-                                    margin: EdgeInsets.all(0),
-                                    child: Card(
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(10),
+                                    margin: const EdgeInsets.symmetric(vertical: 10.0),
+                                    padding: const EdgeInsets.all(16.0),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(16.0),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.grey.withOpacity(0.2),
+                                          blurRadius: 10.0,
+                                          offset: Offset(0, 5),
                                         ),
-                                        child: Padding(padding: EdgeInsets.all(10),
-                                            child: ListTile(
-                                              title:Column(
-                                                  children: [
-                                                    Row(
-                                                        children : [
+                                      ],
+                                    ),
+                                    child: Column(
 
-                                                          Icon(
+                                        children: [
+                                          Row(
+                                              children : [
 
-                                                              Icons.home
-                                                          ),
-                                                          SizedBox(width: 10),
-                                                          Flexible(child: SingleChildScrollView(
-                                                            scrollDirection: Axis.horizontal,
-                                                            child: Text(card.unittype),
-                                                          ))]),
+                                                Icon(
 
-                                                    Padding(padding: EdgeInsets.only(top: 10),
-                                                        child: Row(
-                                                            children : [
-                                                              Icon(
+                                                    Icons.home
+                                                ),
+                                                SizedBox(width: 10),
+                                                Flexible(child: SingleChildScrollView(
+                                                  scrollDirection: Axis.horizontal,
+                                                  child: Text(card.unittype),
+                                                ))]),
 
-                                                                  Icons.location_city
-                                                              ),
-                                                              SizedBox(width: 10),
-                                                              Flexible(child: SingleChildScrollView(
-                                                                scrollDirection: Axis.horizontal,
-                                                                child: Text(card.building_name),
-                                                              ))])),
+                                          Padding(padding: EdgeInsets.only(top: 10),
+                                              child: Row(
+                                                  children : [
+                                                    Icon(
 
-                                                    Padding(padding: EdgeInsets.only(top:10),
-                                                        child: Row(
-                                                            children : [
-                                                              Icon(
+                                                        Icons.location_city
+                                                    ),
+                                                    SizedBox(width: 10),
+                                                    Flexible(child: SingleChildScrollView(
+                                                      scrollDirection: Axis.horizontal,
+                                                      child: Text(card.building_name),
+                                                    ))])),
 
-                                                                  Icons.location_on
-                                                              ),
-                                                              SizedBox(width: 10),
-                                                              Flexible(child: SingleChildScrollView(
-                                                                scrollDirection: Axis.horizontal,
-                                                                child: Text(card.area),
-                                                              ),)
-                                                            ])),
+                                          Padding(padding: EdgeInsets.only(top:10),
+                                              child: Row(
+                                                  children : [
+                                                    Icon(
 
-                                                    Padding(padding: EdgeInsets.only(top:10),
-                                                        child: Row(
-                                                            children : [
-                                                              Icon(
+                                                        Icons.location_on
+                                                    ),
+                                                    SizedBox(width: 10),
+                                                    Flexible(child: SingleChildScrollView(
+                                                      scrollDirection: Axis.horizontal,
+                                                      child: Text(card.area),
+                                                    ),)
+                                                  ])),
 
-                                                                  Icons.public
-                                                              ),
-                                                              SizedBox(width: 10),
-                                                              Flexible(child: SingleChildScrollView(
-                                                                scrollDirection: Axis.horizontal,
-                                                                child: Text(card.emirate),
-                                                              ),)
-                                                            ])),
+                                          Padding(padding: EdgeInsets.only(top:10),
+                                              child: Row(
+                                                  children : [
+                                                    Icon(
+
+                                                        Icons.public
+                                                    ),
+                                                    SizedBox(width: 10),
+                                                    Flexible(child: SingleChildScrollView(
+                                                      scrollDirection: Axis.horizontal,
+                                                      child: Text(card.emirate),
+                                                    ),)
+                                                  ])),
 
 
-                                                    Padding(
-                                                      padding: EdgeInsets.only(top: 20, bottom: 0),
-                                                      child: Row(
-                                                        mainAxisAlignment: MainAxisAlignment.center,
-                                                        crossAxisAlignment: CrossAxisAlignment.center,
-                                                        children: [
-                                                          ElevatedButton.icon(
-                                                            onPressed: () {
-                                                              String unitno = card.unitno;
-                                                              String unittype = card.unittype;
-                                                              String area = card.area;
-                                                              String emirate = card.emirate;
-                                                              String rent = "AED 50,000";
-                                                              String parking = "1 included";
-                                                              String balcony = "Yes";
-                                                              String bathooms = "2";
-                                                              String building = card.building_name;
+                                          Padding(
+                                            padding: EdgeInsets.only(top: 0, bottom: 0),
+                                            child: Row(
+                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              crossAxisAlignment: CrossAxisAlignment.center,
+                                              children: [
 
-                                                              showDialog(
-                                                                context: context,
-                                                                builder: (context) => AvailableUnitsDialog(unitno: unitno, area: area, emirate: emirate, unittype: unittype, rent: rent, parking: parking, balcony: balcony, bathrooms: bathooms,building_name: building,));
+                                                _buildDecentButton(
+                                                  'View',
+                                                  Icons.remove_red_eye,
+                                                  Colors.orange,
+                                                      () {
+                                                    String unitno = card.unitno;
+                                                    String unittype = card.unittype;
+                                                    String area = card.area;
+                                                    String emirate = card.emirate;
+                                                    String rent = "AED 50,000";
+                                                    String parking = "1 included";
+                                                    String balcony = "Yes";
+                                                    String bathooms = "2";
+                                                    String building = card.building_name;
 
-                                                            },
-                                                            icon: Icon(Icons.remove_red_eye, color: Colors.black),
-                                                            label: Text(
-                                                              'View',
-                                                              style: TextStyle(color: Colors.black),
-                                                            ),
-                                                            style: ElevatedButton.styleFrom(
-                                                              backgroundColor: Colors.white, // Button background color
-                                                              shadowColor: Colors.black.withOpacity(0.75), // Shadow color
-                                                              elevation: 5, // Elevation value
-                                                              shape: RoundedRectangleBorder(
-                                                                borderRadius: BorderRadius.circular(20), // Rounded corners
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    )
-                                                  ]),
-                                            ))));})),
+                                                    showDialog(
+                                                        context: context,
+                                                        builder: (context) => AvailableUnitsDialog(unitno: unitno, area: area, emirate: emirate, unittype: unittype, rent: rent, parking: parking, balcony: balcony, bathrooms: bathooms,building_name: building,));
+                                                  },
+                                                ),
+
+                                              ],
+                                            ),
+                                          )
+                                        ]));})),
                       Visibility(
                         visible: _isLoading,
                         child: Center(
@@ -543,6 +542,8 @@ class AvailableUnitsDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      backgroundColor: Colors.white,
+      elevation: 8,
       title:Row(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -689,4 +690,47 @@ class AvailableUnitsDialog extends StatelessWidget {
       ],
     );
   }
+
 }
+Widget _buildDecentButton(
+    String label, IconData icon, Color color, VoidCallback onPressed) {
+  return InkWell(
+    onTap: onPressed,
+    borderRadius: BorderRadius.circular(30.0),
+    splashColor: color.withOpacity(0.2),
+    highlightColor: color.withOpacity(0.1),
+    child: Container(
+      margin: EdgeInsets.only(top: 10.0),
+      padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(30.0),
+        color: Colors.white,
+        border: Border.all(
+          color: color.withOpacity(0.3),
+          width: 1.5,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: color.withOpacity(0.1),
+            blurRadius: 8.0,
+            offset: Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Icon(icon, color: color),
+          SizedBox(width: 8.0),
+          Text(
+            label,
+            style: TextStyle(
+              color: color,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+

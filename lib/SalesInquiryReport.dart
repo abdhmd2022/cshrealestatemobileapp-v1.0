@@ -149,8 +149,8 @@ class _SalesInquiryReportState
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [Colors.blueGrey, Colors.blueGrey],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
           ),
           borderRadius: BorderRadius.circular(30.0),
         ),
@@ -171,7 +171,7 @@ class _SalesInquiryReportState
           ),
           icon: Icon(Icons.add, color: Colors.white),
           backgroundColor: Colors.transparent,
-          elevation: 0,
+          elevation: 8,
         ),
       ),
     );
@@ -204,8 +204,6 @@ class _SalesInquiryReportState
             _buildinquiryHeader(inquiry),
             Divider(color: Colors.grey[300]),
             _buildinquiryDetails(inquiry),
-
-
 
             Container(
               width: MediaQuery.of(context).size.width,
@@ -254,19 +252,14 @@ class _SalesInquiryReportState
                                 String contactno = inquiry.contactno;
                                 String email = inquiry.email;
 
-
                                 Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(builder: (context) =>
                                         SalesInquiryTransfer(name: name, unittype: unittype, area: area, emirate: emirate)));
                               },
                             ),
-
-
                           SizedBox(width:5)
                         ],),
-
-
 
                         _buildDecentButton(
                           'Delete',
@@ -281,15 +274,11 @@ class _SalesInquiryReportState
                     ),
                 )
               )
-
-
             ),
 
 
             if (_expandedinquirys[index])
               _buildExpandedinquiryView(inquiry),
-
-
 
             SizedBox(height: 30), // Top space before the toggle
             Align(

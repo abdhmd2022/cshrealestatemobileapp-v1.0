@@ -374,9 +374,7 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
                                       ))))),
 
                       Container(
-
                           child: ListView.builder(
-
                               itemCount: units.length,
                               itemBuilder: (context, index) {
                                 final card = units[index];
@@ -395,7 +393,6 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
                                       ],
                                     ),
                                     child: Column(
-
                                         children: [
                                           Row(
                                               children : [
@@ -451,7 +448,6 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
                                                     ),)
                                                   ])),
 
-
                                           Padding(
                                             padding: EdgeInsets.only(top: 0, bottom: 0),
                                             child: Row(
@@ -482,7 +478,7 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
 
                                               ],
                                             ),
-                                          )
+                                          ),
                                         ]));})),
                       Visibility(
                         visible: _isLoading,

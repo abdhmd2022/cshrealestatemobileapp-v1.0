@@ -45,8 +45,6 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
       _isLoading = false,
       isVisibleNoUserFound = false;
 
-  String user_email_fetched = "";
-
   final List<AvailableUnits> units = [
     AvailableUnits(
       unitno: "101",

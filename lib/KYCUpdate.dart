@@ -75,6 +75,20 @@ class _kycUpdatePageState extends State<kycUpdate> with TickerProviderStateMixin
     }
   }
 
+  void _showSnackBar(String message) {
+    final snackBar = SnackBar(
+      content: Text(
+        message,
+        style: TextStyle(fontSize: 16),
+      ),
+      backgroundColor: Colors.redAccent,
+      behavior: SnackBarBehavior.floating, // Makes the SnackBar float above the screen
+      elevation: 20,
+
+      margin: EdgeInsets.all(16), // Adds margin around the SnackBar
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
 
   void _showEIDAttachmentOptions() {
     showModalBottomSheet(
@@ -310,83 +324,7 @@ class _kycUpdatePageState extends State<kycUpdate> with TickerProviderStateMixin
     );
   }
 
-  /*void _showAttachmentOptions() {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true, // Control the height based on content
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
-      ),
-      builder: (BuildContext context) {
-        return Padding(
-          padding: const EdgeInsets.only(left: 16,top: 20,right: 20,bottom: 50),
-          child: Wrap(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.pop(context);
-                      _pickImages(ImageSource.gallery); // Open gallery to pick multiple images
-                    },
-                    child: Column(
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Colors.black, // Set the background color
-                            shape: BoxShape.circle, // Make it round
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black26, // Shadow color
-                                blurRadius: 8, // Shadow blur
-                                offset: Offset(4, 4), // Shadow position
-                              ),
-                            ],
-                          ),
-                          padding: EdgeInsets.all(16),
-                          child: Icon(Icons.upload, size: 40, color: Colors.white),
-                        ),
-                        SizedBox(height: 8),
-                        Text('Upload'),
-                      ],
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.pop(context);
-                      _pickImages(ImageSource.gallery); // Open gallery to pick multiple images
-                    },
-                    child: Column(
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Colors.black, // Set the background color
-                            shape: BoxShape.circle, // Make it round
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black26, // Shadow color
-                                blurRadius: 8, // Shadow blur
-                                offset: Offset(4, 4), // Shadow position
-                              ),
-                            ],
-                          ),
-                          padding: EdgeInsets.all(16),
-                          child: Icon(Icons.camera_alt, size: 40, color: Colors.white),
-                        ),
-                        SizedBox(height: 8),
-                        Text('Capture'),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }*/
+
 
   @override
   void initState() {
@@ -401,6 +339,7 @@ class _kycUpdatePageState extends State<kycUpdate> with TickerProviderStateMixin
   Widget build(BuildContext context) {
     return Scaffold(
         key: _scaffoldKey,
+        backgroundColor: const Color(0xFFF2F4F8),
         appBar: AppBar(
           backgroundColor: appbar_color,
           automaticallyImplyLeading: false,
@@ -437,118 +376,111 @@ class _kycUpdatePageState extends State<kycUpdate> with TickerProviderStateMixin
         body: Container(
             height: MediaQuery.of(context).size.height,
             width: MediaQuery.of(context).size.width,
-            /*decoration:BoxDecoration(
+            decoration:BoxDecoration(
               gradient: LinearGradient(
                   colors: [
-                    Color(0xFFD9FCF6),
+                    Colors.white,
                     Colors.white,
                   ],
+
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter
               ),
-            ),*/
+            ),
             child: SingleChildScrollView(
                 child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
 
-                      Card(
+                      Card
+                        (
                           surfaceTintColor: Colors.blueGrey,
                           elevation: 10,
                           margin: EdgeInsets.only(left: 20,right: 20, top: 20),
                           child:  Container(
                               padding: EdgeInsets.all(20),
-                              child:Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
+                              child:Column(
+
                                 children: [
-                                  Container(
-                                    margin: EdgeInsets.only(bottom: 5,),
-                                    child:Column(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      children: [
-                                        Column(
-                                          mainAxisSize: MainAxisSize.min,
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
+                                      Container(
+                                        margin: EdgeInsets.only(bottom: 5,),
+                                        child:Row(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          crossAxisAlignment: CrossAxisAlignment.center,
                                           children: [
-                                            Icon(
-                                              Icons.person,
-                                              color: Colors.black54,
-                                            ),
-                                            SizedBox(height: 2), // Add space between icon and text
-                                            Text(
-                                              'Saadan',
-                                              style: TextStyle(fontSize: 16,
-                                                  color: Colors.black54),
-                                            ),
-                                          ],
-                                        ),
+                                            Column(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Icon(
+                                                  Icons.person,
+                                                  color: Colors.blueGrey,
+                                                ),
+                                                SizedBox(height: 2), // Add space between icon and text
+                                                Text(
 
-                                        SizedBox(height: 30,),
+                                                  'Saadan',
+                                                  style: TextStyle(fontSize: 16,
+                                                      color: Colors.blueGrey),
+                                                ),
+                                              ],
+                                            ),
+                                          ],)
+                                        ,),
 
-                                        Column(
+                                      SizedBox(width: MediaQuery.of(context).size.width/5,),
+                                      Container(
+                                        margin: EdgeInsets.only(bottom: 5,),
+                                        child:Row(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          crossAxisAlignment: CrossAxisAlignment.center,
                                           children: [
-                                            Icon(
-                                              Icons.apartment,
-                                              color: Colors.black54,
+                                            Column(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Icon(
+                                                  Icons.phone,
+                                                  color: Colors.blueGrey,
+                                                ),
+                                                SizedBox(height: 2), // Add space between icon and text
+                                                Text(
+                                                  '+971 500000000',
+                                                  style: TextStyle(fontSize: 16,
+                                                      color: Colors.blueGrey),
+                                                ),
+                                              ],
                                             ),
-                                            SizedBox(height: 2), // Add space between icon and text
-                                            Text(
-                                              'Al Khaleej Center',
-                                              style: TextStyle(fontSize: 16,
-                                                  color: Colors.black54),
-                                            ),
-                                          ],
-                                        ),
-                                      ],)
-                                    ,),
 
-                                  SizedBox(width: MediaQuery.of(context).size.width/5,),
-                                  Container(
-                                    margin: EdgeInsets.only(bottom: 5,),
-                                    child:Column(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      children: [
-                                        Column(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Icon(
-                                              Icons.home_filled,
-                                              color: Colors.black54,
-                                            ),
-                                            SizedBox(height: 2), // Add space between icon and text
-                                            Text(
-                                              '101',
-                                              style: TextStyle(fontSize: 16,
-                                                  color: Colors.black54),
-                                            ),
-                                          ],
-                                        ),
 
-                                        SizedBox(height: 30,),
+                                          ],)
+                                        ,),
+                                    ],),
 
-                                        Column(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Icon(
-                                              Icons.public,
-                                              color: Colors.black54,
-                                            ),
-                                            SizedBox(height: 2), // Add space between icon and text
-                                            Text(
-                                              'Dubai',
-                                              style: TextStyle(fontSize: 16,
-                                                  color: Colors.black54),
-                                            ),
-                                          ],
-                                        ),
-                                      ],)
-                                    ,),
-                                ],))
+                                  SizedBox(height: 30,),
+
+                                  Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        Icons.email_outlined,
+                                        color: Colors.blueGrey,
+                                      ),
+                                      SizedBox(height: 2), // Add space between icon and text
+                                      Text(
+                                        'saadan@ca-eim.com',
+                                        style: TextStyle(fontSize: 16,
+                                            color: Colors.blueGrey),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              )
+                          )
                       ),
-
 
                       Column(
                           mainAxisAlignment: MainAxisAlignment.start,
@@ -816,60 +748,7 @@ class _kycUpdatePageState extends State<kycUpdate> with TickerProviderStateMixin
                               ),),
                           ]),
 
-                      /*  SizedBox(height: 10),
 
-                    Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children:[
-
-                          Container(
-                            margin: EdgeInsets.only(
-                                top:0,
-                                bottom: 2,
-                                left: 20,
-                                right: 20
-                            ),
-                            child: Text("Total Amount:",
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16
-
-                                )
-                            ),),
-
-                          Container(
-                              margin: EdgeInsets.only(
-                                  top:0,
-                                  bottom: 20,
-                                  left: 20,
-                                  right: 20
-                              ),
-                              child: TextField(
-                                  controller: _totalamountController,
-                                  keyboardType: TextInputType.multiline,
-                                  maxLines: null,
-
-                                  decoration: InputDecoration(
-                                    hintText: 'Enter Amount',
-                                    contentPadding: EdgeInsets.all(15),
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10), // Set the border radius
-                                      borderSide: BorderSide(
-                                        color: Colors.black, // Set the border color
-                                      ),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                        color:  Colors.black, // Set the focused border color
-                                      ),
-                                    ),
-                                  ),
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 15,
-                                  ))),
-                        ]),*/
 
                       Container(
                         width: MediaQuery.of(context).size.width,
@@ -882,7 +761,16 @@ class _kycUpdatePageState extends State<kycUpdate> with TickerProviderStateMixin
                           ),
                           onPressed: () {
                             {
+                              if (EID_attachment.isEmpty) {
+                                _showSnackBar("Please upload Emirates ID.");
+                              } else if (passport_attachment.isEmpty) {
+                                _showSnackBar("Please upload Passport.");
+                              } else if (visa_attachment.isEmpty) {
+                                _showSnackBar("Please upload Visa Copy.");
+                              } else {
 
+                                // form submit ok
+                              }
                             }
                           },
                           child: Text('Submit',

@@ -245,6 +245,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
+        backgroundColor: const Color(0xFFF2F4F8),
         appBar: AppBar(
           backgroundColor: appbar_color,
           automaticallyImplyLeading: false,
@@ -336,13 +337,13 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                                     children: [
                                       Icon(
                                         Icons.person,
-                                        color: Colors.black54,
+                                        color: Colors.blueGrey,
                                       ),
                                       SizedBox(height: 2), // Add space between icon and text
                                       Text(
                                         'Name',
                                         style: TextStyle(fontSize: 16,
-                                            color: Colors.black54),
+                                            color: Colors.blueGrey),
                                       ),
                                     ],
                                   ),
@@ -353,13 +354,13 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                                     children: [
                                       Icon(
                                         Icons.hardware_outlined,
-                                        color: Colors.black54,
+                                        color: Colors.blueGrey,
                                       ),
                                       SizedBox(height: 2), // Add space between icon and text
                                       Text(
                                         'Status',
                                         style: TextStyle(fontSize: 16,
-                                            color: Colors.black54),
+                                            color: Colors.blueGrey),
                                       ),
                                     ],
                                   ),
@@ -378,13 +379,13 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                                     children: [
                                       Icon(
                                         Icons.home_filled,
-                                        color: Colors.black54,
+                                        color: Colors.blueGrey,
                                       ),
                                       SizedBox(height: 2), // Add space between icon and text
                                       Text(
                                         'Unit No',
                                         style: TextStyle(fontSize: 16,
-                                            color: Colors.black54),
+                                            color: Colors.blueGrey),
                                       ),
                                     ],
                                   ),
@@ -396,13 +397,13 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                                     children: [
                                       Icon(
                                         Icons.apartment,
-                                        color: Colors.black54,
+                                        color: Colors.blueGrey,
                                       ),
                                       SizedBox(height: 2), // Add space between icon and text
                                       Text(
                                         'Building',
                                         style: TextStyle(fontSize: 16,
-                                            color: Colors.black54),
+                                            color: Colors.blueGrey),
                                       ),
                                     ],
                                   ),
@@ -446,7 +447,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                           padding: EdgeInsets.symmetric(horizontal: 12),
                           margin: EdgeInsets.only(left: 0, right: 0, bottom: 20),
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: Colors.transparent,
                             borderRadius: BorderRadius.circular(8),
                             border: Border.all(color: Colors.black, width: 0.75),
                           ),

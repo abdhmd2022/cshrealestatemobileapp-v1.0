@@ -334,6 +334,7 @@ class _DecentTenantKYCFormState extends State<DecentTenantKYCForm> {
                       } else if (title == 'Visa Copy') {
                         visaCopyFile = null;
                       }
+
                     });
                   },
                   icon: const Icon(Icons.delete, color: Colors.red),

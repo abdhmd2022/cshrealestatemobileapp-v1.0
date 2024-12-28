@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:cshrealestatemobile/AvailableUnitsReport.dart';
+import 'package:cshrealestatemobile/KYCUpdate.dart';
 
 import 'package:cshrealestatemobile/MaintenanceTicketReport.dart';
 import 'package:cshrealestatemobile/SalesDashboard.dart';
@@ -291,6 +292,21 @@ class Sidebar extends StatelessWidget {
                       context,
 
                       MaterialPageRoute(builder: (context) => TenantAccessCardRequest()),          // navigate to users screen
+                    );
+                  }),
+
+
+              ListTile(
+                  title: Text('Tenant KYC Update'),
+                  leading: Icon(Icons.edit_document ,
+                    color: Colors.black,
+                  ),
+                  enabled: true,
+                  onTap: () {
+                    Navigator.pushReplacement(
+                      context,
+
+                      MaterialPageRoute(builder: (context) => kycUpdate()),          // navigate to users screen
                     );
                   }),
 

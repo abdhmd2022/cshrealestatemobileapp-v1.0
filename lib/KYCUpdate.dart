@@ -1,3 +1,4 @@
+import 'package:cshrealestatemobile/SalesDashboard.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:image_picker/image_picker.dart';
@@ -66,14 +67,27 @@ class _DecentTenantKYCFormState extends State<DecentTenantKYCForm> {
         elevation: 1,
         backgroundColor: Colors.blueGrey,
         iconTheme: IconThemeData(color: Colors.white),
+
+        leading: GestureDetector(
+          onTap: ()
+          {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => SalesDashboard()),
+            );
+          },
+          child: Icon(
+            Icons.arrow_back,
+            color: Colors.white,
+          ),),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.only(left:16.0,right: 16,bottom: 16),
+        padding: const EdgeInsets.only(left:10.0,right: 10,bottom: 16),
         child: Column(
           children: [
             Card
               (
-
+                color: Colors.white,
                 surfaceTintColor: Colors.blueGrey,
                 elevation: 10,
                 margin: EdgeInsets.only(left: 20,right: 20, top: 20),

@@ -1,784 +1,396 @@
-import 'dart:io';
-import 'package:cshrealestatemobile/SalesDashboard.dart';
-import 'package:cshrealestatemobile/constants.dart';
-import 'package:flutter/animation.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/widgets.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:multi_select_flutter/multi_select_flutter.dart';
 
-import 'Sidebar.dart';
+import 'constants.dart';
 
-class kycUpdate extends StatefulWidget
-{
-  const kycUpdate({Key? key}) : super(key: key);
+class DecentTenantKYCForm extends StatefulWidget {
   @override
-  _kycUpdatePageState createState() => _kycUpdatePageState();
+  _DecentTenantKYCFormState createState() => _DecentTenantKYCFormState();
 }
 
-class _kycUpdatePageState extends State<kycUpdate> with TickerProviderStateMixin {
+class _DecentTenantKYCFormState extends State<DecentTenantKYCForm> {
+  final _formKey = GlobalKey<FormState>();
+  String? emiratesIdFile, passportFile, visaCopyFile;
 
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-
-  bool isDashEnable = true,
-      isRolesVisible = true,
-      isUserEnable = true,
-      isUserVisible = true,
-      isRolesEnable = true,
-      _isLoading = false,
-      isVisibleNoRoleFound = false;
-
-  String name = "",email = "";
-
-
-  List<File> EID_attachment = []; // List to store eid images
-
-  List<File> passport_attachment = []; // List to store passport images
-
-  List<File> visa_attachment = []; // List to store visa images
-
-  final ImagePicker eid_picker = ImagePicker();
-
-  final ImagePicker passport_picker = ImagePicker();
-
-  final ImagePicker visa_picker = ImagePicker();
-
-  Future<void> _pickEIDImages(ImageSource source) async {
-    final List<XFile>? pickedFiles = await eid_picker.pickMultiImage(); // Pick multiple images
-    if (pickedFiles != null) {
+  Future<void> pickFile(String docType) async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles();
+    if (result != null && result.files.single.path != null) {
       setState(() {
-        // Add all selected images to the attachments list
-        EID_attachment.addAll(pickedFiles.map((file) => File(file.path)).toList());
+        if (docType == 'Emirates ID') {
+          emiratesIdFile = result.files.single.path;
+        } else if (docType == 'Passport') {
+          passportFile = result.files.single.path;
+        } else if (docType == 'Visa Copy') {
+          visaCopyFile = result.files.single.path;
+        }
       });
     }
   }
 
-  Future<void> _pickpassportImages(ImageSource source) async {
-    final List<XFile>? pickedFiles = await passport_picker.pickMultiImage(); // Pick multiple images
-    if (pickedFiles != null) {
+  Future<void> captureFile(String docType) async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? file = await picker.pickImage(source: ImageSource.camera);
+    if (file != null) {
       setState(() {
-        // Add all selected images to the attachments list
-        passport_attachment.addAll(pickedFiles.map((file) => File(file.path)).toList());
+        if (docType == 'Emirates ID') {
+          emiratesIdFile = file.path;
+        } else if (docType == 'Passport') {
+          passportFile = file.path;
+        } else if (docType == 'Visa Copy') {
+          visaCopyFile = file.path;
+        }
       });
     }
-  }
-
-  Future<void> _pickvisaImages(ImageSource source) async {
-    final List<XFile>? pickedFiles = await visa_picker.pickMultiImage(); // Pick multiple images
-    if (pickedFiles != null) {
-      setState(() {
-        // Add all selected images to the attachments list
-        visa_attachment.addAll(pickedFiles.map((file) => File(file.path)).toList());
-      });
-    }
-  }
-
-  void _showSnackBar(String message) {
-    final snackBar = SnackBar(
-      content: Text(
-        message,
-        style: TextStyle(fontSize: 16),
-      ),
-      backgroundColor: Colors.redAccent,
-      behavior: SnackBarBehavior.floating, // Makes the SnackBar float above the screen
-      elevation: 20,
-
-      margin: EdgeInsets.all(16), // Adds margin around the SnackBar
-    );
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-  }
-
-  void _showEIDAttachmentOptions() {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
-      ),
-      builder: (BuildContext context) {
-        return Padding(
-          padding: const EdgeInsets.only(left: 16,top: 20,right: 20,bottom: 50),
-          child: Wrap(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.pop(context);
-                      _pickEIDImages(ImageSource.gallery); // Open gallery to pick multiple images
-                    },
-                    child: Column(
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white, // Set the background color
-                            shape: BoxShape.circle, // Make it round
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black26, // Shadow color
-                                blurRadius: 8, // Shadow blur
-                                offset: Offset(4, 4), // Shadow position
-                              ),
-                            ],
-                          ),
-                          padding: EdgeInsets.all(16),
-                          child: Icon(Icons.upload, size: 40, color: Colors.blueAccent),
-                        ),
-                        SizedBox(height: 8),
-                        Text('Upload'),
-                      ],
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.pop(context);
-                      _pickEIDImages(ImageSource.gallery); // Open gallery to pick multiple images
-                    },
-                    child: Column(
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white, // Set the background color
-                            shape: BoxShape.circle, // Make it round
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black26, // Shadow color
-                                blurRadius: 8, // Shadow blur
-                                offset: Offset(4, 4), // Shadow position
-                              ),
-                            ],
-                          ),
-                          padding: EdgeInsets.all(16),
-                          child: Icon(Icons.camera_alt, size: 40, color: Colors.blueAccent),
-                        ),
-                        SizedBox(height: 8),
-                        Text('Capture'),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  void _showPassportAttachmentOptions() {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
-      ),
-      builder: (BuildContext context) {
-        return Padding(
-          padding: const EdgeInsets.only(left: 16,top: 20,right: 20,bottom: 50),
-          child: Wrap(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.pop(context);
-                      _pickpassportImages(ImageSource.gallery); // Open gallery to pick multiple images
-                    },
-                    child: Column(
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white, // Set the background color
-                            shape: BoxShape.circle, // Make it round
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black26, // Shadow color
-                                blurRadius: 8, // Shadow blur
-                                offset: Offset(4, 4), // Shadow position
-                              ),
-                            ],
-                          ),
-                          padding: EdgeInsets.all(16),
-                          child: Icon(Icons.upload, size: 40, color: Colors.blueAccent),
-                        ),
-                        SizedBox(height: 8),
-                        Text('Upload'),
-                      ],
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.pop(context);
-                      _pickpassportImages(ImageSource.gallery); // Open gallery to pick multiple images
-                    },
-                    child: Column(
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white, // Set the background color
-                            shape: BoxShape.circle, // Make it round
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black26, // Shadow color
-                                blurRadius: 8, // Shadow blur
-                                offset: Offset(4, 4), // Shadow position
-                              ),
-                            ],
-                          ),
-                          padding: EdgeInsets.all(16),
-                          child: Icon(Icons.camera_alt, size: 40, color: Colors.blueAccent),
-                        ),
-                        SizedBox(height: 8),
-                        Text('Capture'),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  void _showVisaAttachmentOptions() {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
-      ),
-      builder: (BuildContext context) {
-        return Padding(
-          padding: const EdgeInsets.only(left: 16,top: 20,right: 20,bottom: 50),
-          child: Wrap(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.pop(context);
-                      _pickvisaImages(ImageSource.gallery); // Open gallery to pick multiple images
-                    },
-                    child: Column(
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white, // Set the background color
-                            shape: BoxShape.circle, // Make it round
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black26, // Shadow color
-                                blurRadius: 8, // Shadow blur
-                                offset: Offset(4, 4), // Shadow position
-                              ),
-                            ],
-                          ),
-                          padding: EdgeInsets.all(16),
-                          child: Icon(Icons.upload, size: 40, color: Colors.blueAccent),
-                        ),
-                        SizedBox(height: 8),
-                        Text('Upload'),
-                      ],
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.pop(context);
-                      _pickvisaImages(ImageSource.gallery); // Open gallery to pick multiple images
-                    },
-                    child: Column(
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white, // Set the background color
-                            shape: BoxShape.circle, // Make it round
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black26, // Shadow color
-                                blurRadius: 8, // Shadow blur
-                                offset: Offset(4, 4), // Shadow position
-                              ),
-                            ],
-                          ),
-                          padding: EdgeInsets.all(16),
-                          child: Icon(Icons.camera_alt, size: 40, color: Colors.blueAccent),
-                        ),
-                        SizedBox(height: 8),
-                        Text('Capture'),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-
-
-  @override
-  void initState() {
-    super.initState();
-    _initSharedPreferences();
-  }
-
-  Future<void> _initSharedPreferences() async {
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        key: _scaffoldKey,
-        backgroundColor: const Color(0xFFF2F4F8),
-        appBar: AppBar(
-          backgroundColor: appbar_color,
-          automaticallyImplyLeading: false,
+      appBar: AppBar(
+        title: Text('Tenant KYC Form', style: TextStyle(color: Colors.white)),
+        centerTitle: true,
+        elevation: 1,
+        backgroundColor: Colors.blueGrey,
+        iconTheme: IconThemeData(color: Colors.white),
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.only(left:16.0,right: 16,bottom: 16),
+        child: Column(
+          children: [
+            Card
+              (
 
-          leading: GestureDetector(
-            onTap: ()
-            {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => SalesDashboard()),
-              );
-            },
-            child: Icon(
-              Icons.arrow_back,
-              color: Colors.white,
-            ),),
+                surfaceTintColor: Colors.blueGrey,
+                elevation: 10,
+                margin: EdgeInsets.only(left: 20,right: 20, top: 20),
+                child:  Container(
+                    padding: EdgeInsets.all(20),
+                    child:Column(
 
-          title: Text('KYC Update',
-            style: TextStyle(
-                color: Colors.white
-            ),),
-        ),
-
-        drawer: Sidebar(
-            isDashEnable: isDashEnable,
-            isRolesVisible: isRolesVisible,
-            isRolesEnable: isRolesEnable,
-            isUserEnable: isUserEnable,
-            isUserVisible: isUserVisible,
-            Username: name,
-            Email: email,
-            tickerProvider: this),
-
-        body: Container(
-            height: MediaQuery.of(context).size.height,
-            width: MediaQuery.of(context).size.width,
-            decoration:BoxDecoration(
-              gradient: LinearGradient(
-                  colors: [
-                    Colors.white,
-                    Colors.white,
-                  ],
-
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter
-              ),
-            ),
-            child: SingleChildScrollView(
-                child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-
-                      Card
-                        (
-                          surfaceTintColor: Colors.blueGrey,
-                          elevation: 10,
-                          margin: EdgeInsets.only(left: 20,right: 20, top: 20),
-                          child:  Container(
-                              padding: EdgeInsets.all(20),
-                              child:Column(
-
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Container(
+                              margin: EdgeInsets.only(bottom: 5,),
+                              child:Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                    children: [
-                                      Container(
-                                        margin: EdgeInsets.only(bottom: 5,),
-                                        child:Row(
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          crossAxisAlignment: CrossAxisAlignment.center,
-                                          children: [
-                                            Column(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                Icon(
-                                                  Icons.person,
-                                                  color: Colors.blueGrey,
-                                                ),
-                                                SizedBox(height: 2), // Add space between icon and text
-                                                Text(
-
-                                                  'Saadan',
-                                                  style: TextStyle(fontSize: 16,
-                                                      color: Colors.blueGrey),
-                                                ),
-                                              ],
-                                            ),
-                                          ],)
-                                        ,),
-
-                                      SizedBox(width: MediaQuery.of(context).size.width/5,),
-                                      Container(
-                                        margin: EdgeInsets.only(bottom: 5,),
-                                        child:Row(
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          crossAxisAlignment: CrossAxisAlignment.center,
-                                          children: [
-                                            Column(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                Icon(
-                                                  Icons.phone,
-                                                  color: Colors.blueGrey,
-                                                ),
-                                                SizedBox(height: 2), // Add space between icon and text
-                                                Text(
-                                                  '+971 500000000',
-                                                  style: TextStyle(fontSize: 16,
-                                                      color: Colors.blueGrey),
-                                                ),
-                                              ],
-                                            ),
-
-
-                                          ],)
-                                        ,),
-                                    ],),
-
-                                  SizedBox(height: 30,),
-
                                   Column(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
                                       Icon(
-                                        Icons.email_outlined,
+                                        Icons.person,
                                         color: Colors.blueGrey,
                                       ),
                                       SizedBox(height: 2), // Add space between icon and text
                                       Text(
-                                        'saadan@ca-eim.com',
+                                        'Saadan',
                                         style: TextStyle(fontSize: 16,
                                             color: Colors.blueGrey),
                                       ),
                                     ],
                                   ),
-                                ],
-                              )
-                          )
+                                ],)
+                              ,),
+
+                            SizedBox(width: MediaQuery.of(context).size.width/5,),
+                            Container(
+                              margin: EdgeInsets.only(bottom: 5,),
+                              child:Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        Icons.phone,
+                                        color: Colors.blueGrey,
+                                      ),
+                                      SizedBox(height: 2), // Add space between icon and text
+                                      Text(
+                                        '+971 500000000',
+                                        style: TextStyle(fontSize: 16,
+                                            color: Colors.blueGrey),
+                                      ),
+                                    ],
+                                  ),
+
+
+                                ],)
+                              ,),
+                          ],),
+
+                        SizedBox(height: 30,),
+
+                        Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.email_outlined,
+                              color: Colors.blueGrey,
+                            ),
+                            SizedBox(height: 2), // Add space between icon and text
+                            Text(
+                              'saadan@ca-eim.com',
+                              style: TextStyle(fontSize: 16,
+                                  color: Colors.blueGrey),
+                            ),
+                          ],
+                        ),
+                      ],
+                    )
+                )
+            ),
+
+            const SizedBox(height: 30),
+            Form(
+              key: _formKey,
+              child: Column(
+                children: [
+                  buildDocumentCard(
+                    title: 'Emirates ID',
+                    filePath: emiratesIdFile,
+                    onPickFile: () => pickFile('Emirates ID'),
+                    onCaptureFile: () => captureFile('Emirates ID'),
+                  ),
+                  buildDocumentCard(
+                    title: 'Passport',
+                    filePath: passportFile,
+                    onPickFile: () => pickFile('Passport'),
+                    onCaptureFile: () => captureFile('Passport'),
+                  ),
+                  buildDocumentCard(
+                    title: 'Visa Copy',
+                    filePath: visaCopyFile,
+                    onPickFile: () => pickFile('Visa Copy'),
+                    onCaptureFile: () => captureFile('Visa Copy'),
+                  ),
+                  const SizedBox(height: 30),
+
+
+                  Container(
+                    width: MediaQuery.of(context).size.width,
+                    margin: EdgeInsets.only(left: 20,right: 20,top: 20,bottom: 80),
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: appbar_color,
+                        elevation: 5, // Adjust the elevation to make it look elevated
+                        shadowColor: Colors.black.withOpacity(0.5), // Optional: adjust the shadow color
                       ),
+                      onPressed: () {
+                        {
 
-                      Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children:[
-                            SizedBox(height: 20,),
-                            Container(
-                              margin: EdgeInsets.only(left: 20, right: 20),
-                              child: Row(
-                                children: [
-                                  Text(
-                                    'Emirates ID',
-                                    style: TextStyle(fontSize: 16,
-                                      fontWeight: FontWeight.bold,),
-                                  ),
-                                  SizedBox(width: 2),
-                                  Text(
-                                    '*', // Red asterisk for required field
-                                    style: TextStyle(
-                                      fontSize: 20,
-                                      color: Colors.red, // Red color for the asterisk
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            SizedBox(height: 20),
-                            Container(
-                              margin: EdgeInsets.only(left:20,right: 20),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
+                        }
+                      },
+                      child: Text('Submit',
+                          style: TextStyle(
+                              color: Colors.white
+                          )),
+                    ),)
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
+  Widget buildCustomerDetailsCard({
+    required String name,
+    required String email,
+    required String contact,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade300,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.shade200,
+            blurRadius: 6,
+            spreadRadius: 2,
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            "Customer Details",
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.black87,
+            ),
+          ),
+          const SizedBox(height: 8),
+          buildDetailRow(Icons.person, name),
+          buildDetailRow(Icons.email, email),
+          buildDetailRow(Icons.phone, contact),
+        ],
+      ),
+    );
+  }
 
-                                  if (EID_attachment.isNotEmpty)
-                                    Column(
-                                      children: [
-                                        Row(
-                                          children: EID_attachment
-                                              .map((attachment) => Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: Image.file(
-                                              attachment,
-                                              width: 100,
-                                              height: 100,
-                                              fit: BoxFit.cover,
-                                            ),
-                                          ))
-                                              .toList(),
-                                        ),
-                                        SizedBox(height: 10),
-                                        // Plus icon to add more images
+  Widget buildDetailRow(IconData icon, String text) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      child: Row(
+        children: [
+          Icon(icon, size: 20, color: Colors.blueGrey),
+          const SizedBox(width: 8),
+          Text(
+            text,
+            style: const TextStyle(fontSize: 16, color: Colors.black87),
+          ),
+        ],
+      ),
+    );
+  }
 
-                                        ElevatedButton(
-                                          style: ElevatedButton.styleFrom(
-                                            shape: CircleBorder(), // Makes the button round
-                                            padding: EdgeInsets.all(16), // Adds padding around the icon
-                                            elevation: 5, // Adds elevation for the shadow effect
-                                            backgroundColor: Colors.white, // Button background color
-                                          ),
-                                          onPressed: _showEIDAttachmentOptions, // Trigger image picker
-                                          child: Icon(
-                                            Icons.add,
-                                            size: 30, // Icon size
-                                            color: Colors.blueAccent, // Icon color
-                                          ),
-                                        ),
-                                      ],
-                                    )
-                                  else
-                                    ElevatedButton(
-                                      style: ElevatedButton.styleFrom(
-                                        shape: CircleBorder(), // Makes the button round
-                                        padding: EdgeInsets.all(16), // Adds padding around the icon
-                                        elevation: 5, // Adds elevation for the shadow effect
-                                        backgroundColor: Colors.white, // Button background color
-                                      ),
-                                      onPressed: _showEIDAttachmentOptions, // Trigger image picker
-                                      child: Icon(
-                                        Icons.attach_file,
-                                        size: 30, // Icon size
-                                        color: Colors.blueAccent, // Icon color
-                                      ),
-                                    ),
-
-
-                                ],
-                              ),),
-                          ]),
-
-                      SizedBox(height: 20,),
-
-                      Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children:[
-
-                            Container(
-                              margin: EdgeInsets.only(left: 20, right: 20),
-                              child: Row(
-                                children: [
-                                  Text(
-                                    'Passport',
-                                    style: TextStyle(fontSize: 16,
-                                      fontWeight: FontWeight.bold,),
-                                  ),
-                                  SizedBox(width: 2),
-                                  Text(
-                                    '*', // Red asterisk for required field
-                                    style: TextStyle(
-                                      fontSize: 20,
-                                      color: Colors.red, // Red color for the asterisk
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            SizedBox(height: 20),
-                            Container(
-                              margin: EdgeInsets.only(left:20,right: 20),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  if (passport_attachment.isNotEmpty)
-                                    Column(
-                                      children: [
-                                        Row(
-                                          children: passport_attachment
-                                              .map((attachment) => Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: Image.file(
-                                              attachment,
-                                              width: 100,
-                                              height: 100,
-                                              fit: BoxFit.cover,
-                                            ),
-                                          ))
-                                              .toList(),
-                                        ),
-                                        SizedBox(height: 10),
-                                        // Plus icon to add more images
-
-                                        ElevatedButton(
-                                          style: ElevatedButton.styleFrom(
-                                            shape: CircleBorder(), // Makes the button round
-                                            padding: EdgeInsets.all(16), // Adds padding around the icon
-                                            elevation: 5, // Adds elevation for the shadow effect
-                                            backgroundColor: Colors.white, // Button background color
-                                          ),
-                                          onPressed: _showPassportAttachmentOptions, // Trigger image picker
-                                          child: Icon(
-                                            Icons.add,
-                                            size: 30, // Icon size
-                                            color: Colors.blueAccent, // Icon color
-                                          ),
-                                        ),
-                                      ],
-                                    )
-                                  else
-                                    ElevatedButton(
-                                      style: ElevatedButton.styleFrom(
-                                        shape: CircleBorder(), // Makes the button round
-                                        padding: EdgeInsets.all(16), // Adds padding around the icon
-                                        elevation: 5, // Adds elevation for the shadow effect
-                                        backgroundColor: Colors.white, // Button background color
-                                      ),
-                                      onPressed: _showEIDAttachmentOptions, // Trigger image picker
-                                      child: Icon(
-                                        Icons.attach_file,
-                                        size: 30, // Icon size
-                                        color: Colors.blueAccent, // Icon color
-                                      ),
-                                    ),
-
-
-                                ],
-                              ),),
-                          ]),
-
-                      SizedBox(height: 20,),
-                      Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children:[
-
-                            Container(
-                              margin: EdgeInsets.only(left: 20, right: 20),
-                              child: Row(
-                                children: [
-                                  Text(
-                                    'Visa Copy',
-                                    style: TextStyle(fontSize: 16,
-                                      fontWeight: FontWeight.bold,),
-                                  ),
-                                  SizedBox(width: 2),
-                                  Text(
-                                    '*', // Red asterisk for required field
-                                    style: TextStyle(
-                                      fontSize: 20,
-                                      color: Colors.red, // Red color for the asterisk
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            SizedBox(height: 20),
-                            Container(
-                              margin: EdgeInsets.only(left:20,right: 20),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  if (visa_attachment.isNotEmpty)
-                                    Column(
-                                      children: [
-                                        Row(
-                                          children: visa_attachment
-                                              .map((attachment) => Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: Image.file(
-                                              attachment,
-                                              width: 100,
-                                              height: 100,
-                                              fit: BoxFit.cover,
-                                            ),
-                                          ))
-                                              .toList(),
-                                        ),
-                                        SizedBox(height: 10),
-                                        // Plus icon to add more images
-
-                                        ElevatedButton(
-                                          style: ElevatedButton.styleFrom(
-                                            shape: CircleBorder(), // Makes the button round
-                                            padding: EdgeInsets.all(16), // Adds padding around the icon
-                                            elevation: 5, // Adds elevation for the shadow effect
-                                            backgroundColor: Colors.white, // Button background color
-                                          ),
-                                          onPressed: _showPassportAttachmentOptions, // Trigger image picker
-                                          child: Icon(
-                                            Icons.add,
-                                            size: 30, // Icon size
-                                            color: Colors.blueAccent, // Icon color
-                                          ),
-                                        ),
-                                      ],
-                                    )
-                                  else
-                                    ElevatedButton(
-                                      style: ElevatedButton.styleFrom(
-                                        shape: CircleBorder(), // Makes the button round
-                                        padding: EdgeInsets.all(16), // Adds padding around the icon
-                                        elevation: 5, // Adds elevation for the shadow effect
-                                        backgroundColor: Colors.white, // Button background color
-                                      ),
-                                      onPressed: _showVisaAttachmentOptions, // Trigger image picker
-                                      child: Icon(
-                                        Icons.attach_file,
-                                        size: 30, // Icon size
-                                        color: Colors.blueAccent, // Icon color
-                                      ),
-                                    ),
-
-
-                                ],
-                              ),),
-                          ]),
-
-
-
-                      Container(
-                        width: MediaQuery.of(context).size.width,
-                        margin: EdgeInsets.only(left: 20,right: 20,top: 20,bottom: 80),
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: appbar_color,
-                            elevation: 5, // Adjust the elevation to make it look elevated
-                            shadowColor: Colors.black.withOpacity(0.5), // Optional: adjust the shadow color
-                          ),
-                          onPressed: () {
-                            {
-                              if (EID_attachment.isEmpty) {
-                                _showSnackBar("Please upload Emirates ID.");
-                              } else if (passport_attachment.isEmpty) {
-                                _showSnackBar("Please upload Passport.");
-                              } else if (visa_attachment.isEmpty) {
-                                _showSnackBar("Please upload Visa Copy.");
-                              } else {
-
-                                // form submit ok
-                              }
-                            }
-                          },
-                          child: Text('Submit',
-                              style: TextStyle(
-                                  color: Colors.white
-                              )),
-                        ),)
-                    ])
+  Widget buildDocumentCard({
+    required String title,
+    required String? filePath,
+    required VoidCallback onPickFile,
+    required VoidCallback onCaptureFile,
+  }) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.shade200,
+            blurRadius: 6,
+            spreadRadius: 2,
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
+            ),
+            const SizedBox(height: 8),
+            filePath != null
+                ? Row(
+              children: [
+                const Icon(Icons.insert_drive_file, color: Colors.green),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    filePath,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                IconButton(
+                  onPressed: () {
+                    setState(() {
+                      if (title == 'Emirates ID') {
+                        emiratesIdFile = null;
+                      } else if (title == 'Passport') {
+                        passportFile = null;
+                      } else if (title == 'Visa Copy') {
+                        visaCopyFile = null;
+                      }
+                    });
+                  },
+                  icon: const Icon(Icons.delete, color: Colors.red),
+                ),
+              ],
             )
-        )
-    );}}
+                : const Text(
+              'No file selected',
+              style: TextStyle(color: Colors.grey, fontSize: 14),
+            ),
+            const SizedBox(height: 12),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+
+                _buildDecentButton(
+                  'Upload',
+                  Icons.upload,
+                  Colors.blueAccent,
+                    onPickFile
+                ),
+
+                SizedBox(width: 10),
+
+                _buildDecentButton(
+                    'Capture',
+                    Icons.camera_alt_outlined,
+                    Colors.deepOrange,
+                    onCaptureFile
+                ),
+
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+Widget _buildDecentButton(
+    String label, IconData icon, Color color, VoidCallback onPressed) {
+  return InkWell(
+    onTap: onPressed,
+    borderRadius: BorderRadius.circular(30.0),
+    splashColor: color.withOpacity(0.2),
+    highlightColor: color.withOpacity(0.1),
+    child: Container(
+      margin: EdgeInsets.only(top: 10.0),
+      padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(30.0),
+        color: Colors.white,
+        border: Border.all(
+          color: color.withOpacity(0.3),
+          width: 1.5,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: color.withOpacity(0.1),
+            blurRadius: 8.0,
+            offset: Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Icon(icon, color: color),
+          SizedBox(width: 8.0),
+          Text(
+            label,
+            style: TextStyle(
+              color: color,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+}

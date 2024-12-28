@@ -306,7 +306,7 @@ class Sidebar extends StatelessWidget {
                     Navigator.pushReplacement(
                       context,
 
-                      MaterialPageRoute(builder: (context) => kycUpdate()),          // navigate to users screen
+                      MaterialPageRoute(builder: (context) => DecentTenantKYCForm()),          // navigate to users screen
                     );
                   }),
 

@@ -44,11 +44,24 @@ class _DecentTenantKYCFormState extends State<DecentTenantKYCForm> {
     }
   }
 
+  void _showSnackBar(String message) {
+    final snackBar = SnackBar(
+      content: Text(
+        message,
+        style: TextStyle(fontSize: 16),
+      ),
+      backgroundColor: Colors.redAccent,
+      behavior: SnackBarBehavior.floating, // Makes the SnackBar float above the screen
+      margin: EdgeInsets.all(16), // Adds margin around the SnackBar
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Tenant KYC Form', style: TextStyle(color: Colors.white)),
+        title: Text('KYC Update', style: TextStyle(color: Colors.white)),
         centerTitle: true,
         elevation: 1,
         backgroundColor: Colors.blueGrey,
@@ -172,7 +185,6 @@ class _DecentTenantKYCFormState extends State<DecentTenantKYCForm> {
                   ),
                   const SizedBox(height: 30),
 
-
                   Container(
                     width: MediaQuery.of(context).size.width,
                     margin: EdgeInsets.only(left: 20,right: 20,top: 20,bottom: 80),
@@ -184,14 +196,23 @@ class _DecentTenantKYCFormState extends State<DecentTenantKYCForm> {
                       ),
                       onPressed: () {
                         {
+                          if (emiratesIdFile!.isEmpty) {
+                            _showSnackBar("Please upload Emirates ID.");
+                          } else if (passportFile!.isEmpty) {
+                            _showSnackBar("Please upload Passport.");
+                          } else if (visaCopyFile!.isEmpty) {
+                            _showSnackBar("Please upload Visa Copy.");
+                          } else {
+                            // Proceed with form submission
 
+                          }
                         }
                       },
                       child: Text('Submit',
                           style: TextStyle(
                               color: Colors.white
                           )),
-                    ),)
+                    ),),
                 ],
               ),
             ),

@@ -37,6 +37,9 @@ class _MaintenanceTicketReportState
     },
   ];
 
+  List<Map<String, dynamic>> filteredTickets = [];
+  String searchQuery = "";
+
   List<bool> _expandedTickets = [];
 
   @override
@@ -44,6 +47,22 @@ class _MaintenanceTicketReportState
     super.initState();
     // Initialize all tickets to be collapsed by default
     _expandedTickets = List.generate(tickets.length, (index) => false);
+    filteredTickets = tickets;
+  }
+
+  void _updateSearchQuery(String query) {
+    setState(() {
+      searchQuery = query;
+      filteredTickets = tickets
+          .where((ticket) =>
+      ticket['ticketNumber'].toLowerCase().contains(query.toLowerCase()) ||
+          ticket['unitNumber'].toLowerCase().contains(query.toLowerCase()) ||
+          ticket['buildingName'].toLowerCase().contains(query.toLowerCase()) ||
+          ticket['emirate'].toLowerCase().contains(query.toLowerCase()) ||
+          ticket['status'].toLowerCase().contains(query.toLowerCase()) ||
+          ticket['maintenanceType'].toLowerCase().contains(query.toLowerCase()))
+          .toList();
+    });
   }
 
   @override
@@ -53,6 +72,25 @@ class _MaintenanceTicketReportState
       backgroundColor: const Color(0xFFF2F4F8),
       appBar: AppBar(
         elevation: 0,
+        bottom: PreferredSize(
+          preferredSize: Size.fromHeight(60.0),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              onChanged: _updateSearchQuery,
+              decoration: InputDecoration(
+                hintText: 'Search Ticket',
+                prefixIcon: Icon(Icons.search),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12.0),
+                  borderSide: BorderSide.none,
+                ),
+                filled: true,
+                fillColor: Colors.white,
+              ),
+            ),
+          ),
+        ),
         leading: IconButton(
           icon: Icon(Icons.menu,
               color: Colors.white),
@@ -84,9 +122,9 @@ class _MaintenanceTicketReportState
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
         child: ListView.builder(
-          itemCount: tickets.length,
+          itemCount: filteredTickets.length,
           itemBuilder: (context, index) {
-            final ticket = tickets[index];
+            final ticket = filteredTickets[index];
             return _buildTicketCard(ticket, index);
           },
         ),

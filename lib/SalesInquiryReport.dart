@@ -93,6 +93,10 @@ class _SalesInquiryReportState
 
   ];
 
+  List<InquiryModel> filteredInquiries = [];
+  String searchQuery = "";
+
+
   List<bool> _expandedinquirys = [];
 
   @override
@@ -100,6 +104,22 @@ class _SalesInquiryReportState
     super.initState();
     // Initialize all inquirys to be collapsed by default
     _expandedinquirys = List.generate(salesinquiry.length, (index) => false);
+    filteredInquiries = salesinquiry;
+  }
+
+  void _updateSearchQuery(String query) {
+    setState(() {
+      searchQuery = query;
+      filteredInquiries = salesinquiry
+          .where((inquiry) =>
+      inquiry.customer_name.toLowerCase().contains(query.toLowerCase()) ||
+          inquiry.unit_type.toLowerCase().contains(query.toLowerCase()) ||
+          inquiry.area.toLowerCase().contains(query.toLowerCase()) ||
+          inquiry.emirate.toLowerCase().contains(query.toLowerCase()) ||
+          inquiry.status.toLowerCase().contains(query.toLowerCase()) ||
+          inquiry.inquiry_no.toLowerCase().contains(query.toLowerCase()))
+          .toList();
+    });
   }
 
   @override
@@ -109,6 +129,25 @@ class _SalesInquiryReportState
       backgroundColor: const Color(0xFFF2F4F8),
       appBar: AppBar(
         elevation: 0,
+        bottom: PreferredSize(
+          preferredSize: Size.fromHeight(60.0),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              onChanged: _updateSearchQuery,
+              decoration: InputDecoration(
+                hintText: 'Search Inquiries',
+                prefixIcon: Icon(Icons.search),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12.0),
+                  borderSide: BorderSide.none,
+                ),
+                filled: true,
+                fillColor: Colors.white,
+              ),
+            ),
+          ),
+        ),
         leading: GestureDetector(
           onTap: ()
           {
@@ -146,9 +185,9 @@ class _SalesInquiryReportState
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
         child: ListView.builder(
-          itemCount: salesinquiry.length,
+          itemCount: filteredInquiries.length,
           itemBuilder: (context, index) {
-            final inquiry = salesinquiry[index];
+            final inquiry = filteredInquiries[index];
             return _buildinquiryCard(inquiry, index);
           },
         ),
@@ -156,7 +195,7 @@ class _SalesInquiryReportState
       floatingActionButton: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [Colors.blueGrey, Colors.blueGrey],
+            colors: [Colors.blueGrey.shade300, Colors.blueGrey.shade400],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
@@ -212,6 +251,7 @@ class _SalesInquiryReportState
             _buildinquiryHeader(inquiry),
             Divider(color: Colors.grey[300]),
             _buildinquiryDetails(inquiry),
+
 
             Container(
               width: MediaQuery.of(context).size.width,
@@ -269,7 +309,7 @@ class _SalesInquiryReportState
                           SizedBox(width:5)
                         ],),
 
-                        _buildDecentButton(
+                        /*_buildDecentButton(
                           'Delete',
                           Icons.delete,
                           Colors.red,
@@ -277,7 +317,7 @@ class _SalesInquiryReportState
                             // Delete action
                             // Add your delete functionality here
                           },
-                        ),
+                        ),*/
                       ],
                     ),
                 )

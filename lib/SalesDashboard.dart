@@ -545,9 +545,39 @@ class _SalesDashboardScreenState extends State<SalesDashboardScreen> with Ticker
                         child: IconButton(
                           icon: Icon(Icons.info_outline),
                           onPressed: () {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Row(
+                                  children: [
+                                    Icon(Icons.info, color: Colors.white),
+                                    SizedBox(width: 10),
+                                    Expanded(
+                                      child: Text(
+                                        'Scroll up/down to change year',
+                                        style: TextStyle(color: Colors.white),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                backgroundColor: Colors.blueGrey.shade500,
+                                behavior: SnackBarBehavior.floating,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                action: SnackBarAction(
+                                  label: 'Got it',
+                                  textColor: Colors.lightGreenAccent,
+                                  onPressed: () {
+                                    // Optional: Add action logic
+                                  },
+                                ),
+                                duration: Duration(seconds: 2),
+                              ),
+                            );
                           },
                         ),
                       ),
+
                     ],
                   ),
                   ],

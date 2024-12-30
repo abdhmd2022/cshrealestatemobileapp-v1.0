@@ -17,5 +17,5 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.black),
         useMaterial3: true,
       ),
-      home: DecentTenantKYCForm(),
+      home: Login(title: app_name,),
     );}}

@@ -1,10 +1,12 @@
 import 'package:cshrealestatemobile/CreateSalesInquiry.dart';
 import 'package:cshrealestatemobile/FollowupSalesInquiry.dart';
 import 'package:cshrealestatemobile/SalesInquiryTransfer.dart';
+import 'package:cshrealestatemobile/constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
+import 'SalesDashboard.dart';
 import 'Sidebar.dart';
 
 class SalesInquiryReport extends StatefulWidget {
@@ -107,16 +109,22 @@ class _SalesInquiryReportState
       backgroundColor: const Color(0xFFF2F4F8),
       appBar: AppBar(
         elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.menu,
-              color: Colors.white),
-          onPressed: () {
-            _scaffoldKey.currentState!.openDrawer();
+        leading: GestureDetector(
+          onTap: ()
+          {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => SalesDashboard()),
+            );
           },
-        ),
+          child: Icon(
+            Icons.arrow_back,
+            color: Colors.white,
+          ),),
 
-        backgroundColor: Colors.blueGrey,
+        backgroundColor: appbar_color,
         centerTitle: true,
+
         title: Text(
           'Inquiries',
           style: TextStyle(

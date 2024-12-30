@@ -225,7 +225,7 @@ class Sidebar extends StatelessWidget {
                     );
                   }),
 
-              ListTile(
+              /*ListTile(
                   title: Text('Sales Inquiry'),
                   leading: Icon(Icons.note_add,
                     color: Colors.black,
@@ -237,7 +237,7 @@ class Sidebar extends StatelessWidget {
 
                       MaterialPageRoute(builder: (context) => SalesInquiryReport()),          // navigate to users screen
                     );
-                  }),
+                  }),*/
 
               ListTile(
                   title: Text('Available Units'),

@@ -180,15 +180,13 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
                   ),
                 ),
               ),
-                title: Flexible(
-                  child: Text(
-                    'Available Units',
-                    style: TextStyle(
-                        color: Colors.white
-                    ),
-                    overflow: TextOverflow.ellipsis, // Truncate text if it overflows
-                    maxLines: 1, // Display only one line of text
+                title: Text(
+                  'Available Units',
+                  style: TextStyle(
+                      color: Colors.white
                   ),
+                  overflow: TextOverflow.ellipsis, // Truncate text if it overflows
+                  maxLines: 2, // Display only one line of text
                 ),
                 backgroundColor: appbar_color,
                 automaticallyImplyLeading: false,

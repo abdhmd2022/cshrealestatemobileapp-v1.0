@@ -301,117 +301,134 @@ class _SalesInquiryTransferPageState extends State<SalesInquiryTransfer> with Ti
                                   margin: EdgeInsets.only(left: 20, right: 20, top: 20),
                                   child: Container(
                                     padding: EdgeInsets.all(20),
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      children: [
-                                        Container(
-                                          margin: EdgeInsets.only(bottom: 5),
-                                          child: Column(
-                                            mainAxisAlignment: MainAxisAlignment.center,
-                                            crossAxisAlignment: CrossAxisAlignment.center,
-                                            children: [
-                                              Column(
-                                                mainAxisSize: MainAxisSize.min,
-                                                children: [
-                                                  Container(
-                                                    margin: EdgeInsets.all(8), // Add margin around the icon
-                                                    child: Icon(
-                                                      Icons.person,
-                                                      color: Colors.blueGrey,
-                                                      size: 30, // Adjust size for better look
+                                    child: Column(children: [
+
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        children: [
+                                          Container(
+                                            margin: EdgeInsets.only(bottom: 5),
+                                            child: Column(
+                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              crossAxisAlignment: CrossAxisAlignment.center,
+                                              children: [
+                                                Column(
+                                                  mainAxisSize: MainAxisSize.min,
+                                                  children: [
+                                                    Container(
+                                                      margin: EdgeInsets.all(8), // Add margin around the icon
+                                                      child: Icon(
+                                                        Icons.person,
+                                                        color: Colors.blueGrey,
+                                                        size: 30, // Adjust size for better look
+                                                      ),
                                                     ),
-                                                  ),
-                                                  SizedBox(height: 2), // Space between icon and text
-                                                  Text(
-                                                    "Saadan",
-                                                    style: TextStyle(fontSize: 16, color: Colors.blueGrey),
-                                                  ),
-                                                ],
-                                              ),
-                                              SizedBox(height: 30),
-                                              Column(
-                                                children: [
-                                                  Container(
-                                                    margin: EdgeInsets.all(8), // Add margin around the icon
-                                                    child: Icon(
-                                                      Icons.apartment,
-                                                      color: Colors.blueGrey,
-                                                      size: 30, // Adjust size for better look
+                                                    SizedBox(height: 2), // Space between icon and text
+                                                    Text(
+                                                      "Saadan",
+                                                      style: TextStyle(fontSize: 16, color: Colors.blueGrey),
                                                     ),
-                                                  ),
-                                                  SizedBox(height: 2), // Space between icon and text
-                                                  Text(
-                                                    "Al Khaleej Center",
-                                                    style: TextStyle(fontSize: 16, color: Colors.blueGrey),
-                                                  ),
-                                                ],
-                                              ),
-                                            ],
+                                                  ],
+                                                ),
+                                                SizedBox(height: 30),
+                                                Column(
+                                                  children: [
+                                                    Container(
+                                                      margin: EdgeInsets.all(8), // Add margin around the icon
+                                                      child: Icon(
+                                                        Icons.apartment,
+                                                        color: Colors.blueGrey,
+                                                        size: 30, // Adjust size for better look
+                                                      ),
+                                                    ),
+                                                    SizedBox(height: 2), // Space between icon and text
+                                                    Text(
+                                                      "Al Khaleej Center",
+                                                      style: TextStyle(fontSize: 16, color: Colors.blueGrey),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
                                           ),
-                                        ),
-                                        SizedBox(width: MediaQuery.of(context).size.width / 5),
-                                        Container(
-                                          margin: EdgeInsets.only(bottom: 5),
-                                          child: Column(
-                                            mainAxisAlignment: MainAxisAlignment.center,
-                                            crossAxisAlignment: CrossAxisAlignment.center,
-                                            children: [
-                                              Column(
-                                                mainAxisSize: MainAxisSize.min,
-                                                children: [
-                                                  Container(
-                                                    margin: EdgeInsets.all(8), // Add margin around the icon
-                                                    child: Icon(
-                                                      Icons.home,
-                                                      color: Colors.blueGrey,
-                                                      size: 30, // Adjust size for better look
+                                          SizedBox(width: MediaQuery.of(context).size.width / 5),
+                                          Container(
+                                            margin: EdgeInsets.only(bottom: 5),
+                                            child: Column(
+                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              crossAxisAlignment: CrossAxisAlignment.center,
+                                              children: [
+                                                Column(
+                                                  mainAxisSize: MainAxisSize.min,
+                                                  children: [
+                                                    Container(
+                                                      margin: EdgeInsets.all(8), // Add margin around the icon
+                                                      child: Icon(
+                                                        Icons.home,
+                                                        color: Colors.blueGrey,
+                                                        size: 30, // Adjust size for better look
+                                                      ),
                                                     ),
-                                                  ),
-                                                  SizedBox(height: 2), // Space between icon and text
-                                                  Text(
-                                                    '101',
-                                                    style: TextStyle(fontSize: 16, color: Colors.blueGrey),
-                                                  ),
-                                                ],
-                                              ),
-                                              SizedBox(height: 30),
-                                              Column(
-                                                mainAxisSize: MainAxisSize.min,
-                                                children: [
-                                                  Container(
-                                                    margin: EdgeInsets.all(8), // Add margin around the icon
-                                                    child: Icon(
-                                                      Icons.public,
-                                                      color: Colors.blueGrey,
-                                                      size: 30, // Adjust size for better look
+                                                    SizedBox(height: 2), // Space between icon and text
+                                                    Text(
+                                                      '101',
+                                                      style: TextStyle(fontSize: 16, color: Colors.blueGrey),
                                                     ),
-                                                  ),
-                                                  SizedBox(height: 2), // Space between icon and text
-                                                  Text(
-                                                    "Dubai",
-                                                    style: TextStyle(fontSize: 16, color: Colors.blueGrey),
-                                                  ),
-                                                ],
-                                              ),
-                                            ],
+                                                  ],
+                                                ),
+                                                SizedBox(height: 30),
+                                                Column(
+                                                  mainAxisSize: MainAxisSize.min,
+                                                  children: [
+                                                    Container(
+                                                      margin: EdgeInsets.all(8), // Add margin around the icon
+                                                      child: Icon(
+                                                        Icons.public,
+                                                        color: Colors.blueGrey,
+                                                        size: 30, // Adjust size for better look
+                                                      ),
+                                                    ),
+                                                    SizedBox(height: 2), // Space between icon and text
+                                                    Text(
+                                                      "Dubai",
+                                                      style: TextStyle(fontSize: 16, color: Colors.blueGrey),
+                                                    ),
+                                                  ],
+                                                ),
+
+
+                                              ],
+                                            ),
                                           ),
-                                        ),
-                                      ],
-                                    ),
+
+
+                                        ],
+                                      ),
+
+
+                                      // edit button for card
+                                      /*SizedBox(height: 10,),
+
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        crossAxisAlignment: CrossAxisAlignment.center,
+
+                                        children: [
+
+                                        _buildDecentButton('Edit',
+                                            Icons.edit,
+                                            Colors.blueGrey.shade300,
+                                                ()
+                                            {
+
+                                            })
+                                      ],)*/
+                                    ],),
+
                                   ),
                                 ),
-                                Positioned(
-                                  top: 30,
-                                  right: 30,
-                                  child: IconButton(
-                                    icon: Icon(Icons.edit, color: Colors.blueGrey),
-                                    onPressed: () {
-                                      // Add your edit functionality here
-                                      print('Edit icon pressed');
-                                    },
-                                  ),
-                                ),
+
                               ],
                             ),
 
@@ -643,3 +660,45 @@ class _SalesInquiryTransferPageState extends State<SalesInquiryTransfer> with Ti
             )
         )
     );}}
+
+Widget _buildDecentButton(
+    String label, IconData icon, Color color, VoidCallback onPressed) {
+  return InkWell(
+    onTap: onPressed,
+    borderRadius: BorderRadius.circular(30.0),
+    splashColor: color.withOpacity(0.2),
+    highlightColor: color.withOpacity(0.1),
+    child: Container(
+      margin: EdgeInsets.only(top: 10.0),
+      padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(30.0),
+        color: Colors.white,
+        border: Border.all(
+          color: color.withOpacity(0.3),
+          width: 1.5,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: color.withOpacity(0.1),
+            blurRadius: 8.0,
+            offset: Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Icon(icon, color: color),
+          SizedBox(width: 8.0),
+          Text(
+            label,
+            style: TextStyle(
+              color: color,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+}

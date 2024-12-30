@@ -114,10 +114,10 @@ class SalesProfileScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       _buildDetailRow('Role', 'Sales Executive'),
-                      const SizedBox(height: 10),
-                      _buildDetailRow('Team', 'Sales'),
-                      const SizedBox(height: 10),
-                      _buildDetailRow('Target', '\AED 50K/month'),
+                      /*const SizedBox(height: 10),
+                      _buildDetailRow('Team', 'Sales'),*/
+                      /*const SizedBox(height: 10),
+                      _buildDetailRow('Target', '\AED 50K/month'),*/
                     ],
                   ),
                 ),

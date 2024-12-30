@@ -87,195 +87,198 @@ class _LoginPageState extends State<Login> {
                   end: Alignment.bottomCenter
               ),
             ),*/
-            child:    Column(
-                children: [
-                  Container(
-                    padding: EdgeInsets.only(top: 50,bottom: 30),
-                    child: Icon(
-                            Icons.real_estate_agent_outlined,
-                      size: 120,
-                    )
-                  ),
+            child:    SingleChildScrollView(
+              child:  Column(
+                  children: [
+                    Container(
+                        padding: EdgeInsets.only(top: 50,bottom: 30),
+                        child: Icon(
+                          Icons.real_estate_agent_outlined,
+                          size: 120,
+                        )
+                    ),
 
-                  Visibility(
-                      visible: isVisibleLoginForm,
-                      child:Expanded(child:  Container(
-                          padding: EdgeInsets.only(left: 32,right: 32,top : 70),
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.1),
-                                  spreadRadius: 0, // Spread radius
-                                  blurRadius: 20, // Blur radius
-                                  offset: Offset(0, -10),
-                                ),
-                              ],
-                              borderRadius: BorderRadius.only(
-                                  topLeft: Radius.circular(50),
-                                  topRight: Radius.circular(50)
-                              )
-                          ),
-                          child:Form(
-                              key: _formKey,
-                              child: ListView(
-                                  children: [
-                                    Container(padding: EdgeInsets.only(top: 5),
-                                      child: TextFormField(
-                                        controller: emailController,
-                                        focusNode: _emailFocusNode,
+                    Visibility(
+                        visible: isVisibleLoginForm,
+                        child:Container(
+                            padding: EdgeInsets.only(left: 32,right: 32,top : 70),
+                            decoration: BoxDecoration(
+                                color: Colors.white,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.1),
+                                    spreadRadius: 0, // Spread radius
+                                    blurRadius: 20, // Blur radius
+                                    offset: Offset(0, -10),
+                                  ),
+                                ],
+                                borderRadius: BorderRadius.only(
+                                    topLeft: Radius.circular(50),
+                                    topRight: Radius.circular(50)
+                                )
+                            ),
+                            child:Form(
+                                key: _formKey,
+                                child: ListView(
+                                    shrinkWrap: true,
+                                    physics: NeverScrollableScrollPhysics(),
+                                    children: [
+                                      Container(padding: EdgeInsets.only(top: 5),
+                                        child: TextFormField(
+                                          controller: emailController,
+                                          focusNode: _emailFocusNode,
+                                          decoration: InputDecoration(
+                                            labelText: 'Email Address',
+                                            filled: true,
+                                            enabledBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(5.0),
+                                              borderSide: BorderSide(
+                                                color: Colors.black12,
+                                              ),
+                                            ),
+                                            fillColor: Colors.white,
+                                            labelStyle: TextStyle(
+                                              color: Colors.black54, // Set the label text color to black
+                                            ),
+                                            focusedBorder: UnderlineInputBorder(
+                                              borderSide: BorderSide(color: Colors.black),
+                                            ),
+                                          ),
+                                          style: TextStyle(
+                                            color: Colors.black,
+                                          ),
+
+                                          validator: (value) {
+                                            if (value == null || value.isEmpty)
+                                            {
+                                              return 'Please enter your email address';
+                                            }
+                                            if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value))
+                                            {
+                                              return 'Please enter a valid email address';
+                                            }
+                                            return null;
+                                          },
+                                          onSaved: (value) => email = value!,
+                                        ),),
+
+                                      SizedBox(height: 16.0),
+
+                                      TextFormField(
+                                        controller: passwordController,
+                                        focusNode: _passwordFocusNode,
                                         decoration: InputDecoration(
-                                          labelText: 'Email Address',
-                                          filled: true,
                                           enabledBorder: OutlineInputBorder(
                                             borderRadius: BorderRadius.circular(5.0),
                                             borderSide: BorderSide(
                                               color: Colors.black12,
                                             ),
                                           ),
+
+                                          suffixIcon: GestureDetector(
+                                            onTap: () {
+                                              setState(() {
+                                                _obscureText = !_obscureText;
+                                              });
+                                            },
+                                            child: Icon(
+                                              _obscureText ? Icons.visibility_off :  Icons.visibility,
+                                            ),
+                                          ),
+
+                                          labelText: 'Password',
+                                          filled: true,
                                           fillColor: Colors.white,
                                           labelStyle: TextStyle(
                                             color: Colors.black54, // Set the label text color to black
                                           ),
+
                                           focusedBorder: UnderlineInputBorder(
                                             borderSide: BorderSide(color: Colors.black),
+
                                           ),
                                         ),
-                                        style: TextStyle(
-                                          color: Colors.black,
-                                        ),
+                                        obscureText: _obscureText,
 
-                                        validator: (value) {
+                                        validator: (value)
+                                        {
                                           if (value == null || value.isEmpty)
                                           {
-                                            return 'Please enter your email address';
-                                          }
-                                          if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value))
-                                          {
-                                            return 'Please enter a valid email address';
+                                            return 'Please enter your password';
                                           }
                                           return null;
                                         },
-                                        onSaved: (value) => email = value!,
-                                      ),),
-
-                                    SizedBox(height: 16.0),
-
-                                    TextFormField(
-                                      controller: passwordController,
-                                      focusNode: _passwordFocusNode,
-                                      decoration: InputDecoration(
-                                        enabledBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(5.0),
-                                          borderSide: BorderSide(
-                                            color: Colors.black12,
-                                          ),
-                                        ),
-
-                                        suffixIcon: GestureDetector(
-                                          onTap: () {
-                                            setState(() {
-                                              _obscureText = !_obscureText;
-                                            });
-                                          },
-                                          child: Icon(
-                                            _obscureText ? Icons.visibility_off :  Icons.visibility,
-                                          ),
-                                        ),
-
-                                        labelText: 'Password',
-                                        filled: true,
-                                        fillColor: Colors.white,
-                                        labelStyle: TextStyle(
-                                          color: Colors.black54, // Set the label text color to black
-                                        ),
-
-                                        focusedBorder: UnderlineInputBorder(
-                                          borderSide: BorderSide(color: Colors.black),
-
-                                        ),
+                                        onSaved: (value) => password = value!,
                                       ),
-                                      obscureText: _obscureText,
 
-                                      validator: (value)
-                                      {
-                                        if (value == null || value.isEmpty)
-                                        {
-                                          return 'Please enter your password';
-                                        }
-                                        return null;
-                                      },
-                                      onSaved: (value) => password = value!,
-                                    ),
+                                      SizedBox(height: 5), // Ad
 
-                                    SizedBox(height: 5), // Ad
-
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      children: [
-                                        GestureDetector(
-                                          onTap: () {
-                                            // Handle "Forgot Password" tap event here
-                                            setState(() {
-                                              /*isVisibleLoginForm = false;*/
-
-                                              /*resetemailController.text = usernameController.text;*/
-
-                                              /*passwordController.clear();*/
-                                              /*isVisibleResetPassForm = true;*/
-                                            });
-                                          },
-                                          child: Text(
-                                            'Forgot Password?',
-                                            style: TextStyle(
-                                              color: Colors.black54,
-                                              decoration: TextDecoration.underline,
-                                            ),
-                                          ),
-                                        ),
-                                      ],),
-
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Expanded(child: Row(mainAxisAlignment: MainAxisAlignment.start,children: [
-
-                                          Checkbox(
-                                            value: remember_me,
-                                            activeColor: appbar_color,
-                                            checkColor: Colors.white, // Optional: sets the color of the check icon
-                                            onChanged: (bool? value) {
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.end,
+                                        children: [
+                                          GestureDetector(
+                                            onTap: () {
+                                              // Handle "Forgot Password" tap event here
                                               setState(() {
-                                                remember_me = value!;
+                                                /*isVisibleLoginForm = false;*/
+
+                                                /*resetemailController.text = usernameController.text;*/
+
+                                                /*passwordController.clear();*/
+                                                /*isVisibleResetPassForm = true;*/
                                               });
                                             },
+                                            child: Text(
+                                              'Forgot Password?',
+                                              style: TextStyle(
+                                                color: Colors.black54,
+                                                decoration: TextDecoration.underline,
+                                              ),
+                                            ),
                                           ),
+                                        ],),
 
-                                          Text(
-                                            'Remember Me',
-                                            style: TextStyle(fontSize: 16,color: Colors.black54),
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Expanded(child: Row(mainAxisAlignment: MainAxisAlignment.start,children: [
+
+                                            Checkbox(
+                                              value: remember_me,
+                                              activeColor: appbar_color,
+                                              checkColor: Colors.white, // Optional: sets the color of the check icon
+                                              onChanged: (bool? value) {
+                                                setState(() {
+                                                  remember_me = value!;
+                                                });
+                                              },
+                                            ),
+
+                                            Text(
+                                              'Remember Me',
+                                              style: TextStyle(fontSize: 16,color: Colors.black54),
+                                            ),
+
+                                          ]))
+                                        ],
+                                      ),
+
+                                      SizedBox(height: 32.0),
+
+                                      Container(
+                                        width: MediaQuery.of(context).size.width,
+                                        child: _isLoading
+                                            ? CupertinoActivityIndicator(
+                                          radius: 20.0,
+                                        )
+                                            : ElevatedButton(
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: _buttonColor,
+                                            elevation: 5, // Adjust the elevation to make it look elevated
+                                            shadowColor: Colors.black.withOpacity(0.5), // Optional: adjust the shadow color
                                           ),
-
-                                        ]))
-                                      ],
-                                    ),
-
-                                    SizedBox(height: 32.0),
-
-                                    Container(
-                                      width: MediaQuery.of(context).size.width,
-                                      child: _isLoading
-                                          ? CupertinoActivityIndicator(
-                                        radius: 20.0,
-                                      )
-                                          : ElevatedButton(
-                                        style: ElevatedButton.styleFrom(
-                                          backgroundColor: _buttonColor,
-                                          elevation: 5, // Adjust the elevation to make it look elevated
-                                          shadowColor: Colors.black.withOpacity(0.5), // Optional: adjust the shadow color
-                                        ),
-                                        onPressed: () {
-                                          /*if (_formKey.currentState != null &&
+                                          onPressed: () {
+                                            /*if (_formKey.currentState != null &&
                                               _formKey.currentState!.validate()) {
                                             _formKey.currentState!.save();
                                             *//*_login();*//*
@@ -284,18 +287,18 @@ class _LoginPageState extends State<Login> {
                                                 MaterialPageRoute(builder: (context) => MaintenanceTicketCreation()));
                                           }*/
 
-                                          Navigator.push(
-                                              context,
-                                              MaterialPageRoute(builder: (context) => SalesDashboard()));
-                                        },
-                                        child: Text('Login',
-                                            style: TextStyle(
-                                                color: Colors.white
-                                            )),
+                                            Navigator.push(
+                                                context,
+                                                MaterialPageRoute(builder: (context) => SalesDashboard()));
+                                          },
+                                          child: Text('Login',
+                                              style: TextStyle(
+                                                  color: Colors.white
+                                              )),
+                                        ),
                                       ),
-                                    ),
 
-                                    /*SizedBox(height: 5),
+                                      /*SizedBox(height: 5),
 
                                     GestureDetector(onTap: ()
                                     {
@@ -315,11 +318,12 @@ class _LoginPageState extends State<Login> {
                                                           decoration: TextDecoration.underline))
                                                 ])))*/]))
 
-                      ),)
-                  ),
-                  /*Visibility(
+                        )
+                    ),
+                    /*Visibility(
                       visible: isVisibleResetPassForm,
                       child:Expanded(child:Container(
+
 
                           padding: EdgeInsets.only(left: 32,right: 32,top: 70),
                           decoration: BoxDecoration(
@@ -617,5 +621,7 @@ class _LoginPageState extends State<Login> {
                                     )
                                   ]
                               ))))),*/
-                ]))
+                  ])
+            ),
+           )
         );}}

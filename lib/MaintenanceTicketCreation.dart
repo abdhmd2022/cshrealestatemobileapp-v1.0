@@ -245,6 +245,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
+
         backgroundColor: const Color(0xFFF2F4F8),
         appBar: AppBar(
           backgroundColor: appbar_color,
@@ -317,100 +318,123 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                     ),*/
 
                     Card(
-                        surfaceTintColor: Colors.blueGrey,
+                        surfaceTintColor: Colors.white,
                         elevation: 10,
                       margin: EdgeInsets.only(left: 20,right: 20, top: 20),
                         child:  Container(
                             padding: EdgeInsets.all(20),
-                            child:Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Container(
-                              margin: EdgeInsets.only(bottom: 5,),
-                              child:Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Icon(
-                                        Icons.person,
-                                        color: Colors.blueGrey,
-                                      ),
-                                      SizedBox(height: 2), // Add space between icon and text
-                                      Text(
-                                        'Name',
-                                        style: TextStyle(fontSize: 16,
-                                            color: Colors.blueGrey),
-                                      ),
-                                    ],
-                                  ),
+                            child:Column(
+                              children: [
 
-                                  SizedBox(height: 30,),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Container(
+                                      margin: EdgeInsets.only(bottom: 5,),
+                                      child:Column(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        children: [
+                                          Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Icon(
+                                                Icons.person,
+                                                color: Colors.blueGrey,
+                                              ),
+                                              SizedBox(height: 2), // Add space between icon and text
+                                              Text(
+                                                'Name',
+                                                style: TextStyle(fontSize: 16,
+                                                    color: Colors.blueGrey),
+                                              ),
+                                            ],
+                                          ),
 
-                                  Column(
-                                    children: [
-                                      Icon(
-                                        Icons.hardware_outlined,
-                                        color: Colors.blueGrey,
-                                      ),
-                                      SizedBox(height: 2), // Add space between icon and text
-                                      Text(
-                                        'Status',
-                                        style: TextStyle(fontSize: 16,
-                                            color: Colors.blueGrey),
-                                      ),
-                                    ],
-                                  ),
-                                ],)
-                              ,),
+                                          SizedBox(height: 30,),
 
-                            SizedBox(width: MediaQuery.of(context).size.width/5,),
-                            Container(
-                              margin: EdgeInsets.only(bottom: 5,),
-                              child:Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Icon(
-                                        Icons.home_filled,
-                                        color: Colors.blueGrey,
-                                      ),
-                                      SizedBox(height: 2), // Add space between icon and text
-                                      Text(
-                                        'Unit No',
-                                        style: TextStyle(fontSize: 16,
-                                            color: Colors.blueGrey),
-                                      ),
-                                    ],
-                                  ),
+                                          Column(
+                                            children: [
+                                              Icon(
+                                                Icons.hardware_outlined,
+                                                color: Colors.blueGrey,
+                                              ),
+                                              SizedBox(height: 2), // Add space between icon and text
+                                              Text(
+                                                'Status',
+                                                style: TextStyle(fontSize: 16,
+                                                    color: Colors.blueGrey),
+                                              ),
+                                            ],
+                                          ),
+                                        ],)
+                                      ,),
 
-                                  SizedBox(height: 30,),
+                                    SizedBox(width: MediaQuery.of(context).size.width/5,),
+                                    Container(
+                                      margin: EdgeInsets.only(bottom: 5,),
+                                      child:Column(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        children: [
+                                          Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Icon(
+                                                Icons.home_filled,
+                                                color: Colors.blueGrey,
+                                              ),
+                                              SizedBox(height: 2), // Add space between icon and text
+                                              Text(
+                                                'Unit No',
+                                                style: TextStyle(fontSize: 16,
+                                                    color: Colors.blueGrey),
+                                              ),
+                                            ],
+                                          ),
 
-                                  Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Icon(
-                                        Icons.apartment,
-                                        color: Colors.blueGrey,
-                                      ),
-                                      SizedBox(height: 2), // Add space between icon and text
-                                      Text(
-                                        'Building',
-                                        style: TextStyle(fontSize: 16,
-                                            color: Colors.blueGrey),
-                                      ),
-                                    ],
-                                  ),
-                                ],)
-                              ,),
-                          ],))
+                                          SizedBox(height: 30,),
+
+                                          Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Icon(
+                                                Icons.apartment,
+                                                color: Colors.blueGrey,
+                                              ),
+                                              SizedBox(height: 2), // Add space between icon and text
+                                              Text(
+                                                'Building',
+                                                style: TextStyle(fontSize: 16,
+                                                    color: Colors.blueGrey),
+                                              ),
+                                            ],
+                                          ),
+                                        ],)
+                                      ,),
+                                  ],),
+                                SizedBox(height: 10,),
+
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        crossAxisAlignment: CrossAxisAlignment.center,
+
+                                        children: [
+
+                                        _buildDecentButton('Edit',
+                                            Icons.edit,
+                                            Colors.blueGrey.shade300,
+                                                ()
+                                            {
+
+                                            })
+                                      ],)
+                              ],
+                            ),
+                            )
                       ),
+
 
                     Container(
                       margin: EdgeInsets.only(left: 20,right: 20,top: 30),
@@ -452,6 +476,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                             border: Border.all(color: Colors.black, width: 0.75),
                           ),
                           child: MultiSelectDialogField(
+
                             items: maintenance_types_list
                                 .map((type) => MultiSelectItem<String>(type, type))
                                 .toList(),
@@ -561,6 +586,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                                   right: 20
                               ),
                               child: TextFormField(
+
                                   controller: _descriptionController,
                                   keyboardType: TextInputType.multiline,
                                   maxLength: 500, // Limit input to 500 characters
@@ -747,3 +773,45 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
             )
             )
     );}}
+
+Widget _buildDecentButton(
+    String label, IconData icon, Color color, VoidCallback onPressed) {
+  return InkWell(
+    onTap: onPressed,
+    borderRadius: BorderRadius.circular(30.0),
+    splashColor: color.withOpacity(0.2),
+    highlightColor: color.withOpacity(0.1),
+    child: Container(
+      margin: EdgeInsets.only(top: 10.0),
+      padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(30.0),
+        color: Colors.white,
+        border: Border.all(
+          color: color.withOpacity(0.3),
+          width: 1.5,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: color.withOpacity(0.1),
+            blurRadius: 8.0,
+            offset: Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Icon(icon, color: color),
+          SizedBox(width: 8.0),
+          Text(
+            label,
+            style: TextStyle(
+              color: color,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+}

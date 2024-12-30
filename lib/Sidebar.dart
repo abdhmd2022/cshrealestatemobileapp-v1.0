@@ -239,7 +239,7 @@ class Sidebar extends StatelessWidget {
                     );
                   }),*/
 
-              ListTile(
+              /*ListTile(
                   title: Text('Available Units'),
                   leading: Icon(Icons.layers,
                     color: Colors.black,
@@ -251,7 +251,7 @@ class Sidebar extends StatelessWidget {
 
                       MaterialPageRoute(builder: (context) => AvailableUnitsReport()),          // navigate to users screen
                     );
-                  }),
+                  }),*/
 
               ListTile(
                   title: Text('Tenant Complaint'),

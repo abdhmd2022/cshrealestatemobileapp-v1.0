@@ -122,6 +122,7 @@ class _SalesDashboardScreenState extends State<SalesDashboardScreen> with Ticker
 
     return Scaffold(
       key: _scaffoldKey,
+      backgroundColor: const Color(0xFFF2F4F8),
       appBar: AppBar(
         backgroundColor: appbar_color,
         title: Text('Sales Dashboard',

@@ -1,6 +1,5 @@
 import 'package:cshrealestatemobile/AvailableUnitsReport.dart';
 import 'package:cshrealestatemobile/KYCUpdate.dart';
-import 'package:cshrealestatemobile/SalesProfile.dart';
 import 'package:cshrealestatemobile/TenantAccessCardRequest.dart';
 import 'package:cshrealestatemobile/TenantComplaint.dart';
 import 'package:cshrealestatemobile/TenantProfile.dart';
@@ -11,12 +10,8 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
-import 'package:intl/intl.dart';
 import 'dart:ui' as ui;
-
-
 import 'MaintenanceTicketReport.dart';
-import 'SalesInquiryReport.dart';
 import 'Sidebar.dart';
 
 class TenantDashboard extends StatelessWidget {

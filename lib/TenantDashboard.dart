@@ -224,11 +224,8 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-
-
-
                       Container(
-                        height: 50,
+                        height: 65,
                         width: containerWidth,
                         child: CupertinoPicker(
                           scrollController: FixedExtentScrollController(initialItem: selectedIndex),
@@ -337,14 +334,11 @@ color: Colors.orange,
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () {
-
                         Navigator.push
-
                           (
                           context,
                           MaterialPageRoute(builder: (context) => MaintenanceTicketReport()), // navigate to company and serial select screen
                         );
-
                       },
                       style: ElevatedButton.styleFrom(
                         padding: EdgeInsets.zero, // Remove padding from button to ensure container fills the space

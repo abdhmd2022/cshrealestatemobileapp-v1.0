@@ -197,7 +197,6 @@ class _TenantComplaintPageState extends State<TenantComplaint> with TickerProvid
                                         style: TextStyle(
                                             fontWeight: FontWeight.bold,
                                             fontSize: 16
-
                                         )
                                     ),
                                     SizedBox(width: 2),

@@ -300,27 +300,26 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
                 height: 275,
                 child: PieChart(
                   PieChartData(
-                    sectionsSpace: 4, // Small gap between sections for better visual appeal
-                    centerSpaceRadius: 60, // Space in the middle of the pie chart
+                    sectionsSpace: 0, // Small gap between sections for better visual appeal
+                    centerSpaceRadius: 0, // Space in the middle of the pie chart
                     sections: [
-
                       PieChartSectionData(
                         color: Colors.blueAccent,
-
                         value: data["Cleared"]!.toDouble(),
                         title: 'Cleared\n${data["Cleared"]}',
-                        radius: 70,
+                        radius: 140,
                         titleStyle: TextStyle(fontSize: 15.0, fontWeight: FontWeight.bold,
                         color: Colors.white),
                       ),
                       PieChartSectionData(
-color: Colors.orange,
+                        color: Colors.orange,
                         value: data["Pending"]!.toDouble(),
                         title: 'Pending\n${data["Pending"]}',
-                        radius: 70,
+                        radius: 140,
                         titleStyle: TextStyle(fontSize: 15.0, fontWeight: FontWeight.bold,
                         color: Colors.white),
                       ),
+
                     ],
                   ),
                 ),
@@ -435,9 +434,9 @@ color: Colors.orange,
                   ),
                 ],
               ),
+
               SizedBox(height: 20),
 
-              // Other Buttons
               Container(
                 width: MediaQuery.of(context).size.width,
                 child: Column(
@@ -454,14 +453,10 @@ color: Colors.orange,
                           Expanded(
                             child: ElevatedButton(
                               onPressed: () {
-
                                 Navigator.pushReplacement(
                                   context,
-
                                   MaterialPageRoute(builder: (context) => TenantmoveinoutRequest()),          // navigate to users screen
                                 );
-
-
                               },
                               style: ElevatedButton.styleFrom(
                                 padding: EdgeInsets.zero, // Remove padding from button to ensure container fills the space
@@ -501,27 +496,17 @@ color: Colors.orange,
                                           fontWeight: FontWeight.w600,
                                           color: Colors.white,
                                           letterSpacing: 0.8,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                          SizedBox(width: 10),
+                                        ))]))))),
 
+                          SizedBox(width: 10),
                           // Second Button
                           Expanded(
                             child: ElevatedButton(
                               onPressed: () {
-
                                 Navigator.pushReplacement(
                                   context,
-
                                   MaterialPageRoute(builder: (context) => TenantAccessCardRequest()),          // navigate to users screen
                                 );
-
                               },
                               style: ElevatedButton.styleFrom(
                                 padding: EdgeInsets.all(0), // Remove padding for full gradient coverage
@@ -560,33 +545,19 @@ color: Colors.orange,
                                           fontWeight: FontWeight.w600,
                                           color: Colors.white,
                                           letterSpacing: 0.8,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                                        ))])))))])),
 
                     SizedBox(height: 10),
 
-                    // Fourth Button
                     Row(
                       children: [
                         Expanded(
                           child: ElevatedButton(
                             onPressed: () {
-
                               Navigator.pushReplacement(
                                 context,
-
                                 MaterialPageRoute(builder: (context) => AvailableUnitsReport()),          // navigate to users screen
                               );
-
                             },
                             style: ElevatedButton.styleFrom(
                               padding: EdgeInsets.all(0), // Remove padding for full gradient coverage
@@ -623,16 +594,7 @@ color: Colors.orange,
                                         fontWeight: FontWeight.w600,
                                         color: Colors.white,
                                         letterSpacing: 0.8,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+                                      ))])))))]),
 
                     SizedBox(height: 10,),
 
@@ -642,14 +604,11 @@ color: Colors.orange,
                         Expanded(
                           child: ElevatedButton(
                             onPressed: () {
-
                               Navigator.pushReplacement
-
                                 (
                                 context,
                                 MaterialPageRoute(builder: (context) => DecentTenantKYCForm()), // navigate to company and serial select screen
                               );
-
                             },
                             style: ElevatedButton.styleFrom(
                               padding: EdgeInsets.zero, // Remove padding from button to ensure container fills the space
@@ -673,9 +632,7 @@ color: Colors.orange,
                                 ),
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
-
                                   children: [
-
                                     Icon(
                                       Icons.upload_file,
                                       color: Colors.white,
@@ -691,19 +648,16 @@ color: Colors.orange,
                                 )
                             ),
                           ),
-
                         ),
                         SizedBox(width: 10),
                         Expanded(
                           child: ElevatedButton(
                             onPressed: () {
                               Navigator.pushReplacement
-
                                 (
                                 context,
                                 MaterialPageRoute(builder: (context) => TenantComplaint()), // navigate to company and serial select screen
                               );
-
                             },
                             style: ElevatedButton.styleFrom(
                               padding: EdgeInsets.zero, // Remove padding from button to ensure container fills the space
@@ -729,7 +683,6 @@ color: Colors.orange,
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
-
                                     Icon(
                                         Icons.info_outline,
                                         color: Colors.white
@@ -739,21 +692,16 @@ color: Colors.orange,
                                       'Complaints/Suggestions',
                                       style: TextStyle(fontSize: 16,
                                           color: Colors.white),
-                                    ),
-
-
-                                  ],
+                                    )
+                                  ]
                                 )
-                            ),
-                          ),
-
-                        ),
-                      ],
+                            )
+                          )
+                        )
+                      ]
                     ))
-
-
-                  ],
-                ),
+                  ]
+                )
               ),
 
 
@@ -978,29 +926,3 @@ double _getTextHeight(String text) {
   return textPainter.size.height; // Return the height of the text
 }
 
-// Pie Chart Widget
-class PieChartSection extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return PieChart(
-      PieChartData(
-        sections: [
-          PieChartSectionData(
-            color: Colors.green,
-            value: 60,
-            title: 'Cleared\n60%',
-            radius: 60,
-            titleStyle: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
-          ),
-          PieChartSectionData(
-            color: Colors.red,
-            value: 40,
-            title: 'Pending\n40%',
-            radius: 60,
-            titleStyle: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
-          ),
-        ],
-      ),
-    );
-  }
-}

@@ -104,6 +104,7 @@ class TenantProfile extends StatelessWidget {
             ),
             const SizedBox(height: 20),
 
+
             // User Details
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),

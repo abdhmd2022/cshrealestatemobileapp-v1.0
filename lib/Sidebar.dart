@@ -5,8 +5,10 @@ import 'package:cshrealestatemobile/KYCUpdate.dart';
 import 'package:cshrealestatemobile/MaintenanceTicketReport.dart';
 import 'package:cshrealestatemobile/SalesDashboard.dart';
 import 'package:cshrealestatemobile/SalesInquiryReport.dart';
+import 'package:cshrealestatemobile/SalesProfile.dart';
 import 'package:cshrealestatemobile/TenantAccessCardRequest.dart';
 import 'package:cshrealestatemobile/TenantComplaint.dart';
+import 'package:cshrealestatemobile/TenantDashboard.dart';
 import 'package:cshrealestatemobile/TenantProfile.dart';
 import 'package:cshrealestatemobile/TenantmoveinoutRequest.dart';
 import 'package:flutter/material.dart';
@@ -96,7 +98,7 @@ class Sidebar extends StatelessWidget {
                                           ))]))]))),
               ListTile
                 (
-                title: Text('Dashboard'),
+                title: Text('Sales Dashboard'),
                 leading: Icon(Icons.dashboard,
                   color: Colors.black,
                 ),
@@ -111,7 +113,7 @@ class Sidebar extends StatelessWidget {
                   );
                 },
               ),
-              ListTile(
+              /*ListTile(
                 title: Text('Maintenance Ticket'),
                 leading: Icon(Icons.hardware,
                   color: Colors.black,
@@ -122,6 +124,23 @@ class Sidebar extends StatelessWidget {
                     (
                     context,
                     MaterialPageRoute(builder: (context) => MaintenanceTicketReport()), // navigate to company and serial select screen
+                  );
+
+                  // navigate to companies screen
+                },
+              ),
+*/
+              ListTile(
+                title: Text('Tenant Dashboard'),
+                leading: Icon(Icons.dashboard,
+                  color: Colors.black,
+                ),
+                onTap: () async {
+                  Navigator.pushReplacement
+
+                    (
+                    context,
+                    MaterialPageRoute(builder: (context) => TenantDashboardScreen()), // navigate to company and serial select screen
                   );
 
                   // navigate to companies screen
@@ -138,7 +157,8 @@ class Sidebar extends StatelessWidget {
                   onTap: () {
                     Navigator.pop(context);
 
-                    *//*Fluttertoast.showToast(msg: 'Coming Soon');*//*
+                    */
+              /*Fluttertoast.showToast(msg: 'Coming Soon');*//*
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(builder: (context) => PendingSalesEntry()),
@@ -212,8 +232,8 @@ class Sidebar extends StatelessWidget {
                       })),*/
 
               ListTile(
-                  title: Text('Profile'),
-                  leading: Icon(Icons.info_outline,
+                  title: Text('Sales Profile'),
+                  leading: Icon(Icons.person,
                     color: Colors.black,
                   ),
                   enabled: true,
@@ -221,7 +241,7 @@ class Sidebar extends StatelessWidget {
                     Navigator.pushReplacement(
                       context,
 
-                      MaterialPageRoute(builder: (context) => TenantProfile()),          // navigate to users screen
+                      MaterialPageRoute(builder: (context) => SalesProfileScreen()),          // navigate to users screen
                     );
                   }),
 
@@ -253,62 +273,12 @@ class Sidebar extends StatelessWidget {
                     );
                   }),*/
 
-              ListTile(
-                  title: Text('Tenant Complaint'),
-                  leading: Icon(Icons.report_gmailerrorred,
-                    color: Colors.black,
-                  ),
-                  enabled: true,
-                  onTap: () {
-                    Navigator.pushReplacement(
-                      context,
-
-                      MaterialPageRoute(builder: (context) => TenantComplaint()),          // navigate to users screen
-                    );
-                  }),
-
-              ListTile(
-                  title: Text('Tenant Move In/Out Request'),
-                  leading: Icon(Icons.transfer_within_a_station_outlined,
-                    color: Colors.black,
-                  ),
-                  enabled: true,
-                  onTap: () {
-                    Navigator.pushReplacement(
-                      context,
-
-                      MaterialPageRoute(builder: (context) => TenantmoveinoutRequest()),          // navigate to users screen
-                    );
-                  }),
-
-              ListTile(
-                  title: Text('Tenant Access Card Request'),
-                  leading: Icon(Icons.vpn_key ,
-                    color: Colors.black,
-                  ),
-                  enabled: true,
-                  onTap: () {
-                    Navigator.pushReplacement(
-                      context,
-
-                      MaterialPageRoute(builder: (context) => TenantAccessCardRequest()),          // navigate to users screen
-                    );
-                  }),
 
 
-              ListTile(
-                  title: Text('Tenant KYC Update'),
-                  leading: Icon(Icons.edit_document ,
-                    color: Colors.black,
-                  ),
-                  enabled: true,
-                  onTap: () {
-                    Navigator.pushReplacement(
-                      context,
 
-                      MaterialPageRoute(builder: (context) => DecentTenantKYCForm()),          // navigate to users screen
-                    );
-                  }),
+
+
+
 
               /*ListTile(
                   title: Text('Settings'),

@@ -1,4 +1,5 @@
 import 'package:cshrealestatemobile/SalesDashboard.dart';
+import 'package:cshrealestatemobile/TenantDashboard.dart';
 import 'package:flutter/material.dart';
 
 import 'constants.dart';
@@ -20,7 +21,7 @@ class TenantProfile extends StatelessWidget {
 
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (context) => SalesDashboard()),
+                MaterialPageRoute(builder: (context) => TenantDashboard()),
               );
             },
             child:

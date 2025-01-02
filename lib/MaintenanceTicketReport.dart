@@ -1,4 +1,6 @@
 import 'package:cshrealestatemobile/MaintenanceTicketCreation.dart';
+import 'package:cshrealestatemobile/SalesDashboard.dart';
+import 'package:cshrealestatemobile/TenantDashboard.dart';
 import 'package:flutter/material.dart';
 import 'Sidebar.dart';
 
@@ -89,13 +91,18 @@ class _MaintenanceTicketReportState
             ),
           ),
         ),
-        leading: IconButton(
-          icon: Icon(Icons.menu,
-              color: Colors.white),
-          onPressed: () {
-            _scaffoldKey.currentState!.openDrawer();
+        leading: GestureDetector(
+          onTap: ()
+          {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => TenantDashboard()),
+            );
           },
-        ),
+          child: Icon(
+            Icons.arrow_back,
+            color: Colors.white,
+          ),),
 
         backgroundColor: Colors.blueGrey,
         centerTitle: true,

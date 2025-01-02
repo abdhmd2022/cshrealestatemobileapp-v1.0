@@ -191,18 +191,12 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
                 backgroundColor: appbar_color,
                 automaticallyImplyLeading: false,
                 centerTitle: true,
-              leading: GestureDetector(
-                onTap: ()
-                {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => SalesDashboard()),
-                  );
-                },
-                child: Icon(
-                  Icons.arrow_back,
-                  color: Colors.white,
-                ),),),
+                leading: IconButton(
+                  icon: Icon(Icons.menu, color: Colors.white),
+                  onPressed: () {
+                    _scaffoldKey.currentState!.openDrawer();
+                  },
+                ),),
             drawer: Sidebar
               (
                 isDashEnable: isDashEnable,

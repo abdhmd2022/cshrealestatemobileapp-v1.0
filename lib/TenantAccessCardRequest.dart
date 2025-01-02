@@ -1,4 +1,5 @@
 import 'package:cshrealestatemobile/SalesDashboard.dart';
+import 'package:cshrealestatemobile/TenantDashboard.dart';
 import 'package:cshrealestatemobile/constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -231,7 +232,7 @@ class _TenantAccessCardRequestPageState extends State<TenantAccessCardRequest> w
             {
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (context) => SalesDashboard()),
+                MaterialPageRoute(builder: (context) => TenantDashboard()),
               );
             },
             child: Icon(

@@ -209,8 +209,6 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-
-
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child:  Container(
@@ -296,9 +294,6 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
                   )
                 )
                 ,),
-
-
-
               SizedBox(height: 20),
               // Pie Chart
               SizedBox(

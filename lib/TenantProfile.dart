@@ -1,3 +1,4 @@
+import 'package:cshrealestatemobile/MaintenanceTicketReport.dart';
 import 'package:cshrealestatemobile/SalesDashboard.dart';
 import 'package:cshrealestatemobile/TenantDashboard.dart';
 import 'package:flutter/material.dart';
@@ -93,8 +94,11 @@ class TenantProfile extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
+
                   _buildStatCard('Apartments', '2', Colors.blue),
-                  _buildStatCard('Total Tickets', '34', Colors.orange),
+
+                  _buildStatCard('Total Tickets', '2', Colors.orange)
+
                 ],
               ),
             ),
@@ -112,8 +116,6 @@ class TenantProfile extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _buildDetailRow('Category', 'Tenant'),
-                      const SizedBox(height: 10),
                       _buildDetailRow('Role', 'Tenant'),
                     ],
                   ),

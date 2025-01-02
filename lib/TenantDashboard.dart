@@ -374,7 +374,7 @@ color: Colors.orange,
                                 color: Colors.white,
                               ),
 
-                              SizedBox(height: 2,),
+                              SizedBox(height: 5,),
                               Text(
                                 'Maintenance',
                                 style: TextStyle(fontSize: 16,
@@ -426,7 +426,7 @@ color: Colors.orange,
                                 Icons.person,
                                 color: Colors.white
                               ),
-                              SizedBox(height: 2,),
+                              SizedBox(height: 5,),
                               Text(
                                 'Profile',
                                 style: TextStyle(fontSize: 16,
@@ -688,7 +688,7 @@ color: Colors.orange,
                                       color: Colors.white,
                                     ),
 
-                                    SizedBox(height: 2,),
+                                    SizedBox(height: 10,),
                                     Text(
                                       'KYC Update',
                                       style: TextStyle(fontSize: 16,
@@ -734,14 +734,14 @@ color: Colors.orange,
                                 ),
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
-
+                                  crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
 
                                     Icon(
                                         Icons.info_outline,
                                         color: Colors.white
                                     ),
-                                    SizedBox(height: 2,),
+                                    SizedBox(height: 10,),
                                     Text(
                                       'Complaints/Suggestions',
                                       style: TextStyle(fontSize: 16,

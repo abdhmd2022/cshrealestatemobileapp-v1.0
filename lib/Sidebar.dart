@@ -231,20 +231,6 @@ class Sidebar extends StatelessWidget {
                         );
                       })),*/
 
-              ListTile(
-                  title: Text('Sales Profile'),
-                  leading: Icon(Icons.person,
-                    color: Colors.black,
-                  ),
-                  enabled: true,
-                  onTap: () {
-                    Navigator.pushReplacement(
-                      context,
-
-                      MaterialPageRoute(builder: (context) => SalesProfileScreen()),          // navigate to users screen
-                    );
-                  }),
-
               /*ListTile(
                   title: Text('Sales Inquiry'),
                   leading: Icon(Icons.note_add,

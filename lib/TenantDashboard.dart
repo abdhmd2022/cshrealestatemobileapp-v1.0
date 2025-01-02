@@ -108,7 +108,7 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
   // Data for each apartment's cheques
   final Map<String, Map<String, int>> chequeData = {
     "1 BHK (Al Khaleej Center)": {"Cleared": 2, "Pending": 4},
-    "2 BHK (Musalla Tower)": {"Cleared": 5, "Pending": 1},
+    "2 BHK (Musalla Tower)": {"Cleared": 5, "Pending": 2},
 
   };
 

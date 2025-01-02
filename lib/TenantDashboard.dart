@@ -213,85 +213,89 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
 
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
-                child:  Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Cheque(s)',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  )
-                  ,
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                child:  Container(
+                  width: MediaQuery.of(context).size.width,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Container(
-                        height: 65,
-                        width: containerWidth,
-                        child: CupertinoPicker(
-                          scrollController: FixedExtentScrollController(initialItem: selectedIndex),
-                          itemExtent: 40,
-                          onSelectedItemChanged: (index) {
-                            setState(() {
-                              selectedIndex = index;
-                              final selected = apartments[index];
-                              selectedApartment =
-                              "${selected['apartment']} (${selected['building']})";
-                            });
-                          },
-                          children: apartments
-                              .map((apartment) => Center(
-                            child: Text(
-                              "${apartment['apartment']} (${apartment['building']})",
-                              style: TextStyle(fontSize: 18.0),
+                      Text(
+                        'Cheque(s)',
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      )
+                      ,
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            height: 65,
+                            width: containerWidth,
+                            child: CupertinoPicker(
+                              scrollController: FixedExtentScrollController(initialItem: selectedIndex),
+                              itemExtent: 40,
+                              onSelectedItemChanged: (index) {
+                                setState(() {
+                                  selectedIndex = index;
+                                  final selected = apartments[index];
+                                  selectedApartment =
+                                  "${selected['apartment']} (${selected['building']})";
+                                });
+                              },
+                              children: apartments
+                                  .map((apartment) => Center(
+                                child: Text(
+                                  "${apartment['apartment']} (${apartment['building']})",
+                                  style: TextStyle(fontSize: 18.0,),
+                                ),
+                              ))
+                                  .toList(),
                             ),
-                          ))
-                              .toList(),
-                        ),
-                      ),
+                          ),
 
 
-                      Tooltip(
-                        message: 'Scroll up/down to change unit',
-                        child: IconButton(
-                          icon: Icon(Icons.info_outline),
-                          onPressed: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Row(
-                                  children: [
-                                    Icon(Icons.info, color: Colors.white),
-                                    SizedBox(width: 10),
-                                    Expanded(
-                                      child: Text(
-                                        'Scroll up/down to change unit',
-                                        style: TextStyle(color: Colors.white),
-                                      ),
+                          Tooltip(
+                            message: 'Scroll up/down to change unit',
+                            child: IconButton(
+                              icon: Icon(Icons.info_outline),
+                              onPressed: () {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Row(
+                                      children: [
+                                        Icon(Icons.info, color: Colors.white),
+                                        SizedBox(width: 10),
+                                        Expanded(
+                                          child: Text(
+                                            'Scroll up/down to change unit',
+                                            style: TextStyle(color: Colors.white),
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                  ],
-                                ),
-                                backgroundColor: Colors.blueGrey.shade500,
-                                behavior: SnackBarBehavior.floating,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                action: SnackBarAction(
-                                  label: 'Got it',
-                                  textColor: Colors.lightGreenAccent,
-                                  onPressed: () {
-                                    // Optional: Add action logic
-                                  },
-                                ),
-                                duration: Duration(seconds: 2),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
+                                    backgroundColor: Colors.blueGrey.shade500,
+                                    behavior: SnackBarBehavior.floating,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    action: SnackBarAction(
+                                      label: 'Got it',
+                                      textColor: Colors.lightGreenAccent,
+                                      onPressed: () {
+                                        // Optional: Add action logic
+                                      },
+                                    ),
+                                    duration: Duration(seconds: 2),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
 
+                        ],
+                      ),
                     ],
-                  ),
-                ],
-              ),),
+                  )
+                )
+                ,),
 
 
 

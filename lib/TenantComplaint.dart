@@ -62,7 +62,6 @@ class _TenantComplaintPageState extends State<TenantComplaint> with TickerProvid
         appBar: AppBar(
           backgroundColor: appbar_color,
           automaticallyImplyLeading: false,
-
           leading: GestureDetector(
             onTap: ()
             {
@@ -93,7 +92,6 @@ class _TenantComplaintPageState extends State<TenantComplaint> with TickerProvid
             tickerProvider: this),
 
         body: Container(
-
             height: MediaQuery.of(context).size.height,
             width: MediaQuery.of(context).size.width,
             decoration:BoxDecoration(
@@ -113,18 +111,14 @@ class _TenantComplaintPageState extends State<TenantComplaint> with TickerProvid
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-
-
                         Card
                           (
-
                             surfaceTintColor: Colors.blueGrey,
                             elevation: 10,
                             margin: EdgeInsets.only(left: 20,right: 20, top: 20),
                             child:  Container(
                                 padding: EdgeInsets.all(20),
                                 child:Column(
-
                                   children: [
                                     Row(
                                       mainAxisAlignment: MainAxisAlignment.center,
@@ -148,11 +142,7 @@ class _TenantComplaintPageState extends State<TenantComplaint> with TickerProvid
                                                     'Saadan',
                                                     style: TextStyle(fontSize: 16,
                                                         color: Colors.blueGrey),
-                                                  ),
-                                                ],
-                                              ),
-                                            ],)
-                                          ,),
+                                                  )])])),
 
                                         SizedBox(width: MediaQuery.of(context).size.width/5,),
                                         Container(
@@ -173,14 +163,7 @@ class _TenantComplaintPageState extends State<TenantComplaint> with TickerProvid
                                                     '+971 500000000',
                                                     style: TextStyle(fontSize: 16,
                                                         color: Colors.blueGrey),
-                                                  ),
-                                                ],
-                                              ),
-
-
-                                            ],)
-                                          ,),
-                                      ],),
+                                                  )])]))]),
 
                                     SizedBox(height: 30,),
 
@@ -196,13 +179,7 @@ class _TenantComplaintPageState extends State<TenantComplaint> with TickerProvid
                                           'saadan@ca-eim.com',
                                           style: TextStyle(fontSize: 16,
                                               color: Colors.blueGrey),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                )
-                            )
-                        ),
+                                        )])]))),
 
                         Container(
                           margin: EdgeInsets.only(left: 20,right: 20,top: 30),

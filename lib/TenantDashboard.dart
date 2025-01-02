@@ -338,7 +338,7 @@ color: Colors.orange,
                     child: ElevatedButton(
                       onPressed: () {
 
-                        Navigator.pushReplacement
+                        Navigator.push
 
                           (
                           context,

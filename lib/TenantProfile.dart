@@ -97,13 +97,54 @@ class TenantProfile extends StatelessWidget {
 
                   _buildStatCard('Apartments', '2', Colors.blue),
 
-                  _buildStatCard('Total Tickets', '2', Colors.orange)
 
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: ()
+                      {
+
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => MaintenanceTicketReport()),
+                        );
+                      }
+                      ,
+                      child: Card(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        elevation: 4,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 15),
+                          child: Column(
+                            children: [
+                              Text(
+                                '2',
+                                style: TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.orange,
+                                ),
+                              ),
+                              const SizedBox(height: 5),
+                              Text(
+                                'Total Tickets',
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.black54,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                      ),
+                    ),
+                  )
                 ],
               ),
             ),
             const SizedBox(height: 20),
-
 
             // User Details
             Padding(

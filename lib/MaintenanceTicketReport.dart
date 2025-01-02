@@ -94,10 +94,7 @@ class _MaintenanceTicketReportState
         leading: GestureDetector(
           onTap: ()
           {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => TenantDashboard()),
-            );
+            Navigator.of(context).pop();
           },
           child: Icon(
             Icons.arrow_back,

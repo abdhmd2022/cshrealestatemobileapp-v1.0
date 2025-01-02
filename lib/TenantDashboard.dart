@@ -108,7 +108,7 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
   // Data for each apartment's cheques
   final Map<String, Map<String, int>> chequeData = {
     "1 BHK (Al Khaleej Center)": {"Cleared": 2, "Pending": 4},
-    "2 BHK (Musalla Tower)": {"Cleared": 4, "Pending": 2},
+    "2 BHK (Musalla Tower)": {"Cleared": 5, "Pending": 1},
 
   };
 
@@ -291,9 +291,7 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
                         ],
                       ),
                     ],
-                  )
-                )
-                ,),
+                  ))),
               SizedBox(height: 20),
               // Pie Chart
               SizedBox(
@@ -319,7 +317,6 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
                         titleStyle: TextStyle(fontSize: 15.0, fontWeight: FontWeight.bold,
                         color: Colors.white),
                       ),
-
                     ],
                   ),
                 ),

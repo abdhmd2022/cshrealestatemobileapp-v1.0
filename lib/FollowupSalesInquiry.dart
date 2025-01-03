@@ -779,18 +779,16 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
 
   Future<void> _initSharedPreferences() async {
 
+
     customernamecontroller.text = widget.name;
     customercontactnocontroller.text = widget.contactno;
     emailcontroller.text = widget.email;
 
     print('emirate list ${widget.existingEmirateList}');
 
-
-
     _preSelectUnitTypes();
 
     _preSelectEmiratesAndAreas();
-
 
   }
 

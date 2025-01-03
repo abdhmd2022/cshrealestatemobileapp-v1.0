@@ -35,10 +35,41 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
   bool isAllUnitsSelected = false;
 
+  String? selectedfollowup_type,selectedfollowup_status;
+
+
+  DateTime? nextFollowUpDate;
+
 
   bool isEmirateSelected = false;
 
   bool isAreasSelected = false;
+
+  bool isQualified = false;
+
+  List<String> followuptype_list = [
+    'Email',
+    'Phone Call',
+    'Whatsapp',
+    'Social Media'
+  ];
+  final List<String> qualifiedStatusList = [
+    'Closed',
+    'Cold',
+    'Contact Later',
+    'Drop',
+    'Hot',
+    'Warm',
+  ];
+
+
+  List<String> followupstatus_list = [
+    'Contact Later',
+    'In Follow-Up',
+    'Not Qualified'
+
+  ];
+
 
 
   bool isAllEmiratesSelected = false;
@@ -1043,6 +1074,298 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                       )),
 
                                   Container(
+                                    child: Column(
+
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Padding(padding: EdgeInsets.only(top: 15,left:20),
+
+                                          child:Row(
+                                            children: [
+                                              Text("Next Follow-Up:",
+                                                  style: TextStyle(
+                                                      fontWeight: FontWeight.bold,
+                                                      fontSize: 16
+
+                                                  )
+                                              ),
+                                              SizedBox(width: 2),
+                                              Text(
+                                                '*', // Red asterisk for required field
+                                                style: TextStyle(
+                                                  fontSize: 20,
+                                                  color: Colors.red, // Red color for the asterisk
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+
+                                        Padding(
+                                          padding: EdgeInsets.only(top: 0, left: 20, right: 20),
+                                          child: GestureDetector(
+                                            onTap: () async {
+                                              DateTime? pickedDate = await showDatePicker(
+                                                context: context,
+
+                                                initialDate: nextFollowUpDate ?? DateTime.now(),
+                                                firstDate: DateTime.now(), // Restrict past dates
+                                                lastDate: DateTime(2100),
+                                                builder: (BuildContext context, Widget? child) {
+                                                  return Theme(
+                                                    data: ThemeData.light().copyWith(
+                                                      colorScheme: ColorScheme.light(
+                                                        primary: Colors.blueGrey, // Header background and selected date color
+                                                        onPrimary: Colors.white, // Header text color
+                                                        onSurface: Colors.blueGrey, // Calendar text color
+                                                      ),
+                                                      textButtonTheme: TextButtonThemeData(
+                                                        style: TextButton.styleFrom(
+                                                          foregroundColor: Colors.blueGrey, // Button text color
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    child: child!,
+                                                  );
+                                                },
+                                              );
+
+                                              if (pickedDate != null) {
+                                                setState(() {
+                                                  nextFollowUpDate = pickedDate; // Save selected date
+                                                });
+                                              }
+                                            },
+                                            child: Container(
+                                              padding: EdgeInsets.symmetric(vertical: 15, horizontal: 10),
+                                              decoration: BoxDecoration(
+                                                border: Border.all(color: Colors.black),
+                                                borderRadius: BorderRadius.circular(10),
+                                              ),
+                                              child: Row(
+                                                mainAxisAlignment: MainAxisAlignment.start,
+                                                children: [
+                                                  Icon(Icons.calendar_today, color: Colors.grey),
+                                                  SizedBox(width: 10,),
+                                                  Text(
+                                                    nextFollowUpDate != null
+                                                        ? "${nextFollowUpDate!.day}-${nextFollowUpDate!.month}-${nextFollowUpDate!.year}"
+                                                        : "Select Next Follow-Up Date",
+                                                    style: TextStyle(fontSize: 16, color: Colors.black54),
+                                                  ),
+
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+
+
+                                      ],
+                                    ),
+                                  ), // next follow up date
+
+                                  Container(
+                                    child: Column(
+
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Padding(padding: EdgeInsets.only(top: 15,left:20),
+
+                                          child:Row(
+                                            children: [
+                                              Text("Follow-Up Type:",
+                                                  style: TextStyle(
+                                                      fontWeight: FontWeight.bold,
+                                                      fontSize: 16
+
+                                                  )
+                                              ),
+                                              SizedBox(width: 2),
+                                              Text(
+                                                '*', // Red asterisk for required field
+                                                style: TextStyle(
+                                                  fontSize: 20,
+                                                  color: Colors.red, // Red color for the asterisk
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+
+                                        Padding(
+                                          padding: EdgeInsets.only(top:0,left:20,right:20,bottom :0),
+
+                                          child: DropdownButtonFormField<dynamic>(
+                                            decoration: InputDecoration(
+
+                                              border: OutlineInputBorder(
+                                                borderSide: BorderSide(color: Colors.black),
+                                                borderRadius: BorderRadius.circular(10.0),
+                                              ),
+                                              focusedBorder: OutlineInputBorder(
+                                                borderSide: BorderSide(color: appbar_color),
+                                                borderRadius: BorderRadius.circular(10.0),
+                                              ),
+                                              enabledBorder: OutlineInputBorder(
+                                                borderRadius: BorderRadius.circular(10.0),
+                                                borderSide: BorderSide(color: Colors.black),
+                                              ),
+                                              contentPadding: EdgeInsets.symmetric(horizontal: 10),
+                                            ),
+
+
+                                            hint: Text('Select Follow-Up Type'), // Add a hint
+                                            value: selectedfollowup_type,
+                                            items: followuptype_list.map((item) {
+                                              return DropdownMenuItem<dynamic>(
+                                                value: item,
+                                                child: Text(item),
+                                              );
+                                            }).toList(),
+                                            onChanged: (value) async {
+                                              selectedfollowup_type = value!;
+                                            },
+
+                                            onTap: ()
+                                            {
+                                              setState(() {
+                                                _isFocused_email = false;
+                                                _isFocus_name = false;
+                                              });
+
+                                            },
+
+                                            validator: (value) {
+                                              if (value == null || value.isEmpty) {
+                                                return 'Follow-Up Type is required'; // Error message
+                                              }
+                                              return null; // No error if a value is selected
+                                            },
+                                          ),
+                                        ),
+
+
+                                      ],
+                                    ),
+                                  ), // follow up type
+
+                                  Container(
+                                    child: Column(
+
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Padding(padding: EdgeInsets.only(top: 15,left:20),
+
+                                            child:Row(
+                                              children: [
+                                                Text("Status:",
+                                                    style: TextStyle(
+                                                        fontWeight: FontWeight.bold,
+                                                        fontSize: 16
+
+                                                    )
+                                                ),
+                                                SizedBox(width: 2),
+                                                Text(
+                                                  '*', // Red asterisk for required field
+                                                  style: TextStyle(
+                                                    fontSize: 20,
+                                                    color: Colors.red, // Red color for the asterisk
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+
+                                          Padding(
+                                            padding: EdgeInsets.only(top:0,left:20,right:20,bottom :0),
+
+                                            child: Column(
+                                              mainAxisAlignment: MainAxisAlignment.start,
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                // Switch for isQualified
+                                                Row(
+                                                  mainAxisAlignment: MainAxisAlignment.start,
+                                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                                  children: [
+                                                    Text('is Qualified:', style: TextStyle(fontSize: 14,fontWeight: FontWeight.bold)),
+                                                    Transform.scale(
+                                                      scale: 1.0,
+                                                      child: Switch(
+                                                        value: isQualified,
+                                                        activeColor: Colors.blueGrey,
+                                                        inactiveThumbColor: Colors.grey,
+                                                        inactiveTrackColor: Colors.white,
+                                                        onChanged: (value) {
+                                                          setState(() {
+                                                            isQualified = value;
+                                                            selectedfollowup_status = null; // Reset dropdown value
+                                                          });
+                                                        },
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                SizedBox(height: 10), // Spacing between dropdown and switch
+
+                                                DropdownButtonFormField<String>(
+                                                  value: selectedfollowup_status,
+                                                  decoration: InputDecoration(
+                                                    hintText: 'Select Status',
+                                                    border: OutlineInputBorder(
+                                                      borderSide: BorderSide(color: Colors.black),
+                                                      borderRadius: BorderRadius.circular(10.0),
+                                                    ),
+                                                    focusedBorder: OutlineInputBorder(
+                                                      borderSide: BorderSide(color: appbar_color),
+                                                      borderRadius: BorderRadius.circular(10.0),
+                                                    ),
+                                                    enabledBorder: OutlineInputBorder(
+                                                      borderRadius: BorderRadius.circular(10.0),
+                                                      borderSide: BorderSide(color: Colors.black),
+                                                    ),
+                                                    contentPadding: EdgeInsets.symmetric(horizontal: 10),
+
+                                                  ),
+                                                  validator: (value) {
+                                                    if (value == null || value.isEmpty) {
+                                                      return 'Status is required'; // Error message
+                                                    }
+                                                    return null; // No error if a value is selected
+                                                  },
+                                                  dropdownColor: Colors.white,
+                                                  icon: Icon(Icons.arrow_drop_down, color: Colors.blueGrey),
+                                                  items: (isQualified
+                                                      ? qualifiedStatusList
+                                                      : followupstatus_list)
+                                                      .map((status) => DropdownMenuItem<String>(
+                                                    value: status,
+                                                    child: Text(
+                                                      status,
+                                                      style: TextStyle(color: Colors.black87),
+                                                    ),
+                                                  ))
+                                                      .toList(),
+                                                  onChanged: (value) {
+                                                    setState(() {
+                                                      selectedfollowup_status = value;
+                                                    });
+                                                  },
+                                                ),
+
+                                              ],
+                                            ),
+
+
+
+
+                                          ),
+                                        ]),
+                                  ),
+
+                                  Container(
                                     margin: EdgeInsets.only( top:15,
                                         bottom: 0,
                                         left: 20,
@@ -1067,6 +1390,8 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                       ],
                                     ),
                                   ),
+
+
 
                                   Padding(
                                     padding: EdgeInsets.only(top: 0, left: 20, right: 20, bottom: 0),

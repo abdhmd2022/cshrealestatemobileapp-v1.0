@@ -262,31 +262,32 @@ class _SalesInquiryReportState
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        _buildDecentButton(
-                          'Follow Up',
-                          Icons.schedule,
-                          Colors.blue,
-                              () {
-
-                            String name = inquiry.customer_name;
-                            List<String> emiratesList = inquiry.emirate.split(',').map((e) => e.trim()).toList();
-                            List<String> areaList = inquiry.area.split(',').map((e) => e.trim()).toList();
-                            List<String> unittype = inquiry.unit_type.split(',').map((e) => e.trim()).toList();
-                            String contactno = inquiry.contactno;
-                            String email = inquiry.email;
 
 
-                            Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(builder: (context) =>
-                                    FollowupSalesInquiry(name: name, unittype: unittype, existingAreaList: areaList, existingEmirateList: emiratesList, contactno: contactno, email: email)));
-                          },
-                        ),
-                        SizedBox(width:5),
+                        if(inquiry.status == 'In Progress' )
                         Row(children: [
 
+                          _buildDecentButton(
+                            'Follow Up',
+                            Icons.schedule,
+                            Colors.blue,
+                                () {
 
-                          if(inquiry.status == 'In Progress')
+                              String name = inquiry.customer_name;
+                              List<String> emiratesList = inquiry.emirate.split(',').map((e) => e.trim()).toList();
+                              List<String> areaList = inquiry.area.split(',').map((e) => e.trim()).toList();
+                              List<String> unittype = inquiry.unit_type.split(',').map((e) => e.trim()).toList();
+                              String contactno = inquiry.contactno;
+                              String email = inquiry.email;
+
+
+                              Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(builder: (context) =>
+                                      FollowupSalesInquiry(name: name, unittype: unittype, existingAreaList: areaList, existingEmirateList: emiratesList, contactno: contactno, email: email)));
+                            },
+                          ),
+                          SizedBox(width:5),
                             _buildDecentButton(
                               'Transfer',
                               Icons.swap_horiz,

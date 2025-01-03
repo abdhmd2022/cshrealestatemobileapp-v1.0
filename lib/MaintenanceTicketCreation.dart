@@ -678,23 +678,26 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
               ],
             )
           else
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                shape: CircleBorder(), // Makes the button round
-                padding: EdgeInsets.all(16), // Adds padding around the icon
-                elevation: 8, // Adds elevation for the shadow effect
-                backgroundColor: Colors.white, // Button background color
+            Column(
+              children: [ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  shape: CircleBorder(), // Makes the button round
+                  padding: EdgeInsets.all(16), // Adds padding around the icon
+                  elevation: 8, // Adds elevation for the shadow effect
+                  backgroundColor: Colors.white, // Button background color
+                ),
+                onPressed: _showAttachmentOptions, // Trigger image picker
+                child: Icon(
+                  Icons.attach_file,
+                  size: 30, // Icon size
+                  color: Colors.blueAccent, // Icon color
+                ),
               ),
-              onPressed: _showAttachmentOptions, // Trigger image picker
-              child: Icon(
-                Icons.attach_file,
-                size: 30, // Icon size
-                color: Colors.blueAccent, // Icon color
-              ),
-            ),
-          SizedBox(height: 20),
+                SizedBox(height: 20),
 
-          Text('No attachment selected'),
+                Text('No attachment selected'),],
+            ),
+
 
         ],
       ),),

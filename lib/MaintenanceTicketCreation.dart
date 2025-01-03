@@ -471,7 +471,8 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                           padding: EdgeInsets.symmetric(horizontal: 12),
                           margin: EdgeInsets.only(left: 0, right: 0, bottom: 20),
                           decoration: BoxDecoration(
-                            color: Colors.transparent,
+                            color: Colors.white,
+
                             borderRadius: BorderRadius.circular(8),
                             border: Border.all(color: Colors.black, width: 0.75),
                           ),
@@ -591,6 +592,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                                   keyboardType: TextInputType.multiline,
                                   maxLength: 500, // Limit input to 500 characters
                                   maxLines: 3, // A
+
                                   decoration: InputDecoration(
                                     hintText: 'Enter Description',
                                     contentPadding: EdgeInsets.all(15),
@@ -600,6 +602,8 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                                         color: Colors.black, // Set the border color
                                       ),
                                     ),
+                                    filled: true,
+                                    fillColor: Colors.white,
                                     focusedBorder: OutlineInputBorder(
                                       borderSide: BorderSide(
                                         color:  Colors.black, // Set the focused border color
@@ -649,6 +653,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                       width: 100,
                       height: 100,
                       fit: BoxFit.cover,
+
                     ),
                   ))
                       .toList(),
@@ -677,7 +682,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
               style: ElevatedButton.styleFrom(
                 shape: CircleBorder(), // Makes the button round
                 padding: EdgeInsets.all(16), // Adds padding around the icon
-                elevation: 5, // Adds elevation for the shadow effect
+                elevation: 8, // Adds elevation for the shadow effect
                 backgroundColor: Colors.white, // Button background color
               ),
               onPressed: _showAttachmentOptions, // Trigger image picker

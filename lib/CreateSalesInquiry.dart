@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'SalesInquiryReport.dart';
 import 'constants.dart';
@@ -29,7 +28,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
   final areaFocusNode = FocusNode();
   final descriptionFocusNode = FocusNode();
 
-   String? selectedasignedto;
+  String? selectedasignedto;
 
   bool isUnitSelected = false;
 
@@ -37,9 +36,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
   String? selectedfollowup_type,selectedfollowup_status;
 
-
   DateTime? nextFollowUpDate;
-
 
   bool isEmirateSelected = false;
 
@@ -53,6 +50,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
     'Whatsapp',
     'Social Media'
   ];
+
   final List<String> qualifiedStatusList = [
     'Closed',
     'Cold',
@@ -62,28 +60,21 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
     'Warm',
   ];
 
-
   List<String> followupstatus_list = [
     'Contact Later',
     'In Follow-Up',
     'Not Qualified'
-
   ];
-
-
 
   bool isAllEmiratesSelected = false;
 
   bool isAllAreasSelected = false;
 
-
   String? selectedEmirate;
 
   bool _isFocused_email = false,_isFocus_name = false;
 
-
   bool _isLoading = false;
-
 
   List<Map<String, dynamic>> emirates = [
     {"label": "Abu Dhabi", "isSelected": false},
@@ -165,7 +156,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
     });
   }
 
-
   void updateAreasSelection() {
     // Reset selected areas if no Emirates are selected
     if (emirates.every((emirate) => !emirate['isSelected'])) {
@@ -207,11 +197,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
           : "Select Area";
     });
   }
-
-
-
-
-
 
   void _openUnitTypeDropdown(BuildContext context) async {
     final selectedItems = await showModalBottomSheet<List<String>>(
@@ -357,7 +342,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
       });
     }
   }
-
 
   void _openEmirateDropdown(BuildContext context) async {
     final selectedItems = await showModalBottomSheet<List<String>>(
@@ -719,11 +703,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
     }
   }
 
-
-
-
-
-
   @override
   void initState() {
     super.initState();
@@ -982,7 +961,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                         },
 
                                       )),
-
 
                                   Container(
                                     margin: EdgeInsets.only( top:15,
@@ -1391,8 +1369,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                     ),
                                   ),
 
-
-
                                   Padding(
                                     padding: EdgeInsets.only(top: 0, left: 20, right: 20, bottom: 0),
                                     child: GestureDetector(
@@ -1502,11 +1478,9 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
                                   Container(
                                     child: Column(
-
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         Padding(padding: EdgeInsets.only(top: 15,left:20),
-
                                           child:Row(
                                             children: [
                                               Text("Select Emirate:",
@@ -1571,11 +1545,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                           ),
                                         )
 
-
-
-
-
-
                                         /*Padding(
                                         padding: EdgeInsets.only(top:0,left:20,right:20,bottom :0),
 
@@ -1625,7 +1594,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                           },
                                         ),
                                       ),*/
-
 
                                       ],
                                     ),
@@ -1688,9 +1656,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                     ),
                                   ),
 
-
-
-
                                   /*Padding(padding: EdgeInsets.only(top:0,left: 20,right: 20,bottom: 0),
 
                                     child: TextFormField(
@@ -1752,21 +1717,17 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
                                 ),*/
 
-
                                   Container(
                                     child: Column(
-
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         Padding(padding: EdgeInsets.only(top: 15,left:20),
-
                                           child:Row(
                                             children: [
                                               Text("Assigned To:",
                                                   style: TextStyle(
                                                       fontWeight: FontWeight.bold,
                                                       fontSize: 16
-
                                                   )
                                               ),
                                               SizedBox(width: 2),
@@ -1783,10 +1744,8 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
                                         Padding(
                                           padding: EdgeInsets.only(top:0,left:20,right:20,bottom :0),
-
                                           child: DropdownButtonFormField<dynamic>(
                                             decoration: InputDecoration(
-
                                               border: OutlineInputBorder(
                                                 borderSide: BorderSide(color: Colors.black),
                                                 borderRadius: BorderRadius.circular(10.0),
@@ -1801,7 +1760,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                               ),
                                               contentPadding: EdgeInsets.symmetric(horizontal: 10),
                                             ),
-
 
                                             hint: Text('Select Assigned To'), // Add a hint
                                             value: selectedasignedto,
@@ -1821,7 +1779,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                 _isFocused_email = false;
                                                 _isFocus_name = false;
                                               });
-
                                             },
 
                                             validator: (value) {
@@ -1832,8 +1789,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                             },
                                           ),
                                         ),
-
-
                                       ],
                                     ),
                                   ),
@@ -1946,7 +1901,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                   _formKey.currentState?.reset();
                                                   selectedasignedto = asignedto.first;
 
-
                                                   /*print(_selectedrole['role_name']);*/
 
                                                   customernamecontroller.clear();
@@ -1992,8 +1946,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                     ),)
                                 ]))
                     )
-
-
                   ],
                 )
               ),)

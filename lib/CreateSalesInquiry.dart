@@ -711,6 +711,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
   }
 
   Future<void> _initSharedPreferences() async {
+
   }
 
   @override
@@ -718,7 +719,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
     return Scaffold(
         appBar: AppBar(
           backgroundColor: appbar_color,
-
           leading: GestureDetector(
             onTap: ()
             {
@@ -748,7 +748,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
               child: Container(
                   decoration: BoxDecoration(
                     color: Colors.white,
-
                   ),
                 child: Column(
                   children: [

@@ -330,51 +330,10 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
+
                                     Container(
                                       margin: EdgeInsets.only(bottom: 5,),
-                                      child:Column(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        crossAxisAlignment: CrossAxisAlignment.center,
-                                        children: [
-                                          Column(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              Icon(
-                                                Icons.person,
-                                                color: Colors.blueGrey,
-                                              ),
-                                              SizedBox(height: 2), // Add space between icon and text
-                                              Text(
-                                                'Name',
-                                                style: TextStyle(fontSize: 16,
-                                                    color: Colors.blueGrey),
-                                              ),
-                                            ],
-                                          ),
-
-                                          SizedBox(height: 30,),
-
-                                          Column(
-                                            children: [
-                                              Icon(
-                                                Icons.hardware_outlined,
-                                                color: Colors.blueGrey,
-                                              ),
-                                              SizedBox(height: 2), // Add space between icon and text
-                                              Text(
-                                                'Status',
-                                                style: TextStyle(fontSize: 16,
-                                                    color: Colors.blueGrey),
-                                              ),
-                                            ],
-                                          ),
-                                        ],)
-                                      ,),
-
-                                    SizedBox(width: MediaQuery.of(context).size.width/5,),
-                                    Container(
-                                      margin: EdgeInsets.only(bottom: 5,),
-                                      child:Column(
+                                      child:Row(
                                         mainAxisAlignment: MainAxisAlignment.center,
                                         crossAxisAlignment: CrossAxisAlignment.center,
                                         children: [
@@ -387,14 +346,14 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                                               ),
                                               SizedBox(height: 2), // Add space between icon and text
                                               Text(
-                                                'Unit No',
+                                                '101',
                                                 style: TextStyle(fontSize: 16,
                                                     color: Colors.blueGrey),
                                               ),
                                             ],
                                           ),
 
-                                          SizedBox(height: 30,),
+                                          SizedBox(width: MediaQuery.of(context).size.width / 5,),
 
                                           Column(
                                             mainAxisSize: MainAxisSize.min,
@@ -405,7 +364,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                                               ),
                                               SizedBox(height: 2), // Add space between icon and text
                                               Text(
-                                                'Building',
+                                                'Al Khaleej Center',
                                                 style: TextStyle(fontSize: 16,
                                                     color: Colors.blueGrey),
                                               ),
@@ -653,13 +612,11 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                       width: 100,
                       height: 100,
                       fit: BoxFit.cover,
-
                     ),
                   ))
                       .toList(),
                 ),
                 SizedBox(height: 10),
-                // Plus icon to add more images
 
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
@@ -697,11 +654,9 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
 
                 Text('No attachment selected'),],
             ),
-
-
         ],
       ),),
-                        ]),
+      ]),
 
                   /*  SizedBox(height: 10),
 

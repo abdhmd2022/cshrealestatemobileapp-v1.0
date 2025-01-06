@@ -794,7 +794,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                             child: ListView(
                               /*physics: NeverScrollableScrollPhysics(),*/
                                 children: [
-
                                   Container(
                                     padding: EdgeInsets.all(20),
                                     decoration: BoxDecoration(

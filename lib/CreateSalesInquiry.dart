@@ -794,261 +794,273 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                             child: ListView(
                               /*physics: NeverScrollableScrollPhysics(),*/
                                 children: [
-                                  Container(
-                                    margin: EdgeInsets.only( top:15,
-                                        bottom: 0,
-                                        left: 20,
-                                        right: 20),
-                                    child: Row(
-                                      children: [
-                                        Text("Name:",
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 16
-
-                                            )
-                                        ),
-                                        SizedBox(width: 2),
-                                        Text(
-                                          '*', // Red asterisk for required field
-                                          style: TextStyle(
-                                            fontSize: 20,
-                                            color: Colors.red, // Red color for the asterisk
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-
-                                  Padding(
-
-                                      padding: EdgeInsets.only(top:0,left: 20,right: 20,bottom: 0),
-                                      child: TextFormField(
-                                        controller: customernamecontroller,
-                                        keyboardType: TextInputType.name,
-                                        validator: (value) {
-                                          if (value!.isEmpty) {
-                                            return 'Name is required';
-                                          }
-                                          return null;
-                                        },
-                                        decoration: InputDecoration(
-                                          hintText: 'Enter Name',
-                                          contentPadding: EdgeInsets.all(15),
-                                          border: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(10), // Set the border radius
-                                            borderSide: BorderSide(
-                                              color: Colors.black, // Set the border color
-                                            ),
-                                          ),
-                                          focusedBorder: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(10),
-                                            borderSide: BorderSide(
-                                              color:  Colors.black, // Set the focused border color
-                                            ),
-                                          ),
-                                        ),
-                                        onChanged: (value) {
-                                          setState(() {
-                                            _isFocus_name = true;
-                                            _isFocused_email = false;
-
-                                          });
-                                        },
-                                        onFieldSubmitted: (value) {
-                                          setState(() {
-                                            _isFocus_name = false;
-                                            _isFocused_email = false;
-                                          });
-                                        },
-                                        onTap: () {
-                                          setState(() {
-                                            _isFocus_name = true;
-                                            _isFocused_email = false;
-                                          });
-                                        },
-                                        onEditingComplete: () {
-                                          setState(() {
-                                            _isFocus_name = false;
-                                            _isFocused_email = false;
-                                          });
-                                        },
-
-                                      )),
 
                                   Container(
-                                    margin: EdgeInsets.only( top:15,
-                                        bottom: 0,
-                                        left: 20,
-                                        right: 20),
-                                    child: Row(
+                                    padding: EdgeInsets.all(20),
+                                    decoration: BoxDecoration(
+                                    border: Border.all(color: Colors.blue, width: 1),
+                                    borderRadius: BorderRadius.circular(8),),
+                                    child: Column(
                                       children: [
-                                        Text("Contact No.",
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 16
+                                        Container(
+                                          margin: EdgeInsets.only( top:15,
+                                              bottom: 0,
+                                              left: 20,
+                                              right: 20),
+                                          child: Row(
+                                            children: [
+                                              Text("Name:",
+                                                  style: TextStyle(
+                                                      fontWeight: FontWeight.bold,
+                                                      fontSize: 16
 
-                                            )
-                                        ),
-                                        SizedBox(width: 2),
-                                        Text(
-                                          '*', // Red asterisk for required field
-                                          style: TextStyle(
-                                            fontSize: 20,
-                                            color: Colors.red, // Red color for the asterisk
+                                                  )
+                                              ),
+                                              SizedBox(width: 2),
+                                              Text(
+                                                '*', // Red asterisk for required field
+                                                style: TextStyle(
+                                                  fontSize: 20,
+                                                  color: Colors.red, // Red color for the asterisk
+                                                ),
+                                              ),
+                                            ],
                                           ),
                                         ),
+
+                                        Padding(
+
+                                            padding: EdgeInsets.only(top:0,left: 20,right: 20,bottom: 0),
+                                            child: TextFormField(
+                                              controller: customernamecontroller,
+                                              keyboardType: TextInputType.name,
+                                              validator: (value) {
+                                                if (value!.isEmpty) {
+                                                  return 'Name is required';
+                                                }
+                                                return null;
+                                              },
+                                              decoration: InputDecoration(
+                                                hintText: 'Enter Name',
+                                                contentPadding: EdgeInsets.all(15),
+                                                border: OutlineInputBorder(
+                                                  borderRadius: BorderRadius.circular(10), // Set the border radius
+                                                  borderSide: BorderSide(
+                                                    color: Colors.black, // Set the border color
+                                                  ),
+                                                ),
+                                                focusedBorder: OutlineInputBorder(
+                                                  borderRadius: BorderRadius.circular(10),
+                                                  borderSide: BorderSide(
+                                                    color:  Colors.black, // Set the focused border color
+                                                  ),
+                                                ),
+                                              ),
+                                              onChanged: (value) {
+                                                setState(() {
+                                                  _isFocus_name = true;
+                                                  _isFocused_email = false;
+
+                                                });
+                                              },
+                                              onFieldSubmitted: (value) {
+                                                setState(() {
+                                                  _isFocus_name = false;
+                                                  _isFocused_email = false;
+                                                });
+                                              },
+                                              onTap: () {
+                                                setState(() {
+                                                  _isFocus_name = true;
+                                                  _isFocused_email = false;
+                                                });
+                                              },
+                                              onEditingComplete: () {
+                                                setState(() {
+                                                  _isFocus_name = false;
+                                                  _isFocused_email = false;
+                                                });
+                                              },
+
+                                            )),
+
+                                        Container(
+                                          margin: EdgeInsets.only( top:15,
+                                              bottom: 0,
+                                              left: 20,
+                                              right: 20),
+                                          child: Row(
+                                            children: [
+                                              Text("Contact No.",
+                                                  style: TextStyle(
+                                                      fontWeight: FontWeight.bold,
+                                                      fontSize: 16
+
+                                                  )
+                                              ),
+                                              SizedBox(width: 2),
+                                              Text(
+                                                '*', // Red asterisk for required field
+                                                style: TextStyle(
+                                                  fontSize: 20,
+                                                  color: Colors.red, // Red color for the asterisk
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+
+                                        Padding(
+
+                                            padding: EdgeInsets.only(top:0,left: 20,right: 20,bottom: 0),
+
+                                            child: TextFormField(
+                                              controller: customercontactnocontroller,
+                                              keyboardType: TextInputType.number,
+                                              validator: (value) {
+                                                if (value!.isEmpty) {
+                                                  return 'Contact No. is required';
+                                                }
+
+                                                return null;
+                                              },
+                                              decoration: InputDecoration(
+                                                hintText: 'Enter Contact No',
+                                                contentPadding: EdgeInsets.all(15),
+                                                border: OutlineInputBorder(
+                                                  borderRadius: BorderRadius.circular(10), // Set the border radius
+                                                  borderSide: BorderSide(
+                                                    color: Colors.black, // Set the border color
+                                                  ),
+                                                ),
+                                                focusedBorder: OutlineInputBorder(
+                                                  borderRadius: BorderRadius.circular(10),
+                                                  borderSide: BorderSide(
+                                                    color:  Colors.black, // Set the focused border color
+
+                                                  ),
+                                                ),
+                                              ),
+                                              onChanged: (value) {
+                                                setState(() {
+                                                  _isFocused_email = true;
+                                                  _isFocus_name = false;
+                                                });
+                                              },
+                                              onFieldSubmitted: (value) {
+                                                setState(() {
+                                                  _isFocused_email = false;
+                                                  _isFocus_name = false;
+                                                });
+                                              },
+                                              onTap: () {
+                                                setState(() {
+                                                  _isFocused_email = true;
+                                                  _isFocus_name = false;
+
+                                                });
+                                              },
+                                              onEditingComplete: () {
+                                                setState(() {
+                                                  _isFocused_email = false;
+                                                  _isFocus_name = false;
+                                                });
+                                              },
+
+                                            )),
+
+                                        Container(
+                                          margin: EdgeInsets.only( top:15,
+                                              bottom: 0,
+                                              left: 20,
+                                              right: 20),
+                                          child: Row(
+                                            children: [
+                                              Text("Email Address",
+                                                  style: TextStyle(
+                                                      fontWeight: FontWeight.bold,
+                                                      fontSize: 16
+
+                                                  )
+                                              ),
+                                              SizedBox(width: 2),
+                                              Text(
+                                                '*', // Red asterisk for required field
+                                                style: TextStyle(
+                                                  fontSize: 20,
+                                                  color: Colors.red, // Red color for the asterisk
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+
+                                        Padding(
+
+                                            padding: EdgeInsets.only(top:0,left: 20,right: 20,bottom: 0),
+
+                                            child: TextFormField(
+                                              controller: emailcontroller,
+                                              keyboardType: TextInputType.emailAddress,
+                                              validator: (value) {
+                                                if (value!.isEmpty) {
+                                                  return 'Email Address is required';
+                                                }
+                                                if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value))
+                                                {
+                                                  return 'Please enter a valid email address';
+                                                }
+
+                                                return null;
+                                              },
+                                              decoration: InputDecoration(
+                                                hintText: 'Enter Email Address',
+                                                contentPadding: EdgeInsets.all(15),
+                                                border: OutlineInputBorder(
+                                                  borderRadius: BorderRadius.circular(10), // Set the border radius
+                                                  borderSide: BorderSide(
+                                                    color: Colors.black, // Set the border color
+                                                  ),
+                                                ),
+                                                focusedBorder: OutlineInputBorder(
+                                                  borderRadius: BorderRadius.circular(10),
+                                                  borderSide: BorderSide(
+                                                    color:  Colors.black, // Set the focused border color
+
+                                                  ),
+                                                ),
+                                              ),
+                                              onChanged: (value) {
+                                                setState(() {
+                                                  _isFocused_email = true;
+                                                  _isFocus_name = false;
+                                                });
+                                              },
+                                              onFieldSubmitted: (value) {
+                                                setState(() {
+                                                  _isFocused_email = false;
+                                                  _isFocus_name = false;
+                                                });
+                                              },
+                                              onTap: () {
+                                                setState(() {
+                                                  _isFocused_email = true;
+                                                  _isFocus_name = false;
+
+                                                });
+                                              },
+                                              onEditingComplete: () {
+                                                setState(() {
+                                                  _isFocused_email = false;
+                                                  _isFocus_name = false;
+                                                });
+                                              },
+
+                                            )),
                                       ],
-                                    ),
+                                    )
                                   ),
 
-                                  Padding(
-
-                                      padding: EdgeInsets.only(top:0,left: 20,right: 20,bottom: 0),
-
-                                      child: TextFormField(
-                                        controller: customercontactnocontroller,
-                                        keyboardType: TextInputType.number,
-                                        validator: (value) {
-                                          if (value!.isEmpty) {
-                                            return 'Contact No. is required';
-                                          }
-
-                                          return null;
-                                        },
-                                        decoration: InputDecoration(
-                                          hintText: 'Enter Contact No',
-                                          contentPadding: EdgeInsets.all(15),
-                                          border: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(10), // Set the border radius
-                                            borderSide: BorderSide(
-                                              color: Colors.black, // Set the border color
-                                            ),
-                                          ),
-                                          focusedBorder: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(10),
-                                            borderSide: BorderSide(
-                                              color:  Colors.black, // Set the focused border color
-
-                                            ),
-                                          ),
-                                        ),
-                                        onChanged: (value) {
-                                          setState(() {
-                                            _isFocused_email = true;
-                                            _isFocus_name = false;
-                                          });
-                                        },
-                                        onFieldSubmitted: (value) {
-                                          setState(() {
-                                            _isFocused_email = false;
-                                            _isFocus_name = false;
-                                          });
-                                        },
-                                        onTap: () {
-                                          setState(() {
-                                            _isFocused_email = true;
-                                            _isFocus_name = false;
-
-                                          });
-                                        },
-                                        onEditingComplete: () {
-                                          setState(() {
-                                            _isFocused_email = false;
-                                            _isFocus_name = false;
-                                          });
-                                        },
-
-                                      )),
-
-                                  Container(
-                                    margin: EdgeInsets.only( top:15,
-                                        bottom: 0,
-                                        left: 20,
-                                        right: 20),
-                                    child: Row(
-                                      children: [
-                                        Text("Email Address",
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 16
-
-                                            )
-                                        ),
-                                        SizedBox(width: 2),
-                                        Text(
-                                          '*', // Red asterisk for required field
-                                          style: TextStyle(
-                                            fontSize: 20,
-                                            color: Colors.red, // Red color for the asterisk
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-
-                                  Padding(
-
-                                      padding: EdgeInsets.only(top:0,left: 20,right: 20,bottom: 0),
-
-                                      child: TextFormField(
-                                        controller: emailcontroller,
-                                        keyboardType: TextInputType.emailAddress,
-                                        validator: (value) {
-                                          if (value!.isEmpty) {
-                                            return 'Email Address is required';
-                                          }
-                                          if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value))
-                                          {
-                                            return 'Please enter a valid email address';
-                                          }
-
-                                          return null;
-                                        },
-                                        decoration: InputDecoration(
-                                          hintText: 'Enter Email Address',
-                                          contentPadding: EdgeInsets.all(15),
-                                          border: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(10), // Set the border radius
-                                            borderSide: BorderSide(
-                                              color: Colors.black, // Set the border color
-                                            ),
-                                          ),
-                                          focusedBorder: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(10),
-                                            borderSide: BorderSide(
-                                              color:  Colors.black, // Set the focused border color
-
-                                            ),
-                                          ),
-                                        ),
-                                        onChanged: (value) {
-                                          setState(() {
-                                            _isFocused_email = true;
-                                            _isFocus_name = false;
-                                          });
-                                        },
-                                        onFieldSubmitted: (value) {
-                                          setState(() {
-                                            _isFocused_email = false;
-                                            _isFocus_name = false;
-                                          });
-                                        },
-                                        onTap: () {
-                                          setState(() {
-                                            _isFocused_email = true;
-                                            _isFocus_name = false;
-
-                                          });
-                                        },
-                                        onEditingComplete: () {
-                                          setState(() {
-                                            _isFocused_email = false;
-                                            _isFocus_name = false;
-                                          });
-                                        },
-
-                                      )),
 
                                   Container(
                                     child: Column(

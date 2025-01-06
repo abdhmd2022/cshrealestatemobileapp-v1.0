@@ -8,7 +8,6 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:multi_select_flutter/multi_select_flutter.dart';
-
 import 'Sidebar.dart';
 
 class MaintenanceTicketCreation extends StatefulWidget

@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:cshrealestatemobile/AvailableUnitsReport.dart';
 import 'package:cshrealestatemobile/KYCUpdate.dart';
+import 'package:cshrealestatemobile/LandlordDashboard.dart';
 
 import 'package:cshrealestatemobile/MaintenanceTicketReport.dart';
 import 'package:cshrealestatemobile/SalesDashboard.dart';
@@ -141,6 +142,23 @@ class Sidebar extends StatelessWidget {
                     (
                     context,
                     MaterialPageRoute(builder: (context) => TenantDashboardScreen()), // navigate to company and serial select screen
+                  );
+
+                  // navigate to companies screen
+                },
+              ),
+
+              ListTile(
+                title: Text('Landlord Dashboard'),
+                leading: Icon(Icons.dashboard,
+                  color: Colors.black,
+                ),
+                onTap: () async {
+                  Navigator.pushReplacement
+
+                    (
+                    context,
+                    MaterialPageRoute(builder: (context) => LandlordDashboardScreen()), // navigate to company and serial select screen
                   );
 
                   // navigate to companies screen

@@ -152,7 +152,7 @@ class _LandlordDashboardScreenState extends State<LandlordDashboardScreen> with 
 
               SizedBox(height: 16,),
               Text(
-                'Buildings',
+                'Building(s)',
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 8),

@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
+import 'LandlordBuildingScreen.dart';
 import 'Sidebar.dart';
 
 class LandlordDashboard extends StatelessWidget {
@@ -31,7 +32,7 @@ class _LandlordDashboardScreenState extends State<LandlordDashboardScreen> with 
     'Al Ain Center',
   ];
 
-  final List<int> vacantUnits = [10, 5, 8]; // Example data for vacant units
+  final List<int> occupiedUnits = [10, 5, 8]; // Example data for occupied units
   final List<int> availableUnits = [20, 15, 12]; // Example data for available units
 
 
@@ -98,13 +99,13 @@ class _LandlordDashboardScreenState extends State<LandlordDashboardScreen> with 
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Vacant Units Overview',
+                'Units Overview',
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 16),
               Expanded(
                 flex: 2,
-                child: BarGraph(vacantUnits: vacantUnits, buildingNames: buildingNames,availableUnits: availableUnits,),
+                child: BarGraph(occupiedUnits: occupiedUnits, buildingNames: buildingNames,availableUnits: availableUnits,),
               ),
               SizedBox(height: 10),
 
@@ -113,7 +114,7 @@ class _LandlordDashboardScreenState extends State<LandlordDashboardScreen> with 
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // Red Color for Vacant
+                    // Red Color for occupied
                     Row(
                       children: [
                         Container(
@@ -126,7 +127,7 @@ class _LandlordDashboardScreenState extends State<LandlordDashboardScreen> with 
 
                         ),
                         SizedBox(width: 8),
-                        Text('Vacant'),
+                        Text('Occupied'),
                       ],
                     ),
                     SizedBox(width: 16),
@@ -163,14 +164,16 @@ class _LandlordDashboardScreenState extends State<LandlordDashboardScreen> with 
                       title: Text(buildingNames[index]),
                       trailing: Icon(Icons.arrow_forward),
                       onTap: () {
-                       /* Navigator.push(
+                        Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
                             builder: (context) => BuildingReportScreen(
-                              buildingName: buildingNames[index],
+                            buildingName: buildingNames[index],
+                        occupiedUnits: [occupiedUnits[index]], // Pass only the selected building's occupied units
+                        availableUnits: [availableUnits[index]],
                             ),
                           ),
-                        );*/
+                        );
                       },
                     );
                   },
@@ -190,11 +193,11 @@ class _LandlordDashboardScreenState extends State<LandlordDashboardScreen> with 
 
 
 class BarGraph extends StatelessWidget {
-  final List<int> vacantUnits;
+  final List<int> occupiedUnits;
   final List<String> buildingNames;
   final List<int> availableUnits;
 
-  BarGraph({required this.vacantUnits, required this.buildingNames,required this.availableUnits});
+  BarGraph({required this.occupiedUnits, required this.buildingNames,required this.availableUnits});
 
   @override
   Widget build(BuildContext context) {
@@ -213,7 +216,7 @@ class BarGraph extends StatelessWidget {
     double chartWidth = calculatedWidth > screenWidth ? calculatedWidth : screenWidth;
 
     // Calculate maximum value for the left titles
-    int maxUnits = (vacantUnits + availableUnits).reduce((a, b) => a > b ? a : b);
+    int maxUnits = (occupiedUnits + availableUnits).reduce((a, b) => a > b ? a : b);
     double leftTitleReservedSize = (maxUnits.toString().length * 8.0) + 16.0; // Adjust size based on number length
 
     String formatLabel(int value) {
@@ -266,7 +269,18 @@ class BarGraph extends StatelessWidget {
                 ),
               ),
               topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-              rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+              rightTitles: AxisTitles(sideTitles: SideTitles(
+                showTitles: true,
+                reservedSize: leftTitleReservedSize,
+                getTitlesWidget: (value, meta) {
+                  return SideTitleWidget(
+                    child: Text(
+                      formatLabel(value.toInt()),
+                    ),
+                    axisSide: meta.axisSide,
+                  );
+                },
+              ),),
             ),
             borderData: FlBorderData(show: false),
             barGroups: List.generate(
@@ -276,7 +290,7 @@ class BarGraph extends StatelessWidget {
                 barRods: [
                   BarChartRodData(
                     fromY: 0,
-                    toY: vacantUnits[index].toDouble(),
+                    toY: occupiedUnits[index].toDouble(),
                     color: Colors.redAccent,
                     width: barWidth,
                     borderRadius: BorderRadius.circular(5),

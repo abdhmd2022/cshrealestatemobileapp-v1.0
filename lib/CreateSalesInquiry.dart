@@ -784,10 +784,13 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                             child: ListView(
                               /*physics: NeverScrollableScrollPhysics(),*/
                                 children: [
+
+
                                   Container(
-                                    padding: EdgeInsets.all(20),
+                                    margin: EdgeInsets.only(left: 0, right: 0),
+                                    padding: EdgeInsets.only(top:0,bottom:0),
                                     decoration: BoxDecoration(
-                                    border: Border.all(color: Colors.blue, width: 1),
+                                    border: Border.all(color: Colors.transparent, width: 1),
                                     borderRadius: BorderRadius.circular(8),),
                                     child: Column(
                                       children: [
@@ -1051,7 +1054,101 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                   ),
 
 
+
+
                                   Container(
+                                    child: Column(
+
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Padding(padding: EdgeInsets.only(top: 15,left:20),
+
+                                            child:Row(
+                                              children: [
+                                                Text("Status:",
+                                                    style: TextStyle(
+                                                        fontWeight: FontWeight.bold,
+                                                        fontSize: 16
+
+                                                    )
+                                                ),
+                                                SizedBox(width: 2),
+                                                Text(
+                                                  '*', // Red asterisk for required field
+                                                  style: TextStyle(
+                                                    fontSize: 20,
+                                                    color: Colors.red, // Red color for the asterisk
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+
+                                          Padding(
+                                            padding: EdgeInsets.only(top:0,left:20,right:20,bottom :0),
+
+                                            child: Column(
+                                              mainAxisAlignment: MainAxisAlignment.start,
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                // Switch for isQualified
+
+                                                DropdownButtonFormField<String>(
+                                                  value: selectedfollowup_status,
+                                                  decoration: InputDecoration(
+                                                    hintText: 'Select Status',
+                                                    border: OutlineInputBorder(
+                                                      borderSide: BorderSide(color: Colors.black),
+                                                      borderRadius: BorderRadius.circular(10.0),
+                                                    ),
+                                                    focusedBorder: OutlineInputBorder(
+                                                      borderSide: BorderSide(color: appbar_color),
+                                                      borderRadius: BorderRadius.circular(10.0),
+                                                    ),
+                                                    enabledBorder: OutlineInputBorder(
+                                                      borderRadius: BorderRadius.circular(10.0),
+                                                      borderSide: BorderSide(color: Colors.black),
+                                                    ),
+                                                    contentPadding: EdgeInsets.symmetric(horizontal: 10),
+
+                                                  ),
+                                                  validator: (value) {
+                                                    if (value == null || value.isEmpty) {
+                                                      return 'Status is required'; // Error message
+                                                    }
+                                                    return null; // No error if a value is selected
+                                                  },
+                                                  dropdownColor: Colors.white,
+                                                  icon: Icon(Icons.arrow_drop_down, color: Colors.blueGrey),
+                                                  items:  followupstatus_list
+                                                      .map((status) => DropdownMenuItem<String>(
+                                                    value: status,
+                                                    child: Text(
+                                                      status,
+                                                      style: TextStyle(color: Colors.black87),
+                                                    ),
+                                                  ))
+                                                      .toList(),
+                                                  onChanged: (value) {
+                                                    setState(() {
+                                                      selectedfollowup_status = value;
+                                                      if(selectedfollowup_status =='Not Qualified')
+                                                        {
+
+                                                          nextFollowUpDate = null;
+                                                        }
+                                                    });
+                                                  },
+                                                ),
+
+                                              ],
+                                            ),
+                                          ),
+                                        ]),
+                                  ), // folowup status
+
+                                  if (selectedfollowup_status == 'In Follow-Up' || selectedfollowup_status == 'Contact Later') // Conditionally render based on status
+                                    Container(
                                     child: Column(
 
                                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -1142,92 +1239,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                       ],
                                     ),
                                   ), // next follow up date
-
-                                  Container(
-                                    child: Column(
-
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Padding(padding: EdgeInsets.only(top: 15,left:20),
-
-                                            child:Row(
-                                              children: [
-                                                Text("Status:",
-                                                    style: TextStyle(
-                                                        fontWeight: FontWeight.bold,
-                                                        fontSize: 16
-
-                                                    )
-                                                ),
-                                                SizedBox(width: 2),
-                                                Text(
-                                                  '*', // Red asterisk for required field
-                                                  style: TextStyle(
-                                                    fontSize: 20,
-                                                    color: Colors.red, // Red color for the asterisk
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-
-                                          Padding(
-                                            padding: EdgeInsets.only(top:0,left:20,right:20,bottom :0),
-
-                                            child: Column(
-                                              mainAxisAlignment: MainAxisAlignment.start,
-                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                              children: [
-                                                // Switch for isQualified
-
-                                                DropdownButtonFormField<String>(
-                                                  value: selectedfollowup_status,
-                                                  decoration: InputDecoration(
-                                                    hintText: 'Select Status',
-                                                    border: OutlineInputBorder(
-                                                      borderSide: BorderSide(color: Colors.black),
-                                                      borderRadius: BorderRadius.circular(10.0),
-                                                    ),
-                                                    focusedBorder: OutlineInputBorder(
-                                                      borderSide: BorderSide(color: appbar_color),
-                                                      borderRadius: BorderRadius.circular(10.0),
-                                                    ),
-                                                    enabledBorder: OutlineInputBorder(
-                                                      borderRadius: BorderRadius.circular(10.0),
-                                                      borderSide: BorderSide(color: Colors.black),
-                                                    ),
-                                                    contentPadding: EdgeInsets.symmetric(horizontal: 10),
-
-                                                  ),
-                                                  validator: (value) {
-                                                    if (value == null || value.isEmpty) {
-                                                      return 'Status is required'; // Error message
-                                                    }
-                                                    return null; // No error if a value is selected
-                                                  },
-                                                  dropdownColor: Colors.white,
-                                                  icon: Icon(Icons.arrow_drop_down, color: Colors.blueGrey),
-                                                  items:  followupstatus_list
-                                                      .map((status) => DropdownMenuItem<String>(
-                                                    value: status,
-                                                    child: Text(
-                                                      status,
-                                                      style: TextStyle(color: Colors.black87),
-                                                    ),
-                                                  ))
-                                                      .toList(),
-                                                  onChanged: (value) {
-                                                    setState(() {
-                                                      selectedfollowup_status = value;
-                                                    });
-                                                  },
-                                                ),
-
-                                              ],
-                                            ),
-                                          ),
-                                        ]),
-                                  ), // folowup status
 
                                   Container(
                                     margin: EdgeInsets.only( top:15,

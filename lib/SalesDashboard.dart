@@ -32,7 +32,6 @@ class SalesDashboardScreen extends StatefulWidget {
 
 class _SalesDashboardScreenState extends State<SalesDashboardScreen> with TickerProviderStateMixin {
 
-
   String? selectedYear;
   Map<String, Map<String, int>> salesData = {
     "2024": {
@@ -106,13 +105,9 @@ class _SalesDashboardScreenState extends State<SalesDashboardScreen> with Ticker
       DateTime now = DateTime.now();  // Get the current date and time
       selectedYear = (now.year).toString();  // Store the year as a string
     });
-
-
   }
 
-
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-
 
   @override
   Widget build(BuildContext context) {
@@ -230,7 +225,6 @@ class _SalesDashboardScreenState extends State<SalesDashboardScreen> with Ticker
 
               SizedBox(height: 50,),
 
-
               Container(
                 height: MediaQuery.of(context).size.height * 0.4,
                 width: MediaQuery.of(context).size.width,
@@ -238,8 +232,6 @@ class _SalesDashboardScreenState extends State<SalesDashboardScreen> with Ticker
               ),
 
               SizedBox(height: 50,),
-
-
 
               // In-Progress and Closed Leads Buttons
               Row(
@@ -594,15 +586,7 @@ class _SalesDashboardScreenState extends State<SalesDashboardScreen> with Ticker
 
               SizedBox(height: 50,),
 
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-
-}
+            ]))));}}
 
 class SalesBarChart extends StatelessWidget {
   final Map<String, Map<String, int>> salesData;
@@ -703,7 +687,6 @@ class SalesBarChart extends StatelessWidget {
   }
 }
 
-
 double _getReservedSize(List<int> salesValues) {
   if (salesValues.isEmpty) return 40; // Default size if there are no sales values
   int maxSales = salesValues.reduce((a, b) => a > b ? a : b); // Find the maximum sales value
@@ -716,13 +699,4 @@ double _getReservedSize(List<int> salesValues) {
   } else {
     return 30.0; // Default space for small sales values
   }
-}
-double _getTextHeight(String text) {
-  final textPainter = TextPainter(
-    text: TextSpan(text: text, style: TextStyle(fontSize: 12)),
-    textDirection:  ui.TextDirection.ltr
-    , // This should work now
-  );
-  textPainter.layout();
-  return textPainter.size.height; // Return the height of the text
 }

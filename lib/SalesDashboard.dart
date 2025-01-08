@@ -47,7 +47,7 @@ class _SalesDashboardScreenState extends State<SalesDashboardScreen> with Ticker
       "Sep": 2100,
       "Oct": 2300,
       "Nov": 2400,
-      "Dec": 2800,
+      "Dec": 2500,
 
     },
     "2023": {
@@ -62,7 +62,7 @@ class _SalesDashboardScreenState extends State<SalesDashboardScreen> with Ticker
       "Sep": 1800,
       "Oct": 2300,
       "Nov": 2400,
-      "Dec": 2700,
+      "Dec": 2500,
     },
     "2022": {
       "Jan": 1100,
@@ -240,6 +240,7 @@ class _SalesDashboardScreenState extends State<SalesDashboardScreen> with Ticker
               SizedBox(height: 50,),
 
 
+
               // In-Progress and Closed Leads Buttons
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -337,6 +338,7 @@ class _SalesDashboardScreenState extends State<SalesDashboardScreen> with Ticker
                   ),
                 ],
               ),
+
               SizedBox(height: 20),
 
               // Other Buttons
@@ -589,8 +591,6 @@ class _SalesDashboardScreenState extends State<SalesDashboardScreen> with Ticker
                   ],
                 ),
               ),
-
-
 
               SizedBox(height: 50,),
 

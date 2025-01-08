@@ -1136,15 +1136,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                         {
 
                                                           nextFollowUpDate = null;
-                                                        }
-                                                    });
-                                                  },
-                                                ),
-
-                                              ],
-                                            ),
-                                          ),
-                                        ]),
+                                                        }  });})]))]),
                                   ), // folowup status
 
                                   if (selectedfollowup_status == 'In Follow-Up' || selectedfollowup_status == 'Contact Later') // Conditionally render based on status

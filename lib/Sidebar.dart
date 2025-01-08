@@ -99,7 +99,7 @@ class Sidebar extends StatelessWidget {
                                           ))]))]))),
               ListTile
                 (
-                title: Text('Sales Dashboard'),
+                title: Text('Sales'),
                 leading: Icon(Icons.dashboard,
                   color: Colors.black,
                 ),
@@ -132,7 +132,7 @@ class Sidebar extends StatelessWidget {
               ),
 */
               ListTile(
-                title: Text('Tenant Dashboard'),
+                title: Text('Tenant'),
                 leading: Icon(Icons.dashboard,
                   color: Colors.black,
                 ),
@@ -149,7 +149,7 @@ class Sidebar extends StatelessWidget {
               ),
 
               ListTile(
-                title: Text('Landlord Dashboard'),
+                title: Text('Landlord'),
                 leading: Icon(Icons.dashboard,
                   color: Colors.black,
                 ),

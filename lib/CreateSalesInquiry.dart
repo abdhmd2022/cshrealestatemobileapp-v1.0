@@ -34,7 +34,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
   bool isAllUnitsSelected = false;
 
-  String? selectedfollowup_type,selectedfollowup_status;
+  String? selectedfollowup_status;
 
   DateTime? nextFollowUpDate;
 
@@ -42,22 +42,11 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
   bool isAreasSelected = false;
 
-  bool isQualified = false;
-
   List<String> followuptype_list = [
     'Email',
     'Phone Call',
     'Whatsapp',
     'Social Media'
-  ];
-
-  final List<String> qualifiedStatusList = [
-    'Closed',
-    'Cold',
-    'Contact Later',
-    'Drop',
-    'Hot',
-    'Warm',
   ];
 
   List<String> followupstatus_list = [
@@ -714,6 +703,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
   }
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -1156,91 +1146,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                   Container(
                                     child: Column(
 
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Padding(padding: EdgeInsets.only(top: 15,left:20),
-
-                                          child:Row(
-                                            children: [
-                                              Text("Follow-Up Type:",
-                                                  style: TextStyle(
-                                                      fontWeight: FontWeight.bold,
-                                                      fontSize: 16
-
-                                                  )
-                                              ),
-                                              SizedBox(width: 2),
-                                              Text(
-                                                '*', // Red asterisk for required field
-                                                style: TextStyle(
-                                                  fontSize: 20,
-                                                  color: Colors.red, // Red color for the asterisk
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-
-                                        Padding(
-                                          padding: EdgeInsets.only(top:0,left:20,right:20,bottom :0),
-
-                                          child: DropdownButtonFormField<dynamic>(
-                                            decoration: InputDecoration(
-
-                                              border: OutlineInputBorder(
-                                                borderSide: BorderSide(color: Colors.black),
-                                                borderRadius: BorderRadius.circular(10.0),
-                                              ),
-                                              focusedBorder: OutlineInputBorder(
-                                                borderSide: BorderSide(color: appbar_color),
-                                                borderRadius: BorderRadius.circular(10.0),
-                                              ),
-                                              enabledBorder: OutlineInputBorder(
-                                                borderRadius: BorderRadius.circular(10.0),
-                                                borderSide: BorderSide(color: Colors.black),
-                                              ),
-                                              contentPadding: EdgeInsets.symmetric(horizontal: 10),
-                                            ),
-
-
-                                            hint: Text('Select Follow-Up Type'), // Add a hint
-                                            value: selectedfollowup_type,
-                                            items: followuptype_list.map((item) {
-                                              return DropdownMenuItem<dynamic>(
-                                                value: item,
-                                                child: Text(item),
-                                              );
-                                            }).toList(),
-                                            onChanged: (value) async {
-                                              selectedfollowup_type = value!;
-                                            },
-
-                                            onTap: ()
-                                            {
-                                              setState(() {
-                                                _isFocused_email = false;
-                                                _isFocus_name = false;
-                                              });
-
-                                            },
-
-                                            validator: (value) {
-                                              if (value == null || value.isEmpty) {
-                                                return 'Follow-Up Type is required'; // Error message
-                                              }
-                                              return null; // No error if a value is selected
-                                            },
-                                          ),
-                                        ),
-
-
-                                      ],
-                                    ),
-                                  ), // follow up type
-
-                                  Container(
-                                    child: Column(
-
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
                                           Padding(padding: EdgeInsets.only(top: 15,left:20),
@@ -1274,29 +1179,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                               crossAxisAlignment: CrossAxisAlignment.start,
                                               children: [
                                                 // Switch for isQualified
-                                                Row(
-                                                  mainAxisAlignment: MainAxisAlignment.start,
-                                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                                  children: [
-                                                    Text('is Qualified:', style: TextStyle(fontSize: 14,fontWeight: FontWeight.bold)),
-                                                    Transform.scale(
-                                                      scale: 1.0,
-                                                      child: Switch(
-                                                        value: isQualified,
-                                                        activeColor: Colors.blueGrey,
-                                                        inactiveThumbColor: Colors.grey,
-                                                        inactiveTrackColor: Colors.white,
-                                                        onChanged: (value) {
-                                                          setState(() {
-                                                            isQualified = value;
-                                                            selectedfollowup_status = null; // Reset dropdown value
-                                                          });
-                                                        },
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                                SizedBox(height: 10), // Spacing between dropdown and switch
 
                                                 DropdownButtonFormField<String>(
                                                   value: selectedfollowup_status,
@@ -1325,9 +1207,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                   },
                                                   dropdownColor: Colors.white,
                                                   icon: Icon(Icons.arrow_drop_down, color: Colors.blueGrey),
-                                                  items: (isQualified
-                                                      ? qualifiedStatusList
-                                                      : followupstatus_list)
+                                                  items:  followupstatus_list
                                                       .map((status) => DropdownMenuItem<String>(
                                                     value: status,
                                                     child: Text(
@@ -1345,13 +1225,9 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
                                               ],
                                             ),
-
-
-
-
                                           ),
                                         ]),
-                                  ),
+                                  ), // folowup status
 
                                   Container(
                                     margin: EdgeInsets.only( top:15,
@@ -1377,7 +1253,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                         ),
                                       ],
                                     ),
-                                  ),
+                                  ), // unit type
 
                                   Padding(
                                     padding: EdgeInsets.only(top: 0, left: 20, right: 20, bottom: 0),

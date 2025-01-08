@@ -151,7 +151,93 @@ class _SalesDashboardScreenState extends State<SalesDashboardScreen> with Ticker
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Year Selector
+              // Sales Bar Chart
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Monthly Sales',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  )
+                  ,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+
+
+
+                      Container(
+                        height: 40,
+                        width: 120,
+                        child: CupertinoPicker(
+                          itemExtent: 32,
+                          scrollController: FixedExtentScrollController(initialItem: initialYearIndex),  // Set initial scroll position
+
+                          onSelectedItemChanged: (index) {
+                            setState(() {
+                              selectedYear = years[index]; // Update selected year based on index
+                            });
+                          },
+                          children: years
+                              .map((year) => Center(child: Text(year, style: TextStyle(fontSize: 16))))
+                              .toList(),
+                        ),
+                      ),
+
+
+                      Tooltip(
+                        message: 'Scroll up/down to change year',
+                        child: IconButton(
+                          icon: Icon(Icons.info_outline),
+                          onPressed: () {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Row(
+                                  children: [
+                                    Icon(Icons.info, color: Colors.white),
+                                    SizedBox(width: 10),
+                                    Expanded(
+                                      child: Text(
+                                        'Scroll up/down to change year',
+                                        style: TextStyle(color: Colors.white),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                backgroundColor: Colors.blueGrey.shade500,
+                                behavior: SnackBarBehavior.floating,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                action: SnackBarAction(
+                                  label: 'Got it',
+                                  textColor: Colors.lightGreenAccent,
+                                  onPressed: () {
+                                    // Optional: Add action logic
+                                  },
+                                ),
+                                duration: Duration(seconds: 2),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+
+                    ],
+                  ),
+                ],
+              ),
+
+              SizedBox(height: 50,),
+
+
+              Container(
+                height: MediaQuery.of(context).size.height * 0.4,
+                width: MediaQuery.of(context).size.width,
+                child: SalesBarChart(salesData: salesData, selectedYear: selectedYear!),
+              ),
+
+              SizedBox(height: 50,),
 
 
               // In-Progress and Closed Leads Buttons
@@ -505,93 +591,9 @@ class _SalesDashboardScreenState extends State<SalesDashboardScreen> with Ticker
               ),
 
 
-              SizedBox(height: 30),
-
-              // Sales Bar Chart
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Monthly Sales',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  )
-                  ,
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-
-
-
-                      Container(
-                        height: 40,
-                        width: 120,
-                        child: CupertinoPicker(
-                          itemExtent: 32,
-                          scrollController: FixedExtentScrollController(initialItem: initialYearIndex),  // Set initial scroll position
-
-                          onSelectedItemChanged: (index) {
-                            setState(() {
-                              selectedYear = years[index]; // Update selected year based on index
-                            });
-                          },
-                          children: years
-                              .map((year) => Center(child: Text(year, style: TextStyle(fontSize: 16))))
-                              .toList(),
-                        ),
-                      ),
-
-
-                      Tooltip(
-                        message: 'Scroll up/down to change year',
-                        child: IconButton(
-                          icon: Icon(Icons.info_outline),
-                          onPressed: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Row(
-                                  children: [
-                                    Icon(Icons.info, color: Colors.white),
-                                    SizedBox(width: 10),
-                                    Expanded(
-                                      child: Text(
-                                        'Scroll up/down to change year',
-                                        style: TextStyle(color: Colors.white),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                backgroundColor: Colors.blueGrey.shade500,
-                                behavior: SnackBarBehavior.floating,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                action: SnackBarAction(
-                                  label: 'Got it',
-                                  textColor: Colors.lightGreenAccent,
-                                  onPressed: () {
-                                    // Optional: Add action logic
-                                  },
-                                ),
-                                duration: Duration(seconds: 2),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-
-                    ],
-                  ),
-                  ],
-              ),
 
               SizedBox(height: 50,),
 
-
-              Container(
-                height: MediaQuery.of(context).size.height * 0.4,
-                width: MediaQuery.of(context).size.width,
-                child: SalesBarChart(salesData: salesData, selectedYear: selectedYear!),
-              ),
             ],
           ),
         ),

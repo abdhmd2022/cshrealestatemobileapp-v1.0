@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:cshrealestatemobile/SalesDashboard.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -19,7 +21,12 @@ class _LoginPageState extends State<Login> {
 
   final _formKey = GlobalKey<FormState>();
 
+  GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
+
   final passwordController = TextEditingController();
+
+  dynamic response_getusers;
+
 
   final emailController = TextEditingController();
 
@@ -63,6 +70,75 @@ class _LoginPageState extends State<Login> {
   Future<void> _initSharedPreferences() async {
 
   }
+
+  Future<void> _directlogin(String email, String password) async {
+
+    String url = "$BASE_URL_config/v1/auth/login";  // url for request
+    String token = 'Bearer $authTokenBase'; // auth token for request
+
+    setState(() {
+      _isLoading = true;
+
+    });
+
+    try
+    {
+      Map<String,String> headers = {
+        'Authorization' : token,
+        "Content-Type": "application/json"
+      };
+
+      var body = jsonEncode({
+        'email': email,
+        'password': password
+      });
+
+
+      response_getusers = await http.post(
+          Uri.parse(url),
+          body: body,
+          headers:headers
+      );
+
+      print('response code ${response_getusers.statusCode}');
+      if (response_getusers.statusCode == 200)
+      {
+
+        Navigator.pushReplacement
+
+          (
+          context,
+          MaterialPageRoute(builder: (context) => SalesDashboard()), // navigate to company and serial select screen
+        );
+
+      }
+      else
+      {
+        final error = jsonDecode(response_getusers.body)['error'];
+        /*print(error);*/
+        _scaffoldMessengerKey.currentState?.showSnackBar(
+          SnackBar(
+            content: Text('$error'),
+          ),
+        );
+      }
+      setState(() {
+        _isLoading = false;
+      });
+    }
+    catch (e)
+    {
+      _scaffoldMessengerKey.currentState?.showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+        ),
+      );
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -278,18 +354,16 @@ class _LoginPageState extends State<Login> {
                                             shadowColor: Colors.black.withOpacity(0.5), // Optional: adjust the shadow color
                                           ),
                                           onPressed: () {
-                                            /*if (_formKey.currentState != null &&
+                                            if (_formKey.currentState != null &&
                                               _formKey.currentState!.validate()) {
                                             _formKey.currentState!.save();
-                                            *//*_login();*//*
-                                            Navigator.push(
-                                                context,
-                                                MaterialPageRoute(builder: (context) => MaintenanceTicketCreation()));
-                                          }*/
 
-                                            Navigator.push(
-                                                context,
-                                                MaterialPageRoute(builder: (context) => SalesDashboard()));
+                                            String email = emailController.text;
+                                            String pass = passwordController.text;
+                                            _directlogin(email,pass);
+                                          }
+
+
                                           },
                                           child: Text('Login',
                                               style: TextStyle(

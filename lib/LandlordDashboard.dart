@@ -167,6 +167,9 @@ class _LandlordDashboardScreenState extends State<LandlordDashboardScreen> with 
 
                         child: Card(
                           elevation: 8.0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15), // Adjust the radius here
+                          ),
 
                           child: Container(
                             decoration: BoxDecoration(
@@ -176,7 +179,7 @@ class _LandlordDashboardScreenState extends State<LandlordDashboardScreen> with 
                                 end: Alignment.bottomCenter,
 
                               ),
-                              borderRadius: BorderRadius.circular(10),
+                              borderRadius: BorderRadius.circular(15),
 
                             ),
                             child: ListTile(

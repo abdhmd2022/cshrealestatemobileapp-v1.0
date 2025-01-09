@@ -75,7 +75,8 @@ class BuildingReportScreen extends StatelessWidget {
       body: Stack(
           children:[
 
-            SingleChildScrollView(child: Expanded(child: Container(
+            SingleChildScrollView(child:
+            Container(
               padding: const EdgeInsets.all(16.0),
               height: MediaQuery.of(context).size.height,
               child: Column(
@@ -134,7 +135,7 @@ class BuildingReportScreen extends StatelessWidget {
                   ),
                 ],
               ),
-            ),),),
+            ),),
 
 
             Positioned(
@@ -196,7 +197,7 @@ class PieChartGraph extends StatelessWidget {
       children: [
 
         Container(
-          height: MediaQuery.of(context).size.height / 3,
+          height: 275,
           child: PieChart(
             PieChartData(
               centerSpaceRadius: 0,

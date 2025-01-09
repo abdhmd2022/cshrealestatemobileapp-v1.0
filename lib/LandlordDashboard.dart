@@ -164,7 +164,6 @@ class _LandlordDashboardScreenState extends State<LandlordDashboardScreen> with 
                     itemBuilder: (context, index) {
                       return Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 3),
-
                         child: Card(
                           elevation: 8.0,
                           shape: RoundedRectangleBorder(

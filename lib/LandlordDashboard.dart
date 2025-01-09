@@ -157,28 +157,57 @@ class _LandlordDashboardScreenState extends State<LandlordDashboardScreen> with 
               ),
               SizedBox(height: 8),
               Expanded(
-                child: ListView.builder(
-                  itemCount: buildingNames.length,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      title: Text(buildingNames[index]),
-                      trailing: Icon(Icons.arrow_forward),
-                      onTap: () {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => BuildingReportScreen(
-                            buildingName: buildingNames[index],
-                        occupiedUnits: [occupiedUnits[index]], // Pass only the selected building's occupied units
-                        availableUnits: [availableUnits[index]],
+                child: Container(
+
+                  child: ListView.builder(
+                    itemCount: buildingNames.length,
+                    itemBuilder: (context, index) {
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 3),
+
+                        child: Card(
+                          elevation: 8.0,
+
+                          child: Container(
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [Colors.blueGrey.shade100, Colors.blueGrey.shade500],
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+
+                              ),
+                              borderRadius: BorderRadius.circular(10),
+
+                            ),
+                            child: ListTile(
+                              title: Text(
+                                buildingNames[index],
+                                style: TextStyle(fontWeight: FontWeight.bold,
+                                color: Colors.white),
+                              ),
+                              trailing: Icon(Icons.arrow_forward,color: Colors.white,),
+                              onTap: () {
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => BuildingReportScreen(
+                                      buildingName: buildingNames[index],
+                                      occupiedUnits: [occupiedUnits[index]], // Pass only the selected building's occupied units
+                                      availableUnits: [availableUnits[index]],
+                                    ),
+                                  ),
+                                );
+                              },
                             ),
                           ),
-                        );
-                      },
-                    );
-                  },
+
+                        ),
+                      );
+                    },
+                  ),
                 ),
               ),
+
 
             ],
           ),

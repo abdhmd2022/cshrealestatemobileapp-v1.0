@@ -252,7 +252,6 @@ class _SalesInquiryReportState
             Divider(color: Colors.grey[300]),
             _buildinquiryDetails(inquiry),
 
-
             Container(
               width: MediaQuery.of(context).size.width,
               child: Center(

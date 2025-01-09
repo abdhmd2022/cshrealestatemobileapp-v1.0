@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'SalesInquiryReport.dart';
 import 'constants.dart';
 
@@ -131,6 +132,36 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
   String selectedAreasString = "Select Area";
   List<String> selectedEmiratesList = [];
   List<String> selectedAreas = [];
+
+  final List<String> amenities = [
+    'Gym',
+    'Parking',
+    'Nearby Community Center',
+    'Swimming Pool',
+    'Sauna',
+    'Jacuzzi',
+    'Maids Room',
+    'Balcony',
+    'Study Room'
+  ];
+
+  final Set<String> selectedAmenities = {};
+
+  final List<String> specialfeatures = [
+  'Nearby Metro/Bus/Tram',
+    'Nearby Mall/Supermarket',
+    'Furnished',
+    'Unfurnished',
+  ];
+
+  final Set<String> selectedSpecialFeatures = {};
+
+  final List<String> propertyType = [
+    'Residential',
+    'Commercial',
+  ];
+
+  String? selectedPropertyType;
 
   void updateEmiratesSelection() {
     setState(() {
@@ -700,7 +731,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
   }
 
   Future<void> _initSharedPreferences() async {
-
   }
 
 
@@ -785,7 +815,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                               /*physics: NeverScrollableScrollPhysics(),*/
                                 children: [
 
-
                                   Container(
                                     margin: EdgeInsets.only(left: 0, right: 0),
                                     padding: EdgeInsets.only(top:0,bottom:0),
@@ -821,7 +850,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                         ),
 
                                         Padding(
-
                                             padding: EdgeInsets.only(top:0,left: 20,right: 20,bottom: 0),
                                             child: TextFormField(
                                               controller: customernamecontroller,
@@ -1053,9 +1081,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                     )
                                   ),
 
-
-
-
                                   Container(
                                     child: Column(
 
@@ -1141,6 +1166,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
                                   if (selectedfollowup_status == 'In Follow-Up' || selectedfollowup_status == 'Contact Later') // Conditionally render based on status
                                     Container(
+
                                     child: Column(
 
                                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -1230,7 +1256,68 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
                                       ],
                                     ),
-                                  ), // next follow up date
+                                  ),
+
+                                  Container(
+                                    padding: const EdgeInsets.only(left: 20.0, right: 20, top: 15),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          "Property Type:",
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.black,
+                                          ),
+                                        ),
+                                        SizedBox(height: 10),
+                                        SingleChildScrollView(
+                                          child: Wrap(
+                                            spacing: 8.0,
+                                            runSpacing: 8.0,
+
+                                            children: propertyType.map((amenity) {
+                                              final isSelected = selectedPropertyType == amenity; // Single selection logic
+                                              return ChoiceChip(
+                                                label: Column(
+                                                  children: [
+                                                    if (amenity == "Residential")
+                                                      Icon(
+                                                        Icons.home,
+                                                        color: isSelected ? Colors.white : Colors.black,
+                                                      ),
+                                                    if (amenity == "Commercial")
+                                                      Icon(
+                                                        Icons.business,
+                                                        color: isSelected ? Colors.white : Colors.black,
+                                                      ),
+                                                    SizedBox(height: 5),
+                                                    Text(
+                                                      amenity,
+                                                      style: TextStyle(
+                                                        color: isSelected ? Colors.white : Colors.black,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                selected: isSelected,
+                                                selectedColor: Colors.blueGrey,
+                                                onSelected: (bool selected) {
+                                                  setState(() {
+                                                    selectedPropertyType = selected ? amenity : null; // Ensure only one selection
+                                                  });
+                                                },
+                                                showCheckmark: false,
+                                                backgroundColor: Colors.white,// Disable the checkmark
+
+                                              );
+                                            }).toList(),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
 
                                   Container(
                                     margin: EdgeInsets.only( top:15,
@@ -1303,6 +1390,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                       ),
                                     ),
                                   ),
+
 
                                   /*Padding(padding: EdgeInsets.only(top:0,left: 20,right: 20,bottom: 0),
 
@@ -1545,6 +1633,103 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                     ),
                                   ),
 
+                                  Container(
+                                    padding: const EdgeInsets.only(left: 20.0, right: 20, top: 15),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          "Amenities:",
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.black,
+                                          ),
+                                        ),
+                                        SizedBox(height: 10),
+                                        SingleChildScrollView(
+                                          child: Wrap(
+                                            spacing: 8.0,
+                                            runSpacing: 8.0,
+                                            children: amenities.map((amenity) {
+                                              final isSelected = selectedAmenities.contains(amenity);
+                                              return ChoiceChip(
+                                                label: Text(
+                                                  amenity,
+                                                  style: TextStyle(
+                                                    color: isSelected ? Colors.white : Colors.black,
+                                                  ),
+                                                ),
+                                                selected: isSelected,
+                                                checkmarkColor: Colors.white,
+                                                selectedColor: Colors.blueGrey,
+                                                onSelected: (bool selected) {
+                                                  setState(() {
+                                                    if (selected) {
+                                                      selectedAmenities.add(amenity);
+                                                    } else {
+                                                      selectedAmenities.remove(amenity);
+                                                    }
+                                                  });
+                                                },
+                                                backgroundColor: Colors.white,
+                                              );
+                                            }).toList(),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+
+                                  Container(
+                                    padding: const EdgeInsets.only(left: 20.0, right: 20, top: 15),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          "Special Features:",
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.black,
+                                          ),
+                                        ),
+                                        SizedBox(height: 10),
+                                        SingleChildScrollView(
+                                          child: Wrap(
+                                            spacing: 8.0,
+                                            runSpacing: 8.0,
+                                            children: specialfeatures.map((amenity) {
+                                              final isSelected = selectedSpecialFeatures.contains(amenity);
+                                              return ChoiceChip(
+                                                label: Text(
+                                                  amenity,
+                                                  style: TextStyle(
+                                                    color: isSelected ? Colors.white : Colors.black,
+                                                  ),
+                                                ),
+                                                selected: isSelected,
+                                                checkmarkColor: Colors.white,
+                                                selectedColor: Colors.blueGrey,
+                                                onSelected: (bool selected) {
+                                                  setState(() {
+                                                    if (selected) {
+                                                      selectedSpecialFeatures.add(amenity);
+                                                    } else {
+                                                      selectedSpecialFeatures.remove(amenity);
+                                                    }
+                                                  });
+                                                },
+                                                backgroundColor: Colors.white,
+                                              );
+                                            }).toList(),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+
+
                                   /*Padding(padding: EdgeInsets.only(top:0,left: 20,right: 20,bottom: 0),
 
                                     child: TextFormField(
@@ -1606,7 +1791,9 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
                                 ),*/
 
-                                  Container(
+                                  // assigned to field and heading
+
+                                 /* Container(
                                     child: Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
@@ -1680,7 +1867,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                         ),
                                       ],
                                     ),
-                                  ),
+                                  ),*/
 
                                   Container(
                                     margin: EdgeInsets.only( top:15,
@@ -1712,6 +1899,8 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
                                       child: TextFormField(
                                         controller: descriptioncontroller,
+                                        maxLength: 500, // Limit input to 500 characters
+                                        maxLines: 3,
                                         validator: (value) {
                                           if (value!.isEmpty) {
                                             return 'Description is required';

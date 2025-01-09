@@ -176,10 +176,8 @@ class _LandlordDashboardScreenState extends State<LandlordDashboardScreen> with 
                                 colors: [Colors.blueGrey.shade100, Colors.blueGrey.shade500],
                                 begin: Alignment.topCenter,
                                 end: Alignment.bottomCenter,
-
                               ),
                               borderRadius: BorderRadius.circular(15),
-
                             ),
                             child: ListTile(
                               title: Text(
@@ -202,23 +200,11 @@ class _LandlordDashboardScreenState extends State<LandlordDashboardScreen> with 
                               },
                             ),
                           ),
-
                         ),
                       );
                     },
                   ),
-                ),
-              ),
-
-
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-
+                ))]))));}
 }
 
 

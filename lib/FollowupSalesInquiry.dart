@@ -70,7 +70,28 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
 
   bool _isLoading = false;
 
-  bool isQualified = false;
+  final List<String> amenities = [
+    'Gym',
+    'Parking',
+    'Nearby Community Center',
+    'Swimming Pool',
+    'Sauna',
+    'Jacuzzi',
+    'Maids Room',
+    'Balcony',
+    'Study Room'
+  ];
+
+  final Set<String> selectedAmenities = {};
+
+  final List<String> specialfeatures = [
+    'Nearby Metro/Bus/Tram',
+    'Nearby Mall/Supermarket',
+    'Furnished',
+    'Unfurnished',
+  ];
+
+  final Set<String> selectedSpecialFeatures = {};
 
   void _preSelectEmiratesAndAreas() {
     // Assume that selectedEmiratesList contains a list of selected emirates
@@ -118,14 +139,14 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
     'Whatsapp',
     'Social Media'
   ];
-  final List<String> qualifiedStatusList = [
-    'Closed',
-    'Cold',
-    'Contact Later',
-    'Drop',
-    'Hot',
-    'Warm',
+
+  final List<String> propertyType = [
+    'Residential',
+    'Commercial',
   ];
+
+  String? selectedPropertyType;
+
 
 
   List<String> followupstatus_list = [
@@ -1134,97 +1155,8 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
 
                                     )),
 
-                                Container(
-                                  child: Column(
-
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Padding(padding: EdgeInsets.only(top: 15,left:20),
-
-                                        child:Row(
-                                          children: [
-                                            Text("Next Follow-Up:",
-                                                style: TextStyle(
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 16
-
-                                                )
-                                            ),
-                                            SizedBox(width: 2),
-                                            Text(
-                                              '*', // Red asterisk for required field
-                                              style: TextStyle(
-                                                fontSize: 20,
-                                                color: Colors.red, // Red color for the asterisk
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-
-                                      Padding(
-                                        padding: EdgeInsets.only(top: 0, left: 20, right: 20),
-                                        child: GestureDetector(
-                                          onTap: () async {
-                                            DateTime? pickedDate = await showDatePicker(
-                                              context: context,
-
-                                              initialDate: nextFollowUpDate ?? DateTime.now(),
-                                              firstDate: DateTime.now(), // Restrict past dates
-                                              lastDate: DateTime(2100),
-                                              builder: (BuildContext context, Widget? child) {
-                                                return Theme(
-                                                  data: ThemeData.light().copyWith(
-                                                    colorScheme: ColorScheme.light(
-                                                      primary: Colors.blueGrey, // Header background and selected date color
-                                                      onPrimary: Colors.white, // Header text color
-                                                      onSurface: Colors.blueGrey, // Calendar text color
-                                                    ),
-                                                    textButtonTheme: TextButtonThemeData(
-                                                      style: TextButton.styleFrom(
-                                                        foregroundColor: Colors.blueGrey, // Button text color
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  child: child!,
-                                                );
-                                              },
-                                            );
-
-                                            if (pickedDate != null) {
-                                              setState(() {
-                                                nextFollowUpDate = pickedDate; // Save selected date
-                                              });
-                                            }
-                                          },
-                                          child: Container(
-                                            padding: EdgeInsets.symmetric(vertical: 15, horizontal: 10),
-                                            decoration: BoxDecoration(
-                                              border: Border.all(color: Colors.black),
-                                              borderRadius: BorderRadius.circular(10),
-                                            ),
-                                            child: Row(
-                                              mainAxisAlignment: MainAxisAlignment.start,
-                                              children: [
-                                                Icon(Icons.calendar_today, color: Colors.grey),
-                                                SizedBox(width: 10,),
-                                                Text(
-                                                  nextFollowUpDate != null
-                                                      ? "${nextFollowUpDate!.day}-${nextFollowUpDate!.month}-${nextFollowUpDate!.year}"
-                                                      : "Select Next Follow-Up Date",
-                                                  style: TextStyle(fontSize: 16, color: Colors.black54),
-                                                ),
-
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                      ),
 
 
-                                    ],
-                                  ),
-                                ), // next follow up date
 
                                 Container(
                                   child: Column(
@@ -1346,30 +1278,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                             mainAxisAlignment: MainAxisAlignment.start,
                                             crossAxisAlignment: CrossAxisAlignment.start,
                                             children: [
-                                              // Switch for isQualified
-                                              Row(
-                                                mainAxisAlignment: MainAxisAlignment.start,
-                                                crossAxisAlignment: CrossAxisAlignment.center,
-                                                children: [
-                                                  Text('is Qualified:', style: TextStyle(fontSize: 14,fontWeight: FontWeight.bold)),
-                                                  Transform.scale(
-                                                    scale: 1.0,
-                                                    child: Switch(
-                                                      value: isQualified,
-                                                      activeColor: Colors.blueGrey,
-                                                      inactiveThumbColor: Colors.grey,
-                                                      inactiveTrackColor: Colors.white,
-                                                      onChanged: (value) {
-                                                        setState(() {
-                                                          isQualified = value;
-                                                          selectedfollowup_status = null; // Reset dropdown value
-                                                        });
-                                                      },
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                              SizedBox(height: 10), // Spacing between dropdown and switch
+
 
                                               DropdownButtonFormField<String>(
                                                 value: selectedfollowup_status,
@@ -1398,9 +1307,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                                 },
                                                 dropdownColor: Colors.white,
                                                 icon: Icon(Icons.arrow_drop_down, color: Colors.blueGrey),
-                                                items: (isQualified
-                                                    ? qualifiedStatusList
-                                                    : followupstatus_list)
+                                                items: followupstatus_list
                                                     .map((status) => DropdownMenuItem<String>(
                                                   value: status,
                                                   child: Text(
@@ -1412,6 +1319,11 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                                 onChanged: (value) {
                                                   setState(() {
                                                     selectedfollowup_status = value;
+                                                    if(selectedfollowup_status =='Not Qualified')
+                                                    {
+
+                                                      nextFollowUpDate = null;
+                                                    }
                                                   });
                                                 },
                                               ),
@@ -1425,6 +1337,161 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                         ),
                                       ]),
                                 ),
+
+                                if (selectedfollowup_status == 'In Follow-Up' || selectedfollowup_status == 'Contact Later') // Conditionally render based on status
+                                  Container(
+                                    child: Column(
+
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Padding(padding: EdgeInsets.only(top: 15,left:20),
+
+                                          child:Row(
+                                            children: [
+                                              Text("Next Follow-Up:",
+                                                  style: TextStyle(
+                                                      fontWeight: FontWeight.bold,
+                                                      fontSize: 16
+
+                                                  )
+                                              ),
+                                              SizedBox(width: 2),
+                                              Text(
+                                                '*', // Red asterisk for required field
+                                                style: TextStyle(
+                                                  fontSize: 20,
+                                                  color: Colors.red, // Red color for the asterisk
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+
+                                        Padding(
+                                          padding: EdgeInsets.only(top: 0, left: 20, right: 20),
+                                          child: GestureDetector(
+                                            onTap: () async {
+                                              DateTime? pickedDate = await showDatePicker(
+                                                context: context,
+
+                                                initialDate: nextFollowUpDate ?? DateTime.now(),
+                                                firstDate: DateTime.now(), // Restrict past dates
+                                                lastDate: DateTime(2100),
+                                                builder: (BuildContext context, Widget? child) {
+                                                  return Theme(
+                                                    data: ThemeData.light().copyWith(
+                                                      colorScheme: ColorScheme.light(
+                                                        primary: Colors.blueGrey, // Header background and selected date color
+                                                        onPrimary: Colors.white, // Header text color
+                                                        onSurface: Colors.blueGrey, // Calendar text color
+                                                      ),
+                                                      textButtonTheme: TextButtonThemeData(
+                                                        style: TextButton.styleFrom(
+                                                          foregroundColor: Colors.blueGrey, // Button text color
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    child: child!,
+                                                  );
+                                                },
+                                              );
+
+                                              if (pickedDate != null) {
+                                                setState(() {
+                                                  nextFollowUpDate = pickedDate; // Save selected date
+                                                });
+                                              }
+                                            },
+                                            child: Container(
+                                              padding: EdgeInsets.symmetric(vertical: 15, horizontal: 10),
+                                              decoration: BoxDecoration(
+                                                border: Border.all(color: Colors.black),
+                                                borderRadius: BorderRadius.circular(10),
+                                              ),
+                                              child: Row(
+                                                mainAxisAlignment: MainAxisAlignment.start,
+                                                children: [
+                                                  Icon(Icons.calendar_today, color: Colors.grey),
+                                                  SizedBox(width: 10,),
+                                                  Text(
+                                                    nextFollowUpDate != null
+                                                        ? "${nextFollowUpDate!.day}-${nextFollowUpDate!.month}-${nextFollowUpDate!.year}"
+                                                        : "Select Next Follow-Up Date",
+                                                    style: TextStyle(fontSize: 16, color: Colors.black54),
+                                                  ),
+
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+
+
+                                      ],
+                                    ),
+                                  ), // next follow up date
+
+                                Container(
+                                  padding: const EdgeInsets.only(left: 20.0, right: 20, top: 15),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        "Property Type:",
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                      SizedBox(height: 10),
+                                      SingleChildScrollView(
+                                        child: Wrap(
+                                          spacing: 8.0,
+                                          runSpacing: 8.0,
+
+                                          children: propertyType.map((amenity) {
+                                            final isSelected = selectedPropertyType == amenity; // Single selection logic
+                                            return ChoiceChip(
+                                              label: Column(
+                                                children: [
+                                                  if (amenity == "Residential")
+                                                    Icon(
+                                                      Icons.home,
+                                                      color: isSelected ? Colors.white : Colors.black,
+                                                    ),
+                                                  if (amenity == "Commercial")
+                                                    Icon(
+                                                      Icons.business,
+                                                      color: isSelected ? Colors.white : Colors.black,
+                                                    ),
+                                                  SizedBox(height: 5),
+                                                  Text(
+                                                    amenity,
+                                                    style: TextStyle(
+                                                      color: isSelected ? Colors.white : Colors.black,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              selected: isSelected,
+                                              selectedColor: Colors.blueGrey,
+                                              onSelected: (bool selected) {
+                                                setState(() {
+                                                  selectedPropertyType = selected ? amenity : null; // Ensure only one selection
+                                                });
+                                              },
+                                              showCheckmark: false,
+                                              backgroundColor: Colors.white,// Disable the checkmark
+
+                                            );
+                                          }).toList(),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+
 
 
 
@@ -1743,6 +1810,102 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                   ),
                                 ),
 
+                                Container(
+                                  padding: const EdgeInsets.only(left: 20.0, right: 20, top: 15),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        "Amenities:",
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                      SizedBox(height: 10),
+                                      SingleChildScrollView(
+                                        child: Wrap(
+                                          spacing: 8.0,
+                                          runSpacing: 8.0,
+                                          children: amenities.map((amenity) {
+                                            final isSelected = selectedAmenities.contains(amenity);
+                                            return ChoiceChip(
+                                              label: Text(
+                                                amenity,
+                                                style: TextStyle(
+                                                  color: isSelected ? Colors.white : Colors.black,
+                                                ),
+                                              ),
+                                              selected: isSelected,
+                                              checkmarkColor: Colors.white,
+                                              selectedColor: Colors.blueGrey,
+                                              onSelected: (bool selected) {
+                                                setState(() {
+                                                  if (selected) {
+                                                    selectedAmenities.add(amenity);
+                                                  } else {
+                                                    selectedAmenities.remove(amenity);
+                                                  }
+                                                });
+                                              },
+                                              backgroundColor: Colors.white,
+                                            );
+                                          }).toList(),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+
+                                Container(
+                                  padding: const EdgeInsets.only(left: 20.0, right: 20, top: 15),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        "Special Features:",
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                      SizedBox(height: 10),
+                                      SingleChildScrollView(
+                                        child: Wrap(
+                                          spacing: 8.0,
+                                          runSpacing: 8.0,
+                                          children: specialfeatures.map((amenity) {
+                                            final isSelected = selectedSpecialFeatures.contains(amenity);
+                                            return ChoiceChip(
+                                              label: Text(
+                                                amenity,
+                                                style: TextStyle(
+                                                  color: isSelected ? Colors.white : Colors.black,
+                                                ),
+                                              ),
+                                              selected: isSelected,
+                                              checkmarkColor: Colors.white,
+                                              selectedColor: Colors.blueGrey,
+                                              onSelected: (bool selected) {
+                                                setState(() {
+                                                  if (selected) {
+                                                    selectedSpecialFeatures.add(amenity);
+                                                  } else {
+                                                    selectedSpecialFeatures.remove(amenity);
+                                                  }
+                                                });
+                                              },
+                                              backgroundColor: Colors.white,
+                                            );
+                                          }).toList(),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+
                                 /*Padding(padding: EdgeInsets.only(top:0,left: 20,right: 20,bottom: 0),
 
                                     child: TextFormField(
@@ -2041,7 +2204,6 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                                 selectedfollowup_status = null;
                                                 nextFollowUpDate = null;
                                                 selectedfollowup_type = null;
-                                                isQualified = false;
 
 
 

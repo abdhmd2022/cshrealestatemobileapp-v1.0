@@ -73,7 +73,6 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
   final List<String> amenities = [
     'Gym',
     'Parking',
-    'Nearby Community Center',
     'Swimming Pool',
     'Sauna',
     'Jacuzzi',
@@ -87,6 +86,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
   final List<String> specialfeatures = [
     'Nearby Metro/Bus/Tram',
     'Nearby Mall/Supermarket',
+    'Nearby Community Center',
     'Furnished',
     'Unfurnished',
   ];

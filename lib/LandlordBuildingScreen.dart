@@ -1,7 +1,10 @@
 import 'package:cshrealestatemobile/LandlordDashboard.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'constants.dart';
 
@@ -13,6 +16,38 @@ class BuildingReportScreen extends StatelessWidget {
   BuildingReportScreen({required this.buildingName, required this.occupiedUnits, required this.availableUnits});
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  void _openMaps() async {
+    final String googleMapsUrl =
+        "https://www.google.com/maps/search/?api=1&query=${Uri.encodeComponent(buildingName)}";
+    final String appleMapsUrl =
+        "https://maps.apple.com/?q=${Uri.encodeComponent(buildingName)}";
+    final String wazeUrl =
+        "waze://?q=${Uri.encodeComponent(buildingName)}"; // Waze URL scheme
+
+    if (defaultTargetPlatform == TargetPlatform.iOS) {
+      // For iOS, prefer Apple Maps
+      if (await canLaunch(appleMapsUrl)) {
+        await launch(appleMapsUrl);
+      } else if (await canLaunch(googleMapsUrl)) {
+        await launch(googleMapsUrl);
+      } else {
+        throw 'Could not open map app';
+      }
+    } else if (defaultTargetPlatform == TargetPlatform.android) {
+      // For Android, check if Google Maps or Waze is installed
+      if (await canLaunch(googleMapsUrl)) {
+        await launch(googleMapsUrl);
+      } else if (await canLaunch(wazeUrl)) {
+        await launch(wazeUrl);
+      } else {
+        throw 'Could not open map app';
+      }
+    } else {
+      // Default case for unsupported platforms
+      throw 'Platform not supported';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,73 +72,196 @@ class BuildingReportScreen extends StatelessWidget {
             color: Colors.white,
           ),),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              '$buildingName Units Overview',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
+      body: Stack(
+          children:[
 
-
-            SizedBox(height: 30),
-
-
-
-
-            BarGraph(occupiedUnits: occupiedUnits, availableUnits: availableUnits,buildingName: buildingName,),
-
-            SizedBox(height: 10),
-
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+            SingleChildScrollView(child: Expanded(child: Container(
+              padding: const EdgeInsets.all(16.0),
+              height: MediaQuery.of(context).size.height,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Red Color for occupied
-                  Row(
-                    children: [
-                      Container(
-                        width: 15,
-                        height: 15,
-                        decoration: BoxDecoration(
-                          color: Colors.redAccent,
-                          shape: BoxShape.circle, // Make it round
-                        ),
-
-                      ),
-                      SizedBox(width: 8),
-                      Text('Occupied'),
-                    ],
+                  Text(
+                    '$buildingName Units Overview',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
-                  SizedBox(width: 16),
-                  // Green Color for Available
-                  Row(
-                    children: [
-                      Container(
-                        width: 15,
-                        height: 15,
-                        decoration: BoxDecoration(
-                          color: Colors.greenAccent,
-                          shape: BoxShape.circle, // Make it round
+
+                  SizedBox(height: 1),
+
+                  PieChartGraph(occupiedUnits: occupiedUnits, availableUnits: availableUnits,buildingName: buildingName,),
+
+                  SizedBox(height: 10),
+
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        // Red Color for occupied
+                        Row(
+                          children: [
+                            Container(
+                              width: 15,
+                              height: 15,
+                              decoration: BoxDecoration(
+                                color: Colors.orangeAccent,
+                                shape: BoxShape.circle, // Make it round
+                              ),
+
+                            ),
+                            SizedBox(width: 8),
+                            Text('Occupied'),
+                          ],
                         ),
-                      ),
-                      SizedBox(width: 8),
-                      Text('Available'),
-                    ],
+                        SizedBox(width: 16),
+                        // Green Color for Available
+                        Row(
+                          children: [
+                            Container(
+                              width: 15,
+                              height: 15,
+                              decoration: BoxDecoration(
+                                color: Colors.blueAccent,
+                                shape: BoxShape.circle, // Make it round
+                              ),
+                            ),
+                            SizedBox(width: 8),
+                            Text('Available'),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
+            ),),),
+
+
+            Positioned(
+              bottom: 20, // Adjust as needed
+              left: 0,
+              right: 20,
+              child: Align(
+                alignment: Alignment.bottomRight,
+
+
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.8),
+                    borderRadius: BorderRadius.circular(10),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black26,
+                        blurRadius: 5,
+                        offset: Offset(2, 2),
+                      ),
+                    ],
+                  ),
+                  child: Image.asset(
+                    'assets/building_location.png', // Image from assets
+                    width: 75, // Adjust size as needed
+                    height: 75,
+                  ),
+                ),
+              ),
+
             ),
-          ],
-        ),
-      ),
+          ]
+      )
     );
   }
 }
-class BarGraph extends StatelessWidget {
+
+class PieChartGraph extends StatelessWidget {
+  final List<int> occupiedUnits;
+  final List<int> availableUnits;
+  final String buildingName;
+
+  PieChartGraph({
+    required this.occupiedUnits,
+    required this.availableUnits,
+    required this.buildingName,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    // Combine occupied and available units for a single building
+    int totalOccupied = occupiedUnits[0]; // Assuming single building
+    int totalAvailable = availableUnits[0];
+    int totalUnits = totalOccupied + totalAvailable;
+
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+
+        Container(
+          height: MediaQuery.of(context).size.height / 3,
+          child: PieChart(
+            PieChartData(
+              centerSpaceRadius: 0,
+              sectionsSpace: 0,
+
+              sections: [
+                PieChartSectionData(
+                  value: totalOccupied.toDouble(),
+                  gradient: LinearGradient(
+                    colors: [Colors.orangeAccent.shade100,Colors.orangeAccent.shade200, Colors.orangeAccent.shade200], // Gradient background
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                  ),
+                  title: "${totalOccupied.toString()} Unit(s)",
+                  titleStyle: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
+                  radius: 120,
+                ),
+                PieChartSectionData(
+                  value: totalAvailable.toDouble(),
+                  gradient: LinearGradient(
+                    colors: [Colors.blueAccent.shade100,Colors.blueAccent.shade200, Colors.blueAccent.shade200], // Gradient background
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                  ),
+                  title: '${totalAvailable.toString()} Unit(s)',
+                  titleStyle: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
+                  radius: 120,
+                ),
+              ],
+              borderData: FlBorderData(show: false),
+            ),
+          ),
+        ),
+
+
+      ],
+    );
+  }
+}
+
+class Indicator extends StatelessWidget {
+  final Color color;
+  final String text;
+
+  Indicator({required this.color, required this.text});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Container(
+          width: 12,
+          height: 12,
+          decoration: BoxDecoration(
+            color: color,
+            shape: BoxShape.circle,
+          ),
+        ),
+        SizedBox(width: 4),
+        Text(text, style: TextStyle(fontSize: 12)),
+      ],
+    );
+  }
+}
+/*class BarGraph extends StatelessWidget {
   final List<int> occupiedUnits;
   final List<int> availableUnits;
   final String buildingName;
@@ -223,4 +381,4 @@ class BarGraph extends StatelessWidget {
       ),
     );
   }
-}
+}*/

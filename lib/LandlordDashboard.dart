@@ -104,7 +104,7 @@ class _LandlordDashboardScreenState extends State<LandlordDashboardScreen> with 
               ),
               SizedBox(height: 16),
               Expanded(
-                flex: 2,
+                flex: 1,
                 child: BarGraph(occupiedUnits: occupiedUnits, buildingNames: buildingNames,availableUnits: availableUnits,),
               ),
               SizedBox(height: 10),
@@ -121,7 +121,7 @@ class _LandlordDashboardScreenState extends State<LandlordDashboardScreen> with 
                           width: 15,
                           height: 15,
                           decoration: BoxDecoration(
-                            color: Colors.redAccent,
+                            color: Colors.redAccent.shade200,
                             shape: BoxShape.circle, // Make it round
                           ),
 
@@ -138,7 +138,7 @@ class _LandlordDashboardScreenState extends State<LandlordDashboardScreen> with 
                           width: 15,
                           height: 15,
                           decoration: BoxDecoration(
-                            color: Colors.greenAccent,
+                            color: Colors.greenAccent.shade200,
                             shape: BoxShape.circle, // Make it round
                           ),
                         ),
@@ -320,14 +320,22 @@ class BarGraph extends StatelessWidget {
                   BarChartRodData(
                     fromY: 0,
                     toY: occupiedUnits[index].toDouble(),
-                    color: Colors.redAccent,
+                    gradient: LinearGradient(
+                      colors: [Colors.redAccent.shade100, Colors.redAccent.shade200], // Gradient background
+                      begin: Alignment.topLeft,
+                      end: Alignment.topRight,
+                    ),
                     width: barWidth,
                     borderRadius: BorderRadius.circular(5),
                   ),
                   BarChartRodData(
                     fromY: 0,
                     toY: availableUnits[index].toDouble(),
-                    color: Colors.greenAccent,
+                    gradient: LinearGradient(
+                  colors: [Colors.greenAccent.shade100, Colors.greenAccent.shade200], // Gradient background
+                    begin: Alignment.topLeft,
+                    end: Alignment.topRight,
+                  ),
                     width: barWidth,
                     borderRadius: BorderRadius.circular(5),
                   ),

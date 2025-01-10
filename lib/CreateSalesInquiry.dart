@@ -147,7 +147,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
   final Set<String> selectedAmenities = {};
 
   final List<String> specialfeatures = [
-  'Nearby Metro/Bus/Tram',
+    'Nearby Metro/Bus/Tram',
     'Nearby Mall/Supermarket',
     'Nearby Community Center',
     'Furnished',

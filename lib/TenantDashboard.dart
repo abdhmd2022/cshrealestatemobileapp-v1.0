@@ -385,7 +385,7 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
                     SizedBox(height: 10),
 
                 Container(
-                  height: MediaQuery.of(context).size.height * 0.5,
+                  height: MediaQuery.of(context).size.height * 0.4,
                   child: Center(
                     child: ApartmentBarChart(
                       selectedApartment: selectedApartment!,
@@ -1024,7 +1024,7 @@ class ApartmentBarChart extends StatelessWidget {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Container(
-        padding: const EdgeInsets.only(top: 15),
+        padding: const EdgeInsets.only(top: 15,bottom: 15),
         width: MediaQuery.of(context).size.width-20,
         child: BarChart(
           BarChartData(

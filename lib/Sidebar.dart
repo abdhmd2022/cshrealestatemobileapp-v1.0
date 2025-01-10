@@ -346,9 +346,6 @@ class Sidebar extends StatelessWidget {
             ),
           ],
         )
-
-
-
         );
   }
 
@@ -359,6 +356,7 @@ class Sidebar extends StatelessWidget {
       onComplete();
     }
   }*/
+
   Future<void> _showConfirmationDialogAndNavigate(BuildContext context) async { // logout dialog function
     await showDialog<void>(
         context: context,

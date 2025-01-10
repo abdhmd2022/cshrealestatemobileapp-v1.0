@@ -593,68 +593,83 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                               ],
                             ),
                           ),
+
+
+
+
       SizedBox(height: 20),
-      Container(
-        margin: EdgeInsets.only(left:20,right: 20),
-        child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          if (_attachment.isNotEmpty)
-            Column(
-              children: [
-                Row(
-                  children: _attachment
-                      .map((attachment) => Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Image.file(
-                      attachment,
-                      width: 100,
-                      height: 100,
-                      fit: BoxFit.cover,
-                    ),
-                  ))
-                      .toList(),
-                ),
-                SizedBox(height: 10),
 
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    shape: CircleBorder(), // Makes the button round
-                    padding: EdgeInsets.all(16), // Adds padding around the icon
-                    elevation: 5, // Adds elevation for the shadow effect
-                    backgroundColor: Colors.white, // Button background color
-                  ),
-                  onPressed: _showAttachmentOptions, // Trigger image picker
-                  child: Icon(
-                    Icons.add,
-                    size: 30, // Icon size
-                    color: Colors.blueAccent, // Icon color
-                  ),
-                ),
-              ],
-            )
-          else
-            Column(
-              children: [ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  shape: CircleBorder(), // Makes the button round
-                  padding: EdgeInsets.all(16), // Adds padding around the icon
-                  elevation: 8, // Adds elevation for the shadow effect
-                  backgroundColor: Colors.white, // Button background color
-                ),
-                onPressed: _showAttachmentOptions, // Trigger image picker
-                child: Icon(
-                  Icons.attach_file,
-                  size: 30, // Icon size
-                  color: Colors.blueAccent, // Icon color
-                ),
-              ),
-                SizedBox(height: 20),
 
-                Text('No attachment selected'),],
-            ),
-        ],
-      ),),
+
+                          Container(
+                            margin: EdgeInsets.only(left:20,right: 20),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                if (_attachment.isNotEmpty)
+                              Column(
+                          children: [
+                            SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: Row(
+                                  children: _attachment
+                                      .map((attachment) => Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Image.file(
+                                      attachment,
+                                      width: 100,
+                                      height: 100,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ))
+                                      .toList(),
+                                ),),
+
+    SizedBox(height: 10),
+
+    ElevatedButton(
+    style: ElevatedButton.styleFrom(
+    shape: CircleBorder(), // Makes the button round
+    padding: EdgeInsets.all(16), // Adds padding around the icon
+    elevation: 5, // Adds elevation for the shadow effect
+    backgroundColor: Colors.white, // Button background color
+    ),
+    onPressed: _showAttachmentOptions, // Trigger image picker
+    child: Icon(
+    Icons.add,
+    size: 30, // Icon size
+    color: Colors.blueAccent, // Icon color
+    ),
+    ),
+    ],
+    )
+
+
+                                else
+                                  Column(
+                                    children: [ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        shape: CircleBorder(), // Makes the button round
+                                        padding: EdgeInsets.all(16), // Adds padding around the icon
+                                        elevation: 8, // Adds elevation for the shadow effect
+                                        backgroundColor: Colors.white, // Button background color
+                                      ),
+                                      onPressed: _showAttachmentOptions, // Trigger image picker
+                                      child: Icon(
+                                        Icons.attach_file,
+                                        size: 30, // Icon size
+                                        color: Colors.blueAccent, // Icon color
+                                      ),
+                                    ),
+                                      SizedBox(height: 20),
+
+                                      Text('No attachment selected'),],
+                                  ),
+                              ],
+                            ),)
+
+
+
       ]),
 
                   /*  SizedBox(height: 10),

@@ -226,6 +226,42 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
       backgroundColor: const Color(0xFFF2F4F8),
       appBar: AppBar(
         backgroundColor: appbar_color,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: InkWell(
+              onTap: () {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => TenantProfile()), // Navigate to the profile screen
+                );
+              },
+              child: Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: LinearGradient(
+                    colors: [Colors.blueGrey.shade300, Colors.blueGrey.shade400],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.2),
+                      blurRadius: 5,
+                      offset: Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Icon(
+                  Icons.person,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+        ],
         title: Text('Tenant Dashboard',
             style: TextStyle(color: Colors.white)),
         centerTitle: true,
@@ -454,62 +490,10 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
                     ),
 
                   ),
-                  SizedBox(width: 10),
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {
 
-                        Navigator.pushReplacement
-
-                          (
-                          context,
-                          MaterialPageRoute(builder: (context) => TenantProfile()), // navigate to company and serial select screen
-                        );
-
-                      },
-                      style: ElevatedButton.styleFrom(
-                        padding: EdgeInsets.zero, // Remove padding from button to ensure container fills the space
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16), // Rounded corners for the button
-                        ),
-                        backgroundColor: Colors.transparent, // Transparent background to allow the container to show
-                        shadowColor: Colors.black.withOpacity(0.2), // Soft shadow for depth
-                        elevation: 5, // Moderate elevation for a subtle 3D effect
-                      ),
-                      child: Container(
-                          alignment: Alignment.center, // Center the content inside the container
-                          padding: EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [Colors.blueGrey.shade300, Colors.blueGrey.shade400], // Gradient background
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                            ),
-                            borderRadius: BorderRadius.circular(16), // Consistent rounded corners
-                          ),
-                          child: Column(
-                            children: [
-
-                              Icon(
-                                Icons.person,
-                                color: Colors.white
-                              ),
-                              SizedBox(height: 5,),
-                              Text(
-                                'Profile',
-                                style: TextStyle(fontSize: 16,
-                                    color: Colors.white),
-                              ),
-
-
-                            ],
-                          )
-                      ),
-                    ),
-
-                  ),
                 ],
               ),
+
 
               SizedBox(height: 20),
 

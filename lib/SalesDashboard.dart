@@ -118,8 +118,45 @@ class _SalesDashboardScreenState extends State<SalesDashboardScreen> with Ticker
     return Scaffold(
       key: _scaffoldKey,
       backgroundColor: const Color(0xFFF2F4F8),
+
       appBar: AppBar(
         backgroundColor: appbar_color,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: InkWell(
+              onTap: () {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => SalesProfileScreen()), // Navigate to the profile screen
+                );
+              },
+              child: Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: LinearGradient(
+                    colors: [Colors.blueGrey.shade300, Colors.blueGrey.shade400],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.2),
+                      blurRadius: 5,
+                      offset: Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Icon(
+                  Icons.person,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+        ],
         title: Text('Sales Dashboard',
             style: TextStyle(color: Colors.white)),
         centerTitle: true,
@@ -405,65 +442,7 @@ class _SalesDashboardScreenState extends State<SalesDashboardScreen> with Ticker
                               ),
                             ),
                           ),
-                          SizedBox(width: 10),
 
-                          // Second Button
-                          Expanded(
-                            child: ElevatedButton(
-                              onPressed: () {
-
-                                Navigator.pushReplacement(
-                                  context,
-
-                                  MaterialPageRoute(builder: (context) => SalesProfileScreen()),          // navigate to users screen
-                                );
-
-                              },
-                              style: ElevatedButton.styleFrom(
-                                padding: EdgeInsets.all(0), // Remove padding for full gradient coverage
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(16),
-                                ),
-                                backgroundColor: Colors.transparent, // Transparent background
-                                shadowColor: Colors.black.withOpacity(0.2),
-                                elevation: 5,
-                              ),
-                              child: Container(
-                                padding: EdgeInsets.all(16),
-                                width: double.infinity,
-                                height: double.infinity,
-                                decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    colors: [Colors.blueGrey.shade300, Colors.blueGrey.shade400], // Gradient background
-                                    begin: Alignment.topCenter,
-                                    end: Alignment.bottomCenter,
-                                  ),
-                                  borderRadius: BorderRadius.circular(16), // Consistent rounded corners
-                                ),
-                                child: Center(
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Icon(
-                                        Icons.person,
-                                        color: Colors.white,
-                                      ),
-                                      SizedBox(height: 10),
-                                      Text(
-                                        'Profile',
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.w600,
-                                          color: Colors.white,
-                                          letterSpacing: 0.8,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
                           SizedBox(width: 10),
 
                           // Third Button

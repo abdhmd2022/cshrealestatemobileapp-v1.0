@@ -736,6 +736,9 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
   @override
   Widget build(BuildContext context) {
+
+    RangeValues _currentRangeValues = const RangeValues(100, 500);
+
     return Scaffold(
         appBar: AppBar(
           backgroundColor: appbar_color,
@@ -1667,6 +1670,38 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                             }).toList(),
                                           ),
                                         ),
+                                      ],
+                                    ),
+                                  ),
+
+
+                                  Container(
+                                    padding: const EdgeInsets.only(left: 20.0, right: 20, top: 15),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'Price Range:',
+                                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                                        ),
+                                        RangeSlider(
+                                          activeColor: Colors.blueGrey,
+                                          values: _currentRangeValues,
+                                          min: 0,
+                                          max: 1000,
+
+                                          labels: RangeLabels(
+                                            _currentRangeValues.start.round().toString(),
+                                            _currentRangeValues.end.round().toString(),
+                                          ),
+                                          onChanged: (RangeValues values) {
+                                            setState(() {
+                                              _currentRangeValues = values; // Update the range value
+                                            });
+                                          },
+
+                                        ),
+
                                       ],
                                     ),
                                   ),

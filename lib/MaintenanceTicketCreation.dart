@@ -622,25 +622,24 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                                       .toList(),
                                 ),),
 
-    SizedBox(height: 10),
+                                SizedBox(height: 10),
 
-    ElevatedButton(
-    style: ElevatedButton.styleFrom(
-    shape: CircleBorder(), // Makes the button round
-    padding: EdgeInsets.all(16), // Adds padding around the icon
-    elevation: 5, // Adds elevation for the shadow effect
-    backgroundColor: Colors.white, // Button background color
-    ),
-    onPressed: _showAttachmentOptions, // Trigger image picker
-    child: Icon(
-    Icons.add,
-    size: 30, // Icon size
-    color: Colors.blueAccent, // Icon color
-    ),
-    ),
-    ],
-    )
-
+                                ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                shape: CircleBorder(), // Makes the button round
+                                padding: EdgeInsets.all(16), // Adds padding around the icon
+                                elevation: 5, // Adds elevation for the shadow effect
+                                backgroundColor: Colors.white, // Button background color
+                                 ),
+                                onPressed: _showAttachmentOptions, // Trigger image picker
+                                child: Icon(
+                                Icons.add,
+                                size: 30, // Icon size
+                                color: Colors.blueAccent, // Icon color
+                                ),
+                                ),
+                                ],
+                                )
 
                                 else
                                   Column(

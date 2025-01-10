@@ -121,7 +121,7 @@ class _LandlordDashboardScreenState extends State<LandlordDashboardScreen> with 
                           width: 15,
                           height: 15,
                           decoration: BoxDecoration(
-                            color: Colors.redAccent.shade200,
+                            color: Colors.orangeAccent.shade200,
                             shape: BoxShape.circle, // Make it round
                           ),
 
@@ -309,7 +309,7 @@ class BarGraph extends StatelessWidget {
                     fromY: 0,
                     toY: occupiedUnits[index].toDouble(),
                     gradient: LinearGradient(
-                      colors: [Colors.redAccent.shade100,Colors.redAccent.shade200, Colors.redAccent.shade200], // Gradient background
+                      colors: [Colors.orangeAccent.shade100,Colors.orangeAccent.shade200, Colors.orangeAccent.shade200], // Gradient background
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                     ),

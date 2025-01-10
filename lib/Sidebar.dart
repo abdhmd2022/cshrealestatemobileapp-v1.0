@@ -54,67 +54,71 @@ class Sidebar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-        child: ListView(
-            padding: EdgeInsets.zero,
-            children: <Widget>[
-              DrawerHeader(
-                  margin: EdgeInsets.zero,
-                  padding: EdgeInsets.zero,
-                  child: Padding(
-                      padding: EdgeInsets.all(20.0),
-                      child: Row(
-                          children: [
-                            CircleAvatar(
-                              backgroundColor: Colors.transparent, // set the background color to red
-                              radius: 30.0,
-                              child: SizedBox(
-                                height: 50.0,
-                                width: 50,
-                                child: Icon(Icons.person),
-                              ),
-                            ),
-                            SizedBox(width: 10.0),
-                            Padding(padding: EdgeInsets.only(top:30.0),
-                                child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        Username!,
-                                        style: TextStyle(
-                                          color: Colors.black,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 15.0,
-                                        ),
+        child: Column(
+          children: [
+
+            Expanded(
+                child: ListView(
+                    padding: EdgeInsets.zero,
+                    children: <Widget>[
+                      DrawerHeader(
+                          margin: EdgeInsets.zero,
+                          padding: EdgeInsets.zero,
+                          child: Padding(
+                              padding: EdgeInsets.all(20.0),
+                              child: Row(
+                                  children: [
+                                    CircleAvatar(
+                                      backgroundColor: Colors.transparent, // set the background color to red
+                                      radius: 30.0,
+                                      child: SizedBox(
+                                        height: 50.0,
+                                        width: 50,
+                                        child: Icon(Icons.person),
                                       ),
-                                      SizedBox(width: 15.0,
-                                        height: 3.0,),
+                                    ),
+                                    SizedBox(width: 10.0),
+                                    Padding(padding: EdgeInsets.only(top:30.0),
+                                        child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            mainAxisAlignment: MainAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                Username!,
+                                                style: TextStyle(
+                                                  color: Colors.black,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 15.0,
+                                                ),
+                                              ),
+                                              SizedBox(width: 15.0,
+                                                height: 3.0,),
 
-                                      Text(
-                                          Email!,
-                                          style: TextStyle
-                                            (
-                                            color: Colors.black,
-                                            fontSize: 13.0,
-                                          ))]))]))),
-              ListTile
-                (
-                title: Text('Sales'),
-                leading: Icon(Icons.dashboard,
-                  color: Colors.black,
-                ),
-                enabled: isDashEnable, // disable the item based on the parameter
+                                              Text(
+                                                  Email!,
+                                                  style: TextStyle
+                                                    (
+                                                    color: Colors.black,
+                                                    fontSize: 13.0,
+                                                  ))]))]))),
+                      ListTile
+                        (
+                        title: Text('Sales'),
+                        leading: Icon(Icons.dashboard,
+                          color: Colors.black,
+                        ),
+                        enabled: isDashEnable, // disable the item based on the parameter
 
-                onTap: () {
-                  Navigator.pushReplacement
+                        onTap: () {
+                          Navigator.pushReplacement
 
-                    (
-                    context,
-                    MaterialPageRoute(builder: (context) => SalesDashboard()), // navigate to company and serial select screen
-                  );
-                },
-              ),
-              /*ListTile(
+                            (
+                            context,
+                            MaterialPageRoute(builder: (context) => SalesDashboard()), // navigate to company and serial select screen
+                          );
+                        },
+                      ),
+                      /*ListTile(
                 title: Text('Maintenance Ticket'),
                 leading: Icon(Icons.hardware,
                   color: Colors.black,
@@ -131,40 +135,40 @@ class Sidebar extends StatelessWidget {
                 },
               ),
 */
-              ListTile(
-                title: Text('Tenant'),
-                leading: Icon(Icons.dashboard,
-                  color: Colors.black,
-                ),
-                onTap: () async {
-                  Navigator.pushReplacement
+                      ListTile(
+                        title: Text('Tenant'),
+                        leading: Icon(Icons.dashboard,
+                          color: Colors.black,
+                        ),
+                        onTap: () async {
+                          Navigator.pushReplacement
 
-                    (
-                    context,
-                    MaterialPageRoute(builder: (context) => TenantDashboardScreen()), // navigate to company and serial select screen
-                  );
+                            (
+                            context,
+                            MaterialPageRoute(builder: (context) => TenantDashboardScreen()), // navigate to company and serial select screen
+                          );
 
-                  // navigate to companies screen
-                },
-              ),
+                          // navigate to companies screen
+                        },
+                      ),
 
-              ListTile(
-                title: Text('Landlord'),
-                leading: Icon(Icons.dashboard,
-                  color: Colors.black,
-                ),
-                onTap: () async {
-                  Navigator.pushReplacement
+                      ListTile(
+                        title: Text('Landlord'),
+                        leading: Icon(Icons.dashboard,
+                          color: Colors.black,
+                        ),
+                        onTap: () async {
+                          Navigator.pushReplacement
 
-                    (
-                    context,
-                    MaterialPageRoute(builder: (context) => LandlordDashboardScreen()), // navigate to company and serial select screen
-                  );
+                            (
+                            context,
+                            MaterialPageRoute(builder: (context) => LandlordDashboardScreen()), // navigate to company and serial select screen
+                          );
 
-                  // navigate to companies screen
-                },
-              ),
-              /*Visibility(
+                          // navigate to companies screen
+                        },
+                      ),
+                      /*Visibility(
                 visible: isSalesEntryVisible,
                 child:  ListTile(
                   title: Text('Sales Entry'),
@@ -176,7 +180,7 @@ class Sidebar extends StatelessWidget {
                     Navigator.pop(context);
 
                     */
-              /*Fluttertoast.showToast(msg: 'Coming Soon');*//*
+                      /*Fluttertoast.showToast(msg: 'Coming Soon');*//*
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(builder: (context) => PendingSalesEntry()),
@@ -216,7 +220,7 @@ class Sidebar extends StatelessWidget {
                   },
                 )
             ),*/
-              /*Visibility(
+                      /*Visibility(
                   visible: isRolesVisible,
                   child:  ListTile(
                     title: Text('Roles'),
@@ -249,7 +253,7 @@ class Sidebar extends StatelessWidget {
                         );
                       })),*/
 
-              /*ListTile(
+                      /*ListTile(
                   title: Text('Sales Inquiry'),
                   leading: Icon(Icons.note_add,
                     color: Colors.black,
@@ -263,7 +267,7 @@ class Sidebar extends StatelessWidget {
                     );
                   }),*/
 
-              /*ListTile(
+                      /*ListTile(
                   title: Text('Available Units'),
                   leading: Icon(Icons.layers,
                     color: Colors.black,
@@ -284,7 +288,7 @@ class Sidebar extends StatelessWidget {
 
 
 
-              /*ListTile(
+                      /*ListTile(
                   title: Text('Settings'),
                   leading: Icon(Icons.settings,
                     color: Colors.black,
@@ -296,42 +300,56 @@ class Sidebar extends StatelessWidget {
                       MaterialPageRoute(builder: (context) => Settings()),         // navigate to settings screen
                     );*//*
                   }),*/
-              Divider(),
-              ListTile(
-                title: Text('Version 1.0'),
-                leading: Icon(Icons.build,
-                  color: Colors.black,
-                ),
-                onTap: () {
-                  // show version information
-                },
-              ),
-              ListTile(
-                  title: Text('Help'),
-                  leading: Icon(Icons.contact_support,
-                    color: Colors.black,
-                  ),
-                  onTap: ()
-                  {
-                    Navigator.pop(context); // Close the dialog
-                    /*Navigator.push
+                      Divider(),
+
+                      ListTile(
+                          title: Text('Help'),
+                          leading: Icon(Icons.contact_support,
+                            color: Colors.black,
+                          ),
+                          onTap: ()
+                          {
+                            Navigator.pop(context); // Close the dialog
+                            /*Navigator.push
                       (
                       context,
                       MaterialPageRoute(builder: (context) => Help()), // navigate to help screen
                     );*/
-                  }
-              ),
+                          }
+                      ),
 
-              ListTile
-                (
-                  title: Text('Logout'),
-                  leading: Icon(Icons.logout,
-                    color: Colors.black,
+                      ListTile
+                        (
+                          title: Text('Logout'),
+                          leading: Icon(Icons.logout,
+                            color: Colors.black,
+                          ),
+                          onTap: ()
+                          {
+                            _showConfirmationDialogAndNavigate(context);
+                          })])
+            ),
+
+            Padding(
+              padding: const EdgeInsets.all(25.0),
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: Text(
+                  "v1.0",
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey,
+                    fontWeight: FontWeight.bold
                   ),
-                  onTap: ()
-                  {
-                    _showConfirmationDialogAndNavigate(context);
-                  })]));
+                ),
+              ),
+            ),
+          ],
+        )
+
+
+
+        );
   }
 
   /*void emitDeleteMyId(Map<String, dynamic> jsonPayload, Function() onComplete) {

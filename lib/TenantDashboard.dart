@@ -14,6 +14,20 @@ import 'dart:ui' as ui;
 import 'MaintenanceTicketReport.dart';
 import 'Sidebar.dart';
 
+class Invoice {
+  final String invoiceId;
+  final double amount;
+  final String dueDate;
+  final bool isPaid;
+
+  Invoice({
+    required this.invoiceId,
+    required this.amount,
+    required this.dueDate,
+    required this.isPaid,
+  });
+}
+
 class TenantDashboard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -31,7 +45,9 @@ class TenantDashboardScreen extends StatefulWidget {
   _SalesDashboardScreenState createState() => _SalesDashboardScreenState();
 }
 
+
 class _SalesDashboardScreenState extends State<TenantDashboardScreen> with TickerProviderStateMixin {
+
 
 
   /*String? selectedYear;
@@ -107,12 +123,36 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
 
   };
 
+  final Map<String, Map<String, double>> pendingInvoicesData = {
+    "1 BHK (Al Khaleej Center)": {"Jan": 12000, "Mar": 12000,"May": 12000,"July":12000},
+    "2 BHK (Musalla Tower)": {"Mar": 10000, "May": 10000},
+  };
+
   String? selectedApartment;
   // Current selected apartment
 
 
   // Current index for CupertinoPicker
   int selectedIndex = 0;
+
+  List<Map<String, dynamic>> groupInvoicesByMonth(List<Invoice> invoices) {
+    final grouped = <String, double>{};
+
+    for (var invoice in invoices) {
+      // Extract year and month from the dueDate
+      final month = invoice.dueDate.substring(0, 7); // Format as YYYY-MM
+      grouped[month] = (grouped[month] ?? 0) + invoice.amount;
+    }
+
+    return grouped.entries.map((e) {
+      final parsedDate = DateTime.parse('${e.key}-01'); // Append '-01' to make it a valid date
+      return {
+        "month": parsedDate,
+        "amount": e.value,
+      };
+    }).toList();
+  }
+
 
   @override
   void initState() {
@@ -171,6 +211,14 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
 
     // Add some padding to the width
     double containerWidth = maxWidth + 20.0;
+
+    final invoices = [
+      Invoice(invoiceId: "001", amount: 1500, dueDate: "2025-01-15", isPaid: false),
+      Invoice(invoiceId: "002", amount: 2000, dueDate: "2025-02-15", isPaid: false),
+    ];
+
+    final chartData = groupInvoicesByMonth(invoices);
+
 
 
     return Scaffold(
@@ -297,15 +345,22 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
                     centerSpaceRadius: 0, // Space in the middle of the pie chart
                     sections: [
                       PieChartSectionData(
-                        color: Colors.blueAccent,
-                        value: data["Cleared"]!.toDouble(),
+                        gradient: LinearGradient(
+                          colors: [Colors.blueAccent.shade100,Colors.blueAccent.shade200, Colors.blueAccent.shade200], // Gradient background
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                        ),                        value: data["Cleared"]!.toDouble(),
                         title: 'Cleared\n${data["Cleared"]}',
                         radius: 140,
                         titleStyle: TextStyle(fontSize: 15.0, fontWeight: FontWeight.bold,
                         color: Colors.white),
                       ),
                       PieChartSectionData(
-                        color: Colors.orange,
+                        gradient: LinearGradient(
+                          colors: [Colors.orangeAccent.shade100,Colors.orangeAccent.shade200, Colors.orangeAccent.shade200], // Gradient background
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                        ),
                         value: data["Pending"]!.toDouble(),
                         title: 'Pending\n${data["Pending"]}',
                         radius: 140,
@@ -317,6 +372,35 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
                 ),
               ),
               SizedBox(height: 20),
+
+              Padding(
+                padding: const EdgeInsets.only(left:0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Pending Invoices",
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(height: 10),
+
+                Container(
+                  height: MediaQuery.of(context).size.height * 0.5,
+                  child: Center(
+                    child: ApartmentBarChart(
+                      selectedApartment: selectedApartment!,
+                      pendingInvoicesData: pendingInvoicesData,
+                    ),
+                  ),
+
+                )
+
+
+                  ],
+                ),
+              ),
+              SizedBox(height: 20),
+
 
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -917,4 +1001,100 @@ double _getTextHeight(String text) {
   textPainter.layout();
   return textPainter.size.height; // Return the height of the text
 }
+
+class ApartmentBarChart extends StatelessWidget {
+  final String selectedApartment;
+  final Map<String, Map<String, double>> pendingInvoicesData;
+
+  ApartmentBarChart({
+    required this.selectedApartment,
+    required this.pendingInvoicesData,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    // Fetch data for the selected apartment
+    final apartmentInvoiceData =
+        pendingInvoicesData[selectedApartment] ?? {};
+
+    // Extract months and amounts
+    List<String> months = apartmentInvoiceData.keys.toList();
+    List<double> amounts = apartmentInvoiceData.values.toList();
+
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Container(
+        padding: const EdgeInsets.only(top: 15),
+        width: MediaQuery.of(context).size.width-20,
+        child: BarChart(
+          BarChartData(
+            barGroups: [
+              for (int i = 0; i < months.length; i++)
+                BarChartGroupData(
+                  x: i,
+                  barRods: [
+                    BarChartRodData(
+                      toY: amounts[i],
+                      width: 40,
+                      gradient: LinearGradient(
+                        colors: [Colors.blueGrey.shade300, Colors.blueGrey.shade500],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                  ],
+                ),
+            ],
+            titlesData: FlTitlesData(
+              bottomTitles: AxisTitles(
+                sideTitles: SideTitles(
+                  showTitles: true,
+                  getTitlesWidget: (value, meta) {
+                    // Display corresponding month
+                    if (value.toInt() < months.length) {
+                      return SideTitleWidget(
+                        axisSide: meta.axisSide,
+                        child: Text(
+                          months[value.toInt()],
+                          style: const TextStyle(fontSize: 10),
+                        ),
+                      );
+                    }
+                    return const SizedBox.shrink();
+                  },
+                  reservedSize: 20,
+                ),
+              ),
+              leftTitles: AxisTitles(
+                sideTitles: SideTitles(
+                  showTitles: true,
+                  getTitlesWidget: (value, meta) {
+                    String formattedValue = value >= 1000
+                        ? '${(value / 1000).toStringAsFixed(1)}K'
+                        : value.toStringAsFixed(0);
+                    return SideTitleWidget(
+                      axisSide: meta.axisSide,
+                      child: Text(
+                        formattedValue,
+                        style: const TextStyle(fontSize: 12),
+                      ),
+                    );
+                  },
+                  reservedSize: 45.0,
+                ),
+              ),
+              topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+              rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+            ),
+            gridData: FlGridData(show: true, drawVerticalLine: false),
+            borderData: FlBorderData(show: false),
+            alignment: BarChartAlignment.spaceEvenly,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 

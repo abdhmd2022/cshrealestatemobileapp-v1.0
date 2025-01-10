@@ -138,7 +138,7 @@ class _LandlordDashboardScreenState extends State<LandlordDashboardScreen> with 
                           width: 15,
                           height: 15,
                           decoration: BoxDecoration(
-                            color: Colors.greenAccent.shade200,
+                            color: Colors.blueAccent.shade200,
                             shape: BoxShape.circle, // Make it round
                           ),
                         ),
@@ -309,9 +309,9 @@ class BarGraph extends StatelessWidget {
                     fromY: 0,
                     toY: occupiedUnits[index].toDouble(),
                     gradient: LinearGradient(
-                      colors: [Colors.redAccent.shade100, Colors.redAccent.shade200], // Gradient background
-                      begin: Alignment.topLeft,
-                      end: Alignment.topRight,
+                      colors: [Colors.redAccent.shade100,Colors.redAccent.shade200, Colors.redAccent.shade200], // Gradient background
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
                     ),
                     width: barWidth,
                     borderRadius: BorderRadius.circular(5),
@@ -320,10 +320,10 @@ class BarGraph extends StatelessWidget {
                     fromY: 0,
                     toY: availableUnits[index].toDouble(),
                     gradient: LinearGradient(
-                  colors: [Colors.greenAccent.shade100, Colors.greenAccent.shade200], // Gradient background
-                    begin: Alignment.topLeft,
-                    end: Alignment.topRight,
-                  ),
+                      colors: [Colors.blueAccent.shade100,Colors.blueAccent.shade200, Colors.blueAccent.shade200], // Gradient background
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                    ),
                     width: barWidth,
                     borderRadius: BorderRadius.circular(5),
                   ),

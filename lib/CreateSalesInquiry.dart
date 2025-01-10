@@ -35,7 +35,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
   bool isAllUnitsSelected = false;
 
-  String? selectedfollowup_status;
+  String? selectedinquiry_status;
 
   DateTime? nextFollowUpDate;
 
@@ -808,10 +808,11 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                     ),
 
                     Container(
-                        height: MediaQuery.of(context).size.height,
                         child:  Form(
                             key: _formKey,
-                            child: ListView(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               /*physics: NeverScrollableScrollPhysics(),*/
                                 children: [
 
@@ -823,37 +824,14 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                     borderRadius: BorderRadius.circular(8),),
                                     child: Column(
                                       children: [
-                                        Container(
-                                          margin: EdgeInsets.only( top:15,
-                                              bottom: 0,
-                                              left: 20,
-                                              right: 20),
-                                          child: Row(
-                                            children: [
-                                              Text("Name:",
-                                                  style: TextStyle(
-                                                      fontWeight: FontWeight.bold,
-                                                      fontSize: 16
 
-                                                  )
-                                              ),
-                                              SizedBox(width: 2),
-                                              Text(
-                                                '*', // Red asterisk for required field
-                                                style: TextStyle(
-                                                  fontSize: 20,
-                                                  color: Colors.red, // Red color for the asterisk
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
 
                                         Padding(
-                                            padding: EdgeInsets.only(top:0,left: 20,right: 20,bottom: 0),
+                                            padding: EdgeInsets.only(top:10,left: 20,right: 20,bottom: 0),
                                             child: TextFormField(
                                               controller: customernamecontroller,
                                               keyboardType: TextInputType.name,
+
                                               validator: (value) {
                                                 if (value!.isEmpty) {
                                                   return 'Name is required';
@@ -862,6 +840,11 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                               },
                                               decoration: InputDecoration(
                                                 hintText: 'Enter Name',
+                                                label: Text('Name',
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.normal,
+                                                    color: Colors.black
+                                                ),),
                                                 contentPadding: EdgeInsets.all(15),
                                                 border: OutlineInputBorder(
                                                   borderRadius: BorderRadius.circular(10), // Set the border radius
@@ -904,35 +887,10 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
                                             )),
 
-                                        Container(
-                                          margin: EdgeInsets.only( top:15,
-                                              bottom: 0,
-                                              left: 20,
-                                              right: 20),
-                                          child: Row(
-                                            children: [
-                                              Text("Contact No.",
-                                                  style: TextStyle(
-                                                      fontWeight: FontWeight.bold,
-                                                      fontSize: 16
-
-                                                  )
-                                              ),
-                                              SizedBox(width: 2),
-                                              Text(
-                                                '*', // Red asterisk for required field
-                                                style: TextStyle(
-                                                  fontSize: 20,
-                                                  color: Colors.red, // Red color for the asterisk
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
 
                                         Padding(
 
-                                            padding: EdgeInsets.only(top:0,left: 20,right: 20,bottom: 0),
+                                            padding: EdgeInsets.only(top:20,left: 20,right: 20,bottom: 0),
 
                                             child: TextFormField(
                                               controller: customercontactnocontroller,
@@ -946,6 +904,11 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                               },
                                               decoration: InputDecoration(
                                                 hintText: 'Enter Contact No',
+                                                label: Text('Contact No.',
+                                                  style: TextStyle(
+                                                      fontWeight: FontWeight.normal,
+                                                      color: Colors.black
+                                                  ),),
                                                 contentPadding: EdgeInsets.all(15),
                                                 border: OutlineInputBorder(
                                                   borderRadius: BorderRadius.circular(10), // Set the border radius
@@ -989,35 +952,10 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
                                             )),
 
-                                        Container(
-                                          margin: EdgeInsets.only( top:15,
-                                              bottom: 0,
-                                              left: 20,
-                                              right: 20),
-                                          child: Row(
-                                            children: [
-                                              Text("Email Address",
-                                                  style: TextStyle(
-                                                      fontWeight: FontWeight.bold,
-                                                      fontSize: 16
-
-                                                  )
-                                              ),
-                                              SizedBox(width: 2),
-                                              Text(
-                                                '*', // Red asterisk for required field
-                                                style: TextStyle(
-                                                  fontSize: 20,
-                                                  color: Colors.red, // Red color for the asterisk
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
 
                                         Padding(
 
-                                            padding: EdgeInsets.only(top:0,left: 20,right: 20,bottom: 0),
+                                            padding: EdgeInsets.only(top:20,left: 20,right: 20,bottom: 0),
 
                                             child: TextFormField(
                                               controller: emailcontroller,
@@ -1035,6 +973,11 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                               },
                                               decoration: InputDecoration(
                                                 hintText: 'Enter Email Address',
+                                                label: Text('Email Address',
+                                                  style: TextStyle(
+                                                      fontWeight: FontWeight.normal,
+                                                      color: Colors.black
+                                                  ),),
                                                 contentPadding: EdgeInsets.all(15),
                                                 border: OutlineInputBorder(
                                                   borderRadius: BorderRadius.circular(10), // Set the border radius
@@ -1086,31 +1029,9 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
-                                          Padding(padding: EdgeInsets.only(top: 15,left:20),
-
-                                            child:Row(
-                                              children: [
-                                                Text("Status:",
-                                                    style: TextStyle(
-                                                        fontWeight: FontWeight.bold,
-                                                        fontSize: 16
-
-                                                    )
-                                                ),
-                                                SizedBox(width: 2),
-                                                Text(
-                                                  '*', // Red asterisk for required field
-                                                  style: TextStyle(
-                                                    fontSize: 20,
-                                                    color: Colors.red, // Red color for the asterisk
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
 
                                           Padding(
-                                            padding: EdgeInsets.only(top:0,left:20,right:20,bottom :0),
+                                            padding: EdgeInsets.only(top:20,left:20,right:20,bottom :0),
 
                                             child: Column(
                                               mainAxisAlignment: MainAxisAlignment.start,
@@ -1119,11 +1040,16 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                 // Switch for isQualified
 
                                                 DropdownButtonFormField<String>(
-                                                  value: selectedfollowup_status,
+                                                  value: selectedinquiry_status,
                                                   decoration: InputDecoration(
-                                                    hintText: 'Select Status',
+                                                    hintText: 'Select Inquiry Status',
+                                                    label: Text('Inquiry Status',
+                                                      style: TextStyle(
+                                                          fontWeight: FontWeight.normal,
+                                                          color: Colors.black
+                                                      ),),
                                                     border: OutlineInputBorder(
-                                                      borderSide: BorderSide(color: Colors.black),
+                                                      borderSide: BorderSide(color: Colors.black54),
                                                       borderRadius: BorderRadius.circular(10.0),
                                                     ),
                                                     focusedBorder: OutlineInputBorder(
@@ -1132,14 +1058,14 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                     ),
                                                     enabledBorder: OutlineInputBorder(
                                                       borderRadius: BorderRadius.circular(10.0),
-                                                      borderSide: BorderSide(color: Colors.black),
+                                                      borderSide: BorderSide(color: Colors.black54),
                                                     ),
                                                     contentPadding: EdgeInsets.symmetric(horizontal: 10),
 
                                                   ),
                                                   validator: (value) {
                                                     if (value == null || value.isEmpty) {
-                                                      return 'Status is required'; // Error message
+                                                      return 'Inquiry Status is required'; // Error message
                                                     }
                                                     return null; // No error if a value is selected
                                                   },
@@ -1156,15 +1082,15 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                       .toList(),
                                                   onChanged: (value) {
                                                     setState(() {
-                                                      selectedfollowup_status = value;
-                                                      if(selectedfollowup_status =='Not Qualified')
+                                                      selectedinquiry_status = value;
+                                                      if(selectedinquiry_status =='Not Qualified')
                                                         {
 
                                                           nextFollowUpDate = null;
                                                         }  });})]))]),
                                   ), // folowup status
 
-                                  if (selectedfollowup_status == 'In Follow-Up' || selectedfollowup_status == 'Contact Later') // Conditionally render based on status
+                                  if (selectedinquiry_status == 'In Follow-Up' || selectedinquiry_status == 'Contact Later') // Conditionally render based on status
                                     Container(
 
                                     child: Column(
@@ -1232,19 +1158,19 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                             child: Container(
                                               padding: EdgeInsets.symmetric(vertical: 15, horizontal: 10),
                                               decoration: BoxDecoration(
-                                                border: Border.all(color: Colors.black),
+                                                border: Border.all(color: Colors.black54),
                                                 borderRadius: BorderRadius.circular(10),
                                               ),
                                               child: Row(
                                                 mainAxisAlignment: MainAxisAlignment.start,
                                                 children: [
-                                                  Icon(Icons.calendar_today, color: Colors.grey),
+                                                  Icon(Icons.calendar_today, color: Colors.black87),
                                                   SizedBox(width: 10,),
                                                   Text(
                                                     nextFollowUpDate != null
                                                         ? "${nextFollowUpDate!.day}-${nextFollowUpDate!.month}-${nextFollowUpDate!.year}"
                                                         : "Select Next Follow-Up Date",
-                                                    style: TextStyle(fontSize: 16, color: Colors.black54),
+                                                    style: TextStyle(fontSize: 16, color: Colors.black87),
                                                   ),
 
                                                 ],
@@ -1259,7 +1185,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                   ),
 
                                   Container(
-                                    padding: const EdgeInsets.only(left: 20.0, right: 20, top: 15),
+                                    padding: const EdgeInsets.only(left: 20.0, right: 20, top: 20),
                                     child: Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
@@ -1271,7 +1197,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                             color: Colors.black,
                                           ),
                                         ),
-                                        SizedBox(height: 10),
+                                        SizedBox(height: 5),
                                         SingleChildScrollView(
                                           child: Wrap(
                                             spacing: 8.0,
@@ -1353,24 +1279,26 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                         controller: TextEditingController(text: selectedUnitType),
                                         decoration: InputDecoration(
                                           hintText: 'Select Unit Type(s)',
+
+
                                           contentPadding: EdgeInsets.all(15),
                                           fillColor: isUnitSelected ? Colors.transparent : Colors.transparent, // Set to black if selected
                                           filled: true, // Ensure the field is filled but transparent or black based on isSelected
                                           border: OutlineInputBorder(
                                             borderRadius: BorderRadius.circular(10),
-                                            borderSide: BorderSide(color: Colors.black), // Black border
+                                            borderSide: BorderSide(color: Colors.black54), // Black border
                                           ),
                                           enabledBorder: OutlineInputBorder(
                                             borderRadius: BorderRadius.circular(10),
-                                            borderSide: BorderSide(color: Colors.black), // Black border when enabled
+                                            borderSide: BorderSide(color: Colors.black54), // Black border when enabled
                                           ),
                                           disabledBorder: OutlineInputBorder(
                                             borderRadius: BorderRadius.circular(10),
-                                            borderSide: BorderSide(color: Colors.black), // Black border when disabled
+                                            borderSide: BorderSide(color: Colors.black54), // Black border when disabled
                                           ),
                                           focusedBorder: OutlineInputBorder(
                                             borderRadius: BorderRadius.circular(10),
-                                            borderSide: BorderSide(color: Colors.black), // Black focused border
+                                            borderSide: BorderSide(color: Colors.black54), // Black focused border
                                           ),
                                           labelStyle: TextStyle(color: Colors.black),
                                           hintStyle: TextStyle(color: Colors.black), // Hint text color (white for better contrast)
@@ -1489,7 +1417,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                               decoration: BoxDecoration(
                                                 borderRadius: BorderRadius.circular(10),
                                                 color: Colors.transparent, // Set it to transparent
-                                                border: Border.all(color: Colors.black), // Black border
+                                                border: Border.all(color: Colors.black54), // Black border
                                               ),
                                               child: Row(
                                                 mainAxisAlignment: MainAxisAlignment.spaceBetween, // Space between text and icon
@@ -1609,25 +1537,39 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                           ? () => _openAreaDropdown(context) // Open the custom dropdown
                                           : null, // Disable if no emirates are selected
                                       child: Container(
+                                        width: double.infinity,
                                         padding: EdgeInsets.all(15),
                                         decoration: BoxDecoration(
                                           borderRadius: BorderRadius.circular(10),
                                           color: Colors.transparent, // Set it to transparent as per your requirement
-                                          border: Border.all(color: Colors.black), // Black border
+                                          border: Border.all(color: Colors.black54), // Black border
                                         ),
-                                        child: selectedAreasString.isNotEmpty
-                                            ? Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: selectedAreasString.split(', ').map((areaEmirate) {
-                                            return Text(
-                                              areaEmirate, // Display each area-emirate pair
-                                              style: TextStyle(fontSize: 16, color: Colors.grey), // Text style for readability
-                                            );
-                                          }).toList(),
-                                        )
-                                            : Text(
-                                          'Select Area(s)', // Placeholder text when no areas are selected
-                                          style: TextStyle(fontSize: 16, color: Colors.grey),
+                                        child: Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween, // Space between text and icon
+                                          children: [
+                                            // Column to display selected emirates
+                                            Expanded(
+                                              child: selectedAreasString.isNotEmpty
+                                                  ? Column(
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: selectedAreasString.split(', ').map((emirate) {
+                                                  return Text(
+                                                    emirate, // Display each emirate on a new line
+                                                    style: TextStyle(fontSize: 16, color: Colors.grey),
+                                                  );
+                                                }).toList(),
+                                              )
+                                                  : Text(
+                                                'Select Area(s)', // Placeholder text when no emirates are selected
+                                                style: TextStyle(fontSize: 16, color: Colors.grey),
+                                              ),
+                                            ),
+                                            // Down arrow icon
+                                            Icon(
+                                              Icons.arrow_drop_down,
+                                              color: Colors.grey, // Adjust the color of the arrow
+                                            ),
+                                          ],
                                         ),
                                       ),
                                     ),

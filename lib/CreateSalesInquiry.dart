@@ -1689,7 +1689,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                           values: _currentRangeValues,
                                           min: 0,
                                           max: 1000,
-
                                           labels: RangeLabels(
                                             _currentRangeValues.start.round().toString(),
                                             _currentRangeValues.end.round().toString(),

@@ -316,86 +316,85 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                       ),),
                     ),*/
 
-                    Card(
-                        surfaceTintColor: Colors.white,
-                        elevation: 10,
-                      margin: EdgeInsets.only(left: 20,right: 20, top: 20),
-                        child:  Container(
-                            padding: EdgeInsets.all(20),
-                            child:Column(
-                              children: [
+                    Container(
+                      padding: EdgeInsets.only(top:20),
+                      child:Row(
+                        children: [
 
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
+                          Row(mainAxisSize: MainAxisSize.min,
 
-                                    Container(
-                                      margin: EdgeInsets.only(bottom: 5,),
-                                      child:Row(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        crossAxisAlignment: CrossAxisAlignment.center,
-                                        children: [
-                                          Column(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              Icon(
-                                                Icons.home_filled,
-                                                color: Colors.blueGrey,
-                                              ),
-                                              SizedBox(height: 2), // Add space between icon and text
-                                              Text(
-                                                '101',
-                                                style: TextStyle(fontSize: 16,
-                                                    color: Colors.blueGrey),
-                                              ),
-                                            ],
-                                          ),
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
 
-                                          SizedBox(width: MediaQuery.of(context).size.width / 5,),
+                              Container(
+                                margin: EdgeInsets.only(left: 20,right: 5, top: 20),
+                                padding: EdgeInsets.only(left:10,right:10, top: 5, bottom: 5),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(30.0),
+                                  color: Colors.blueGrey.shade400,
+                                  border: Border.all(
+                                    color: Colors.blueGrey.shade300.withOpacity(0.3),
+                                    width: 1.5,
+                                  ),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.blueGrey.shade300.withOpacity(0.1),
+                                      blurRadius: 8.0,
+                                      offset: Offset(0, 4),
+                                    ),
+                                  ],
+                                ),
+                                child:Text('Unit 101',
+                                    style: TextStyle(
+                                        color: Colors.white
+                                    )),),
 
-                                          Column(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              Icon(
-                                                Icons.apartment,
-                                                color: Colors.blueGrey,
-                                              ),
-                                              SizedBox(height: 2), // Add space between icon and text
-                                              Text(
-                                                'Al Khaleej Center',
-                                                style: TextStyle(fontSize: 16,
-                                                    color: Colors.blueGrey),
-                                              ),
-                                            ],
-                                          ),
-                                        ],)
-                                      ,),
-                                  ],),
-                                SizedBox(height: 10,),
+                              Container(
+                                margin: EdgeInsets.only(left: 0,right: 0, top: 20),
 
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                padding: EdgeInsets.only(left:10,right:10, top: 5, bottom: 5),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(30.0),
+                                  color: Colors.blueGrey.shade400,
+                                  border: Border.all(
+                                    color: Colors.blueGrey.shade300.withOpacity(0.3),
+                                    width: 1.5,
+                                  ),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.blueGrey.shade300.withOpacity(0.1),
+                                      blurRadius: 8.0,
+                                      offset: Offset(0, 4),
+                                    ),
+                                  ],
+                                ),
 
-                                        children: [
+                                child:Text('Building Al Khaleej Center',style: TextStyle(
+                                  color: Colors.white
+                                ),),),
+                            ],),
+                          SizedBox(width: 10,),
 
-                                        _buildDecentButton('Edit',
-                                            Icons.edit,
-                                            Colors.blueGrey.shade300,
-                                                ()
-                                            {
 
-                                            })
-                                      ],)
-                              ],
-                            ),
+                          GestureDetector(child:
+
+
+                          Container(
+                            padding: EdgeInsets.only(top: 20),
+                            child:  Icon(
+                              Icons.edit,
+                              color: Colors.blueGrey,
+                              size: 20,
                             )
+                          )
+                         ,)
+                        ],
                       ),
-
+                    ),
 
                     Container(
-                      margin: EdgeInsets.only(left: 20,right: 20,top: 30),
+                      margin: EdgeInsets.only(left: 20,right: 20,top: 20),
                       child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [

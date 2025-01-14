@@ -837,6 +837,9 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
   RangeValues _currentRangeValues = const RangeValues(10000, 50000);
 
+  int selectedIndex = 0;
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -923,13 +926,117 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                 children: [
 
                                   Container(
-                                    margin: EdgeInsets.only(left: 0, right: 0),
+                                    margin: EdgeInsets.only(left: 0, right: 0,top:10),
                                     padding: EdgeInsets.only(top:0,bottom:0),
                                     decoration: BoxDecoration(
                                     border: Border.all(color: Colors.transparent, width: 1),
                                     borderRadius: BorderRadius.circular(8),),
                                     child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
+
+                                        Padding(
+                                          padding: EdgeInsets.only(top:10,left: 20,right: 20,bottom: 10),
+
+                                          child:  Column(
+                                          mainAxisAlignment: MainAxisAlignment.start,
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            const Text('Interest Type:',
+                                              style: TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.black,
+                                              ),),
+                                            const SizedBox(height: 10),
+                                            ToggleButtons(
+                                              borderRadius: BorderRadius.circular(10),
+                                              isSelected: [selectedIndex == 0, selectedIndex == 1],
+                                              onPressed: (int index) {
+                                                setState(() {
+                                                  selectedIndex = index;
+                                                });
+                                              },
+                                              selectedColor: Colors.white, // Text color for selected button
+                                              fillColor:
+                                              Colors.blueGrey.shade400, // Background color for selected button
+                                              color: Colors.black, // Text color for unselected button
+                                              children: const [
+                                                Padding(
+                                                  padding: EdgeInsets.symmetric(horizontal: 16.0),
+                                                  child: Text("Rent"),
+                                                ),
+                                                Padding(
+                                                  padding: EdgeInsets.symmetric(horizontal: 16.0),
+                                                  child: Text("Buy"),
+                                                ),
+                                              ],
+                                            ),
+
+                                          ],
+                                        ),),
+
+                                        Container(
+                                          padding: const EdgeInsets.only(left: 20.0, right: 20, top: 8,bottom:10),
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                "Property Type:",
+                                                style: TextStyle(
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.black,
+                                                ),
+                                              ),
+                                              SizedBox(height: 5),
+                                              SingleChildScrollView(
+                                                child: Wrap(
+                                                  spacing: 8.0,
+                                                  runSpacing: 8.0,
+
+                                                  children: propertyType.map((amenity) {
+                                                    final isSelected = selectedPropertyType == amenity; // Single selection logic
+                                                    return ChoiceChip(
+                                                      label: Column(
+                                                        children: [
+                                                          if (amenity == "Residential")
+                                                            Icon(
+                                                              Icons.home,
+                                                              color: isSelected ? Colors.white : Colors.black,
+                                                            ),
+                                                          if (amenity == "Commercial")
+                                                            Icon(
+                                                              Icons.business,
+                                                              color: isSelected ? Colors.white : Colors.black,
+                                                            ),
+                                                          SizedBox(height: 5),
+                                                          Text(
+                                                            amenity,
+                                                            style: TextStyle(
+                                                              color: isSelected ? Colors.white : Colors.black,
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      selected: isSelected,
+                                                      selectedColor: Colors.blueGrey.shade400,
+                                                      onSelected: (bool selected) {
+                                                        setState(() {
+                                                          selectedPropertyType = selected ? amenity : null; // Ensure only one selection
+                                                        });
+                                                      },
+                                                      showCheckmark: false,
+                                                      backgroundColor: Colors.white,// Disable the checkmark
+
+                                                    );
+                                                  }).toList(),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
 
 
                                         Padding(
@@ -1296,66 +1403,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                     ),
                                   ),
 
-                                  Container(
-                                    padding: const EdgeInsets.only(left: 20.0, right: 20, top: 20),
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          "Property Type:",
-                                          style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.black,
-                                          ),
-                                        ),
-                                        SizedBox(height: 5),
-                                        SingleChildScrollView(
-                                          child: Wrap(
-                                            spacing: 8.0,
-                                            runSpacing: 8.0,
-
-                                            children: propertyType.map((amenity) {
-                                              final isSelected = selectedPropertyType == amenity; // Single selection logic
-                                              return ChoiceChip(
-                                                label: Column(
-                                                  children: [
-                                                    if (amenity == "Residential")
-                                                      Icon(
-                                                        Icons.home,
-                                                        color: isSelected ? Colors.white : Colors.black,
-                                                      ),
-                                                    if (amenity == "Commercial")
-                                                      Icon(
-                                                        Icons.business,
-                                                        color: isSelected ? Colors.white : Colors.black,
-                                                      ),
-                                                    SizedBox(height: 5),
-                                                    Text(
-                                                      amenity,
-                                                      style: TextStyle(
-                                                        color: isSelected ? Colors.white : Colors.black,
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                                selected: isSelected,
-                                                selectedColor: Colors.blueGrey,
-                                                onSelected: (bool selected) {
-                                                  setState(() {
-                                                    selectedPropertyType = selected ? amenity : null; // Ensure only one selection
-                                                  });
-                                                },
-                                                showCheckmark: false,
-                                                backgroundColor: Colors.white,// Disable the checkmark
-
-                                              );
-                                            }).toList(),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
 
                                   Container(
                                     margin: EdgeInsets.only( top:15,

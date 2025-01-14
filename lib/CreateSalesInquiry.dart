@@ -1,7 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'SalesInquiryReport.dart';
 import 'constants.dart';
+import 'package:http/http.dart' as http;
+
 
 class CreateSalesInquiry extends StatefulWidget {
 
@@ -51,9 +55,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
   ];
 
   List<String> followupstatus_list = [
-    'Contact Later',
-    'In Follow-Up',
-    'Not Qualified'
   ];
 
   bool isAllEmiratesSelected = false;
@@ -162,6 +163,59 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
   ];
 
   String? selectedPropertyType;
+
+
+
+  Future<void> fetchLeadStatus() async {
+
+    print('fetching lead status');
+    followupstatus_list.clear();
+
+    final url = '$BASE_URL_config/v1/leadStatus'; // Replace with your API endpoint
+    String token = 'Bearer $Serial_Token'; // auth token for request
+
+    print('fetch url $url');
+    Map<String, String> headers = {
+      'Authorization': token,
+      "Content-Type": "application/json"
+    };
+    try {
+      final response = await http.get(Uri.parse(url),
+        headers: headers,);
+      if (response.statusCode == 200) {
+
+        final data = json.decode(response.body);
+
+        setState(() {
+          print('response ${response.body}');
+          List<dynamic> leadStatusList = data['data']['leadStatus'];
+
+          // Iterate over the leadStatus data and store the names in the list
+          for (var status in leadStatusList) {
+            // You can access id, name, and is_qualified here if needed
+            String name = status['name'];
+            bool isQualified = status['is_qualified'] == 'true'; // Convert to bool
+            int id = status['id'];
+
+
+            // Store only the name in the followupstatus_list
+            followupstatus_list.add(name);
+
+            // Optionally, you can print or use isQualified and id here if needed
+            print('ID: $id, Name: $name, Is Qualified: $isQualified');
+          }
+        });
+      } else {
+        throw Exception('Failed to load data');
+      }
+    } catch (e) {
+
+      print('Error fetching data: $e');
+    }
+
+
+  }
+
 
   void updateEmiratesSelection() {
     setState(() {
@@ -731,6 +785,8 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
   }
 
   Future<void> _initSharedPreferences() async {
+
+    fetchLeadStatus();
   }
 
 

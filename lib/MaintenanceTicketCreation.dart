@@ -348,11 +348,10 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                                 child:Text('Unit 101',
                                     style: TextStyle(
                                         color: Colors.white
-                                    )),),
+                                    ))),
 
                               Container(
                                 margin: EdgeInsets.only(left: 0,right: 0, top: 20),
-
                                 padding: EdgeInsets.only(left:10,right:10, top: 5, bottom: 5),
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(30.0),

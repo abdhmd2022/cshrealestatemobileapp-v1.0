@@ -60,6 +60,8 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
   bool isAllUnitsSelected = false;
 
+  double range_min = 0, range_max = 100000;
+
   FollowUpStatus? selectedinquiry_status;
 
   DateTime? nextFollowUpDate;
@@ -833,11 +835,12 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
     fetchAmenities();
   }
 
+  RangeValues _currentRangeValues = const RangeValues(10000, 50000);
+
 
   @override
   Widget build(BuildContext context) {
 
-    RangeValues _currentRangeValues = const RangeValues(100, 500);
 
     return Scaffold(
         appBar: AppBar(
@@ -1790,26 +1793,42 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                           'Price Range:',
                                           style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                                         ),
+
                                         RangeSlider(
                                           activeColor: Colors.blueGrey,
+                                          inactiveColor: Colors.blueGrey.withOpacity(0.4),
                                           values: _currentRangeValues,
-                                          min: 0,
-                                          max: 1000,
+                                          min: range_min,
+                                          max: range_max,
+                                          divisions: 20, // Optional: Set divisions for better sliding control
                                           labels: RangeLabels(
                                             _currentRangeValues.start.round().toString(),
                                             _currentRangeValues.end.round().toString(),
                                           ),
                                           onChanged: (RangeValues values) {
                                             setState(() {
-                                              _currentRangeValues = values; // Update the range value
+                                              _currentRangeValues = values;
                                             });
                                           },
-
                                         ),
 
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(
+                                              range_min.toString(),
+                                              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                                            ),
+                                            Text(
+                                              range_max.toString(),
+                                              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                                            ),
+                                          ],
+                                        ),
                                       ],
                                     ),
                                   ),
+
 
 
                                   /*Padding(padding: EdgeInsets.only(top:0,left: 20,right: 20,bottom: 0),

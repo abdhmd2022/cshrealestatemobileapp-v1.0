@@ -58,7 +58,7 @@ class _LandlordDashboardScreenState extends State<LandlordDashboardScreen> with 
   }
 
 
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+    final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
 
   @override

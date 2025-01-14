@@ -7,6 +7,7 @@ import 'package:cshrealestatemobile/MaintenanceTicketReport.dart';
 import 'package:cshrealestatemobile/SalesDashboard.dart';
 import 'package:cshrealestatemobile/SalesInquiryReport.dart';
 import 'package:cshrealestatemobile/SalesProfile.dart';
+import 'package:cshrealestatemobile/Settings.dart';
 import 'package:cshrealestatemobile/TenantAccessCardRequest.dart';
 import 'package:cshrealestatemobile/TenantComplaint.dart';
 import 'package:cshrealestatemobile/TenantDashboard.dart';
@@ -163,6 +164,23 @@ class Sidebar extends StatelessWidget {
                             (
                             context,
                             MaterialPageRoute(builder: (context) => LandlordDashboardScreen()), // navigate to company and serial select screen
+                          );
+
+                          // navigate to companies screen
+                        },
+                      ),
+
+                      ListTile(
+                        title: Text('Settings'),
+                        leading: Icon(Icons.settings,
+                          color: Colors.black,
+                        ),
+                        onTap: () async {
+                          Navigator.pushReplacement
+
+                            (
+                            context,
+                            MaterialPageRoute(builder: (context) => SettingsScreen()), // navigate to company and serial select screen
                           );
 
                           // navigate to companies screen

@@ -331,12 +331,7 @@ class _TenantAccessCardRequestPageState extends State<TenantAccessCardRequest> w
                                                     Text(
                                                       "Al Khaleej Center",
                                                       style: TextStyle(fontSize: 16, color: Colors.blueGrey),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ],
-                                            ),
-                                          ),
+                                                    )])])),
                                           SizedBox(width: MediaQuery.of(context).size.width / 5),
                                           Container(
                                             margin: EdgeInsets.only(bottom: 5),
@@ -402,7 +397,6 @@ class _TenantAccessCardRequestPageState extends State<TenantAccessCardRequest> w
                                 ],
                               ),
 
-
                               Container(
                                 margin: EdgeInsets.only(left: 20,right: 20,top: 30),
                                 child: Column(
@@ -428,11 +422,7 @@ class _TenantAccessCardRequestPageState extends State<TenantAccessCardRequest> w
                                             style: TextStyle(
                                               fontSize: 20,
                                               color: Colors.red, // Red color for the asterisk
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
+                                            ))])),
 
                                     Container(
                                       padding: EdgeInsets.symmetric(horizontal: 12),

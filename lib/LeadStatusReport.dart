@@ -23,6 +23,338 @@ class _LeadStatusReportState extends State<LeadStatusReport> {
     fetchLeadStatus();
   }
 
+  Future<void> sendLeadStatus() async {
+    final Map<String, dynamic> jsonBody = {
+      "uuid": uuid,
+      "name": leadStatusController.text,
+      "is_qualified": isQualified ? 1 : 0,
+    };
+
+    String token = 'Bearer $Serial_Token'; // auth token for request
+
+
+    Map<String, String> headers = {
+      'Authorization': token,
+      "Content-Type": "application/json"
+    };
+
+    const String url = "$BASE_URL_config/v1/leadStatus";
+
+    try{
+      final response = await http.post(
+        Uri.parse(url),
+        headers: headers,
+        body: jsonEncode(jsonBody),
+      );
+
+      if (response.statusCode == 201) {
+        final Map<String, dynamic> data = json.decode(response.body);
+
+        // Extract code and message
+        final String message = data['message'];
+
+        // Display the message in a Snackbar
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('$message'),
+          ),);
+        // Handle success
+        fetchLeadStatus();
+
+      } else {
+        final Map<String, dynamic> data = json.decode(response.body);
+
+        // Extract code and message
+        final String code = data['code'].toString();
+        final String message = data['message'].toString();
+
+        // Display the message in a Snackbar
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Code: $code\nMessage: $message'),
+            backgroundColor: code == 200 ? Colors.green : Colors.red,
+          ),
+        );
+      }
+    }
+    catch (e)
+    {
+
+    }
+
+
+
+  }
+
+  Future<void> editLeadStatus(int id, String status_name, bool is_qualified ) async {
+    final Map<String, dynamic> jsonBody = {
+      "uuid": uuid,
+      "name": status_name,
+      "is_qualified": is_qualified ? 1 : 0,
+    };
+
+    print('jsonbody $jsonBody ');
+
+    print('id $id ');
+
+    String token = 'Bearer $Serial_Token'; // auth token for request
+
+
+    Map<String, String> headers = {
+      'Authorization': token,
+      "Content-Type": "application/json"
+    };
+
+     String url = "$BASE_URL_config/v1/leadStatus/$id";
+
+    try{
+      final response = await http.put(
+        Uri.parse(url),
+        headers: headers,
+        body: jsonEncode(jsonBody),
+      );
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = json.decode(response.body);
+
+        // Extract code and message
+        final String message = data['message'];
+
+        // Display the message in a Snackbar
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('$message'),
+          ),);
+        // Handle success
+        fetchLeadStatus();
+
+      } else {
+        final Map<String, dynamic> data = json.decode(response.body);
+
+        // Extract code and message
+        final String code = data['code'].toString();
+        final String message = data['message'].toString();
+
+        // Display the message in a Snackbar
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Code: $code\nMessage: $message'),
+            backgroundColor: code == 200 ? Colors.green : Colors.red,
+          ),
+        );
+      }
+    }
+    catch (e)
+    {
+
+    }
+
+
+
+  }
+
+
+  void showLeadStatusDialog() {
+    final _formKey = GlobalKey<FormState>();
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: Colors.blueGrey[50],
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          title: Text(
+            "Lead Status",
+            style: TextStyle(color: Colors.blueGrey[900]),
+          ),
+          content: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text("Is Qualified", style: TextStyle(color: Colors.blueGrey[900])),
+                    Switch(
+                      value: isQualified,
+                      onChanged: (value) {
+                        setState(() {
+                          isQualified = value;
+                          Navigator.of(context).pop();
+                          showLeadStatusDialog();
+                        });
+                      },
+                      activeColor: Colors.blueGrey,
+                    ),
+                  ],
+                ),
+
+                SizedBox(height: 10,),
+                TextFormField(
+                  controller: leadStatusController,
+                  validator: (value) {
+                    if (value == null || value.isEmpty)
+                    {
+                      return 'Please enter lead status name';
+                    }
+
+                    return null;
+                  },
+                  decoration: InputDecoration(
+                    labelText: "Lead Status Name",
+                    labelStyle: TextStyle(color: Colors.blueGrey),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.blueGrey),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.blueGrey[200]!),
+                    ),
+                  ),
+                ),
+
+
+              ],
+            ),
+          ),
+
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text("Cancel", style: TextStyle(color: Colors.blueGrey)),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                if (_formKey.currentState != null &&
+                    _formKey.currentState!.validate()) {
+                  _formKey.currentState!.save();
+
+                  sendLeadStatus();
+                  Navigator.pop(context);
+
+                }
+
+              },
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.blueGrey),
+              child: Text("Submit",style: TextStyle(color: Colors.white)),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void showEditLeadStatusDialog(int id, String old_status_name, String is_qualified) {
+    final _formKey = GlobalKey<FormState>();
+
+    bool isQualified = false;
+
+    if(is_qualified.toLowerCase() == "true")
+      {
+        isQualified = true;
+
+      }
+    TextEditingController leadStatusController = TextEditingController();
+
+    leadStatusController.text = old_status_name;
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: Colors.blueGrey[50],
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          title: Text(
+            "Edit Lead Status",
+            style: TextStyle(color: Colors.blueGrey[900],
+                ),
+          ),
+          content: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text("Is Qualified", style: TextStyle(color: Colors.blueGrey[900])),
+                    Switch(
+                      value: isQualified,
+                      onChanged: (value) {
+                        setState(() {
+                          isQualified = value;
+                          Navigator.of(context).pop();
+                          if(isQualified == true)
+                            {
+                              is_qualified = "true";
+                            }
+                          else
+                            {
+                              is_qualified = "false";
+                            }
+                          showEditLeadStatusDialog(id, leadStatusController.text,is_qualified);
+                        });
+                      },
+                      activeColor: Colors.blueGrey,
+                    ),
+                  ],
+                ),
+
+                SizedBox(height: 10,),
+                TextFormField(
+                  controller: leadStatusController,
+                  validator: (value) {
+                    if (value == null || value.isEmpty)
+                    {
+                      return 'Please enter lead status name';
+                    }
+
+                    return null;
+                  },
+                  decoration: InputDecoration(
+                    labelText: "Lead Status Name",
+                    labelStyle: TextStyle(color: Colors.blueGrey),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.blueGrey),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.blueGrey[200]!),
+                    ),
+                  ),
+                ),
+
+
+              ],
+            ),
+          ),
+
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text("Cancel", style: TextStyle(color: Colors.blueGrey)),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                if (_formKey.currentState != null &&
+                    _formKey.currentState!.validate()) {
+                  _formKey.currentState!.save();
+
+                    editLeadStatus(id, leadStatusController.text, isQualified) ;
+                    Navigator.pop(context);
+
+                }
+
+              },
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.blueGrey),
+              child: Text("Submit",style: TextStyle(color: Colors.white)),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+
   Future<void> fetchLeadStatus() async {
 
     print('fetching lead status');
@@ -138,8 +470,9 @@ class _LeadStatusReportState extends State<LeadStatusReport> {
           final lead = leadStatuses[index];
           final isQualified = lead['is_qualified'] == 'true';
           return Card(
+            color: Colors.white,
             margin: const EdgeInsets.symmetric(
-                horizontal: 16, vertical: 8),
+                horizontal: 16, vertical: 5),
             elevation: 2,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
@@ -149,36 +482,55 @@ class _LeadStatusReportState extends State<LeadStatusReport> {
                   horizontal: 16, vertical: 12),
               title: Container(
                 child:  Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      lead['name'] ?? 'Unnamed',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.blueGrey[800],
-                      ),
+
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.assignment_ind,
+                          color: Colors.blueGrey,
+                        ),
+
+                        SizedBox(width: 5,),
+                        Text(
+                          lead['name'] ?? 'Unnamed',
+                          style: TextStyle(
+                            fontWeight: FontWeight.normal,
+                            color: Colors.blueGrey[800],
+                          ),
+                        ),
+                      ],
                     ),
 
                     SizedBox(height: 10),
 
-                    Row(children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
 
-                      _buildDecentButton(
-                        'Edit',
-                        Icons.edit,
-                        Colors.blue,
-                            () {},
-                      ),
-                      SizedBox(width:5),
-                      _buildDecentButton(
-                        'Delete',
-                        Icons.delete,
-                        Colors.redAccent,
-                            () {
+                        _buildDecentButton(
+                          'Edit',
+                          Icons.edit,
+                          Colors.blue,
+                              () {
 
-                          deleteLeadStatus(lead['id']); },
-                      ),
-                      SizedBox(width:5)
-                    ],),
+                                showEditLeadStatusDialog(lead['id'],lead['name'],lead['is_qualified']);
+                              },
+                        ),
+                        SizedBox(width:5),
+                        _buildDecentButton(
+                          'Delete',
+                          Icons.delete,
+                          Colors.redAccent,
+                              () {
+
+                            deleteLeadStatus(lead['id']); },
+                        ),
+                        SizedBox(width:5)
+                      ],),
+
                   ],),
               ),
 
@@ -200,158 +552,7 @@ class _LeadStatusReportState extends State<LeadStatusReport> {
       ),
     );
   }
-  Future<void> sendLeadStatus() async {
-    final Map<String, dynamic> jsonBody = {
-      "uuid": uuid,
-      "name": leadStatusController.text,
-      "is_qualified": isQualified ? 1 : 0,
-    };
 
-    String token = 'Bearer $Serial_Token'; // auth token for request
-
-
-    Map<String, String> headers = {
-      'Authorization': token,
-      "Content-Type": "application/json"
-    };
-
-    const String url = "$BASE_URL_config/v1/leadStatus";
-
-    try{
-      final response = await http.post(
-        Uri.parse(url),
-        headers: headers,
-        body: jsonEncode(jsonBody),
-      );
-
-      if (response.statusCode == 201) {
-        final Map<String, dynamic> data = json.decode(response.body);
-
-        // Extract code and message
-        final String message = data['message'];
-
-        // Display the message in a Snackbar
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('$message'),
-          ),);
-        // Handle success
-        fetchLeadStatus();
-
-      } else {
-        final Map<String, dynamic> data = json.decode(response.body);
-
-        // Extract code and message
-        final String code = data['code'].toString();
-        final String message = data['message'].toString();
-
-        // Display the message in a Snackbar
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Code: $code\nMessage: $message'),
-            backgroundColor: code == 200 ? Colors.green : Colors.red,
-          ),
-        );
-      }
-    }
-    catch (e)
-    {
-
-    }
-
-
-
-  }
-
-  void showLeadStatusDialog() {
-    final _formKey = GlobalKey<FormState>();
-
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          backgroundColor: Colors.blueGrey[50],
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          title: Text(
-            "Lead Status",
-            style: TextStyle(color: Colors.blueGrey[900]),
-          ),
-          content: Form(
-            key: _formKey,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text("Is Qualified", style: TextStyle(color: Colors.blueGrey[900])),
-                    Switch(
-                      value: isQualified,
-                      onChanged: (value) {
-                        setState(() {
-                          isQualified = value;
-                          Navigator.of(context).pop();
-                          showLeadStatusDialog();
-                        });
-                      },
-                      activeColor: Colors.blueGrey,
-                    ),
-                  ],
-                ),
-
-                SizedBox(height: 10,),
-                TextFormField(
-                  controller: leadStatusController,
-                  validator: (value) {
-                    if (value == null || value.isEmpty)
-                    {
-                      return 'Please enter lead status name';
-                    }
-
-                    return null;
-                  },
-                  decoration: InputDecoration(
-                    labelText: "Lead Status Name",
-                    labelStyle: TextStyle(color: Colors.blueGrey),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.blueGrey),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.blueGrey[200]!),
-                    ),
-                  ),
-                ),
-
-
-              ],
-            ),
-          ),
-
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text("Cancel", style: TextStyle(color: Colors.blueGrey)),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                if (_formKey.currentState != null &&
-                    _formKey.currentState!.validate()) {
-                  _formKey.currentState!.save();
-
-                  sendLeadStatus();
-                  Navigator.pop(context);
-
-                }
-
-              },
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.blueGrey),
-              child: Text("Submit",style: TextStyle(color: Colors.white)),
-            ),
-          ],
-        );
-      },
-    );
-  }
 }
 Widget _buildDecentButton(
     String label, IconData icon, Color color, VoidCallback onPressed) {
@@ -362,7 +563,7 @@ Widget _buildDecentButton(
     highlightColor: color.withOpacity(0.1),
     child: Container(
       margin: EdgeInsets.only(top: 10.0),
-      padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
+      padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 7.0),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(30.0),
         color: Colors.white,

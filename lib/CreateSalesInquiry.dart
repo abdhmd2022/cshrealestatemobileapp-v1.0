@@ -7,6 +7,26 @@ import 'constants.dart';
 import 'package:http/http.dart' as http;
 
 
+class FollowUpStatus {
+  final int id;
+  final String name;
+  final bool isQualified;
+
+  FollowUpStatus({
+    required this.id,
+    required this.name,
+    required this.isQualified,
+  });
+
+  // Factory method to create a FollowUpStatus object from JSON
+  factory FollowUpStatus.fromJson(Map<String, dynamic> json) {
+    return FollowUpStatus(
+      id: json['id'],
+      name: json['name'],
+      isQualified: json['is_qualified'] == 'true',  // Convert to bool
+    );
+  }
+}
 class CreateSalesInquiry extends StatefulWidget {
 
   @override
@@ -39,7 +59,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
   bool isAllUnitsSelected = false;
 
-  String? selectedinquiry_status;
+  FollowUpStatus? selectedinquiry_status;
 
   DateTime? nextFollowUpDate;
 
@@ -54,8 +74,8 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
     'Social Media'
   ];
 
-  List<String> followupstatus_list = [
-  ];
+  List<FollowUpStatus> inquirystatus_list = [];
+
 
   bool isAllEmiratesSelected = false;
 
@@ -169,12 +189,11 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
   Future<void> fetchLeadStatus() async {
 
     print('fetching lead status');
-    followupstatus_list.clear();
+    inquirystatus_list.clear();
 
     final url = '$BASE_URL_config/v1/leadStatus'; // Replace with your API endpoint
     String token = 'Bearer $Serial_Token'; // auth token for request
 
-    print('fetch url $url');
     Map<String, String> headers = {
       'Authorization': token,
       "Content-Type": "application/json"
@@ -187,22 +206,18 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
         final data = json.decode(response.body);
 
         setState(() {
-          print('response ${response.body}');
           List<dynamic> leadStatusList = data['data']['leadStatus'];
 
-          // Iterate over the leadStatus data and store the names in the list
           for (var status in leadStatusList) {
-            // You can access id, name, and is_qualified here if needed
-            String name = status['name'];
-            bool isQualified = status['is_qualified'] == 'true'; // Convert to bool
-            int id = status['id'];
+            // Create a FollowUpStatus object from JSON
+            FollowUpStatus followUpStatus = FollowUpStatus.fromJson(status);
+
+            // Add the object to the list
+            inquirystatus_list.add(followUpStatus);
 
 
-            // Store only the name in the followupstatus_list
-            followupstatus_list.add(name);
-
-            // Optionally, you can print or use isQualified and id here if needed
-            print('ID: $id, Name: $name, Is Qualified: $isQualified');
+            // Optionally, you can print the object for verification
+            print('ID: ${followUpStatus.id}, Name: ${followUpStatus.name}, Is Qualified: ${followUpStatus.isQualified}');
           }
         });
       } else {
@@ -1096,17 +1111,18 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                               mainAxisAlignment: MainAxisAlignment.start,
                                               crossAxisAlignment: CrossAxisAlignment.start,
                                               children: [
-                                                // Switch for isQualified
 
-                                                DropdownButtonFormField<String>(
-                                                  value: selectedinquiry_status,
+                                                DropdownButtonFormField<FollowUpStatus>(
+                                                  value: selectedinquiry_status,  // This should be an object of FollowUpStatus
                                                   decoration: InputDecoration(
                                                     hintText: 'Select Inquiry Status',
-                                                    label: Text('Inquiry Status',
+                                                    label: Text(
+                                                      'Inquiry Status',
                                                       style: TextStyle(
-                                                          fontWeight: FontWeight.normal,
-                                                          color: Colors.black
-                                                      ),),
+                                                        fontWeight: FontWeight.normal,
+                                                        color: Colors.black,
+                                                      ),
+                                                    ),
                                                     border: OutlineInputBorder(
                                                       borderSide: BorderSide(color: Colors.black54),
                                                       borderRadius: BorderRadius.circular(10.0),
@@ -1120,33 +1136,38 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                       borderSide: BorderSide(color: Colors.black54),
                                                     ),
                                                     contentPadding: EdgeInsets.symmetric(horizontal: 10),
-
                                                   ),
                                                   validator: (value) {
-                                                    if (value == null || value.isEmpty) {
+                                                    if (value == null) {
                                                       return 'Inquiry Status is required'; // Error message
                                                     }
                                                     return null; // No error if a value is selected
                                                   },
                                                   dropdownColor: Colors.white,
                                                   icon: Icon(Icons.arrow_drop_down, color: Colors.blueGrey),
-                                                  items:  followupstatus_list
-                                                      .map((status) => DropdownMenuItem<String>(
-                                                    value: status,
-                                                    child: Text(
-                                                      status,
-                                                      style: TextStyle(color: Colors.black87),
-                                                    ),
-                                                  ))
-                                                      .toList(),
-                                                  onChanged: (value) {
+                                                  items: inquirystatus_list.map((FollowUpStatus status) {
+                                                    return DropdownMenuItem<FollowUpStatus>(
+                                                      value: status,
+                                                      child: Text(
+                                                        status.name,  // Display the 'name'
+                                                        style: TextStyle(color: Colors.black87),
+                                                      ),
+                                                    );
+                                                  }).toList(),
+                                                  onChanged: (FollowUpStatus? value) {
                                                     setState(() {
                                                       selectedinquiry_status = value;
-                                                      if(selectedinquiry_status =='Not Qualified')
-                                                        {
 
-                                                          nextFollowUpDate = null;
-                                                        }  });})]))]),
+                                                      if (selectedinquiry_status != null && selectedinquiry_status!.name == 'Not Qualified') {
+                                                        nextFollowUpDate = null;
+                                                      }
+                                                    });
+                                                  },
+                                                )
+
+                                                // Switch for isQualified
+
+                                                ]))]),
                                   ), // folowup status
 
                                   if (selectedinquiry_status == 'In Follow-Up' || selectedinquiry_status == 'Contact Later') // Conditionally render based on status

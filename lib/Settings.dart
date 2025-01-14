@@ -53,7 +53,7 @@ class _SettingsScreenState extends State<SettingsScreen> with TickerProviderStat
           Padding(padding: EdgeInsets.only(top: 5,bottom: 5),
               child: ListTile(
                   title: Text('Lead Status'),
-                  subtitle: Text('Create lead status masters for the app'),
+                  subtitle: Text('Manage lead status masters for the app'),
                   onTap: ()
                 {
                   Navigator.pushReplacement
@@ -65,6 +65,23 @@ class _SettingsScreenState extends State<SettingsScreen> with TickerProviderStat
 
                 },
                   )),
+          Divider(),
+
+          Padding(padding: EdgeInsets.only(top: 5,bottom: 5),
+              child: ListTile(
+                title: Text('Amenities'),
+                subtitle: Text('Manage amenities masters for the app'),
+                onTap: ()
+                {
+                  Navigator.pushReplacement
+
+                    (
+                    context,
+                    MaterialPageRoute(builder: (context) => LeadStatusReport()), // navigate to company and serial select screen
+                  );
+
+                },
+              )),
           Divider(),
 
 

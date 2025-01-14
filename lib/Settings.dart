@@ -1,3 +1,4 @@
+import 'package:cshrealestatemobile/AmenitiesReport.dart';
 import 'package:cshrealestatemobile/LeadStatusReport.dart';
 import 'package:cshrealestatemobile/constants.dart';
 import 'package:flutter/material.dart';
@@ -77,7 +78,7 @@ class _SettingsScreenState extends State<SettingsScreen> with TickerProviderStat
 
                     (
                     context,
-                    MaterialPageRoute(builder: (context) => LeadStatusReport()), // navigate to company and serial select screen
+                    MaterialPageRoute(builder: (context) => AmentiesReport()), // navigate to company and serial select screen
                   );
 
                 },

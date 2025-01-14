@@ -13,7 +13,7 @@ class _AmentiesReportState extends State<AmentiesReport> {
   List<dynamic> amenities = [];
   bool isLoading = true;
 
-  bool isQualified = false;
+  bool isSpecial = false;
   TextEditingController amenitiesController = TextEditingController();
   final String uuid = "6e35f08d-8285-45e3-ae32-a0e9efe5407e";
 
@@ -27,18 +27,17 @@ class _AmentiesReportState extends State<AmentiesReport> {
     final Map<String, dynamic> jsonBody = {
       "uuid": uuid,
       "name": amenitiesController.text,
-      "is_qualified": isQualified ? 1 : 0,
+      "is_special": isSpecial ? 1 : 0,
     };
 
     String token = 'Bearer $Serial_Token'; // auth token for request
-
 
     Map<String, String> headers = {
       'Authorization': token,
       "Content-Type": "application/json"
     };
 
-    const String url = "$BASE_URL_config/v1/leadStatus";
+    const String url = "$BASE_URL_config/v1/amenities";
 
     try{
       final response = await http.post(
@@ -86,11 +85,11 @@ class _AmentiesReportState extends State<AmentiesReport> {
 
   }
 
-  Future<void> editAmenities(int id, String status_name, bool is_qualified ) async {
+  Future<void> editAmenities(int id, String amenity_name, bool is_special ) async {
     final Map<String, dynamic> jsonBody = {
       "uuid": uuid,
-      "name": status_name,
-      "is_qualified": is_qualified ? 1 : 0,
+      "name": amenity_name,
+      "is_special": is_special ? 1 : 0,
     };
 
     print('jsonbody $jsonBody ');
@@ -105,7 +104,7 @@ class _AmentiesReportState extends State<AmentiesReport> {
       "Content-Type": "application/json"
     };
 
-    String url = "$BASE_URL_config/v1/leadStatus/$id";
+    String url = "$BASE_URL_config/v1/amenities/$id";
 
     try{
       final response = await http.put(
@@ -148,9 +147,6 @@ class _AmentiesReportState extends State<AmentiesReport> {
     {
 
     }
-
-
-
   }
 
 
@@ -164,7 +160,7 @@ class _AmentiesReportState extends State<AmentiesReport> {
           backgroundColor: Colors.blueGrey[50],
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           title: Text(
-            "Lead Status",
+            "Amenities",
             style: TextStyle(color: Colors.blueGrey[900]),
           ),
           content: Form(
@@ -175,12 +171,12 @@ class _AmentiesReportState extends State<AmentiesReport> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text("Is Qualified", style: TextStyle(color: Colors.blueGrey[900])),
+                    Text("Special Feature", style: TextStyle(color: Colors.blueGrey[900])),
                     Switch(
-                      value: isQualified,
+                      value: isSpecial,
                       onChanged: (value) {
                         setState(() {
-                          isQualified = value;
+                          isSpecial = value;
                           Navigator.of(context).pop();
                           showAmenitiesDialog();
                         });
@@ -196,13 +192,13 @@ class _AmentiesReportState extends State<AmentiesReport> {
                   validator: (value) {
                     if (value == null || value.isEmpty)
                     {
-                      return 'Please enter lead status name';
+                      return 'Please enter amenity name';
                     }
 
                     return null;
                   },
                   decoration: InputDecoration(
-                    labelText: "Lead Status Name",
+                    labelText: "Amenity Name",
                     labelStyle: TextStyle(color: Colors.blueGrey),
                     focusedBorder: OutlineInputBorder(
                       borderSide: BorderSide(color: Colors.blueGrey),
@@ -244,19 +240,19 @@ class _AmentiesReportState extends State<AmentiesReport> {
     );
   }
 
-  void showEditAmenitiesDialog(int id, String old_status_name, String is_qualified) {
+  void showEditAmenitiesDialog(int id, String old_amenity_name, String is_special) {
     final _formKey = GlobalKey<FormState>();
 
-    bool isQualified = false;
+    bool isSpecial = false;
 
-    if(is_qualified.toLowerCase() == "true")
+    if(is_special.toLowerCase() == "true")
     {
-      isQualified = true;
+      isSpecial = true;
 
     }
-    TextEditingController leadStatusController = TextEditingController();
+    TextEditingController amenityController = TextEditingController();
 
-    leadStatusController.text = old_status_name;
+    amenityController.text = old_amenity_name;
 
     showDialog(
       context: context,
@@ -265,7 +261,7 @@ class _AmentiesReportState extends State<AmentiesReport> {
           backgroundColor: Colors.blueGrey[50],
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           title: Text(
-            "Edit Lead Status",
+            "Edit Amenity",
             style: TextStyle(color: Colors.blueGrey[900],
             ),
           ),
@@ -277,22 +273,22 @@ class _AmentiesReportState extends State<AmentiesReport> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text("Is Qualified", style: TextStyle(color: Colors.blueGrey[900])),
+                    Text("Special Feature", style: TextStyle(color: Colors.blueGrey[900])),
                     Switch(
-                      value: isQualified,
+                      value: isSpecial,
                       onChanged: (value) {
                         setState(() {
-                          isQualified = value;
+                          isSpecial = value;
                           Navigator.of(context).pop();
-                          if(isQualified == true)
+                          if(isSpecial == true)
                           {
-                            is_qualified = "true";
+                            is_special = "true";
                           }
                           else
                           {
-                            is_qualified = "false";
+                            is_special = "false";
                           }
-                          showEditAmenitiesDialog(id, leadStatusController.text,is_qualified);
+                          showEditAmenitiesDialog(id, amenityController.text,is_special);
                         });
                       },
                       activeColor: Colors.blueGrey,
@@ -302,17 +298,17 @@ class _AmentiesReportState extends State<AmentiesReport> {
 
                 SizedBox(height: 10,),
                 TextFormField(
-                  controller: leadStatusController,
+                  controller: amenityController,
                   validator: (value) {
                     if (value == null || value.isEmpty)
                     {
-                      return 'Please enter lead status name';
+                      return 'Please enter amenity name';
                     }
 
                     return null;
                   },
                   decoration: InputDecoration(
-                    labelText: "Lead Status Name",
+                    labelText: "Amenity Name",
                     labelStyle: TextStyle(color: Colors.blueGrey),
                     focusedBorder: OutlineInputBorder(
                       borderSide: BorderSide(color: Colors.blueGrey),
@@ -322,8 +318,6 @@ class _AmentiesReportState extends State<AmentiesReport> {
                     ),
                   ),
                 ),
-
-
               ],
             ),
           ),
@@ -339,7 +333,7 @@ class _AmentiesReportState extends State<AmentiesReport> {
                     _formKey.currentState!.validate()) {
                   _formKey.currentState!.save();
 
-                  editAmenities(id, leadStatusController.text, isQualified) ;
+                  editAmenities(id, amenityController.text, isSpecial) ;
                   Navigator.pop(context);
 
                 }
@@ -357,10 +351,10 @@ class _AmentiesReportState extends State<AmentiesReport> {
 
   Future<void> fetchAmenities() async {
 
-    print('fetching lead status');
+    print('fetching amenities');
     amenities.clear();
 
-    final url = '$BASE_URL_config/v1/leadStatus'; // Replace with your API endpoint
+    final url = '$BASE_URL_config/v1/amenities'; // Replace with your API endpoint
     String token = 'Bearer $Serial_Token'; // auth token for request
 
     print('fetch url $url');
@@ -377,7 +371,7 @@ class _AmentiesReportState extends State<AmentiesReport> {
 
         setState(() {
           print('response ${response.body}');
-          amenities = data['data']['leadStatus'];
+          amenities = data['data']['amenities'];
         });
       } else {
         throw Exception('Failed to load data');
@@ -392,8 +386,8 @@ class _AmentiesReportState extends State<AmentiesReport> {
     });
   }
 
-  Future<void> deleteLeadStatus(int id) async {
-    final url = '$BASE_URL_config/v1/leadstatus/$id'; // Replace with your API endpoint
+  Future<void> deleteAmenities(int id) async {
+    final url = '$BASE_URL_config/v1/amenities/$id'; // Replace with your API endpoint
     String token = 'Bearer $Serial_Token'; // auth token for request
 
     Map<String, String> headers = {
@@ -406,7 +400,7 @@ class _AmentiesReportState extends State<AmentiesReport> {
         final data = json.decode(response.body);
         if (data['success']) {
           setState(() {
-            amenities.removeWhere((lead) => lead['id'] == id);
+            amenities.removeWhere((amenity) => amenity['id'] == id);
           });
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(data['message'])),
@@ -444,7 +438,7 @@ class _AmentiesReportState extends State<AmentiesReport> {
             Icons.arrow_back,
             color: Colors.white,
           ),),
-        title: Text('Lead Status',
+        title: Text('Amenities',
           style: TextStyle(
               color: Colors.white
           ),),
@@ -467,8 +461,8 @@ class _AmentiesReportState extends State<AmentiesReport> {
           : ListView.builder(
         itemCount: amenities.length,
         itemBuilder: (context, index) {
-          final lead = amenities[index];
-          final isQualified = lead['is_qualified'] == 'true';
+          final amenity = amenities[index];
+          final isQualified = amenity['is_special'] == 'true';
           return Card(
             color: Colors.white,
             margin: const EdgeInsets.symmetric(
@@ -494,12 +488,43 @@ class _AmentiesReportState extends State<AmentiesReport> {
 
                         SizedBox(width: 5,),
                         Text(
-                          lead['name'] ?? 'Unnamed',
+                          amenity['name'] ?? 'Unnamed',
                           style: TextStyle(
                             fontWeight: FontWeight.normal,
                             color: Colors.blueGrey[800],
                           ),
                         ),
+                      ],
+                    ),
+
+                    SizedBox(height: 8),
+
+                    Row(
+                      children: [
+                        Text('Special Feature: ',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold
+                        ),),
+
+                        if(amenity['is_special'] == 'true')
+                          Text(
+                            'Yes' ?? 'Unnamed',
+                            style: TextStyle(
+                              fontWeight: FontWeight.normal,
+                              color: Colors.blueGrey[800],
+                            ),
+                          ),
+
+                        if(amenity['is_special'] == 'false')
+                          Text(
+                            'No' ?? 'Unnamed',
+                            style: TextStyle(
+                              fontWeight: FontWeight.normal,
+                              color: Colors.blueGrey[800],
+                            ),
+                          ),
+
+
                       ],
                     ),
 
@@ -516,7 +541,7 @@ class _AmentiesReportState extends State<AmentiesReport> {
                           Colors.blue,
                               () {
 
-                            showEditAmenitiesDialog(lead['id'],lead['name'],lead['is_qualified']);
+                            showEditAmenitiesDialog(amenity['id'],amenity['name'],amenity['is_special']);
                           },
                         ),
                         SizedBox(width:5),
@@ -526,7 +551,7 @@ class _AmentiesReportState extends State<AmentiesReport> {
                           Colors.redAccent,
                               () {
 
-                            deleteLeadStatus(lead['id']); },
+                            deleteAmenities(amenity['id']); },
                         ),
                         SizedBox(width:5)
                       ],),
@@ -543,7 +568,7 @@ class _AmentiesReportState extends State<AmentiesReport> {
         onPressed:()
         {
           amenitiesController.clear();
-          isQualified = false;
+          isSpecial = false;
           showAmenitiesDialog();
         },
         backgroundColor: Colors.blueGrey,

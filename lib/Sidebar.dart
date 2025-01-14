@@ -186,6 +186,7 @@ class Sidebar extends StatelessWidget {
                           // navigate to companies screen
                         },
                       ),
+
                       /*Visibility(
                 visible: isSalesEntryVisible,
                 child:  ListTile(

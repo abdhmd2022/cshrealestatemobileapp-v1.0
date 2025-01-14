@@ -27,6 +27,7 @@ class FollowUpStatus {
     );
   }
 }
+
 class CreateSalesInquiry extends StatefulWidget {
 
   @override
@@ -154,28 +155,10 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
   List<String> selectedEmiratesList = [];
   List<String> selectedAreas = [];
 
-  final List<String> amenities = [
-    'Gym',
-    'Parking',
-    'Swimming Pool',
-    'Sauna',
-    'Jacuzzi',
-    'Maids Room',
-    'Balcony',
-    'Study Room'
-  ];
-
-  final Set<String> selectedAmenities = {};
-
-  final List<String> specialfeatures = [
-    'Nearby Metro/Bus/Tram',
-    'Nearby Mall/Supermarket',
-    'Nearby Community Center',
-    'Furnished',
-    'Unfurnished',
-  ];
-
-  final Set<String> selectedSpecialFeatures = {};
+  final List<Map<String, dynamic>> specialfeatures = [];
+  final List<Map<String, dynamic>> amenities = [];
+  final Set<int> selectedSpecialFeatures = {};
+  final Set<int> selectedAmenities = {};
 
   final List<String> propertyType = [
     'Residential',
@@ -184,6 +167,51 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
   String? selectedPropertyType;
 
+  Future<void> fetchAmenities() async {
+
+    print('fetching amenities');
+    amenities.clear();
+
+    final url = '$BASE_URL_config/v1/amenities'; // Replace with your API endpoint
+    String token = 'Bearer $Serial_Token'; // auth token for request
+
+    print('fetch url $url');
+    Map<String, String> headers = {
+      'Authorization': token,
+      "Content-Type": "application/json"
+    };
+    try {
+      final response = await http.get(Uri.parse(url),
+        headers: headers,);
+      if (response.statusCode == 200) {
+
+
+        setState(() {
+          print('response ${response.body}');
+
+          final Map<String, dynamic> data = json.decode(response.body);
+          final List<dynamic> amenitiesData = data['data']['amenities'];
+
+          for (var item in amenitiesData) {
+            if (item['is_special'] == "true") {
+              specialfeatures.add(item);
+            } else {
+              amenities.add(item);
+            }
+          }
+          setState(() {});
+
+        });
+      } else {
+        throw Exception('Failed to load data');
+      }
+    } catch (e) {
+
+      print('Error fetching data: $e');
+    }
+
+    ;
+  }
 
 
   Future<void> fetchLeadStatus() async {
@@ -802,6 +830,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
   Future<void> _initSharedPreferences() async {
 
     fetchLeadStatus();
+    fetchAmenities();
   }
 
 
@@ -1674,10 +1703,10 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                             spacing: 8.0,
                                             runSpacing: 8.0,
                                             children: amenities.map((amenity) {
-                                              final isSelected = selectedAmenities.contains(amenity);
+                                              final isSelected = selectedAmenities.contains(amenity['id']);
                                               return ChoiceChip(
                                                 label: Text(
-                                                  amenity,
+                                                  amenity['name'],
                                                   style: TextStyle(
                                                     color: isSelected ? Colors.white : Colors.black,
                                                   ),
@@ -1688,9 +1717,9 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                 onSelected: (bool selected) {
                                                   setState(() {
                                                     if (selected) {
-                                                      selectedAmenities.add(amenity);
+                                                      selectedAmenities.add(amenity['id']);
                                                     } else {
-                                                      selectedAmenities.remove(amenity);
+                                                      selectedAmenities.remove(amenity['id']);
                                                     }
                                                   });
                                                 },
@@ -1722,10 +1751,10 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                             spacing: 8.0,
                                             runSpacing: 8.0,
                                             children: specialfeatures.map((amenity) {
-                                              final isSelected = selectedSpecialFeatures.contains(amenity);
+                                              final isSelected = selectedSpecialFeatures.contains(amenity['id']);
                                               return ChoiceChip(
                                                 label: Text(
-                                                  amenity,
+                                                  amenity['name'],
                                                   style: TextStyle(
                                                     color: isSelected ? Colors.white : Colors.black,
                                                   ),
@@ -1736,9 +1765,9 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                 onSelected: (bool selected) {
                                                   setState(() {
                                                     if (selected) {
-                                                      selectedSpecialFeatures.add(amenity);
+                                                      selectedSpecialFeatures.add(amenity['id']);
                                                     } else {
-                                                      selectedSpecialFeatures.remove(amenity);
+                                                      selectedSpecialFeatures.remove(amenity['id']);
                                                     }
                                                   });
                                                 },

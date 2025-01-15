@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'SalesInquiryReport.dart';
 import 'constants.dart';
 import 'package:http/http.dart' as http;
@@ -27,6 +29,25 @@ class FollowUpStatus {
     );
   }
 }
+
+class ActivitySource {
+  final int id;
+  final String name;
+
+  ActivitySource({
+    required this.id,
+    required this.name,
+  });
+
+  // Factory method to create a FollowUpStatus object from JSON
+  factory ActivitySource.fromJson(Map<String, dynamic> json) {
+    return ActivitySource(
+      id: json['id'],
+      name: json['name'],
+    );
+  }
+}
+
 
 class CreateSalesInquiry extends StatefulWidget {
 
@@ -54,15 +75,22 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
   final areaFocusNode = FocusNode();
   final descriptionFocusNode = FocusNode();
 
+  final TextEditingController startController = TextEditingController();
+  final TextEditingController endController = TextEditingController();
+
+
   String? selectedasignedto;
 
   bool isUnitSelected = false;
 
   bool isAllUnitsSelected = false;
 
-  double range_min = 0, range_max = 100000;
+  double? range_min, range_max;
 
   FollowUpStatus? selectedinquiry_status;
+
+  ActivitySource? selectedactivity_source;
+
 
   DateTime? nextFollowUpDate;
 
@@ -79,6 +107,14 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
   List<FollowUpStatus> inquirystatus_list = [];
 
+  List<ActivitySource> activitysource_list = [
+
+    ActivitySource(id: 1, name: "Whatsapp"),
+    ActivitySource(id: 2, name: "Email"),
+    ActivitySource(id: 3, name: "Website"),
+    ActivitySource(id: 4, name: "Phone Call"),
+
+  ];
 
   bool isAllEmiratesSelected = false;
 
@@ -162,12 +198,95 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
   final Set<int> selectedSpecialFeatures = {};
   final Set<int> selectedAmenities = {};
 
+  final List<String> interestTypes = ["Rent", "Buy"]; // List of options
+
+
   final List<String> propertyType = [
     'Residential',
     'Commercial',
   ];
 
+  void _updateRangeFromTextFields() {
+    // Parse start and end values, defaulting to range_min and range_max if invalid
+    double start = double.tryParse(startController.text) ?? range_min!;
+    double end = double.tryParse(endController.text) ?? range_max!;
+
+    // Constrain start and end to the min and max values
+    start = start.clamp(range_min!, range_max!);
+    end = end.clamp(range_min!, range_max!);
+
+    // Ensure start value is less than or equal to end value
+    if (start > end) {
+      end = start;
+    }
+
+    setState(() {
+      _currentRangeValues = RangeValues(start, end);
+    });
+  }
+
   String? selectedPropertyType;
+
+  Future<void> sendCreateInquiryRequest() async {
+
+
+    // converting amenities set to list
+    final List<int> amenitiesList = selectedAmenities.toList();
+
+    //converting date to yyyy-MM-dd format
+    String? formattedDate;
+    if (nextFollowUpDate != null) {
+      final DateFormat formatter = DateFormat('yyyy-MM-dd');
+      formattedDate = formatter.format(nextFollowUpDate!);
+    } else {
+      formattedDate = null;
+    }
+
+    // Replace with your API endpoint
+    final String url = "https://yourapiendpoint.com/create";
+
+    // Constructing the JSON body
+    final Map<String, dynamic> requestBody = {
+      "uuid": uuid,
+      "name": customernamecontroller.text,
+      "email": emailcontroller.text,
+      "mobile_no": customercontactnocontroller.text,
+      "areas": [1, 2],
+      "flatTypes": [1],
+      "lead_status_id": selectedinquiry_status!.id,
+      "next_followup_date": formattedDate,
+      "property_type": selectedPropertyType,
+      "interest_type": interestTypes[selectedInterestType ?? 0],
+      "max_price": _currentRangeValues!.end.round().toString(),
+      "min_price": _currentRangeValues!.start.round().toString(),
+      "amenities": amenitiesList,
+      "description" : descriptioncontroller.text
+    };
+
+    print('request body $requestBody');
+
+    /*try {
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $Company_Token",
+        },
+        body: jsonEncode(requestBody),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        // Request was successful
+        print("Response Data: ${response.body}");
+      } else {
+        // Error occurred
+        print("Error: ${response.statusCode}");
+        print("Message: ${response.body}");
+      }
+    } catch (error) {
+      print("Exception: $error");
+    }*/
+  }
 
   Future<void> fetchAmenities() async {
 
@@ -218,7 +337,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
   Future<void> fetchLeadStatus() async {
 
-    print('fetching lead status');
     inquirystatus_list.clear();
 
     final url = '$BASE_URL_config/v1/leadStatus'; // Replace with your API endpoint
@@ -831,19 +949,31 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
   Future<void> _initSharedPreferences() async {
 
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+
+      range_min = prefs.getDouble('range_min') ?? 10000;
+      range_max = prefs.getDouble('range_max') ?? 100000;
+
+      double range_start = range_min! + (range_min! / 0.8);
+      double range_end = range_max! - (range_max! * 0.2);
+
+      _currentRangeValues = RangeValues(range_start, range_end);
+
+      startController.text = _currentRangeValues!.start.toStringAsFixed(0);
+      endController.text = _currentRangeValues!.end.toStringAsFixed(0);
+    });
+
     fetchLeadStatus();
     fetchAmenities();
   }
 
-  RangeValues _currentRangeValues = const RangeValues(10000, 50000);
+  RangeValues? _currentRangeValues;
 
-  int selectedIndex = 0;
-
-
+  int? selectedInterestType;
 
   @override
   Widget build(BuildContext context) {
-
 
     return Scaffold(
         appBar: AppBar(
@@ -952,10 +1082,10 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                             const SizedBox(height: 10),
                                             ToggleButtons(
                                               borderRadius: BorderRadius.circular(10),
-                                              isSelected: [selectedIndex == 0, selectedIndex == 1],
+                                              isSelected: [selectedInterestType == 0, selectedInterestType == 1],
                                               onPressed: (int index) {
                                                 setState(() {
-                                                  selectedIndex = index;
+                                                  selectedInterestType = index;
                                                 });
                                               },
                                               selectedColor: Colors.white, // Text color for selected button
@@ -970,12 +1100,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                 Padding(
                                                   padding: EdgeInsets.symmetric(horizontal: 16.0),
                                                   child: Text("Buy"),
-                                                ),
-                                              ],
-                                            ),
-
-                                          ],
-                                        ),),
+                                                )])])),
 
                                         Container(
                                           padding: const EdgeInsets.only(left: 20.0, right: 20, top: 8,bottom:10),
@@ -1037,6 +1162,69 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                             ],
                                           ),
                                         ),
+
+                                        Padding(
+                                            padding: EdgeInsets.only(top:10,left:20,right:20,bottom :10),
+
+                                            child: Column(
+                                                mainAxisAlignment: MainAxisAlignment.start,
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: [
+
+                                                  DropdownButtonFormField<ActivitySource>(
+                                                    value: selectedactivity_source,  // This should be an object of FollowUpStatus
+                                                    decoration: InputDecoration(
+                                                      hintText: 'Select Activity Source ',
+                                                      label: Text(
+                                                        'Activity Source',
+                                                        style: TextStyle(
+                                                          fontWeight: FontWeight.normal,
+                                                          color: Colors.black,
+                                                        ),
+                                                      ),
+                                                      border: OutlineInputBorder(
+                                                        borderSide: BorderSide(color: Colors.black54),
+                                                        borderRadius: BorderRadius.circular(10.0),
+                                                      ),
+                                                      focusedBorder: OutlineInputBorder(
+                                                        borderSide: BorderSide(color: appbar_color),
+                                                        borderRadius: BorderRadius.circular(10.0),
+                                                      ),
+                                                      enabledBorder: OutlineInputBorder(
+                                                        borderRadius: BorderRadius.circular(10.0),
+                                                        borderSide: BorderSide(color: Colors.black54),
+                                                      ),
+                                                      contentPadding: EdgeInsets.symmetric(horizontal: 10),
+                                                    ),
+                                                    validator: (value) {
+                                                      if (value == null) {
+                                                        return 'Activity Source is required'; // Error message
+                                                      }
+                                                      return null; // No error if a value is selected
+                                                    },
+                                                    dropdownColor: Colors.white,
+                                                    icon: Icon(Icons.arrow_drop_down, color: Colors.blueGrey),
+                                                    items: activitysource_list.map((ActivitySource status) {
+                                                      return DropdownMenuItem<ActivitySource>(
+                                                        value: status,
+                                                        child: Text(
+                                                          status.name,  // Display the 'name'
+                                                          style: TextStyle(color: Colors.black87),
+                                                        ),
+                                                      );
+                                                    }).toList(),
+                                                    onChanged: (ActivitySource? value) {
+                                                      setState(() {
+                                                        selectedactivity_source = value;
+
+
+                                                      });
+                                                    },
+                                                  )
+
+                                                  // Switch for isQualified
+
+                                                ])),
 
 
                                         Padding(
@@ -1297,9 +1485,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                     setState(() {
                                                       selectedinquiry_status = value;
 
-                                                      if (selectedinquiry_status != null && selectedinquiry_status!.name == 'Not Qualified') {
-                                                        nextFollowUpDate = null;
-                                                      }
+
                                                     });
                                                   },
                                                 )
@@ -1309,8 +1495,9 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                 ]))]),
                                   ), // folowup status
 
-                                  if (selectedinquiry_status == 'In Follow-Up' || selectedinquiry_status == 'Contact Later') // Conditionally render based on status
-                                    Container(
+                                  /*if (selectedinquiry_status == 'In Follow-Up' || selectedinquiry_status == 'Contact Later') // Conditionally render based on status
+                                    */
+                                  Container(
 
                                     child: Column(
 
@@ -1383,13 +1570,13 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                               child: Row(
                                                 mainAxisAlignment: MainAxisAlignment.start,
                                                 children: [
-                                                  Icon(Icons.calendar_today, color: Colors.black87),
+                                                  Icon(Icons.calendar_today, color: Colors.black54),
                                                   SizedBox(width: 10,),
                                                   Text(
                                                     nextFollowUpDate != null
                                                         ? "${nextFollowUpDate!.day}-${nextFollowUpDate!.month}-${nextFollowUpDate!.year}"
                                                         : "Select Next Follow-Up Date",
-                                                    style: TextStyle(fontSize: 16, color: Colors.black87),
+                                                    style: TextStyle(fontSize: 16, color: Colors.black54),
                                                   ),
 
                                                 ],
@@ -1840,43 +2027,59 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                           'Price Range:',
                                           style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                                         ),
+                                        SizedBox(height:10),
+                                        Row(
+                                          children: [
+                                            Expanded(
+                                              child: TextFormField(
+                                                controller: startController,
+                                                keyboardType: TextInputType.number,
+                                                decoration: InputDecoration(
+                                                  border: OutlineInputBorder(),
+                                                ),
+                                                onChanged: (value) => _updateRangeFromTextFields(),
+                                              ),
+                                            ),
+                                            SizedBox(width: 5),
+
+                                            Text('to'),
+
+                                            SizedBox(width: 5),
+
+                                            Expanded(
+                                              child: TextFormField(
+                                                controller: endController,
+                                                keyboardType: TextInputType.number,
+                                                decoration: InputDecoration(
+                                                  border: OutlineInputBorder(),
+                                                ),
+                                                onChanged: (value) => _updateRangeFromTextFields(),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+
+                                        SizedBox(height:10),
 
                                         RangeSlider(
                                           activeColor: Colors.blueGrey,
                                           inactiveColor: Colors.blueGrey.withOpacity(0.4),
-                                          values: _currentRangeValues,
-                                          min: range_min,
-                                          max: range_max,
-                                          divisions: 20, // Optional: Set divisions for better sliding control
-                                          labels: RangeLabels(
-                                            _currentRangeValues.start.round().toString(),
-                                            _currentRangeValues.end.round().toString(),
-                                          ),
+                                          values: _currentRangeValues!,
+                                          min: range_min!,
+                                          max: range_max!,
+                                          divisions: 20,
+
                                           onChanged: (RangeValues values) {
                                             setState(() {
                                               _currentRangeValues = values;
+                                              startController.text = values.start.toStringAsFixed(0);
+                                              endController.text = values.end.toStringAsFixed(0);
                                             });
                                           },
-                                        ),
-
-                                        Row(
-                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Text(
-                                              range_min.toString(),
-                                              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
-                                            ),
-                                            Text(
-                                              range_max.toString(),
-                                              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
-                                            ),
-                                          ],
                                         ),
                                       ],
                                     ),
                                   ),
-
-
 
                                   /*Padding(padding: EdgeInsets.only(top:0,left: 20,right: 20,bottom: 0),
 
@@ -2163,7 +2366,8 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                     _isFocused_email = false;
                                                     _isFocus_name = false;
                                                   });
-                                                  /*userRegistration(serial_no!,fetched_email,fetched_password,fetched_role,fetched_name);*/
+
+                                                  sendCreateInquiryRequest();
 
                                                 }},
                                               child: Text('Create'),

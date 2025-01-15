@@ -15,7 +15,6 @@ class _AmentiesReportState extends State<AmentiesReport> {
 
   bool isSpecial = false;
   TextEditingController amenitiesController = TextEditingController();
-  final String uuid = "6e35f08d-8285-45e3-ae32-a0e9efe5407e";
 
   @override
   void initState() {

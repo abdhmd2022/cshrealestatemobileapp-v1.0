@@ -98,6 +98,9 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
   bool isAreasSelected = false;
 
+  RangeValues? _currentRangeValues;
+
+
   List<String> followuptype_list = [
     'Email',
     'Phone Call',
@@ -329,11 +332,8 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
     } catch (e) {
 
       print('Error fetching data: $e');
-    }
-
-    ;
+    };
   }
-
 
   Future<void> fetchLeadStatus() async {
 
@@ -378,7 +378,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
 
   }
-
 
   void updateEmiratesSelection() {
     setState(() {
@@ -968,7 +967,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
     fetchAmenities();
   }
 
-  RangeValues? _currentRangeValues;
 
   int? selectedInterestType;
 

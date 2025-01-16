@@ -127,13 +127,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
   bool _isLoading = false;
 
   List<Map<String, dynamic>> emirates = [
-    {"label": "Abu Dhabi", "isSelected": false},
-    {"label": "Dubai", "isSelected": false},
-    {"label": "Sharjah", "isSelected": false},
-    {"label": "Ajman", "isSelected": false},
-    {"label": "Umm Al Quwain", "isSelected": false},
-    {"label": "Ras Al Khaimah", "isSelected": false},
-    {"label": "Fujairah", "isSelected": false},
+
   ];
 
   List<String> asignedto = [
@@ -143,49 +137,14 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
   List<Map<String, dynamic>> unitTypes = [];
 
   Map<String, List<Map<String, dynamic>>> areas = {
-    'Dubai': [
-      {'label': 'Downtown Dubai', 'isSelected': false},
-      {'label': 'Jumeirah', 'isSelected': false},
-      {'label': 'Bur Dubai', 'isSelected': false},
-      {'label': 'Dubai Marina', 'isSelected': false},
-      {'label': 'Al Qusais', 'isSelected': false},
-    ],
-    'Abu Dhabi': [
-      {'label': 'Al Ain', 'isSelected': false},
-      {'label': 'Al Dhafra', 'isSelected': false},
-      {'label': 'Abu Dhabi City', 'isSelected': false},
-      {'label': 'Bani Yas', 'isSelected': false},
-    ],
-    'Sharjah': [
-      {'label': 'Al Qasba', 'isSelected': false},
-      {'label': 'Al Khan', 'isSelected': false},
-      {'label': 'Al Nahda', 'isSelected': false},
-      {'label': 'Al Majaz', 'isSelected': false},
-    ],
-    'Ajman': [
-      {'label': 'Ajman City', 'isSelected': false},
-      {'label': 'Al Nuaimiya', 'isSelected': false},
-      {'label': 'Rashidiya', 'isSelected': false},
-    ],
-    'Fujairah': [
-      {'label': 'Fujairah City', 'isSelected': false},
-      {'label': 'Dibba', 'isSelected': false},
-    ],
-    'Ras Al Khaimah': [
-      {'label': 'Ras Al Khaimah City', 'isSelected': false},
-      {'label': 'Al Jazeera', 'isSelected': false},
-    ],
-    'Umm Al Quwain': [
-      {'label': 'Umm Al Quwain City', 'isSelected': false},
-      {'label': 'Al Salama', 'isSelected': false},
-    ],
+
   };
 
   String selectedUnitType = "Select Unit Types";
-  String selectedEmirates = "Select Emirate";
+  String selectedEmiratesString = "Select Emirate";
   String selectedAreasString = "Select Area";
-  List<String> selectedEmiratesList = [];
-  List<String> selectedAreas = [];
+  List<Map<String, dynamic>> selectedEmiratesList = []; // Store objects with 'id' and 'label'
+  List<Map<String, dynamic>> selectedAreas = []; // Store objects with 'id' and 'label'
 
   final List<Map<String, dynamic>> specialfeatures = [];
   final List<Map<String, dynamic>> amenities = [];
@@ -203,6 +162,87 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
   List<int> selectedUnitIds = [];
 
   List<Map<String, dynamic>>? filteredEmirates;
+  List<Map<String, dynamic>>? filteredAreas;
+
+  List<Map<String, dynamic>> areasToDisplay = []; // Global variable
+
+  void updateAreasDisplay() {
+    areasToDisplay.clear();
+
+    selectedEmiratesList.forEach((emirate) {
+      areasToDisplay.addAll(areas[emirate['label']] ?? []);
+    });
+
+    // Reset areas not belonging to the selected emirates
+    areas.forEach((emirate, areaList) {
+      if (!selectedEmiratesList.any((e) => e['label'] == emirate)) {
+        areaList.forEach((area) {
+          area['isSelected'] = false;
+        });
+      }
+    });
+
+    // Update selectedAreasString based on updated areasToDisplay
+    final selectedAreaLabels = areasToDisplay
+        .where((area) => area['isSelected'])
+        .map((area) => area['label'] as String)
+        .toList();
+
+    selectedAreasString = selectedAreaLabels.isEmpty ? "Select Area" : selectedAreaLabels.join(', ');
+  }
+
+
+
+  void loadAreasFromJson(dynamic jsonResponse) {
+    try {
+      final areasFromResponse = jsonResponse['data']?['areas'] as List<dynamic>? ?? [];
+
+      areas.clear(); // Clear existing areas
+
+      for (var area in areasFromResponse) {
+        final emirateName = area['emirates']?['state_name'] ?? '';
+        if (emirateName.isNotEmpty) {
+          areas.putIfAbsent(emirateName, () => []); // Add emirate key if not already present
+          areas[emirateName]!.add({
+            "label": area['area_name'] ?? '',
+            "id": area['cost_centre_masterid'] ?? '',
+            "isSelected": false,
+          });
+        }
+      }
+
+      print("Areas loaded successfully: $areas");
+    } catch (e) {
+      print("Error loading areas: $e");
+    }
+  }
+
+
+  void populateEmiratesList(dynamic jsonResponse) {
+    try {
+      // Safely extract the "emirates" list
+      final emiratesFromResponse = jsonResponse['data']?['emirates'] as List<dynamic>?;
+
+      if (emiratesFromResponse == null || emiratesFromResponse.isEmpty) {
+        print("No emirates data found in the response.");
+        return; // Exit if there's no data
+      }
+
+      // Map the "state_name" into the "emirates" list format
+      emirates = emiratesFromResponse.map((emirate) {
+        return {
+          "label": emirate['state_name'] ?? '', // Fallback to empty string if state_name is null
+          "id": emirate['cost_centre_masterid'] ?? '',
+          "isSelected": false, // Default to not selected
+        };
+      }).toList();
+
+      print('Emirates list populated successfully. Total Emirates: ${emirates.length}');
+    } catch (e) {
+      // Log the error for debugging
+      print('Error populating Emirates list: $e');
+    }
+  }
 
 
   void fetchFlatTypes(dynamic jsonResponse) {
@@ -222,6 +262,74 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
           .toList();
     } else {
       print('Error: Invalid data structure');
+    }
+  }
+
+  Future<void> fetchEmirates() async {
+
+    print('fetching emirates');
+
+    emirates.clear();
+
+    final url = '$BASE_URL_config/v1/masters/emirates'; // Replace with your API endpoint
+    String token = 'Bearer $Company_Token'; // auth token for request
+
+    Map<String, String> headers = {
+      'Authorization': token,
+      "Content-Type": "application/json"
+    };
+    try {
+      final response = await http.get(Uri.parse(url),
+        headers: headers,);
+      if (response.statusCode == 200) {
+
+
+        final data = jsonDecode(response.body);
+        setState(() {
+          populateEmiratesList(data);
+
+        });
+      } else {
+        throw Exception('Failed to load data');
+      }
+    } catch (e) {
+
+      print('Error fetching data: $e');
+    }
+  }
+
+  Future<void> fetchAreas() async {
+
+    print('fetching areas');
+
+    areas.clear();
+
+    final url = '$BASE_URL_config/v1/masters/areas'; // Replace with your API endpoint
+    String token = 'Bearer $Company_Token'; // auth token for request
+
+    Map<String, String> headers = {
+      'Authorization': token,
+      "Content-Type": "application/json"
+    };
+    try {
+      final response = await http.get(Uri.parse(url),
+        headers: headers,);
+      if (response.statusCode == 200) {
+
+        final data = jsonDecode(response.body);
+        setState(() {
+          loadAreasFromJson(data);
+
+        });
+      } else {
+        print("Error: ${response.statusCode}");
+        print("Message: ${response.body}");
+        throw Exception('Failed to load data');
+      }
+    } catch (e) {
+
+
+      print('Error fetching data: $e');
     }
   }
 
@@ -253,6 +361,11 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
     // converting amenities set to list
     final List<int> amenitiesList = selectedSpecialFeatures.union(selectedAmenities).toList();
 
+    List<int> emiratesIds = selectedEmiratesList.map((emirate) => emirate['id'] as int).toList();
+
+    List<int> areasIds = selectedAreas.map((area) => area['id'] as int).toList();
+
+
     //converting date to yyyy-MM-dd format
     String? formattedDate;
     if (nextFollowUpDate != null) {
@@ -271,7 +384,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
       "name": customernamecontroller.text,
       "email": emailcontroller.text,
       "mobile_no": customercontactnocontroller.text,
-      "areas": [1, 2],
+      "areas": areasIds,
       "flatTypes": selectedUnitIds,
       "lead_status_id": selectedinquiry_status!.id,
       "next_followup_date": formattedDate,
@@ -328,7 +441,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
         final data = json.decode(response.body);
 
-        print(data);
         setState(() {
           fetchFlatTypes(data);
 
@@ -481,7 +593,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
       isAllEmiratesSelected = emirates.every((emirate) => emirate['isSelected']);
 
       // Update the selected Emirates text field
-      selectedEmirates = emirates
+      selectedEmiratesString = emirates
           .where((emirate) => emirate['isSelected'])
           .map((emirate) => emirate['label'])
           .join(', ') ?? "Select Emirate";
@@ -510,24 +622,24 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
     setState(() {});
   }
 
-  void updateSelectedAreasString() {
-    setState(() {
-      // Create a list of area strings with their corresponding emirate names
-      List<String> areaWithEmirates = [];
+  void updateSelectedAreasString(List<Map<String, dynamic>> filteredAreas)  {
+    final selectedAreaLabels = filteredAreas
+        .where((area) => area['isSelected'])
+        .map((area) => area['label'] as String)
+        .toList();
 
-      areas.forEach((emirate, areaList) {
-        for (var area in areaList) {
-          if (area['isSelected']) {
-            areaWithEmirates.add("${area['label']} - $emirate");
-          }
-        }
-      });
+    selectedAreasString = selectedAreaLabels.isEmpty ? "Select Area" : selectedAreaLabels.join(', ');
+  }
 
-      // Join the area strings with commas
-      selectedAreasString = areaWithEmirates.isNotEmpty
-          ? areaWithEmirates.join(', ')
-          : "Select Area";
-    });
+  void clearAreas() {
+    areasToDisplay.clear(); // Reset areas to display
+    for (var areaList in areas.values) {
+      for (var area in areaList) {
+        area['isSelected'] = false;
+      }
+    }
+    selectedAreas.clear();
+    selectedAreasString = "Select Area(s)";
   }
 
   void _openUnitTypeDropdown(BuildContext context) async {
@@ -587,6 +699,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                           style: TextStyle(color: Colors.black),
                         ),
                         activeColor: Colors.blueGrey,
+
                         value: isAllUnitsSelected,
                         onChanged: (bool? value) {
                           setState(() {
@@ -684,15 +797,15 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
     }
   }
 
-
   void _openEmirateDropdown(BuildContext context) async {
-    final selectedItems = await showModalBottomSheet<List<String>>(
+    final selectedItems = await showModalBottomSheet<List<Map<String, dynamic>>>(
       context: context,
-      isDismissible: false, // Prevent closing by tapping outside
-      enableDrag: false,    // Prevent closing by dragging
+      isDismissible: false,
+      enableDrag: false,
       builder: (BuildContext context) {
         TextEditingController searchController = TextEditingController();
         filteredEmirates = List.from(emirates);
+        isAllEmiratesSelected = filteredEmirates!.every((a) => a['isSelected']);
 
         return StatefulBuilder(
           builder: (context, setState) {
@@ -718,64 +831,40 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                     },
                     decoration: InputDecoration(
                       labelText: 'Search Emirate(s)',
-                      prefixIcon: Icon(Icons.search),
+                      prefixIcon: Icon(Icons.search, color: Colors.blueGrey),
+                      labelStyle: TextStyle(color: Colors.blueGrey),
                       border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide(color: Colors.blueGrey),
+                      ),
+                      enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
                         borderSide: BorderSide(color: Colors.blueGrey),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(color: Colors.blueGrey),
+                        borderSide: BorderSide(color: Colors.blueGrey, width: 2.0),
                       ),
                     ),
+                    cursorColor: Colors.blueGrey,
                   ),
                 ),
+                CheckboxListTile(
+                  title: Text("Select All"),
+                  value: isAllEmiratesSelected,
+                  activeColor: Colors.blueGrey,
 
-                Padding(
-                  padding: const EdgeInsets.only(top: 16.0),
-                  child: Align(
-                    alignment: Alignment.topRight,
-                    child: CheckboxListTile(
-                      title: Text("Select All",
-                        style: TextStyle(color: Colors.black),
-                      ),
-                      activeColor: Colors.blueGrey,
-                      value: isAllEmiratesSelected,
-                      onChanged: (bool? value) {
-                        setState(() {
-                          isAllEmiratesSelected = value ?? false;
-                          // Update all Emirates based on Select All
-                          for (var emirate in emirates) {
-                            emirate['isSelected'] = isAllEmiratesSelected;
-                          }
+                  onChanged: (bool? value) {
+                    setState(() {
+                      isAllEmiratesSelected = value ?? false;
 
-                          // If no emirates are selected, clear all areas
-                          if (emirates.every((emirate) => !emirate['isSelected'])) {
-                            selectedAreas.clear();
-                            selectedAreasString = "Select Area";
-
-                            // Reset all area states
-                            areas.forEach((key, areaList) {
-                              for (var area in areaList) {
-                                area['isSelected'] = false;
-                              }
-                            });
-                          }
-
-                          // Update the displayed areas
-                          updateSelectedAreasString();
-
-
-
-                          /*updateEmiratesSelection();  // Update Emirates selection text*/
-                          updateAreasSelection();     // Update Areas based on Emirates selection
-                        });
-                      },
-                    ),
-                  ),
+                      // Update all emirates based on "Select All"
+                      for (var emirate in filteredEmirates!) {
+                        emirate['isSelected'] = isAllEmiratesSelected;
+                      }
+                    });
+                  },
                 ),
-
-                SizedBox(height: 15),
                 Expanded(
                   child: ListView(
                     children: filteredEmirates!.map((emirate) {
@@ -787,35 +876,11 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                           setState(() {
                             emirate['isSelected'] = value!;
 
-                            // Handle 'Select All' logic for emirates
-                            isAllEmiratesSelected =
-                                emirates.every((emirate) => emirate['isSelected']);
+                            // Update the "Select All" checkbox
+                            isAllEmiratesSelected = emirates.every((e) => e['isSelected']);
 
-                            // If an emirate is deselected, clear its areas
-                            if (!emirate['isSelected']) {
-                              List<Map<String, dynamic>> emirateAreas = areas[emirate['label']] ?? [];
-                              for (var area in emirateAreas) {
-                                area['isSelected'] = false;
-                                selectedAreas.remove(area['label']); // Remove from selectedAreas list
-                              }
-                            }
-
-
-                            // If no emirates are selected, clear all areas
-                            if (emirates.every((emirate) => !emirate['isSelected'])) {
-                              selectedAreas.clear();
-                              selectedAreasString = "Select Area";
-
-                              // Reset all area states
-                              areas.forEach((key, areaList) {
-                                for (var area in areaList) {
-                                  area['isSelected'] = false;
-                                }
-                              });
-                            }
-
-                            // Update the displayed areas
-                            updateSelectedAreasString();
+                            // Dynamically update the areas list
+                            updateAreasDisplay();
                           });
                         },
                       );
@@ -834,18 +899,15 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                       ),
                     ),
                     onPressed: () {
-                      List<String> selected = emirates
+                      final selectedItems = emirates
                           .where((emirate) => emirate['isSelected'])
-                          .map((emirate) => emirate['label'] as String)
+                          .map((emirate) => {
+                        'id': emirate['id'],
+                        'label': emirate['label'],
+                      })
                           .toList();
 
-
-
-                      if (selected.isEmpty) {
-                        Navigator.of(context).pop(null);
-                      } else {
-                        Navigator.of(context).pop(selected);
-                      }
+                      Navigator.of(context).pop(selectedItems.isEmpty ? null : selectedItems);
                     },
                     child: Text('OK'),
                   ),
@@ -860,45 +922,42 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
     if (selectedItems != null && selectedItems.isNotEmpty) {
       setState(() {
         selectedEmiratesList = selectedItems;
-        selectedEmirates = selectedItems.join(', ');
+
+        // Update the selectedEmirates string
+        selectedEmiratesString = selectedItems.map((item) => item['label'] as String).join(', ');
+
+        print('emirates list $selectedEmiratesList');
+
+        // Refresh areas to display
+        updateAreasDisplay();
       });
-    }
-    else {
+    } else {
       setState(() {
-        selectedEmirates = "Select Emirate";  // Reset if no selection
-        isEmirateSelected = false;  // Mark as not selected
         selectedEmiratesList.clear();
+        selectedEmiratesString = "Select Emirate";
+
+        // Clear areas to display
+        updateAreasDisplay();
       });
     }
-
-
   }
   // Area Dropdown based on selected emirates
+
   void _openAreaDropdown(BuildContext context) async {
-    // List to store areas to display based on selected Emirates
-    List<Map<String, dynamic>> areasToDisplay = [];
+    updateAreasDisplay(); // Ensure areasToDisplay is updated before opening
 
-    // Populate areasToDisplay based on selected emirates
-    selectedEmiratesList.forEach((emirate) {
-      if (areas.containsKey(emirate)) {
-        areasToDisplay.addAll(areas[emirate]!);  // Add areas related to the selected emirate
-      }
-    });
-
-    // Show modal bottom sheet with filtered areas list
-    final selectedAreasList = await showModalBottomSheet<List<String>>(
+    final selectedItems = await showModalBottomSheet<List<Map<String, dynamic>>>(
       context: context,
-      isDismissible: false, // Prevent closing by tapping outside
-      enableDrag: false,    // Prevent closing by dragging
+      isDismissible: false,
+      enableDrag: false,
       builder: (BuildContext context) {
         TextEditingController searchController = TextEditingController();
-        List<Map<String, dynamic>> filteredAreas = List.from(areasToDisplay); // Start with all areas
+         filteredAreas = List.from(areasToDisplay);
+        isAllAreasSelected = filteredAreas!.every((a) => a['isSelected']);
+
 
         return StatefulBuilder(
           builder: (context, setState) {
-            // Check if all areas are selected
-            bool isAllAreasSelected = filteredAreas.every((area) => area['isSelected']);
-
             return Column(
               children: [
                 SizedBox(height: 10),
@@ -906,8 +965,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                   "Select Area(s)",
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
-
-                // Search bar to filter areas
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: TextField(
@@ -917,116 +974,90 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                         filteredAreas = areasToDisplay
                             .where((area) => area['label']
                             .toLowerCase()
-                            .contains(query.toLowerCase()))  // Case insensitive search
+                            .contains(query.toLowerCase()))
                             .toList();
                       });
                     },
                     decoration: InputDecoration(
                       labelText: 'Search Areas',
-                      prefixIcon: Icon(Icons.search),
+                      prefixIcon: Icon(Icons.search, color: Colors.blueGrey),
+                      labelStyle: TextStyle(color: Colors.blueGrey),
                       border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide(color: Colors.blueGrey),
+                      ),
+                      enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
                         borderSide: BorderSide(color: Colors.blueGrey),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(color: Colors.blueGrey),
+                        borderSide: BorderSide(color: Colors.blueGrey, width: 2.0),
                       ),
                     ),
+                    cursorColor: Colors.blueGrey,
                   ),
                 ),
-
-                SizedBox(height: 15),
-
-                // "Select All" checkbox
                 CheckboxListTile(
-                  title: Text('Select All'),
-                  activeColor: Colors.blueGrey,
+                  title: Text("Select All"),
                   value: isAllAreasSelected,
+                  activeColor: Colors.blueGrey,
+
                   onChanged: (bool? value) {
                     setState(() {
-                      // Update all areas to the selected value
-                      isAllAreasSelected = value!;
-                      filteredAreas.forEach((area) {
+                      isAllAreasSelected = value ?? false;
+
+                      // Update all areas based on "Select All"
+                      for (var area in filteredAreas!) {
                         area['isSelected'] = isAllAreasSelected;
-                      });
-                      updateSelectedAreasString();
+                      }
                     });
                   },
                 ),
-
-                SizedBox(height: 15),
-
-                // Display filtered areas with their corresponding emirates
                 Expanded(
                   child: ListView(
-                    children: filteredAreas.map((area) {
-                      // Loop through emirates to find the matching one
-                      String emirate = '';
-                      areas.forEach((emirateName, areaList) {
-                        if (areaList.contains(area)) {
-                          emirate = emirateName;
+                    children: filteredAreas!.map((area) {
+                      String? emirateName;
+                      areas.forEach((key, value) {
+                        if (value.contains(area)) {
+                          emirateName = key;
                         }
                       });
-
                       return CheckboxListTile(
                         activeColor: Colors.blueGrey,
-                        title: Text('${area['label']} - $emirate'), // Display area and emirate
+                        title: Text('${area['label']} - ${emirateName ?? "Unknown"}'), // Label with emirate name
                         value: area['isSelected'],
                         onChanged: (bool? value) {
                           setState(() {
                             area['isSelected'] = value!;
-                            if (area['isSelected']) {
-                              selectedAreas.add('${area['label']} - $emirate');  // Add area with emirate
-                            } else {
-                              selectedAreas.remove('${area['label']} - $emirate');  // Remove area with emirate
-                            }
-                            // Update the "Select All" checkbox based on individual selections
-                            isAllAreasSelected = filteredAreas.every((area) => area['isSelected']);
-                            updateSelectedAreasString();
+                            isAllAreasSelected = filteredAreas!.every((a) => a['isSelected']);
+                            updateSelectedAreasString(filteredAreas!);
                           });
                         },
                       );
                     }).toList(),
                   ),
                 ),
-
                 Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: appbar_color, // Button background color
+                      backgroundColor: Colors.blueGrey,
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(5), // Rounded corners
-                        side: BorderSide(
-                          color: Colors.grey, // Border color
-                          width: 0.5, // Border width
-                        ),
+                        borderRadius: BorderRadius.circular(5),
+                        side: BorderSide(color: Colors.grey, width: 0.5),
                       ),
                     ),
                     onPressed: () {
-                      // Collect the selected areas with their emirate names
-                      List<String> formattedAreas = [];
-                      areas.forEach((emirateName, areaList) {
-                        for (var area in areaList) {
-                          if (area['isSelected']) {
-                            formattedAreas.add('${area['label']} - $emirateName');
-                          }
-                        }
-                      });
+                      final selectedItems = filteredAreas!
+                          .where((area) => area['isSelected'])
+                          .map((area) => {
+                        'id': area['id'],
+                        'label': area['label'],
+                      }).toList();
 
-                      // Update the `selectedAreasString` to show the selected areas with emirate names
-                      setState(() {
-                        if (formattedAreas.isEmpty) {
-                          selectedAreasString = "Select Area";
-                        } else {
-                          selectedAreasString = formattedAreas.join(', ');
-                        }
-                      });
-
-                      // Pop the modal
-                      Navigator.of(context).pop(formattedAreas.isEmpty ? null : formattedAreas);
+                      Navigator.of(context).pop(selectedItems.isEmpty ? null : selectedItems);
                     },
                     child: Text('OK'),
                   ),
@@ -1038,10 +1069,19 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
       },
     );
 
-    if (selectedAreasList != null && selectedAreasList.isNotEmpty) {
+    if (selectedItems != null && selectedItems.isNotEmpty) {
       setState(() {
-        selectedAreas = selectedAreasList;
-        selectedAreasString = selectedAreas.join(', ');
+        selectedAreas = selectedItems;
+        selectedAreasString = selectedItems.map((item) => item['label'] as String).join(', ');
+
+        print('select areas $selectedAreas');
+
+      });
+    } else {
+      setState(() {
+        selectedAreas.clear();
+        selectedAreasString = 'Select Area(s)';
+
       });
     }
   }
@@ -1070,6 +1110,8 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
       endController.text = _currentRangeValues!.end.toStringAsFixed(0);
     });
     fetchActivitySources();
+    fetchEmirates();
+    fetchAreas();
     fetchUnitTypes();
     fetchLeadStatus();
     fetchAmenities();
@@ -1896,10 +1938,10 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                 children: [
                                                   // Column to display selected emirates
                                                   Expanded(
-                                                    child: selectedEmirates.isNotEmpty
+                                                    child: selectedEmiratesString.isNotEmpty
                                                         ? Column(
                                                       crossAxisAlignment: CrossAxisAlignment.start,
-                                                      children: selectedEmirates.split(', ').map((emirate) {
+                                                      children: selectedEmiratesString.split(', ').map((emirate) {
                                                         return Text(
                                                           emirate, // Display each emirate on a new line
                                                           style: TextStyle(fontSize: 16, color: Colors.grey),
@@ -2492,22 +2534,23 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                   selectedUnitIds.clear();
 
                                                   selectedUnitType = "Select Unit Types";
-                                                  selectedEmirates = "Select Emirate";
+                                                  selectedEmiratesString = "Select Emirate";
                                                   selectedEmiratesList.clear();
 
-                                                  emirates.forEach((emirate) {
+                                                  for (var emirate in emirates) {
                                                     emirate['isSelected'] = false;
-                                                  });
+                                                  }
+                                                  isAllEmiratesSelected = false;
 
-                                                  filteredEmirates = List.from(emirates);
+                                                  // Reset areas automatically
+                                                  clearAreas();
 
-                                                  updateSelectedAreasString();
 
+
+                                                  updateAreasDisplay();
 
                                                   updateAreasSelection();
 
-                                                  selectedAreasString = "Select Area";
-                                                  selectedAreas.clear();
                                                   selectedAmenities.clear();
                                                   selectedSpecialFeatures.clear();
 

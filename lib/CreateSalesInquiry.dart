@@ -142,11 +142,13 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
   String selectedUnitType = "Select Unit Types";
   String selectedEmiratesString = "Select Emirate";
   String selectedAreasString = "Select Area";
+
   List<Map<String, dynamic>> selectedEmiratesList = []; // Store objects with 'id' and 'label'
   List<Map<String, dynamic>> selectedAreas = []; // Store objects with 'id' and 'label'
 
   final List<Map<String, dynamic>> specialfeatures = [];
   final List<Map<String, dynamic>> amenities = [];
+
   final Set<int> selectedSpecialFeatures = {};
   final Set<int> selectedAmenities = {};
 
@@ -2659,6 +2661,11 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                   endController.text = _currentRangeValues!.end.toStringAsFixed(0);
 
                                                   isAllEmiratesSelected = false;
+
+                                                   _selectedCountryCode = '+971'; // Default to UAE country code
+                                                   _selectedCountryISO = 'AE'; // Default to UAE ISO code
+                                                   _selectedCountryFlag = '🇦🇪'; // Default UAE flag emoji
+
 
                                                   customernamecontroller.clear();
                                                   customercontactnocontroller.clear();

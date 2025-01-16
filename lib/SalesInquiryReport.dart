@@ -74,7 +74,7 @@ class _SalesInquiryReportState
         inquiry_no: "INQ-001",
         creation_date: "20-12-2024",
         description: "This is description",
-        contactno: "+971 500000000",
+        contactno: "  500000000",
         email: "saadan@ca-eim.com"
 
     ),
@@ -87,7 +87,7 @@ class _SalesInquiryReportState
         inquiry_no: "INQ-002",
         creation_date: "22-12-2024",
         description: "This is description",
-        contactno: "+971 500000000",
+        contactno: "500000000",
         email: "saadan@ca-eim.com"
     ),
 

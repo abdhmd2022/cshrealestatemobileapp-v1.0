@@ -1,7 +1,52 @@
+import 'dart:convert';
+
+import 'package:country_picker/country_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'SalesInquiryReport.dart';
 import 'constants.dart';
+import 'package:http/http.dart' as http;
+
+class FollowUpStatus {
+  final int id;
+  final String name;
+  final bool isQualified;
+
+  FollowUpStatus({
+    required this.id,
+    required this.name,
+    required this.isQualified,
+  });
+
+  // Factory method to create a FollowUpStatus object from JSON
+  factory FollowUpStatus.fromJson(Map<String, dynamic> json) {
+    return FollowUpStatus(
+      id: json['id'],
+      name: json['name'],
+      isQualified: json['is_qualified'] == 'true',  // Convert to bool
+    );
+  }
+}
+
+class ActivitySource {
+  final int id;
+  final String name;
+
+  ActivitySource({
+    required this.id,
+    required this.name,
+  });
+
+  // Factory method to create a FollowUpStatus object from JSON
+  factory ActivitySource.fromJson(Map<String, dynamic> json) {
+    return ActivitySource(
+      id: json['id'],
+      name: json['name'],
+    );
+  }
+}
 
 class FollowupSalesInquiry extends StatefulWidget {
 
@@ -46,12 +91,17 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
   final areaFocusNode = FocusNode();
   final descriptionFocusNode = FocusNode();
 
-  String? selectedfollowup_type,selectedfollowup_status;
-
+  String? selectedfollowup_status;
+  FollowUpStatus? selectedfollowup_type;
 
   DateTime? nextFollowUpDate;
 
   bool isUnitSelected = false;
+
+  List<Map<String, dynamic>>? filteredEmirates;
+  List<Map<String, dynamic>>? filteredAreas;
+
+  SharedPreferences? prefs;
 
   bool isAllUnitsSelected = false;
 
@@ -70,30 +120,54 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
 
   bool _isLoading = false;
 
-  final List<String> amenities = [
-    'Gym',
-    'Parking',
-    'Swimming Pool',
-    'Sauna',
-    'Jacuzzi',
-    'Maids Room',
-    'Balcony',
-    'Study Room'
+  double? range_min, range_max;
+
+  FollowUpStatus? selectedinquiry_status;
+
+  ActivitySource? selectedactivity_source;
+
+  final TextEditingController startController = TextEditingController();
+  final TextEditingController endController = TextEditingController();
+
+
+
+  String selectedEmiratesString = "Select Emirate";
+
+  final List<String> interestTypes = ["Rent", "Buy"]; // List of options
+
+  int? selectedInterestType;
+
+
+
+  final List<String> propertyType = [
+    'Residential',
+    'Commercial',
   ];
 
-  final Set<String> selectedAmenities = {};
+  List<int> selectedUnitIds = [];
 
-  final List<String> specialfeatures = [
-    'Nearby Metro/Bus/Tram',
-    'Nearby Mall/Supermarket',
-    'Nearby Community Center',
-    'Furnished',
-    'Unfurnished',
+  RangeValues? _currentRangeValues;
+
+  List<ActivitySource> activitysource_list = [
+
   ];
 
-  final Set<String> selectedSpecialFeatures = {};
 
-  void _preSelectEmiratesAndAreas() {
+  final List<Map<String, dynamic>> specialfeatures = [];
+  final List<Map<String, dynamic>> amenities = [];
+
+  final Set<int> selectedSpecialFeatures = {};
+
+  final Set<int> selectedAmenities = {};
+
+  String _selectedCountryCode = '+971'; // Default to UAE country code
+  String _selectedCountryISO = 'AE'; // Default to UAE ISO code
+  String _selectedCountryFlag = '🇦🇪'; // Default UAE flag emoji
+
+  String _hintText = 'Enter Contact No'; // Default hint text
+
+
+  /*void _preSelectEmiratesAndAreas() {
     // Assume that selectedEmiratesList contains a list of selected emirates
     List<String> preSelectedEmirates = widget.existingEmirateList; // Example selected emirates
     List<String> preSelectedAreasList = widget.existingAreaList; // This will hold the areas in "Area - Emirate" format
@@ -121,7 +195,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
       selectedEmirates = selectedEmiratesList.join(', '); // Update selected emirates string
       selectedAreasString = selectedAreas.join(', '); // Update selected areas string
     });
-  }
+  }*/
 
   List<Map<String, dynamic>> emirates = [
     {"label": "Abu Dhabi", "isSelected": false},
@@ -133,83 +207,34 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
     {"label": "Fujairah", "isSelected": false},
   ];
 
-  List<String> followuptype_list = [
-    'Email',
-    'Phone Call',
-    'Whatsapp',
-    'Social Media'
-  ];
+  List<FollowUpStatus> followuptype_list = [
 
-  final List<String> propertyType = [
-    'Residential',
-    'Commercial',
   ];
 
   String? selectedPropertyType;
 
-
-
   List<String> followupstatus_list = [
-    'Contact Later',
-    'In Follow-Up',
-    'Not Qualified'
+
 
   ];
 
   List<Map<String, dynamic>> unitTypes = [
-    {"label": "Studio", "isSelected": false},
-    {"label": "1BHK", "isSelected": false},
-    {"label": "2BHK", "isSelected": false},
-    {"label": "3BHK", "isSelected": false},
-    {"label": "Penthouse", "isSelected": false},
+
   ];
 
 
   Map<String, List<Map<String, dynamic>>> areas = {
-    'Dubai': [
-      {'label': 'Downtown Dubai', 'isSelected': false},
-      {'label': 'Jumeirah', 'isSelected': false},
-      {'label': 'Bur Dubai', 'isSelected': false},
-      {'label': 'Dubai Marina', 'isSelected': false},
-      {'label': 'Al Qusais', 'isSelected': false},
-    ],
-    'Abu Dhabi': [
-      {'label': 'Al Ain', 'isSelected': false},
-      {'label': 'Al Dhafra', 'isSelected': false},
-      {'label': 'Abu Dhabi City', 'isSelected': false},
-      {'label': 'Bani Yas', 'isSelected': false},
-    ],
-    'Sharjah': [
-      {'label': 'Al Qasba', 'isSelected': false},
-      {'label': 'Al Khan', 'isSelected': false},
-      {'label': 'Al Nahda', 'isSelected': false},
-      {'label': 'Al Majaz', 'isSelected': false},
-    ],
-    'Ajman': [
-      {'label': 'Ajman City', 'isSelected': false},
-      {'label': 'Al Nuaimiya', 'isSelected': false},
-      {'label': 'Rashidiya', 'isSelected': false},
-    ],
-    'Fujairah': [
-      {'label': 'Fujairah City', 'isSelected': false},
-      {'label': 'Dibba', 'isSelected': false},
-    ],
-    'Ras Al Khaimah': [
-      {'label': 'Ras Al Khaimah City', 'isSelected': false},
-      {'label': 'Al Jazeera', 'isSelected': false},
-    ],
-    'Umm Al Quwain': [
-      {'label': 'Umm Al Quwain City', 'isSelected': false},
-      {'label': 'Al Salama', 'isSelected': false},
-    ],
-  };
 
+  };
 
   String selectedUnitType = "Select Unit Types";
   String selectedEmirates = "Select Emirate";
   String selectedAreasString = "Select Area";
-  List<String> selectedEmiratesList = [];
-  List<String> selectedAreas = [];
+  List<Map<String, dynamic>> selectedEmiratesList = []; // Store objects with 'id' and 'label'
+  List<Map<String, dynamic>> selectedAreas = []; // Store objects with 'id' and 'label'
+
+  List<Map<String, dynamic>> areasToDisplay = []; // Global variable
+
 
   void _preSelectUnitTypes() {
     List<String> preSelectedUnitTypes = widget.unittype; // The list of pre-selected unit types
@@ -230,19 +255,437 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
 
 
 
+  void updateAreasDisplay() {
+    areasToDisplay.clear();
+
+    selectedEmiratesList.forEach((emirate) {
+      areasToDisplay.addAll(areas[emirate['label']] ?? []);
+    });
+
+    // Reset areas not belonging to the selected emirates
+    areas.forEach((emirate, areaList) {
+      if (!selectedEmiratesList.any((e) => e['label'] == emirate)) {
+        areaList.forEach((area) {
+          area['isSelected'] = false;
+        });
+      }
+    });
+
+    // Update selectedAreasString based on updated areasToDisplay
+    final selectedAreaLabels = areasToDisplay
+        .where((area) => area['isSelected'])
+        .map((area) => area['label'] as String)
+        .toList();
+
+    selectedAreasString = selectedAreaLabels.isEmpty ? "Select Area" : selectedAreaLabels.join(', ');
+  }
+
+  void loadAreasFromJson(dynamic jsonResponse) {
+    try {
+      final areasFromResponse = jsonResponse['data']?['areas'] as List<dynamic>? ?? [];
+
+      areas.clear(); // Clear existing areas
+
+      for (var area in areasFromResponse) {
+        final emirateName = area['emirates']?['state_name'] ?? '';
+        if (emirateName.isNotEmpty) {
+          areas.putIfAbsent(emirateName, () => []); // Add emirate key if not already present
+          areas[emirateName]!.add({
+            "label": area['area_name'] ?? '',
+            "id": area['cost_centre_masterid'] ?? '',
+            "isSelected": false,
+          });
+        }
+      }
+
+      print("Areas loaded successfully: $areas");
+    } catch (e) {
+      print("Error loading areas: $e");
+    }
+  }
+
+
+  void populateEmiratesList(dynamic jsonResponse) {
+    try {
+      // Safely extract the "emirates" list
+      final emiratesFromResponse = jsonResponse['data']?['emirates'] as List<dynamic>?;
+
+      if (emiratesFromResponse == null || emiratesFromResponse.isEmpty) {
+        print("No emirates data found in the response.");
+        return; // Exit if there's no data
+      }
+
+      // Map the "state_name" into the "emirates" list format
+      emirates = emiratesFromResponse.map((emirate) {
+        return {
+          "label": emirate['state_name'] ?? '', // Fallback to empty string if state_name is null
+          "id": emirate['cost_centre_masterid'] ?? '',
+          "isSelected": false, // Default to not selected
+        };
+      }).toList();
+
+      print('Emirates list populated successfully. Total Emirates: ${emirates.length}');
+    } catch (e) {
+      // Log the error for debugging
+      print('Error populating Emirates list: $e');
+    }
+  }
+
+
+  void fetchFlatTypes(dynamic jsonResponse) {
+    final data = jsonResponse is String
+        ? jsonDecode(jsonResponse)
+        : jsonResponse;
+
+    if (data != null && data['data'] != null && data['data']['flatTypes'] != null) {
+      final flatTypes = data['data']['flatTypes'] as List<dynamic>;
+
+      unitTypes = flatTypes
+          .map((flat) => {
+        'label': flat['flat_type'], // Flat type name
+        'id': flat['cost_centre_masterid'], // ID value
+        'isSelected': false, // Default selection state
+      })
+          .toList();
+    } else {
+      print('Error: Invalid data structure');
+    }
+  }
+
+  Future<void> fetchEmirates() async {
+
+    print('fetching emirates');
+
+    emirates.clear();
+
+    final url = '$BASE_URL_config/v1/masters/emirates'; // Replace with your API endpoint
+    String token = 'Bearer $Company_Token'; // auth token for request
+
+    Map<String, String> headers = {
+      'Authorization': token,
+      "Content-Type": "application/json"
+    };
+    try {
+      final response = await http.get(Uri.parse(url),
+        headers: headers,);
+      if (response.statusCode == 200) {
+
+
+        final data = jsonDecode(response.body);
+        setState(() {
+          populateEmiratesList(data);
+
+        });
+      } else {
+        throw Exception('Failed to load data');
+      }
+    } catch (e) {
+
+      print('Error fetching data: $e');
+    }
+  }
+
+  Future<void> fetchAreas() async {
+
+    print('fetching areas');
+
+    areas.clear();
+
+    final url = '$BASE_URL_config/v1/masters/areas'; // Replace with your API endpoint
+    String token = 'Bearer $Company_Token'; // auth token for request
+
+    Map<String, String> headers = {
+      'Authorization': token,
+      "Content-Type": "application/json"
+    };
+    try {
+      final response = await http.get(Uri.parse(url),
+        headers: headers,);
+      if (response.statusCode == 200) {
+
+        final data = jsonDecode(response.body);
+        setState(() {
+          loadAreasFromJson(data);
+
+        });
+      } else {
+        print("Error: ${response.statusCode}");
+        print("Message: ${response.body}");
+        throw Exception('Failed to load data');
+      }
+    } catch (e) {
+
+
+      print('Error fetching data: $e');
+    }
+  }
+
+
+  void _updateRangeFromTextFields() {
+    // Parse start and end values, defaulting to range_min and range_max if invalid
+    double start = double.tryParse(startController.text) ?? range_min!;
+    double end = double.tryParse(endController.text) ?? range_max!;
+
+    // Constrain start and end to the min and max values
+    start = start.clamp(range_min!, range_max!);
+    end = end.clamp(range_min!, range_max!);
+
+    // Ensure start value is less than or equal to end value
+    if (start > end) {
+      end = start;
+    }
+
+    setState(() {
+      _currentRangeValues = RangeValues(start, end);
+    });
+  }
+
+  Future<void> sendCreateInquiryRequest() async {
+
+
+    // converting amenities set to list
+    final List<int> amenitiesList = selectedSpecialFeatures.union(selectedAmenities).toList();
+
+    List<int> emiratesIds = selectedEmiratesList.map((emirate) => emirate['id'] as int).toList();
+
+    List<int> areasIds = selectedAreas.map((area) => area['id'] as int).toList();
+
+
+    //converting date to yyyy-MM-dd format
+    String? formattedDate;
+    if (nextFollowUpDate != null) {
+      final DateFormat formatter = DateFormat('yyyy-MM-dd');
+      formattedDate = formatter.format(nextFollowUpDate!);
+    } else {
+      formattedDate = null;
+    }
+
+    // Replace with your API endpoint
+    final String url = "$BASE_URL_config/v1/leads";
+
+    // Constructing the JSON body
+    final Map<String, dynamic> requestBody = {
+      "uuid": uuid,
+      "name": customernamecontroller.text,
+      "email": emailcontroller.text,
+      "mobile_no": '$_selectedCountryCode${customercontactnocontroller.text}',
+      "areas": areasIds,
+      "flatTypes": selectedUnitIds,
+      "lead_status_id": selectedinquiry_status!.id,
+      "next_followup_date": formattedDate,
+      "property_type": selectedPropertyType,
+      "interest_type": interestTypes[selectedInterestType ?? 0],
+      "max_price": _currentRangeValues!.end.round().toString(),
+      "min_price": _currentRangeValues!.start.round().toString(),
+      "amenities": amenitiesList,
+      "description" : remarksController.text,
+      'activity_source_id' : selectedactivity_source!.id
+    };
+
+    print('create request body $requestBody');
+
+
+    try {
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $Company_Token",
+        },
+        body: jsonEncode(requestBody),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        // Request was successful
+        print("Response Data: ${response.body}");
+      } else {
+        // Error occurred
+        print("Error: ${response.statusCode}");
+        print("Message: ${response.body}");
+
+      }
+    } catch (error) {
+      print("Exception: $error");
+    }
+  }
+
+  Future<void> fetchUnitTypes() async {
+
+    print('fetching unit types');
+    unitTypes.clear();
+
+    final url = '$BASE_URL_config/v1/masters/flatTypes'; // Replace with your API endpoint
+    String token = 'Bearer $Company_Token'; // auth token for request
+
+    Map<String, String> headers = {
+      'Authorization': token,
+      "Content-Type": "application/json"
+    };
+    try {
+      final response = await http.get(Uri.parse(url),
+        headers: headers,);
+      if (response.statusCode == 200) {
+
+        final data = json.decode(response.body);
+
+        setState(() {
+          fetchFlatTypes(data);
+
+        });
+      } else {
+        throw Exception('Failed to load data');
+      }
+    } catch (e) {
+
+      print('Error fetching data: $e');
+    }
+
+
+  }
+
+
+  Future<void> fetchActivitySources() async {
+
+    activitysource_list.clear();
+
+    final url = '$BASE_URL_config/v1/activitySources'; // Replace with your API endpoint
+    String token = 'Bearer $Serial_Token'; // auth token for request
+
+    Map<String, String> headers = {
+      'Authorization': token,
+      "Content-Type": "application/json"
+    };
+    try {
+      final response = await http.get(Uri.parse(url),
+        headers: headers,);
+      if (response.statusCode == 200) {
+
+        final data = json.decode(response.body);
+
+        setState(() {
+          List<dynamic> activitySourceList = data['data']['activitySources'];
+
+          for (var status in activitySourceList) {
+            // Create a FollowUpStatus object from JSON
+            ActivitySource activitySource = ActivitySource.fromJson(status);
+
+            // Add the object to the list
+            activitysource_list.add(activitySource);
+
+
+            // Optionally, you can print the object for verification
+            print('ID: ${activitySource.id}, Name: ${activitySource.name}');
+          }
+        });
+      } else {
+        throw Exception('Failed to load data');
+      }
+    } catch (e) {
+
+      print('Error fetching data: $e');
+    }
+
+
+  }
+
+
+  Future<void> fetchAmenities() async {
+
+    amenities.clear();
+
+    final url = '$BASE_URL_config/v1/amenities'; // Replace with your API endpoint
+    String token = 'Bearer $Serial_Token'; // auth token for request
+
+    print('fetch url $url');
+    Map<String, String> headers = {
+      'Authorization': token,
+      "Content-Type": "application/json"
+    };
+    try {
+      final response = await http.get(Uri.parse(url),
+        headers: headers,);
+      if (response.statusCode == 200) {
+
+
+        setState(() {
+
+          final Map<String, dynamic> data = json.decode(response.body);
+          final List<dynamic> amenitiesData = data['data']['amenities'];
+
+          for (var item in amenitiesData) {
+            if (item['is_special'] == "true") {
+              specialfeatures.add(item);
+            } else {
+              amenities.add(item);
+            }
+          }
+          setState(() {});
+
+        });
+      } else {
+        throw Exception('Failed to load data');
+      }
+    } catch (e) {
+
+      print('Error fetching data: $e');
+    };
+  }
+
+  Future<void> fetchLeadStatus() async {
+
+    followuptype_list.clear();
+
+    final url = '$BASE_URL_config/v1/leadStatus'; // Replace with your API endpoint
+    String token = 'Bearer $Serial_Token'; // auth token for request
+
+    Map<String, String> headers = {
+      'Authorization': token,
+      "Content-Type": "application/json"
+    };
+    try {
+      final response = await http.get(Uri.parse(url),
+        headers: headers,);
+      if (response.statusCode == 200) {
+
+        final data = json.decode(response.body);
+
+        setState(() {
+          List<dynamic> leadStatusList = data['data']['leadStatus'];
+
+          for (var status in leadStatusList) {
+            // Create a FollowUpStatus object from JSON
+            FollowUpStatus followUpStatus = FollowUpStatus.fromJson(status);
+
+            // Add the object to the list
+            followuptype_list.add(followUpStatus);
+
+
+            // Optionally, you can print the object for verification
+          }
+        });
+      } else {
+        throw Exception('Failed to load data');
+      }
+    } catch (e) {
+
+      print('Error fetching data: $e');
+    }
+
+
+  }
+
   void updateEmiratesSelection() {
     setState(() {
       // Check if all Emirates are selected
       isAllEmiratesSelected = emirates.every((emirate) => emirate['isSelected']);
 
       // Update the selected Emirates text field
-      selectedEmirates = emirates
+      selectedEmiratesString = emirates
           .where((emirate) => emirate['isSelected'])
           .map((emirate) => emirate['label'])
           .join(', ') ?? "Select Emirate";
     });
   }
-
 
   void updateAreasSelection() {
     // Reset selected areas if no Emirates are selected
@@ -266,30 +709,28 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
     setState(() {});
   }
 
-  void updateSelectedAreasString() {
-    setState(() {
-      // Create a list of area strings with their corresponding emirate names
-      List<String> areaWithEmirates = [];
+  void updateSelectedAreasString(List<Map<String, dynamic>> filteredAreas)  {
+    final selectedAreaLabels = filteredAreas
+        .where((area) => area['isSelected'])
+        .map((area) => area['label'] as String)
+        .toList();
 
-      areas.forEach((emirate, areaList) {
-        for (var area in areaList) {
-          if (area['isSelected']) {
-            areaWithEmirates.add("${area['label']} - $emirate");
-          }
-        }
-      });
+    selectedAreasString = selectedAreaLabels.isEmpty ? "Select Area" : selectedAreaLabels.join(', ');
+  }
 
-      // Join the area strings with commas
-      selectedAreasString = areaWithEmirates.isNotEmpty
-          ? areaWithEmirates.join(', ')
-          : "Select Area";
-    });
+  void clearAreas() {
+    areasToDisplay.clear(); // Reset areas to display
+    for (var areaList in areas.values) {
+      for (var area in areaList) {
+        area['isSelected'] = false;
+      }
+    }
+    selectedAreas.clear();
+    selectedAreasString = "Select Area(s)";
   }
 
   void _openUnitTypeDropdown(BuildContext context) async {
-
-
-    final selectedItems = await showModalBottomSheet<List<String>>(
+    final selectedItems = await showModalBottomSheet<Map<String, List<dynamic>>>(
       context: context,
       isDismissible: false, // Prevent closing by tapping outside
       enableDrag: false,    // Prevent closing by dragging
@@ -334,6 +775,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                     ),
                   ),
                 ),
+                // Conditionally show Select All only if there is no search query
                 if (searchController.text.isEmpty)
                   Padding(
                     padding: const EdgeInsets.only(top: 16.0),
@@ -344,6 +786,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                           style: TextStyle(color: Colors.black),
                         ),
                         activeColor: Colors.blueGrey,
+
                         value: isAllUnitsSelected,
                         onChanged: (bool? value) {
                           setState(() {
@@ -397,15 +840,23 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                       ),
                     ),
                     onPressed: () {
-                      List<String> selected = unitTypes
+                      // Extract the IDs of all selected unit types
+                      selectedUnitIds = unitTypes
+                          .where((unit) => unit['isSelected'])
+                          .map((unit) => unit['id'] as int)
+                          .toList();
+
+                      // Extract names of selected items
+                      List<String> selectedNames = unitTypes
                           .where((unit) => unit['isSelected'])
                           .map((unit) => unit['label'] as String)
                           .toList();
 
-                      if (selected.isEmpty) {
-                        Navigator.of(context).pop(null);  // Return null if no selection
+                      if (selectedUnitIds.isEmpty) {
+                        Navigator.of(context).pop(null); // Return null if no selection
                       } else {
-                        Navigator.of(context).pop(selected);
+                        // Return both IDs and names
+                        Navigator.of(context).pop({'ids': selectedUnitIds, 'names': selectedNames});
                       }
                     },
                     child: Text('OK'),
@@ -421,7 +872,8 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
     // Update the selected items and set the background color
     if (selectedItems != null && selectedItems.isNotEmpty) {
       setState(() {
-        selectedUnitType = selectedItems.join(', ');
+        selectedUnitType = selectedItems['names']!.join(', ');
+        print('unit types id $selectedUnitIds');
         isUnitSelected = true;  // Mark as selected
       });
     } else {
@@ -433,13 +885,14 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
   }
 
   void _openEmirateDropdown(BuildContext context) async {
-    final selectedItems = await showModalBottomSheet<List<String>>(
+    final selectedItems = await showModalBottomSheet<List<Map<String, dynamic>>>(
       context: context,
-      isDismissible: false, // Prevent closing by tapping outside
-      enableDrag: false,    // Prevent closing by dragging
+      isDismissible: false,
+      enableDrag: false,
       builder: (BuildContext context) {
         TextEditingController searchController = TextEditingController();
-        List<Map<String, dynamic>> filteredEmirates = List.from(emirates);
+        filteredEmirates = List.from(emirates);
+        isAllEmiratesSelected = filteredEmirates!.every((a) => a['isSelected']);
 
         return StatefulBuilder(
           builder: (context, setState) {
@@ -465,66 +918,43 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                     },
                     decoration: InputDecoration(
                       labelText: 'Search Emirate(s)',
-                      prefixIcon: Icon(Icons.search),
+                      prefixIcon: Icon(Icons.search, color: Colors.blueGrey),
+                      labelStyle: TextStyle(color: Colors.blueGrey),
                       border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide(color: Colors.blueGrey),
+                      ),
+                      enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
                         borderSide: BorderSide(color: Colors.blueGrey),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(color: Colors.blueGrey),
+                        borderSide: BorderSide(color: Colors.blueGrey, width: 2.0),
                       ),
                     ),
+                    cursorColor: Colors.blueGrey,
                   ),
                 ),
+                CheckboxListTile(
+                  title: Text("Select All"),
+                  value: isAllEmiratesSelected,
+                  activeColor: Colors.blueGrey,
 
-                Padding(
-                  padding: const EdgeInsets.only(top: 16.0),
-                  child: Align(
-                    alignment: Alignment.topRight,
-                    child: CheckboxListTile(
-                      title: Text("Select All",
-                        style: TextStyle(color: Colors.black),
-                      ),
-                      activeColor: Colors.blueGrey,
-                      value: isAllEmiratesSelected,
-                      onChanged: (bool? value) {
-                        setState(() {
-                          isAllEmiratesSelected = value ?? false;
-                          // Update all Emirates based on Select All
-                          for (var emirate in emirates) {
-                            emirate['isSelected'] = isAllEmiratesSelected;
-                          }
+                  onChanged: (bool? value) {
+                    setState(() {
+                      isAllEmiratesSelected = value ?? false;
 
-                          // If no emirates are selected, clear all areas
-                          if (emirates.every((emirate) => !emirate['isSelected'])) {
-                            selectedAreas.clear();
-                            selectedAreasString = "Select Area";
-
-                            // Reset all area states
-                            areas.forEach((key, areaList) {
-                              for (var area in areaList) {
-                                area['isSelected'] = false;
-                              }
-                            });
-                          }
-
-                          // Update the displayed areas
-                          updateSelectedAreasString();
-
-
-                          /*updateEmiratesSelection();  // Update Emirates selection text*/
-                          updateAreasSelection();     // Update Areas based on Emirates selection
-                        });
-                      },
-                    ),
-                  ),
+                      // Update all emirates based on "Select All"
+                      for (var emirate in filteredEmirates!) {
+                        emirate['isSelected'] = isAllEmiratesSelected;
+                      }
+                    });
+                  },
                 ),
-
-                SizedBox(height: 15),
                 Expanded(
                   child: ListView(
-                    children: filteredEmirates.map((emirate) {
+                    children: filteredEmirates!.map((emirate) {
                       return CheckboxListTile(
                         activeColor: Colors.blueGrey,
                         title: Text(emirate['label']),
@@ -533,35 +963,11 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                           setState(() {
                             emirate['isSelected'] = value!;
 
-                            // Handle 'Select All' logic for emirates
-                            isAllEmiratesSelected =
-                                emirates.every((emirate) => emirate['isSelected']);
+                            // Update the "Select All" checkbox
+                            isAllEmiratesSelected = emirates.every((e) => e['isSelected']);
 
-                            // If an emirate is deselected, clear its areas
-                            if (!emirate['isSelected']) {
-                              List<Map<String, dynamic>> emirateAreas = areas[emirate['label']] ?? [];
-                              for (var area in emirateAreas) {
-                                area['isSelected'] = false;
-                                selectedAreas.remove(area['label']); // Remove from selectedAreas list
-                              }
-                            }
-
-
-                            // If no emirates are selected, clear all areas
-                            if (emirates.every((emirate) => !emirate['isSelected'])) {
-                              selectedAreas.clear();
-                              selectedAreasString = "Select Area";
-
-                              // Reset all area states
-                              areas.forEach((key, areaList) {
-                                for (var area in areaList) {
-                                  area['isSelected'] = false;
-                                }
-                              });
-                            }
-
-                            // Update the displayed areas
-                            updateSelectedAreasString();
+                            // Dynamically update the areas list
+                            updateAreasDisplay();
                           });
                         },
                       );
@@ -580,18 +986,15 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                       ),
                     ),
                     onPressed: () {
-                      List<String> selected = emirates
+                      final selectedItems = emirates
                           .where((emirate) => emirate['isSelected'])
-                          .map((emirate) => emirate['label'] as String)
+                          .map((emirate) => {
+                        'id': emirate['id'],
+                        'label': emirate['label'],
+                      })
                           .toList();
 
-
-
-                      if (selected.isEmpty) {
-                        Navigator.of(context).pop(null);
-                      } else {
-                        Navigator.of(context).pop(selected);
-                      }
+                      Navigator.of(context).pop(selectedItems.isEmpty ? null : selectedItems);
                     },
                     child: Text('OK'),
                   ),
@@ -606,44 +1009,42 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
     if (selectedItems != null && selectedItems.isNotEmpty) {
       setState(() {
         selectedEmiratesList = selectedItems;
-        selectedEmirates = selectedItems.join(', ');
+
+        // Update the selectedEmirates string
+        selectedEmiratesString = selectedItems.map((item) => item['label'] as String).join(', ');
+
+        print('emirates list $selectedEmiratesList');
+
+        // Refresh areas to display
+        updateAreasDisplay();
       });
-    }
-    else {
+    } else {
       setState(() {
-        selectedEmirates = "Select Emirate";  // Reset if no selection
-        isEmirateSelected = false;  // Mark as not selected
         selectedEmiratesList.clear();
+        selectedEmiratesString = "Select Emirate";
+
+        // Clear areas to display
+        updateAreasDisplay();
       });
     }
   }
-
   // Area Dropdown based on selected emirates
+
   void _openAreaDropdown(BuildContext context) async {
-    // List to store areas to display based on selected Emirates
-    List<Map<String, dynamic>> areasToDisplay = [];
+    updateAreasDisplay(); // Ensure areasToDisplay is updated before opening
 
-    // Populate areasToDisplay based on selected emirates
-    selectedEmiratesList.forEach((emirate) {
-      if (areas.containsKey(emirate)) {
-        areasToDisplay.addAll(areas[emirate]!);  // Add areas related to the selected emirate
-      }
-    });
-
-    // Show modal bottom sheet with filtered areas list
-    final selectedAreasList = await showModalBottomSheet<List<String>>(
+    final selectedItems = await showModalBottomSheet<List<Map<String, dynamic>>>(
       context: context,
-      isDismissible: false, // Prevent closing by tapping outside
-      enableDrag: false,    // Prevent closing by dragging
+      isDismissible: false,
+      enableDrag: false,
       builder: (BuildContext context) {
         TextEditingController searchController = TextEditingController();
-        List<Map<String, dynamic>> filteredAreas = List.from(areasToDisplay); // Start with all areas
+        filteredAreas = List.from(areasToDisplay);
+        isAllAreasSelected = filteredAreas!.every((a) => a['isSelected']);
+
 
         return StatefulBuilder(
           builder: (context, setState) {
-            // Check if all areas are selected
-            bool isAllAreasSelected = filteredAreas.every((area) => area['isSelected']);
-
             return Column(
               children: [
                 SizedBox(height: 10),
@@ -651,8 +1052,6 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                   "Select Area(s)",
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
-
-                // Search bar to filter areas
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: TextField(
@@ -662,116 +1061,90 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                         filteredAreas = areasToDisplay
                             .where((area) => area['label']
                             .toLowerCase()
-                            .contains(query.toLowerCase()))  // Case insensitive search
+                            .contains(query.toLowerCase()))
                             .toList();
                       });
                     },
                     decoration: InputDecoration(
                       labelText: 'Search Areas',
-                      prefixIcon: Icon(Icons.search),
+                      prefixIcon: Icon(Icons.search, color: Colors.blueGrey),
+                      labelStyle: TextStyle(color: Colors.blueGrey),
                       border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide(color: Colors.blueGrey),
+                      ),
+                      enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
                         borderSide: BorderSide(color: Colors.blueGrey),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(color: Colors.blueGrey),
+                        borderSide: BorderSide(color: Colors.blueGrey, width: 2.0),
                       ),
                     ),
+                    cursorColor: Colors.blueGrey,
                   ),
                 ),
-
-                SizedBox(height: 15),
-
-                // "Select All" checkbox
                 CheckboxListTile(
-                  title: Text('Select All'),
-                  activeColor: Colors.blueGrey,
+                  title: Text("Select All"),
                   value: isAllAreasSelected,
+                  activeColor: Colors.blueGrey,
+
                   onChanged: (bool? value) {
                     setState(() {
-                      // Update all areas to the selected value
-                      isAllAreasSelected = value!;
-                      filteredAreas.forEach((area) {
+                      isAllAreasSelected = value ?? false;
+
+                      // Update all areas based on "Select All"
+                      for (var area in filteredAreas!) {
                         area['isSelected'] = isAllAreasSelected;
-                      });
-                      updateSelectedAreasString();
+                      }
                     });
                   },
                 ),
-
-                SizedBox(height: 15),
-
-                // Display filtered areas with their corresponding emirates
                 Expanded(
                   child: ListView(
-                    children: filteredAreas.map((area) {
-                      // Loop through emirates to find the matching one
-                      String emirate = '';
-                      areas.forEach((emirateName, areaList) {
-                        if (areaList.contains(area)) {
-                          emirate = emirateName;
+                    children: filteredAreas!.map((area) {
+                      String? emirateName;
+                      areas.forEach((key, value) {
+                        if (value.contains(area)) {
+                          emirateName = key;
                         }
                       });
-
                       return CheckboxListTile(
                         activeColor: Colors.blueGrey,
-                        title: Text('${area['label']} - $emirate'), // Display area and emirate
+                        title: Text('${area['label']} - ${emirateName ?? "Unknown"}'), // Label with emirate name
                         value: area['isSelected'],
                         onChanged: (bool? value) {
                           setState(() {
                             area['isSelected'] = value!;
-                            if (area['isSelected']) {
-                              selectedAreas.add('${area['label']} - $emirate');  // Add area with emirate
-                            } else {
-                              selectedAreas.remove('${area['label']} - $emirate');  // Remove area with emirate
-                            }
-                            // Update the "Select All" checkbox based on individual selections
-                            isAllAreasSelected = filteredAreas.every((area) => area['isSelected']);
-                            updateSelectedAreasString();
+                            isAllAreasSelected = filteredAreas!.every((a) => a['isSelected']);
+                            updateSelectedAreasString(filteredAreas!);
                           });
                         },
                       );
                     }).toList(),
                   ),
                 ),
-
                 Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: appbar_color, // Button background color
+                      backgroundColor: Colors.blueGrey,
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(5), // Rounded corners
-                        side: BorderSide(
-                          color: Colors.grey, // Border color
-                          width: 0.5, // Border width
-                        ),
+                        borderRadius: BorderRadius.circular(5),
+                        side: BorderSide(color: Colors.grey, width: 0.5),
                       ),
                     ),
                     onPressed: () {
-                      // Collect the selected areas with their emirate names
-                      List<String> formattedAreas = [];
-                      areas.forEach((emirateName, areaList) {
-                        for (var area in areaList) {
-                          if (area['isSelected']) {
-                            formattedAreas.add('${area['label']} - $emirateName');
-                          }
-                        }
-                      });
+                      final selectedItems = filteredAreas!
+                          .where((area) => area['isSelected'])
+                          .map((area) => {
+                        'id': area['id'],
+                        'label': area['label'],
+                      }).toList();
 
-                      // Update the `selectedAreasString` to show the selected areas with emirate names
-                      setState(() {
-                        if (formattedAreas.isEmpty) {
-                          selectedAreasString = "Select Area";
-                        } else {
-                          selectedAreasString = formattedAreas.join(', ');
-                        }
-                      });
-
-                      // Pop the modal
-                      Navigator.of(context).pop(formattedAreas.isEmpty ? null : formattedAreas);
+                      Navigator.of(context).pop(selectedItems.isEmpty ? null : selectedItems);
                     },
                     child: Text('OK'),
                   ),
@@ -783,13 +1156,23 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
       },
     );
 
-    if (selectedAreasList != null && selectedAreasList.isNotEmpty) {
+    if (selectedItems != null && selectedItems.isNotEmpty) {
       setState(() {
-        selectedAreas = selectedAreasList;
-        selectedAreasString = selectedAreas.join(', ');
+        selectedAreas = selectedItems;
+        selectedAreasString = selectedItems.map((item) => item['label'] as String).join(', ');
+
+        print('select areas $selectedAreas');
+
+      });
+    } else {
+      setState(() {
+        selectedAreas.clear();
+        selectedAreasString = 'Select Area(s)';
+
       });
     }
   }
+
 
   @override
   void initState() {
@@ -807,9 +1190,30 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
 
     print('emirate list ${widget.existingEmirateList}');
 
-    _preSelectUnitTypes();
+    prefs = await SharedPreferences.getInstance();
+    setState(() {
 
-    _preSelectEmiratesAndAreas();
+      range_min = prefs!.getDouble('range_min') ?? 10000;
+      range_max = prefs!.getDouble('range_max') ?? 100000;
+
+      double range_start = range_min! + (range_min! / 0.8);
+      double range_end = range_max! - (range_max! * 0.2);
+
+      _currentRangeValues = RangeValues(range_start, range_end);
+
+      startController.text = _currentRangeValues!.start.toStringAsFixed(0);
+      endController.text = _currentRangeValues!.end.toStringAsFixed(0);
+    });
+    fetchActivitySources();
+    fetchEmirates();
+    fetchAreas();
+    fetchUnitTypes();
+    fetchLeadStatus();
+    fetchAmenities();
+
+    /*_preSelectUnitTypes();*/
+
+    /*_preSelectEmiratesAndAreas();*/
 
   }
 
@@ -964,8 +1368,96 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
 
 
                                 Padding(
+                                  padding: EdgeInsets.only(top:20,left: 20,right: 20,bottom: 0),
+                                  child: Row(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      // Country Picker
+                                      GestureDetector(
+                                        onTap: () {
+                                          showCountryPicker(
+                                            context: context,
+                                            showPhoneCode: true,
+                                            onSelect: (Country country) {
+                                              setState(() {
+                                                _selectedCountryCode = '+${country.phoneCode}';
+                                                _selectedCountryISO = country.countryCode;
+                                                _selectedCountryFlag = country.flagEmoji; // Store the flag emoji
+                                              });
+                                            },
+                                          );
+                                        },
+                                        child: Container(
+                                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                                          decoration: BoxDecoration(
+                                            border: Border.all(color: Colors.black, width: 1),
+                                            borderRadius: BorderRadius.circular(10),
+                                          ),
+                                          child: Row(
+                                            children: [
+                                              Text(
+                                                _selectedCountryFlag, // Display the flag emoji
+                                                style: const TextStyle(fontSize: 18), // Adjust font size for the flag
+                                              ),
+                                              const SizedBox(width: 8), // Add spacing between flag and text
+                                              Text(
+                                                '$_selectedCountryCode', // Display the country code
+                                                style: const TextStyle(fontSize: 16),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
 
-                                    padding: EdgeInsets.only(top:0,left: 20,right: 20,bottom: 0),
+                                      const SizedBox(width: 5),
+                                      // Phone Number Input Field
+                                      Expanded(
+                                        child: TextFormField(
+
+                                          controller: customercontactnocontroller,
+                                          keyboardType: TextInputType.phone,
+                                          validator: (value) {
+                                            if (value == null || value.isEmpty) {
+                                              return 'Contact No. is required';
+                                            }
+                                            return null; // Show validation message if any
+                                          },
+
+
+                                          decoration: InputDecoration(
+                                            hintText: _hintText, // Dynamic hint
+                                            contentPadding: EdgeInsets.all(15),
+// text
+                                            label: Text('Contact No',
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.normal,
+                                                  color: Colors.black
+                                              ),),
+                                            border: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(10),
+                                              borderSide: const BorderSide(
+                                                color: Colors.black,
+                                              ),
+                                            ),
+                                            focusedBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(10),
+                                              borderSide: const BorderSide(
+                                                color: Colors.black,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+
+
+                                      )
+                                    ],
+                                  ),
+                                ),
+
+
+                                /* Padding(
+
+                                    padding: EdgeInsets.only(top:10,left: 20,right: 20,bottom: 0),
 
                                     child: TextFormField(
                                       controller: customercontactnocontroller,
@@ -1026,7 +1518,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                         });
                                       },
 
-                                    )),
+                                    )),*/
 
 
 
@@ -1108,146 +1600,75 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                     children: [
 
                                       Padding(
-                                        padding: EdgeInsets.only(top:20,left:20,right:20,bottom :0),
+                                          padding: EdgeInsets.only(top:20,left:20,right:20,bottom :0),
 
-                                        child: DropdownButtonFormField<dynamic>(
-                                          decoration: InputDecoration(
-                                            label: Text('Follow-up Type',
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.normal,
-                                                  color: Colors.black
-                                              ),),
-                                            border: OutlineInputBorder(
-                                              borderSide: BorderSide(color: Colors.black54),
-                                              borderRadius: BorderRadius.circular(10.0),
-                                            ),
-                                            focusedBorder: OutlineInputBorder(
-                                              borderSide: BorderSide(color: appbar_color),
-                                              borderRadius: BorderRadius.circular(10.0),
-                                            ),
-                                            enabledBorder: OutlineInputBorder(
-                                              borderRadius: BorderRadius.circular(10.0),
-                                              borderSide: BorderSide(color: Colors.black54),
-                                            ),
-                                            contentPadding: EdgeInsets.symmetric(horizontal: 10),
-                                          ),
+                                          child: Column(
+                                              mainAxisAlignment: MainAxisAlignment.start,
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+
+                                                DropdownButtonFormField<FollowUpStatus>(
+                                                  value: selectedinquiry_status,  // This should be an object of FollowUpStatus
+                                                  decoration: InputDecoration(
+                                                    hintText: 'Select Follow-up Status (required)',
+                                                    label: Text(
+                                                      'Follow-up Status',
+                                                      style: TextStyle(
+                                                        fontWeight: FontWeight.normal,
+                                                        color: Colors.black,
+                                                      ),
+                                                    ),
+                                                    border: OutlineInputBorder(
+                                                      borderSide: BorderSide(color: Colors.black54),
+                                                      borderRadius: BorderRadius.circular(10.0),
+                                                    ),
+                                                    focusedBorder: OutlineInputBorder(
+                                                      borderSide: BorderSide(color: appbar_color),
+                                                      borderRadius: BorderRadius.circular(10.0),
+                                                    ),
+                                                    enabledBorder: OutlineInputBorder(
+                                                      borderRadius: BorderRadius.circular(10.0),
+                                                      borderSide: BorderSide(color: Colors.black54),
+                                                    ),
+                                                    contentPadding: EdgeInsets.symmetric(horizontal: 10),
+                                                  ),
+                                                  validator: (value) {
+                                                    if (value == null) {
+                                                      return 'Inquiry Status is required'; // Error message
+                                                    }
+                                                    return null; // No error if a value is selected
+                                                  },
+                                                  dropdownColor: Colors.white,
+                                                  icon: Icon(Icons.arrow_drop_down, color: Colors.blueGrey),
+                                                  items: followuptype_list.map((FollowUpStatus status) {
+                                                    return DropdownMenuItem<FollowUpStatus>(
+                                                      value: status,
+                                                      child: Text(
+                                                        status.name,  // Display the 'name'
+                                                        style: TextStyle(color: Colors.black87),
+                                                      ),
+                                                    );
+                                                  }).toList(),
+                                                  onChanged: (FollowUpStatus? value) {
+                                                    setState(() {
+                                                      selectedinquiry_status = value;
 
 
-                                          hint: Text('Select Follow-Up Type'), // Add a hint
-                                          value: selectedfollowup_type,
-                                          items: followuptype_list.map((item) {
-                                            return DropdownMenuItem<dynamic>(
-                                              value: item,
-                                              child: Text(item),
-                                            );
-                                          }).toList(),
-                                          onChanged: (value) async {
-                                            selectedfollowup_type = value!;
-                                          },
+                                                    });
+                                                  },
+                                                )
 
-                                          onTap: ()
-                                          {
-                                            setState(() {
-                                              _isFocused_email = false;
-                                              _isFocus_name = false;
-                                            });
+                                                // Switch for isQualified
 
-                                          },
-
-                                          validator: (value) {
-                                            if (value == null || value.isEmpty) {
-                                              return 'Follow-Up Type is required'; // Error message
-                                            }
-                                            return null; // No error if a value is selected
-                                          },
-                                        ),
-                                      ),
+                                              ])),
 
 
                                     ],
                                   ),
                                 ), // follow up type
 
-                                Container(
-                                  child: Column(
-
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
 
 
-                                        Padding(
-                                          padding: EdgeInsets.only(top:20,left:20,right:20,bottom :0),
-
-                                          child: Column(
-                                            mainAxisAlignment: MainAxisAlignment.start,
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-
-
-                                              DropdownButtonFormField<String>(
-                                                value: selectedfollowup_status,
-                                                decoration: InputDecoration(
-                                                  hintText: 'Select Status',
-                                                  label: Text('Inquiry Status',
-                                                    style: TextStyle(
-                                                        fontWeight: FontWeight.normal,
-                                                        color: Colors.black
-                                                    ),),
-                                                  border: OutlineInputBorder(
-                                                    borderSide: BorderSide(color: Colors.black54),
-                                                    borderRadius: BorderRadius.circular(10.0),
-                                                  ),
-                                                  focusedBorder: OutlineInputBorder(
-                                                    borderSide: BorderSide(color: appbar_color),
-                                                    borderRadius: BorderRadius.circular(10.0),
-                                                  ),
-                                                  enabledBorder: OutlineInputBorder(
-                                                    borderRadius: BorderRadius.circular(10.0),
-                                                    borderSide: BorderSide(color: Colors.black54),
-                                                  ),
-                                                  contentPadding: EdgeInsets.symmetric(horizontal: 10),
-
-                                                ),
-                                                validator: (value) {
-                                                  if (value == null || value.isEmpty) {
-                                                    return 'Status is required'; // Error message
-                                                  }
-                                                  return null; // No error if a value is selected
-                                                },
-                                                dropdownColor: Colors.white,
-                                                icon: Icon(Icons.arrow_drop_down, color: Colors.blueGrey),
-                                                items: followupstatus_list
-                                                    .map((status) => DropdownMenuItem<String>(
-                                                  value: status,
-                                                  child: Text(
-                                                    status,
-                                                    style: TextStyle(color: Colors.black87),
-                                                  ),
-                                                ))
-                                                    .toList(),
-                                                onChanged: (value) {
-                                                  setState(() {
-                                                    selectedfollowup_status = value;
-                                                    if(selectedfollowup_status =='Not Qualified')
-                                                    {
-
-                                                      nextFollowUpDate = null;
-                                                    }
-                                                  });
-                                                },
-                                              ),
-
-                                            ],
-                                          ),
-
-
-
-
-                                        ),
-                                      ]),
-                                ),
-
-                                if (selectedfollowup_status == 'In Follow-Up' || selectedfollowup_status == 'Contact Later') // Conditionally render based on status
                                   Container(
                                     child: Column(
 
@@ -1578,10 +1999,10 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                               children: [
                                                 // Column to display selected emirates
                                                 Expanded(
-                                                  child: selectedEmirates.isNotEmpty
+                                                  child: selectedEmiratesString.isNotEmpty
                                                       ? Column(
                                                     crossAxisAlignment: CrossAxisAlignment.start,
-                                                    children: selectedEmirates.split(', ').map((emirate) {
+                                                    children: selectedEmiratesString.split(', ').map((emirate) {
                                                       return Text(
                                                         emirate, // Display each emirate on a new line
                                                         style: TextStyle(fontSize: 16, color: Colors.grey),
@@ -1596,13 +2017,14 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                                 // Down arrow icon
                                                 Icon(
                                                   Icons.arrow_drop_down,
-                                                  color: Colors.blueGrey, // Adjust the color of the arrow
+                                                  color: Colors.grey, // Adjust the color of the arrow
                                                 ),
                                               ],
                                             ),
                                           ),
                                         ),
                                       )
+
 
                                       /*Padding(
                                         padding: EdgeInsets.only(top:0,left:20,right:20,bottom :0),
@@ -1690,20 +2112,15 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                     onTap: selectedEmiratesList.isNotEmpty
                                         ? () => _openAreaDropdown(context) // Open the custom dropdown
                                         : null, // Disable if no emirates are selected
-                                    child:
-
-
-
-
-                                    Container(
+                                    child: Container(
+                                      width: double.infinity,
                                       padding: EdgeInsets.all(15),
                                       decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(10),
                                         color: Colors.transparent, // Set it to transparent as per your requirement
                                         border: Border.all(color: Colors.black54), // Black border
                                       ),
-                                      child:
-                                          Row(
+                                      child: Row(
                                         mainAxisAlignment: MainAxisAlignment.spaceBetween, // Space between text and icon
                                         children: [
                                           // Column to display selected emirates
@@ -1726,14 +2143,14 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                           // Down arrow icon
                                           Icon(
                                             Icons.arrow_drop_down,
-                                            color: Colors.blueGrey, // Adjust the color of the arrow
+                                            color: Colors.grey, // Adjust the color of the arrow
                                           ),
                                         ],
                                       ),
-
                                     ),
                                   ),
                                 ),
+
 
                                 Container(
                                   padding: const EdgeInsets.only(left: 20.0, right: 20, top: 15),
@@ -1754,10 +2171,10 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                           spacing: 8.0,
                                           runSpacing: 8.0,
                                           children: amenities.map((amenity) {
-                                            final isSelected = selectedAmenities.contains(amenity);
+                                            final isSelected = selectedAmenities.contains(amenity['id']);
                                             return ChoiceChip(
                                               label: Text(
-                                                amenity,
+                                                amenity['name'],
                                                 style: TextStyle(
                                                   color: isSelected ? Colors.white : Colors.black,
                                                 ),
@@ -1768,9 +2185,9 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                               onSelected: (bool selected) {
                                                 setState(() {
                                                   if (selected) {
-                                                    selectedAmenities.add(amenity);
+                                                    selectedAmenities.add(amenity['id']);
                                                   } else {
-                                                    selectedAmenities.remove(amenity);
+                                                    selectedAmenities.remove(amenity['id']);
                                                   }
                                                 });
                                               },
@@ -1802,10 +2219,10 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                           spacing: 8.0,
                                           runSpacing: 8.0,
                                           children: specialfeatures.map((amenity) {
-                                            final isSelected = selectedSpecialFeatures.contains(amenity);
+                                            final isSelected = selectedSpecialFeatures.contains(amenity['id']);
                                             return ChoiceChip(
                                               label: Text(
-                                                amenity,
+                                                amenity['name'],
                                                 style: TextStyle(
                                                   color: isSelected ? Colors.white : Colors.black,
                                                 ),
@@ -1816,9 +2233,9 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                               onSelected: (bool selected) {
                                                 setState(() {
                                                   if (selected) {
-                                                    selectedSpecialFeatures.add(amenity);
+                                                    selectedSpecialFeatures.add(amenity['id']);
                                                   } else {
-                                                    selectedSpecialFeatures.remove(amenity);
+                                                    selectedSpecialFeatures.remove(amenity['id']);
                                                   }
                                                 });
                                               },
@@ -2048,6 +2465,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                           _isFocused_email = false;
                                         });
                                       },
+
                                       onTap: () {
                                         setState(() {
                                           _isFocus_name = false;
@@ -2117,7 +2535,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
 
                                                 selectedEmiratesList.clear();
 
-                                                updateSelectedAreasString();
+                                                updateSelectedAreasString(filteredAreas!);
 
                                                 for (var unit in unitTypes) {
                                                   unit['isSelected'] = false;

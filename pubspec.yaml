@@ -42,6 +42,7 @@ dependencies:
   intl:
   http:
   url_launcher:
+  country_picker:
 
 dev_dependencies:
   flutter_test:

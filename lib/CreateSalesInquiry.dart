@@ -1,5 +1,5 @@
 import 'dart:convert';
-
+import 'package:country_picker/country_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
@@ -7,7 +7,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'SalesInquiryReport.dart';
 import 'constants.dart';
 import 'package:http/http.dart' as http;
-
 
 class FollowUpStatus {
   final int id;
@@ -166,6 +165,14 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
   List<Map<String, dynamic>> areasToDisplay = []; // Global variable
 
+  String _selectedCountryCode = '+971'; // Default to UAE country code
+  String _selectedCountryISO = 'AE'; // Default to UAE ISO code
+  String _selectedCountryFlag = '🇦🇪'; // Default UAE flag emoji
+
+  String _hintText = 'Enter Contact No'; // Default hint text
+
+
+
   void updateAreasDisplay() {
     areasToDisplay.clear();
 
@@ -190,8 +197,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
     selectedAreasString = selectedAreaLabels.isEmpty ? "Select Area" : selectedAreaLabels.join(', ');
   }
-
-
 
   void loadAreasFromJson(dynamic jsonResponse) {
     try {
@@ -376,14 +381,14 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
     }
 
     // Replace with your API endpoint
-    final String url = "https://yourapiendpoint.com/create";
+    final String url = "$BASE_URL_config/v1/leads";
 
     // Constructing the JSON body
     final Map<String, dynamic> requestBody = {
       "uuid": uuid,
       "name": customernamecontroller.text,
       "email": emailcontroller.text,
-      "mobile_no": customercontactnocontroller.text,
+      "mobile_no": '$_selectedCountryCode${customercontactnocontroller.text}',
       "areas": areasIds,
       "flatTypes": selectedUnitIds,
       "lead_status_id": selectedinquiry_status!.id,
@@ -393,13 +398,14 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
       "max_price": _currentRangeValues!.end.round().toString(),
       "min_price": _currentRangeValues!.start.round().toString(),
       "amenities": amenitiesList,
-      "description" : descriptioncontroller.text
+      "description" : descriptioncontroller.text,
+      'activity_source_id' : selectedactivity_source!.id
     };
 
     print('create request body $requestBody');
 
 
-    /*try {
+    try {
       final response = await http.post(
         Uri.parse(url),
         headers: {
@@ -416,10 +422,11 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
         // Error occurred
         print("Error: ${response.statusCode}");
         print("Message: ${response.body}");
+
       }
     } catch (error) {
       print("Exception: $error");
-    }*/
+    }
   }
 
   Future<void> fetchUnitTypes() async {
@@ -1461,6 +1468,92 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
 
                                         Padding(
+                                          padding: EdgeInsets.only(top:20,left: 20,right: 20,bottom: 0),
+                                          child: Row(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              // Country Picker
+                                              GestureDetector(
+                                                onTap: () {
+                                                  showCountryPicker(
+                                                    context: context,
+                                                    showPhoneCode: true,
+                                                    onSelect: (Country country) {
+                                                      setState(() {
+                                                        _selectedCountryCode = '+${country.phoneCode}';
+                                                        _selectedCountryISO = country.countryCode;
+                                                        _selectedCountryFlag = country.flagEmoji; // Store the flag emoji
+                                                      });
+                                                    },
+                                                  );
+                                                },
+                                                child: Container(
+                                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                                                  decoration: BoxDecoration(
+                                                    border: Border.all(color: Colors.black, width: 1),
+                                                    borderRadius: BorderRadius.circular(10),
+                                                  ),
+                                                  child: Row(
+                                                    children: [
+                                                      Text(
+                                                        _selectedCountryFlag, // Display the flag emoji
+                                                        style: const TextStyle(fontSize: 18), // Adjust font size for the flag
+                                                      ),
+                                                      const SizedBox(width: 8), // Add spacing between flag and text
+                                                      Text(
+                                                        '$_selectedCountryCode', // Display the country code
+                                                        style: const TextStyle(fontSize: 16),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+
+                                              const SizedBox(width: 5),
+                                              // Phone Number Input Field
+                                              Expanded(
+                                                  child: TextFormField(
+
+                                                    controller: customercontactnocontroller,
+                                                    keyboardType: TextInputType.phone,
+                                                    validator: (value) {
+                                                      if (value == null || value.isEmpty) {
+                                                        return 'Contact No. is required';
+                                                      }
+                                                      return null; // Show validation message if any
+                                                    },
+
+
+                                                    decoration: InputDecoration(
+                                                      hintText: _hintText, // Dynamic hint
+                                                      contentPadding: EdgeInsets.all(15),
+// text
+                                                      label: Text('Contact No',
+                                                        style: TextStyle(
+                                                            fontWeight: FontWeight.normal,
+                                                            color: Colors.black
+                                                        ),),
+                                                      border: OutlineInputBorder(
+                                                        borderRadius: BorderRadius.circular(10),
+                                                        borderSide: const BorderSide(
+                                                          color: Colors.black,
+                                                        ),
+                                                      ),
+                                                      focusedBorder: OutlineInputBorder(
+                                                        borderRadius: BorderRadius.circular(10),
+                                                        borderSide: const BorderSide(
+                                                          color: Colors.black,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+
+
+                                              )
+                                            ],
+                                          ),
+                                        ),
+                                        /*Padding(
 
                                             padding: EdgeInsets.only(top:20,left: 20,right: 20,bottom: 0),
 
@@ -1522,7 +1615,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                 });
                                               },
 
-                                            )),
+                                            )),*/
 
 
                                         Padding(
@@ -1899,7 +1992,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                     child: Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
-                                        Padding(padding: EdgeInsets.only(top: 5,left:20),
+                                        Padding(padding: EdgeInsets.only(top: 10,left:20),
                                           child:Row(
                                             children: [
                                               Text("Select Emirate:",
@@ -2019,7 +2112,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                   ),
 
                                   Container(
-                                    margin: EdgeInsets.only( top:15,
+                                    margin: EdgeInsets.only( top:10,
                                         bottom: 0,
                                         left: 20,
                                         right: 20),

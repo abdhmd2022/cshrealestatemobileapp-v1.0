@@ -100,6 +100,8 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
   RangeValues? _currentRangeValues;
 
+  SharedPreferences? prefs;
+
 
   List<String> followuptype_list = [
     'Email',
@@ -111,11 +113,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
   List<FollowUpStatus> inquirystatus_list = [];
 
   List<ActivitySource> activitysource_list = [
-
-    ActivitySource(id: 1, name: "Whatsapp"),
-    ActivitySource(id: 2, name: "Email"),
-    ActivitySource(id: 3, name: "Website"),
-    ActivitySource(id: 4, name: "Phone Call"),
 
   ];
 
@@ -143,13 +140,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
     'Self',
   ];
 
-  List<Map<String, dynamic>> unitTypes = [
-  {"label": "Studio", "isSelected": false},
-  {"label": "1BHK", "isSelected": false},
-  {"label": "2BHK", "isSelected": false},
-  {"label": "3BHK", "isSelected": false},
-  {"label": "Penthouse", "isSelected": false},
-  ];
+  List<Map<String, dynamic>> unitTypes = [];
 
   Map<String, List<Map<String, dynamic>>> areas = {
     'Dubai': [
@@ -209,6 +200,29 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
     'Commercial',
   ];
 
+  List<int> selectedUnitIds = [];
+
+  void fetchFlatTypes(dynamic jsonResponse) {
+    final data = jsonResponse is String
+        ? jsonDecode(jsonResponse)
+        : jsonResponse;
+
+    if (data != null && data['data'] != null && data['data']['flatTypes'] != null) {
+      final flatTypes = data['data']['flatTypes'] as List<dynamic>;
+
+      unitTypes = flatTypes
+          .map((flat) => {
+        'label': flat['flat_type'], // Flat type name
+        'id': flat['cost_centre_masterid'], // ID value
+        'isSelected': false, // Default selection state
+      })
+          .toList();
+    } else {
+      print('Error: Invalid data structure');
+    }
+  }
+
+
   void _updateRangeFromTextFields() {
     // Parse start and end values, defaulting to range_min and range_max if invalid
     double start = double.tryParse(startController.text) ?? range_min!;
@@ -234,7 +248,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
 
     // converting amenities set to list
-    final List<int> amenitiesList = selectedAmenities.toList();
+    final List<int> amenitiesList = selectedSpecialFeatures.union(selectedAmenities).toList();
 
     //converting date to yyyy-MM-dd format
     String? formattedDate;
@@ -255,7 +269,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
       "email": emailcontroller.text,
       "mobile_no": customercontactnocontroller.text,
       "areas": [1, 2],
-      "flatTypes": [1],
+      "flatTypes": selectedUnitIds,
       "lead_status_id": selectedinquiry_status!.id,
       "next_followup_date": formattedDate,
       "property_type": selectedPropertyType,
@@ -266,7 +280,8 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
       "description" : descriptioncontroller.text
     };
 
-    print('request body $requestBody');
+    print('create request body $requestBody');
+
 
     /*try {
       final response = await http.post(
@@ -291,9 +306,89 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
     }*/
   }
 
+  Future<void> fetchUnitTypes() async {
+
+    print('fetching unit types');
+    unitTypes.clear();
+
+    final url = '$BASE_URL_config/v1/masters/flatTypes'; // Replace with your API endpoint
+    String token = 'Bearer $Company_Token'; // auth token for request
+
+    Map<String, String> headers = {
+      'Authorization': token,
+      "Content-Type": "application/json"
+    };
+    try {
+      final response = await http.get(Uri.parse(url),
+        headers: headers,);
+      if (response.statusCode == 200) {
+
+        final data = json.decode(response.body);
+
+        print(data);
+        setState(() {
+          fetchFlatTypes(data);
+
+        });
+      } else {
+        throw Exception('Failed to load data');
+      }
+    } catch (e) {
+
+      print('Error fetching data: $e');
+    }
+
+
+  }
+
+
+  Future<void> fetchActivitySources() async {
+
+    activitysource_list.clear();
+
+    final url = '$BASE_URL_config/v1/activitySources'; // Replace with your API endpoint
+    String token = 'Bearer $Serial_Token'; // auth token for request
+
+    Map<String, String> headers = {
+      'Authorization': token,
+      "Content-Type": "application/json"
+    };
+    try {
+      final response = await http.get(Uri.parse(url),
+        headers: headers,);
+      if (response.statusCode == 200) {
+
+        final data = json.decode(response.body);
+
+        setState(() {
+          List<dynamic> activitySourceList = data['data']['activitySources'];
+
+          for (var status in activitySourceList) {
+            // Create a FollowUpStatus object from JSON
+            ActivitySource activitySource = ActivitySource.fromJson(status);
+
+            // Add the object to the list
+            activitysource_list.add(activitySource);
+
+
+            // Optionally, you can print the object for verification
+            print('ID: ${activitySource.id}, Name: ${activitySource.name}');
+          }
+        });
+      } else {
+        throw Exception('Failed to load data');
+      }
+    } catch (e) {
+
+      print('Error fetching data: $e');
+    }
+
+
+  }
+
+
   Future<void> fetchAmenities() async {
 
-    print('fetching amenities');
     amenities.clear();
 
     final url = '$BASE_URL_config/v1/amenities'; // Replace with your API endpoint
@@ -311,7 +406,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
 
         setState(() {
-          print('response ${response.body}');
 
           final Map<String, dynamic> data = json.decode(response.body);
           final List<dynamic> amenitiesData = data['data']['amenities'];
@@ -365,8 +459,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
 
             // Optionally, you can print the object for verification
-            print('ID: ${followUpStatus.id}, Name: ${followUpStatus.name}, Is Qualified: ${followUpStatus.isQualified}');
-          }
+             }
         });
       } else {
         throw Exception('Failed to load data');
@@ -435,7 +528,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
   }
 
   void _openUnitTypeDropdown(BuildContext context) async {
-    final selectedItems = await showModalBottomSheet<List<String>>(
+    final selectedItems = await showModalBottomSheet<Map<String, List<dynamic>>>(
       context: context,
       isDismissible: false, // Prevent closing by tapping outside
       enableDrag: false,    // Prevent closing by dragging
@@ -544,15 +637,23 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                       ),
                     ),
                     onPressed: () {
-                      List<String> selected = unitTypes
+                      // Extract the IDs of all selected unit types
+                      selectedUnitIds = unitTypes
+                          .where((unit) => unit['isSelected'])
+                          .map((unit) => unit['id'] as int)
+                          .toList();
+
+                      // Extract names of selected items
+                      List<String> selectedNames = unitTypes
                           .where((unit) => unit['isSelected'])
                           .map((unit) => unit['label'] as String)
                           .toList();
 
-                      if (selected.isEmpty) {
-                        Navigator.of(context).pop(null);  // Return null if no selection
+                      if (selectedUnitIds.isEmpty) {
+                        Navigator.of(context).pop(null); // Return null if no selection
                       } else {
-                        Navigator.of(context).pop(selected);
+                        // Return both IDs and names
+                        Navigator.of(context).pop({'ids': selectedUnitIds, 'names': selectedNames});
                       }
                     },
                     child: Text('OK'),
@@ -568,7 +669,8 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
     // Update the selected items and set the background color
     if (selectedItems != null && selectedItems.isNotEmpty) {
       setState(() {
-        selectedUnitType = selectedItems.join(', ');
+        selectedUnitType = selectedItems['names']!.join(', ');
+        print('unit types id $selectedUnitIds');
         isUnitSelected = true;  // Mark as selected
       });
     } else {
@@ -578,6 +680,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
       });
     }
   }
+
 
   void _openEmirateDropdown(BuildContext context) async {
     final selectedItems = await showModalBottomSheet<List<String>>(
@@ -948,11 +1051,11 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
   Future<void> _initSharedPreferences() async {
 
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs = await SharedPreferences.getInstance();
     setState(() {
 
-      range_min = prefs.getDouble('range_min') ?? 10000;
-      range_max = prefs.getDouble('range_max') ?? 100000;
+      range_min = prefs!.getDouble('range_min') ?? 10000;
+      range_max = prefs!.getDouble('range_max') ?? 100000;
 
       double range_start = range_min! + (range_min! / 0.8);
       double range_end = range_max! - (range_max! * 0.2);
@@ -962,11 +1065,11 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
       startController.text = _currentRangeValues!.start.toStringAsFixed(0);
       endController.text = _currentRangeValues!.end.toStringAsFixed(0);
     });
-
+    fetchActivitySources();
+    fetchUnitTypes();
     fetchLeadStatus();
     fetchAmenities();
   }
-
 
   int? selectedInterestType;
 
@@ -1071,15 +1174,29 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                           mainAxisAlignment: MainAxisAlignment.start,
                                           crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
-                                            const Text('Interest Type:',
-                                              style: TextStyle(
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.bold,
-                                                color: Colors.black,
-                                              ),),
-                                            const SizedBox(height: 10),
+                                            Row(
+                                              children: [
+                                                Text("Interest Type:",
+                                                    style: TextStyle(
+                                                        fontWeight: FontWeight.bold,
+                                                        fontSize: 16
+
+                                                    )
+                                                ),
+                                                SizedBox(width: 2),
+                                                Text(
+                                                  '*', // Red asterisk for required field
+                                                  style: TextStyle(
+                                                    fontSize: 20,
+                                                    color: Colors.red, // Red color for the asterisk
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            const SizedBox(height: 5),
                                             ToggleButtons(
                                               borderRadius: BorderRadius.circular(10),
+
                                               isSelected: [selectedInterestType == 0, selectedInterestType == 1],
                                               onPressed: (int index) {
                                                 setState(() {
@@ -1105,13 +1222,24 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                           child: Column(
                                             crossAxisAlignment: CrossAxisAlignment.start,
                                             children: [
-                                              Text(
-                                                "Property Type:",
-                                                style: TextStyle(
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.black,
-                                                ),
+                                              Row(
+                                                children: [
+                                                  Text("Property Type:",
+                                                      style: TextStyle(
+                                                          fontWeight: FontWeight.bold,
+                                                          fontSize: 16
+
+                                                      )
+                                                  ),
+                                                  SizedBox(width: 2),
+                                                  Text(
+                                                    '*', // Red asterisk for required field
+                                                    style: TextStyle(
+                                                      fontSize: 20,
+                                                      color: Colors.red, // Red color for the asterisk
+                                                    ),
+                                                  ),
+                                                ],
                                               ),
                                               SizedBox(height: 5),
                                               SingleChildScrollView(
@@ -1214,7 +1342,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                     onChanged: (ActivitySource? value) {
                                                       setState(() {
                                                         selectedactivity_source = value;
-
 
                                                       });
                                                     },
@@ -1440,7 +1567,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                 DropdownButtonFormField<FollowUpStatus>(
                                                   value: selectedinquiry_status,  // This should be an object of FollowUpStatus
                                                   decoration: InputDecoration(
-                                                    hintText: 'Select Inquiry Status',
+                                                    hintText: 'Select Inquiry Status (required)',
                                                     label: Text(
                                                       'Inquiry Status',
                                                       style: TextStyle(
@@ -1512,17 +1639,19 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
                                                   )
                                               ),
-                                              SizedBox(width: 2),
+                                              /*SizedBox(width: 2),
                                               Text(
                                                 '*', // Red asterisk for required field
                                                 style: TextStyle(
                                                   fontSize: 20,
                                                   color: Colors.red, // Red color for the asterisk
                                                 ),
-                                              ),
+                                              ),*/
                                             ],
                                           ),
                                         ),
+                                        
+                                        SizedBox(height: 5),
 
                                         Padding(
                                           padding: EdgeInsets.only(top: 0, left: 20, right: 20),
@@ -1623,8 +1752,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                         controller: TextEditingController(text: selectedUnitType),
                                         decoration: InputDecoration(
                                           hintText: 'Select Unit Type(s)',
-
-
                                           contentPadding: EdgeInsets.all(15),
                                           fillColor: isUnitSelected ? Colors.transparent : Colors.transparent, // Set to black if selected
                                           filled: true, // Ensure the field is filled but transparent or black based on isSelected
@@ -1647,9 +1774,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                           labelStyle: TextStyle(color: Colors.black),
                                           hintStyle: TextStyle(color: Colors.black), // Hint text color (white for better contrast)
                                         ),
-
-
-
                                         enabled: false, //// Disable direct editing
                                         validator: (value) {
                                           // If no unit type is selected, show error
@@ -1729,7 +1853,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                     child: Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
-                                        Padding(padding: EdgeInsets.only(top: 15,left:20),
+                                        Padding(padding: EdgeInsets.only(top: 5,left:20),
                                           child:Row(
                                             children: [
                                               Text("Select Emirate:",
@@ -2021,15 +2145,37 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                     child: Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
-                                        Text(
-                                          'Price Range:',
-                                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                                        Row(
+                                          children: [
+                                            Text("Price Range:",
+
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 16
+
+                                                )
+                                            ),
+                                            SizedBox(width: 2),
+                                            Text(
+                                              '*', // Red asterisk for required field
+                                              style: TextStyle(
+                                                fontSize: 20,
+                                                color: Colors.red, // Red color for the asterisk
+                                              ),
+                                            ),
+                                          ],
                                         ),
-                                        SizedBox(height:10),
                                         Row(
                                           children: [
                                             Expanded(
                                               child: TextFormField(
+                                                validator: (value) {
+                                                  if (value!.isEmpty) {
+                                                    return 'From Price is required';
+                                                  }
+
+                                                  return null;
+                                                },
                                                 controller: startController,
                                                 keyboardType: TextInputType.number,
                                                 decoration: InputDecoration(
@@ -2046,6 +2192,13 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
                                             Expanded(
                                               child: TextFormField(
+                                                validator: (value) {
+                                                  if (value!.isEmpty) {
+                                                    return 'To Price is required';
+                                                  }
+
+                                                  return null;
+                                                },
                                                 controller: endController,
                                                 keyboardType: TextInputType.number,
                                                 decoration: InputDecoration(
@@ -2327,11 +2480,40 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
                                                   _formKey.currentState?.reset();
                                                   selectedasignedto = asignedto.first;
+                                                  selectedinquiry_status = null;
+                                                  selectedInterestType = null;
+                                                  selectedPropertyType = null;
+                                                  selectedactivity_source = null;
+                                                  nextFollowUpDate = null;
+                                                  selectedUnitIds.clear();
+
+                                                  selectedUnitType = "Select Unit Types";
+                                                  selectedEmirates = "Select Emirate";
+                                                  selectedEmiratesList.clear();
+
+                                                   selectedAreasString = "Select Area";
+                                                  selectedAreas.clear();
+                                                  selectedAmenities.clear();
+                                                  selectedSpecialFeatures.clear();
+
+                                                  range_min = prefs!.getDouble('range_min') ?? 10000;
+                                                  range_max = prefs!.getDouble('range_max') ?? 100000;
+
+                                                  double range_start = range_min! + (range_min! / 0.8);
+                                                  double range_end = range_max! - (range_max! * 0.2);
+
+                                                  _currentRangeValues = RangeValues(range_start, range_end);
+
+                                                  startController.text = _currentRangeValues!.start.toStringAsFixed(0);
+                                                  endController.text = _currentRangeValues!.end.toStringAsFixed(0);
+
+
 
                                                   /*print(_selectedrole['role_name']);*/
 
                                                   customernamecontroller.clear();
                                                   customercontactnocontroller.clear();
+                                                  emailcontroller.clear();
                                                   unittypecontroller.clear();
                                                   areacontroller.clear();
                                                   descriptioncontroller.clear();
@@ -2356,18 +2538,50 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                               ),
                                               onPressed: () {
 
-                                                if (_formKey.currentState != null &&
-                                                    _formKey.currentState!.validate()) {
-                                                  _formKey.currentState!.save();
+                                                if(selectedInterestType == null)
+                                                {
+                                                  ScaffoldMessenger.of(context).showSnackBar(
+                                                    SnackBar(
+                                                      content: Text('Select Interest Type'),
+                                                      backgroundColor: Colors.red,
+                                                    ),
+                                                  );
+                                                }
+                                                else
+                                                {
 
-                                                  setState(() {
-                                                    _isFocused_email = false;
-                                                    _isFocus_name = false;
-                                                  });
+                                                  if(selectedPropertyType == null)
+                                                    {
+                                                      ScaffoldMessenger.of(context).showSnackBar(
+                                                        SnackBar(
+                                                          content: Text('Select Property Type'),
+                                                          backgroundColor: Colors.red,
+                                                        ),
+                                                      );
+                                                    }
+                                                  else
+                                                    {
 
-                                                  sendCreateInquiryRequest();
+                                                      if (_formKey.currentState != null &&
+                                                          _formKey.currentState!.validate()) {
+                                                        _formKey.currentState!.save();
 
-                                                }},
+                                                        setState(() {
+                                                          _isFocused_email = false;
+                                                          _isFocus_name = false;
+                                                        });
+
+
+                                                        sendCreateInquiryRequest();
+
+
+
+                                                      }
+                                                    }
+
+                                                }
+
+                                                },
                                               child: Text('Create'),
                                             ),
                                           ],)

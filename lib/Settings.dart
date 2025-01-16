@@ -6,6 +6,7 @@ import 'dart:convert'; // For JSON encoding
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'ActivitySourceReport.dart';
 import 'Sidebar.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -183,6 +184,24 @@ class _SettingsScreenState extends State<SettingsScreen> with TickerProviderStat
               ],
             ),
           ),
+
+          Divider(),
+
+          Padding(padding: EdgeInsets.only(top: 5,bottom: 5),
+              child: ListTile(
+                title: Text('Activity Source'),
+                subtitle: Text('Manage activity source masters for the app'),
+                onTap: ()
+                {
+                  Navigator.pushReplacement
+
+                    (
+                    context,
+                    MaterialPageRoute(builder: (context) => ActivitySourceReport()), // navigate to company and serial select screen
+                  );
+
+                },
+              )),
 
 
 

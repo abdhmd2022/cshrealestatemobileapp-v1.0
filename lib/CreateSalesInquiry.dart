@@ -202,6 +202,9 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
   List<int> selectedUnitIds = [];
 
+  List<Map<String, dynamic>>? filteredEmirates;
+
+
   void fetchFlatTypes(dynamic jsonResponse) {
     final data = jsonResponse is String
         ? jsonDecode(jsonResponse)
@@ -689,7 +692,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
       enableDrag: false,    // Prevent closing by dragging
       builder: (BuildContext context) {
         TextEditingController searchController = TextEditingController();
-        List<Map<String, dynamic>> filteredEmirates = List.from(emirates);
+        filteredEmirates = List.from(emirates);
 
         return StatefulBuilder(
           builder: (context, setState) {
@@ -763,6 +766,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                           updateSelectedAreasString();
 
 
+
                           /*updateEmiratesSelection();  // Update Emirates selection text*/
                           updateAreasSelection();     // Update Areas based on Emirates selection
                         });
@@ -774,7 +778,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                 SizedBox(height: 15),
                 Expanded(
                   child: ListView(
-                    children: filteredEmirates.map((emirate) {
+                    children: filteredEmirates!.map((emirate) {
                       return CheckboxListTile(
                         activeColor: Colors.blueGrey,
                         title: Text(emirate['label']),
@@ -2491,7 +2495,18 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                   selectedEmirates = "Select Emirate";
                                                   selectedEmiratesList.clear();
 
-                                                   selectedAreasString = "Select Area";
+                                                  emirates.forEach((emirate) {
+                                                    emirate['isSelected'] = false;
+                                                  });
+
+                                                  filteredEmirates = List.from(emirates);
+
+                                                  updateSelectedAreasString();
+
+
+                                                  updateAreasSelection();
+
+                                                  selectedAreasString = "Select Area";
                                                   selectedAreas.clear();
                                                   selectedAmenities.clear();
                                                   selectedSpecialFeatures.clear();
@@ -2507,9 +2522,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                   startController.text = _currentRangeValues!.start.toStringAsFixed(0);
                                                   endController.text = _currentRangeValues!.end.toStringAsFixed(0);
 
-
-
-                                                  /*print(_selectedrole['role_name']);*/
+                                                  isAllEmiratesSelected = false;
 
                                                   customernamecontroller.clear();
                                                   customercontactnocontroller.clear();

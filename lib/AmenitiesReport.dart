@@ -3,6 +3,7 @@ import 'package:cshrealestatemobile/constants.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:uuid/uuid.dart';
 
 class AmentiesReport extends StatefulWidget {
   @override
@@ -23,8 +24,13 @@ class _AmentiesReportState extends State<AmentiesReport> {
   }
 
   Future<void> sendAmenities() async {
+
+    var uuid = Uuid();
+
+    // Generate a v4 (random) UUID
+    String uuidValue = uuid.v4();
     final Map<String, dynamic> jsonBody = {
-      "uuid": uuid,
+      "uuid": uuidValue,
       "name": amenitiesController.text,
       "is_special": isSpecial ? 1 : 0,
     };
@@ -85,8 +91,13 @@ class _AmentiesReportState extends State<AmentiesReport> {
   }
 
   Future<void> editAmenities(int id, String amenity_name, bool is_special ) async {
+
+    var uuid = Uuid();
+
+    // Generate a v4 (random) UUID
+    String uuidValue = uuid.v4();
     final Map<String, dynamic> jsonBody = {
-      "uuid": uuid,
+      "uuid": uuidValue,
       "name": amenity_name,
       "is_special": is_special ? 1 : 0,
     };

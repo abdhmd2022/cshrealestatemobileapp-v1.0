@@ -3,6 +3,7 @@ import 'package:cshrealestatemobile/constants.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:uuid/uuid.dart';
 
 class LeadStatusReport extends StatefulWidget {
   @override
@@ -23,8 +24,12 @@ class _LeadStatusReportState extends State<LeadStatusReport> {
   }
 
   Future<void> sendLeadStatus() async {
+    var uuid = Uuid();
+
+    // Generate a v4 (random) UUID
+    String uuidValue = uuid.v4();
     final Map<String, dynamic> jsonBody = {
-      "uuid": uuid,
+      "uuid": uuidValue,
       "name": leadStatusController.text,
       "is_qualified": isQualified ? 1 : 0,
     };
@@ -86,8 +91,13 @@ class _LeadStatusReportState extends State<LeadStatusReport> {
   }
 
   Future<void> editLeadStatus(int id, String status_name, bool is_qualified ) async {
+
+    var uuid = Uuid();
+
+    // Generate a v4 (random) UUID
+    String uuidValue = uuid.v4();
     final Map<String, dynamic> jsonBody = {
-      "uuid": uuid,
+      "uuid": uuidValue,
       "name": status_name,
       "is_qualified": is_qualified ? 1 : 0,
     };

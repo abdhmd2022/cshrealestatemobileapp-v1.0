@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:uuid/uuid.dart';
 import 'SalesInquiryReport.dart';
 import 'constants.dart';
 import 'package:http/http.dart' as http;
@@ -463,9 +464,14 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
     // Replace with your API endpoint
     final String url = "$BASE_URL_config/v1/leads";
 
+    var uuid = Uuid();
+
+    // Generate a v4 (random) UUID
+    String uuidValue = uuid.v4();
+
     // Constructing the JSON body
     final Map<String, dynamic> requestBody = {
-      "uuid": uuid,
+      "uuid": uuidValue,
       "name": customernamecontroller.text,
       "email": emailcontroller.text,
       "mobile_no": '$_selectedCountryCode${customercontactnocontroller.text}',

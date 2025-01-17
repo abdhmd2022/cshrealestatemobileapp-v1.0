@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:uuid/uuid.dart';
 import 'SalesInquiryReport.dart';
 import 'constants.dart';
 import 'package:http/http.dart' as http;
@@ -385,9 +386,14 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
     // Replace with your API endpoint
     final String url = "$BASE_URL_config/v1/leads";
 
+    var uuid = Uuid();
+
+    // Generate a v4 (random) UUID
+    String uuidValue = uuid.v4();
+
     // Constructing the JSON body
     final Map<String, dynamic> requestBody = {
-      "uuid": uuid,
+      "uuid": uuidValue,
       "name": customernamecontroller.text,
       "email": emailcontroller.text,
       "mobile_no": '$_selectedCountryCode${customercontactnocontroller.text}',
@@ -1490,7 +1496,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                   );
                                                 },
                                                 child: Container(
-                                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
                                                   decoration: BoxDecoration(
                                                     border: Border.all(color: Colors.black, width: 1),
                                                     borderRadius: BorderRadius.circular(10),
@@ -1515,7 +1521,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                               // Phone Number Input Field
                                               Expanded(
                                                   child: TextFormField(
-
                                                     controller: customercontactnocontroller,
                                                     keyboardType: TextInputType.phone,
                                                     validator: (value) {

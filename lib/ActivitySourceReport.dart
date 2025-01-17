@@ -3,6 +3,7 @@ import 'package:cshrealestatemobile/constants.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:uuid/uuid.dart';
 
 class ActivitySourceReport extends StatefulWidget {
   @override
@@ -22,8 +23,13 @@ class _ActivitySourceReportState extends State<ActivitySourceReport> {
   }
 
   Future<void> sendActivitySources() async {
+
+    var uuid = Uuid();
+
+    // Generate a v4 (random) UUID
+    String uuidValue = uuid.v4();
     final Map<String, dynamic> jsonBody = {
-      "uuid": uuid,
+      "uuid": uuidValue,
       "name": activitySourceController.text,
     };
 
@@ -83,8 +89,12 @@ class _ActivitySourceReportState extends State<ActivitySourceReport> {
   }
 
   Future<void> editActivitySource(int id, String activitysource_name ) async {
+    var uuid = Uuid();
+
+    // Generate a v4 (random) UUID
+    String uuidValue = uuid.v4();
     final Map<String, dynamic> jsonBody = {
-      "uuid": uuid,
+      "uuid": uuidValue,
       "name": activitysource_name,
     };
 

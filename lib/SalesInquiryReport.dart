@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:cshrealestatemobile/CreateSalesInquiry.dart';
 import 'package:cshrealestatemobile/FollowupSalesInquiry.dart';
 import 'package:cshrealestatemobile/SalesInquiryTransfer.dart';
@@ -5,6 +7,7 @@ import 'package:cshrealestatemobile/constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:intl/intl.dart';
 
 import 'SalesDashboard.dart';
 import 'Sidebar.dart';
@@ -16,47 +19,111 @@ class SalesInquiryReport extends StatefulWidget {
 }
 
 class InquiryModel {
-  final String customer_name;
-  final String unit_type;
+  final String customerName;
+  final String unitType;
   final String area;
   final String emirate;
-  final String status;
-  final String inquiry_no;
-  final String creation_date;
   final String description;
-  final String contactno;
+  final String contactNo;
   final String email;
+  final int inquiryNo;
+  final String creationDate;
+  final double minPrice;
+  final double maxPrice;
+  final String status;
+  final List<Map<String, dynamic>> preferredAreas;
+  final List<Map<String, dynamic>> preferredFlatTypes;
+  final List<Map<String, dynamic>> preferredAmenities;
 
   InquiryModel({
-    required this.customer_name,
-    required this.unit_type,
+    required this.customerName,
+    required this.unitType,
     required this.area,
     required this.emirate,
-    required this.status,
-    required this.inquiry_no,
-    required this.creation_date,
     required this.description,
-    required this.contactno,
+    required this.contactNo,
     required this.email,
-
+    required this.inquiryNo,
+    required this.creationDate,
+    required this.minPrice,
+    required this.maxPrice,
+    required this.status,
+    required this.preferredAreas,
+    required this.preferredFlatTypes,
+    required this.preferredAmenities,
   });
 
-  factory InquiryModel.fromJson(Map<String, dynamic> json)
-  {
-    return InquiryModel
-      (
-      customer_name: json['customer_name'],
-      unit_type: json['unit_type'],
-      area: json['area'],
-      emirate: json['emirate'],
-      status: json['status'],
-      inquiry_no: json['inquiry_no'],
-      creation_date: json['creation_date'],
-      description: json['description'],
-      contactno: json['contactno'],
-      email: json['email'],
+  factory InquiryModel.fromJson(Map<String, dynamic> json) {
+    final rawDate = json['created_at'] ?? '';
+    final formattedDate = _formatDate(rawDate);
+    final areas = (json['preferred_areas'] as List<dynamic>?)
+        ?.map((area) => area['areas']['area_name'])
+        .join(', ') ??
+        'No areas specified';
 
+    // Fetch and concatenate emirates
+    final emirates = (json['preferred_areas'] as List<dynamic>?)
+        ?.map((area) => area['areas']['emirates_masterid'].toString())
+        .join(', ') ??
+        'No emirates specified';
+
+    final flatTypes = (json['preferred_flat_types'] as List<dynamic>?)
+        ?.map((flatType) => flatType['flat_types']['flat_type'])
+        .join(', ') ??
+        'No unit type specified';
+
+    return InquiryModel(
+
+      customerName: json['name'] ?? 'Unknown',
+      unitType: flatTypes,
+      area: areas,
+      emirate: emirates,
+      description: json['description'] ?? 'No description',
+      contactNo: json['mobile_no'] ?? 'N/A',
+      email: json['email'] ?? 'N/A',
+      inquiryNo: json['id'] ?? '',
+      creationDate: formattedDate,
+
+      minPrice: (json['min_price'] as num?)?.toDouble() ?? 0.0,
+      maxPrice: (json['max_price'] as num?)?.toDouble() ?? 0.0,
+      status: json['status'] ?? 'In Progress',
+      preferredAreas: (json['preferred_areas'] as List<dynamic>?)
+          ?.map((area) => area as Map<String, dynamic>)
+          .toList() ??
+          [],
+      preferredFlatTypes: (json['preferred_flat_types'] as List<dynamic>?)
+          ?.map((flatType) => flatType as Map<String, dynamic>)
+          .toList() ??
+          [],
+      preferredAmenities: (json['preferred_amenities'] as List<dynamic>?)
+          ?.map((amenity) => amenity as Map<String, dynamic>)
+          .toList() ??
+          [],
     );
+  }
+
+  /// Helper method to safely extract nested values
+  static T _getNestedValue<T>(
+      Map<String, dynamic> json, List<dynamic> keys, T defaultValue) {
+    dynamic value = json;
+    for (var key in keys) {
+      if (value is Map<String, dynamic> && value.containsKey(key)) {
+        value = value[key];
+      } else if (value is List && key is int && key < value.length) {
+        value = value[key];
+      } else {
+        return defaultValue;
+      }
+    }
+    return value as T? ?? defaultValue;
+  }
+  static String _formatDate(String rawDate) {
+    try {
+      final parsedDate = DateTime.parse(rawDate);
+      return DateFormat('dd-MMM-yyyy').format(parsedDate);
+    } catch (e) {
+      return rawDate; // Return the raw date if parsing fails
+    }
   }
 }
 
@@ -64,33 +131,7 @@ class _SalesInquiryReportState
     extends State<SalesInquiryReport> with TickerProviderStateMixin {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  final List<InquiryModel> salesinquiry = [
-    InquiryModel(
-        customer_name: 'Ali',
-        unit_type: '1BHK, 3BHK',
-        area: 'Bur Dubai, Al Khan',
-        emirate: 'Dubai, Sharjah',
-        status: 'Closed',
-        inquiry_no: "INQ-001",
-        creation_date: "20-12-2024",
-        description: "This is description",
-        contactno: "  500000000",
-        email: "saadan@ca-eim.com"
-
-    ),
-    InquiryModel(
-        customer_name: 'Saadan',
-        unit_type: 'Studio',
-        area: 'Al Qusais',
-        emirate: 'Dubai',
-        status: 'In Progress',
-        inquiry_no: "INQ-002",
-        creation_date: "22-12-2024",
-        description: "This is description",
-        contactno: "500000000",
-        email: "saadan@ca-eim.com"
-    ),
-
+   List<InquiryModel> salesinquiry = [
   ];
 
   List<InquiryModel> filteredInquiries = [];
@@ -102,22 +143,65 @@ class _SalesInquiryReportState
   @override
   void initState() {
     super.initState();
-    // Initialize all inquirys to be collapsed by default
-    _expandedinquirys = List.generate(salesinquiry.length, (index) => false);
-    filteredInquiries = salesinquiry;
+    fetchInquiries();
   }
+
+  List<InquiryModel> parseInquiries(Map<String, dynamic> jsonResponse) {
+    final leads = jsonResponse['data']?['leads'] as List<dynamic>? ?? [];
+    return leads.map((lead) => InquiryModel.fromJson(lead)).toList();
+  }
+
+  Future<void> fetchInquiries() async {
+
+    print('fetching inquiries');
+
+    filteredInquiries.clear();
+    salesinquiry.clear();
+
+    final url = '$BASE_URL_config/v1/leads'; // Replace with your API endpoint
+    String token = 'Bearer $Company_Token'; // auth token for request
+
+    Map<String, String> headers = {
+      'Authorization': token,
+      "Content-Type": "application/json"
+    };
+    try {
+      final response = await http.get(Uri.parse(url),
+        headers: headers,);
+      if (response.statusCode == 200) {
+
+        setState(() {
+
+          print(response.body);
+          final jsonResponse = json.decode(response.body);
+          salesinquiry = parseInquiries(jsonResponse);
+          _expandedinquirys = List.generate(salesinquiry.length, (index) => false);
+
+          filteredInquiries = salesinquiry;
+        });
+      } else {
+        print("Error: ${response.statusCode}");
+        print("Message: ${response.body}");
+        throw Exception('Failed to load data');
+      }
+    } catch (e) {
+
+      print('Error fetching data: $e');
+    }
+  }
+
 
   void _updateSearchQuery(String query) {
     setState(() {
       searchQuery = query;
       filteredInquiries = salesinquiry
           .where((inquiry) =>
-      inquiry.customer_name.toLowerCase().contains(query.toLowerCase()) ||
-          inquiry.unit_type.toLowerCase().contains(query.toLowerCase()) ||
+      inquiry.customerName.toLowerCase().contains(query.toLowerCase()) ||
+          inquiry.unitType.toLowerCase().contains(query.toLowerCase()) ||
           inquiry.area.toLowerCase().contains(query.toLowerCase()) ||
           inquiry.emirate.toLowerCase().contains(query.toLowerCase()) ||
           inquiry.status.toLowerCase().contains(query.toLowerCase()) ||
-          inquiry.inquiry_no.toLowerCase().contains(query.toLowerCase()))
+          inquiry.inquiryNo.toString().toLowerCase().contains(query.toLowerCase()))
           .toList();
     });
   }
@@ -232,7 +316,7 @@ class _SalesInquiryReportState
         });
       },
       child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 10.0),
+        margin: const EdgeInsets.symmetric(vertical: 5.0),
         padding: const EdgeInsets.all(16.0),
         decoration: BoxDecoration(
           color: Colors.white,
@@ -272,11 +356,11 @@ class _SalesInquiryReportState
                             Colors.blue,
                                 () {
 
-                              String name = inquiry.customer_name;
+                              String name = inquiry.customerName;
                               List<String> emiratesList = inquiry.emirate.split(',').map((e) => e.trim()).toList();
                               List<String> areaList = inquiry.area.split(',').map((e) => e.trim()).toList();
-                              List<String> unittype = inquiry.unit_type.split(',').map((e) => e.trim()).toList();
-                              String contactno = inquiry.contactno;
+                              List<String> unittype = inquiry.unitType.split(',').map((e) => e.trim()).toList();
+                              String contactno = inquiry.contactNo;
                               String email = inquiry.email;
 
 
@@ -293,11 +377,11 @@ class _SalesInquiryReportState
                               Colors.orange,
                                   () {
 
-                                String name = inquiry.customer_name;
+                                String name = inquiry.customerName;
                                 String emirate = inquiry.emirate;
                                 String area = inquiry.area;
-                                String unittype = inquiry.unit_type;
-                                String contactno = inquiry.contactno;
+                                String unittype = inquiry.unitType;
+                                String contactno = inquiry.contactNo;
                                 String email = inquiry.email;
 
                                 Navigator.pushReplacement(
@@ -384,7 +468,7 @@ class _SalesInquiryReportState
             Icon(Icons.confirmation_number, color: Colors.teal, size: 24.0),
             SizedBox(width: 8.0),
             Text(
-              inquiry.inquiry_no,
+              inquiry.inquiryNo.toString(),
               style: TextStyle(
                 fontSize: 18.0,
                 fontWeight: FontWeight.bold,
@@ -401,10 +485,11 @@ class _SalesInquiryReportState
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildInfoRow('Name:', inquiry.customer_name),
-        _buildInfoRow('Unit Type:', inquiry.unit_type),
+        _buildInfoRow('Name:', inquiry.customerName),
+        _buildInfoRow('Unit Type:', inquiry.unitType),
+        _buildInfoRow('Email:', inquiry.email),
         _buildInfoRow('Area:', inquiry.area),
-        _buildInfoRow('Date:', inquiry.creation_date),
+        _buildInfoRow('Date:', inquiry.creationDate),
       ],
     );
   }

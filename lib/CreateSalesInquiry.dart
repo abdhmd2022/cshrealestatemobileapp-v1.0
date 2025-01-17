@@ -373,7 +373,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
     List<int> areasIds = selectedAreas.map((area) => area['id'] as int).toList();
 
-
     //converting date to yyyy-MM-dd format
     String? formattedDate;
     if (nextFollowUpDate != null) {
@@ -411,7 +410,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
     };
 
     print('create request body $requestBody');
-
 
     try {
       final response = await http.post(

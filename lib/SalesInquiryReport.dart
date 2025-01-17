@@ -449,14 +449,11 @@ class _SalesInquiryReportState
                 ),
               ),
             )
-
-
           ],
         ),
       ),
     );
   }
-
 
   Widget _buildinquiryHeader(InquiryModel inquiry) {
     return Row(
@@ -464,7 +461,6 @@ class _SalesInquiryReportState
       children: [
         Row(
           children: [
-
             Icon(Icons.confirmation_number, color: Colors.teal, size: 24.0),
             SizedBox(width: 8.0),
             Text(
@@ -567,10 +563,9 @@ class _SalesInquiryReportState
     );
   }
 
-
-
   Widget _buildDecentButton(
       String label, IconData icon, Color color, VoidCallback onPressed) {
+
     return InkWell(
       onTap: onPressed,
       borderRadius: BorderRadius.circular(30.0),
@@ -610,6 +605,5 @@ class _SalesInquiryReportState
       ),
     );
   }
-
 }
 

@@ -363,11 +363,18 @@ class _SalesInquiryReportState
                               String contactno = inquiry.contactNo;
                               String email = inquiry.email;
 
+                              final RegExp regExp = RegExp(r"^\+\d{1,3}");
+
+                              // Remove the country code
+                              String processedNumber = contactno.replaceAll(regExp, "");
+
+                              // Print the result
+                              print('number $processedNumber'); // Output: 9876543210
 
                               Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(builder: (context) =>
-                                      FollowupSalesInquiry(name: name, unittype: unittype, existingAreaList: areaList, existingEmirateList: emiratesList, contactno: contactno, email: email)));
+                                      FollowupSalesInquiry(name: name, unittype: unittype, existingAreaList: areaList, existingEmirateList: emiratesList, contactno: processedNumber, email: email)));
                             },
                           ),
                           SizedBox(width:5),
@@ -461,7 +468,7 @@ class _SalesInquiryReportState
       children: [
         Row(
           children: [
-            Icon(Icons.confirmation_number, color: Colors.teal, size: 24.0),
+            Icon(Icons.label_important, color: Colors.teal, size: 24.0),
             SizedBox(width: 8.0),
             Text(
               inquiry.inquiryNo.toString(),

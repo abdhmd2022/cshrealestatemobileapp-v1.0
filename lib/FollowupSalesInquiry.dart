@@ -4,6 +4,9 @@ import 'package:country_picker/country_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:multi_select_flutter/chip_display/multi_select_chip_display.dart';
+import 'package:multi_select_flutter/dialog/multi_select_dialog_field.dart';
+import 'package:multi_select_flutter/util/multi_select_item.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 import 'SalesInquiryReport.dart';
@@ -157,9 +160,9 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
   final List<Map<String, dynamic>> specialfeatures = [];
   final List<Map<String, dynamic>> amenities = [];
 
-  final Set<int> selectedSpecialFeatures = {};
+   Set<int> selectedSpecialFeatures = {};
 
-  final Set<int> selectedAmenities = {};
+   Set<int> selectedAmenities = {};
 
   String _selectedCountryCode = '+971'; // Default to UAE country code
   String _selectedCountryISO = 'AE'; // Default to UAE ISO code
@@ -303,8 +306,8 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
     } catch (e) {
       print("Error loading areas: $e");
     }
-  }
 
+  }
 
   void populateEmiratesList(dynamic jsonResponse) {
     try {
@@ -331,7 +334,6 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
       print('Error populating Emirates list: $e');
     }
   }
-
 
   void fetchFlatTypes(dynamic jsonResponse) {
     final data = jsonResponse is String
@@ -579,8 +581,6 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
             activitysource_list.add(activitySource);
 
 
-            // Optionally, you can print the object for verification
-            print('ID: ${activitySource.id}, Name: ${activitySource.name}');
           }
         });
       } else {
@@ -879,7 +879,6 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
     if (selectedItems != null && selectedItems.isNotEmpty) {
       setState(() {
         selectedUnitType = selectedItems['names']!.join(', ');
-        print('unit types id $selectedUnitIds');
         isUnitSelected = true;  // Mark as selected
       });
     } else {
@@ -1019,7 +1018,6 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
         // Update the selectedEmirates string
         selectedEmiratesString = selectedItems.map((item) => item['label'] as String).join(', ');
 
-        print('emirates list $selectedEmiratesList');
 
         // Refresh areas to display
         updateAreasDisplay();
@@ -1167,7 +1165,6 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
         selectedAreas = selectedItems;
         selectedAreasString = selectedItems.map((item) => item['label'] as String).join(', ');
 
-        print('select areas $selectedAreas');
 
       });
     } else {
@@ -1194,7 +1191,6 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
     customercontactnocontroller.text = widget.contactno;
     emailcontroller.text = widget.email;
 
-    print('emirate list ${widget.existingEmirateList}');
 
     prefs = await SharedPreferences.getInstance();
     setState(() {
@@ -2159,7 +2155,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
 
 
                                 Container(
-                                  padding: const EdgeInsets.only(left: 20.0, right: 20, top: 15),
+                                  padding: const EdgeInsets.only(left: 20.0, right: 20, top: 10),
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
@@ -2172,42 +2168,73 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                         ),
                                       ),
                                       SizedBox(height: 10),
-                                      SingleChildScrollView(
-                                        child: Wrap(
-                                          spacing: 8.0,
-                                          runSpacing: 8.0,
-                                          children: amenities.map((amenity) {
-                                            final isSelected = selectedAmenities.contains(amenity['id']);
-                                            return ChoiceChip(
-                                              label: Text(
-                                                amenity['name'],
-                                                style: TextStyle(
-                                                  color: isSelected ? Colors.white : Colors.black,
-                                                ),
-                                              ),
-                                              selected: isSelected,
-                                              checkmarkColor: Colors.white,
-                                              selectedColor: appbar_color,
-                                              onSelected: (bool selected) {
-                                                setState(() {
-                                                  if (selected) {
-                                                    selectedAmenities.add(amenity['id']);
-                                                  } else {
-                                                    selectedAmenities.remove(amenity['id']);
-                                                  }
-                                                });
-                                              },
-                                              backgroundColor: Colors.white,
-                                            );
-                                          }).toList(),
+
+                                      Container(
+                                        padding: EdgeInsets.symmetric(horizontal: 12),
+                                        margin: EdgeInsets.only(left: 0, right: 0, bottom: 10),
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+
+                                          borderRadius: BorderRadius.circular(8),
+                                          border: Border.all(color: Colors.black, width: 0.75),
                                         ),
-                                      ),
+                                        child: MultiSelectDialogField(
+                                          items: amenities
+                                              .map((amenity) =>
+                                              MultiSelectItem<int>(amenity['id'], amenity['name']))
+                                              .toList(),
+
+                                          initialValue: selectedAmenities.toList(),
+                                          title: Text("Amenities"),
+                                          searchable: true,
+                                          selectedColor: appbar_color,
+                                          checkColor: Colors.white,
+                                          confirmText: Text(
+                                            "Confirm",
+                                            style: TextStyle(color: appbar_color), // Custom confirm button
+                                          ),
+                                          cancelText: Text(
+                                            "Cancel",
+                                            style: TextStyle(color: appbar_color), // Custom cancel button
+                                          ),
+                                          buttonIcon: Icon(Icons.arrow_drop_down, color: Colors.black54),
+                                          buttonText: Text(
+                                            "Select Amenities",
+                                            style: TextStyle(color: Colors.black54, fontSize: 16),
+                                          ),
+                                          onConfirm: (values) {
+                                            setState(() {
+                                              selectedAmenities = Set<int>.from(values);
+                                            });
+                                          },
+                                          chipDisplay: MultiSelectChipDisplay(
+                                            textStyle: TextStyle(color: Colors.white), // Selected value text color
+                                            chipColor: appbar_color,
+                                            items: selectedAmenities
+                                                .map((id) => MultiSelectItem<int>(
+                                                id, amenities.firstWhere((item) => item['id'] == id)['name']))
+                                                .toList(),
+                                            onTap: (value) {
+                                              setState(() {
+                                                selectedAmenities.remove(value);
+                                              });
+                                            },
+                                          ),
+                                          decoration: BoxDecoration(
+                                            border: Border.all(color: Colors.transparent),
+                                          ),
+
+                                        ),
+                                      )
+
+
+
                                     ],
                                   ),
                                 ),
 
                                 Container(
-                                  padding: const EdgeInsets.only(left: 20.0, right: 20, top: 15),
+                                  padding: const EdgeInsets.only(left: 20.0, right: 20, top: 10),
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
@@ -2220,36 +2247,66 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                         ),
                                       ),
                                       SizedBox(height: 10),
-                                      SingleChildScrollView(
-                                        child: Wrap(
-                                          spacing: 8.0,
-                                          runSpacing: 8.0,
-                                          children: specialfeatures.map((amenity) {
-                                            final isSelected = selectedSpecialFeatures.contains(amenity['id']);
-                                            return ChoiceChip(
-                                              label: Text(
-                                                amenity['name'],
-                                                style: TextStyle(
-                                                  color: isSelected ? Colors.white : Colors.black,
-                                                ),
-                                              ),
-                                              selected: isSelected,
-                                              checkmarkColor: Colors.white,
-                                              selectedColor: appbar_color,
-                                              onSelected: (bool selected) {
-                                                setState(() {
-                                                  if (selected) {
-                                                    selectedSpecialFeatures.add(amenity['id']);
-                                                  } else {
-                                                    selectedSpecialFeatures.remove(amenity['id']);
-                                                  }
-                                                });
-                                              },
-                                              backgroundColor: Colors.white,
-                                            );
-                                          }).toList(),
+
+
+                                      Container(
+                                        padding: EdgeInsets.symmetric(horizontal: 12),
+                                        margin: EdgeInsets.only(left: 0, right: 0, bottom: 10),
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+
+                                          borderRadius: BorderRadius.circular(8),
+                                          border: Border.all(color: Colors.black, width: 0.75),
                                         ),
-                                      ),
+                                        child:  MultiSelectDialogField(
+                                          items: specialfeatures
+                                              .map((amenity) =>
+                                              MultiSelectItem<int>(amenity['id'], amenity['name']))
+                                              .toList(),
+                                          initialValue: selectedSpecialFeatures.toList(),
+                                          title: Text("Special Features"),
+                                          searchable: true,
+                                          selectedColor: appbar_color,
+                                          checkColor: Colors.white,
+                                          confirmText: Text(
+                                            "Confirm",
+                                            style: TextStyle(color: appbar_color),
+                                          ),
+                                          cancelText: Text(
+                                            "Cancel",
+                                            style: TextStyle(color: appbar_color),
+                                          ),
+                                          buttonIcon: Icon(Icons.arrow_drop_down, color: Colors.black54),
+                                          buttonText: Text(
+                                            "Select Special Features",
+                                            style: TextStyle(color: Colors.black54, fontSize: 16),
+                                          ),
+                                          onConfirm: (values) {
+                                            setState(() {
+                                              selectedSpecialFeatures = Set<int>.from(values);
+                                            });
+                                          },
+                                          chipDisplay: MultiSelectChipDisplay(
+                                            textStyle: TextStyle(color: Colors.white),
+                                            chipColor: appbar_color,
+                                            items: selectedSpecialFeatures
+                                                .map((id) => MultiSelectItem<int>(
+                                                id,
+                                                specialfeatures
+                                                    .firstWhere((feature) => feature['id'] == id)['name']))
+                                                .toList(),
+                                            onTap: (value) {
+                                              setState(() {
+                                                selectedSpecialFeatures.remove(value);
+                                              });
+                                            },
+                                          ),
+                                          decoration: BoxDecoration(
+                                            border: Border.all(color: Colors.transparent),
+                                          ),
+                                        ),
+
+                                      )
                                     ],
                                   ),
                                 ),

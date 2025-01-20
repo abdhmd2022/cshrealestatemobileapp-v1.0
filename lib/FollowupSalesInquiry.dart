@@ -1342,7 +1342,6 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                         setState(() {
                                           _isFocus_name = true;
                                           _isFocused_email = false;
-
                                         });
                                       },
                                       onFieldSubmitted: (value) {
@@ -1363,9 +1362,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                           _isFocused_email = false;
                                         });
                                       },
-
                                     )),
-
 
                                 Padding(
                                   padding: EdgeInsets.only(top:20,left: 20,right: 20,bottom: 0),
@@ -1375,7 +1372,6 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                       // Country Picker
                                       GestureDetector(
                                         onTap: null,
-
                                         child: Container(
                                           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                                           decoration: BoxDecoration(
@@ -1404,21 +1400,16 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                       Expanded(
                                         child: TextFormField(
                                           enabled: false,
-
                                           controller: customercontactnocontroller,
                                           keyboardType: TextInputType.phone,
                                           validator: (value) {
-                                            if (value == null || value.isEmpty) {
-                                              return 'Contact No. is required';
+                                            if (value == null || value.isEmpty) {return 'Contact No. is required';
                                             }
                                             return null; // Show validation message if any
                                           },
-
-
                                           decoration: InputDecoration(
                                             hintText: _hintText, // Dynamic hint
                                             contentPadding: EdgeInsets.all(15),
-// text
                                             label: Text('Contact No',
                                               style: TextStyle(
                                                   fontWeight: FontWeight.normal,
@@ -1438,13 +1429,10 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                             ),
                                           ),
                                         ),
-
-
                                       )
                                     ],
                                   ),
                                 ),
-
 
                                 /* Padding(
 
@@ -1510,8 +1498,6 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                       },
 
                                     )),*/
-
-
 
                                 Padding(
 
@@ -1581,23 +1567,16 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
 
                                     )),
 
-
-
-
                                 Container(
                                   child: Column(
-
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-
                                       Padding(
                                           padding: EdgeInsets.only(top:20,left:20,right:20,bottom :0),
-
                                           child: Column(
                                               mainAxisAlignment: MainAxisAlignment.start,
                                               crossAxisAlignment: CrossAxisAlignment.start,
                                               children: [
-
                                                 DropdownButtonFormField<FollowUpStatus>(
                                                   value: selectedfollowup_type,  // This should be an object of FollowUpStatus
                                                   decoration: InputDecoration(
@@ -1643,14 +1622,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                                   onChanged: (FollowUpStatus? value) {
                                                     setState(() {
                                                       selectedfollowup_type = value;
-                                                    });
-                                                  },
-                                                )
-                                                // Switch for isQualified
-                                              ])),
-                                    ],
-                                  ),
-                                ), // follow up type
+                                                    });})]))])), // follow up type
 
                                   Container(
                                     child: Column(

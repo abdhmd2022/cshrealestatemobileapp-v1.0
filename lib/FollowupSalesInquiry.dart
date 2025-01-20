@@ -1429,7 +1429,8 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                           enabled: false,
                                           controller: customercontactnocontroller,
                                           keyboardType: TextInputType.phone,
-                                          validator: (value) {
+                                          validator: (value)
+                                          {
                                             if (value == null || value.isEmpty) {return 'Contact No. is required';
                                             }
                                             return null; // Show validation message if any
@@ -1452,19 +1453,10 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                               borderRadius: BorderRadius.circular(10),
                                               borderSide: const BorderSide(
                                                 color: Colors.black,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                ),
+                                              )))))])),
 
                                 /* Padding(
-
                                     padding: EdgeInsets.only(top:10,left: 20,right: 20,bottom: 0),
-
                                     child: TextFormField(
                                       controller: customercontactnocontroller,
                                       enabled: false,
@@ -1473,7 +1465,6 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                         if (value!.isEmpty) {
                                           return 'Contact No. is required';
                                         }
-
                                         return null;
                                       },
                                       decoration: InputDecoration(
@@ -1494,7 +1485,6 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                           borderRadius: BorderRadius.circular(10),
                                           borderSide: BorderSide(
                                             color:  Colors.black, // Set the focused border color
-
                                           ),
                                         ),
                                       ),
@@ -1514,7 +1504,6 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                         setState(() {
                                           _isFocused_email = true;
                                           _isFocus_name = false;
-
                                         });
                                       },
                                       onEditingComplete: () {
@@ -1523,8 +1512,8 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                           _isFocus_name = false;
                                         });
                                       },
-
-                                    )),*/
+                                    )),
+                                    */
 
                                 Padding(
 
@@ -1594,6 +1583,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
 
                                     )),
 
+                                // follow up type
                                 Container(
                                     child: Column(
                                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1651,9 +1641,8 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                                             selectedfollowup_type = value;
                                                           });})]))])),
 
-                                 // follow up type
-
-                                  Container(
+                                 // follow up date
+                                Container(
                                     child: Column(
 
                                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -1745,6 +1734,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                     ),
                                   ), // next follow up date
 
+                                // follow up status
                                 Container(
                                     child: Column(
                                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1862,9 +1852,6 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                     ],
                                   ),
                                 ),*/
-
-
-
 
                                 /*Container(
                                   margin: EdgeInsets.only( top:15,
@@ -2192,7 +2179,6 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                   ),
                                 ),
 
-
                                 Container(
                                   padding: const EdgeInsets.only(left: 20.0, right: 20, top: 10),
                                   child: Column(
@@ -2350,6 +2336,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                   ),
                                 ),
 */
+
                                 /*Padding(padding: EdgeInsets.only(top:0,left: 20,right: 20,bottom: 0),
 
                                     child: TextFormField(
@@ -2410,7 +2397,6 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
 
 
                                 ),*/
-
 
                                 /*Container(
                                 child: Column(
@@ -2496,7 +2482,6 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                   ],
                                 ),
                               ),*/
-
 
                                 Container(
                                   margin: EdgeInsets.only( top:15,

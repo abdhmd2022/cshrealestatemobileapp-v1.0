@@ -2266,7 +2266,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                   ),
 
                                   Container(
-                                    padding: const EdgeInsets.only(left: 20.0, right: 20, top: 10),
+                                    padding: const EdgeInsets.only(left: 20.0, right: 20, top: 0),
                                     child: Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
@@ -2345,7 +2345,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
 
                                   Container(
-                                    padding: const EdgeInsets.only(left: 20.0, right: 20, top: 15),
+                                    padding: const EdgeInsets.only(left: 20.0, right: 20, top: 0),
                                     child: Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
@@ -2576,7 +2576,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                   ),*/
 
                                   Container(
-                                    margin: EdgeInsets.only( top:15,
+                                    margin: EdgeInsets.only( top:10,
                                         bottom: 0,
                                         left: 20,
                                         right: 20),

@@ -95,8 +95,6 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
   final areaFocusNode = FocusNode();
   final descriptionFocusNode = FocusNode();
 
-  String? selectedfollowup_status;
-  FollowUpStatus? selectedfollowup_type;
 
   DateTime? nextFollowUpDate;
 
@@ -126,7 +124,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
 
   double? range_min, range_max;
 
-  FollowUpStatus? selectedinquiry_status;
+  FollowUpStatus? selectedfollowup_type;
 
   ActivitySource? selectedactivity_source;
 
@@ -479,7 +477,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
       "mobile_no": '$_selectedCountryCode${customercontactnocontroller.text}',
       "areas": areasIds,
       "flatTypes": selectedUnitIds,
-      "lead_status_id": selectedinquiry_status!.id,
+      "lead_status_id": selectedfollowup_type!.id,
       "next_followup_date": formattedDate,
       "property_type": selectedPropertyType,
       "interest_type": interestTypes[selectedInterestType ?? 0],
@@ -1308,7 +1306,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
 
                                 Padding(
 
-                                    padding: EdgeInsets.only(top:0,left: 20,right: 20,bottom: 0),
+                                    padding: EdgeInsets.only(top:30,left: 20,right: 20,bottom: 0),
                                     child: TextFormField(
                                       controller: customernamecontroller,
                                       keyboardType: TextInputType.name,
@@ -1376,23 +1374,12 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                     children: [
                                       // Country Picker
                                       GestureDetector(
-                                        onTap: () {
-                                          showCountryPicker(
-                                            context: context,
-                                            showPhoneCode: true,
-                                            onSelect: (Country country) {
-                                              setState(() {
-                                                _selectedCountryCode = '+${country.phoneCode}';
-                                                _selectedCountryISO = country.countryCode;
-                                                _selectedCountryFlag = country.flagEmoji; // Store the flag emoji
-                                              });
-                                            },
-                                          );
-                                        },
+                                        onTap: null,
+
                                         child: Container(
                                           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                                           decoration: BoxDecoration(
-                                            border: Border.all(color: Colors.black, width: 1),
+                                            border: Border.all(color: Colors.grey, width: 1),
                                             borderRadius: BorderRadius.circular(10),
                                           ),
                                           child: Row(
@@ -1404,7 +1391,8 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                               const SizedBox(width: 8), // Add spacing between flag and text
                                               Text(
                                                 '$_selectedCountryCode', // Display the country code
-                                                style: const TextStyle(fontSize: 16),
+                                                style: const TextStyle(fontSize: 16,
+                                                color: Colors.grey),
                                               ),
                                             ],
                                           ),
@@ -1415,6 +1403,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                       // Phone Number Input Field
                                       Expanded(
                                         child: TextFormField(
+                                          enabled: false,
 
                                           controller: customercontactnocontroller,
                                           keyboardType: TextInputType.phone,
@@ -1610,7 +1599,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                               children: [
 
                                                 DropdownButtonFormField<FollowUpStatus>(
-                                                  value: selectedinquiry_status,  // This should be an object of FollowUpStatus
+                                                  value: selectedfollowup_type,  // This should be an object of FollowUpStatus
                                                   decoration: InputDecoration(
                                                     hintText: 'Select Follow-up Status (required)',
                                                     label: Text(
@@ -1636,7 +1625,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                                   ),
                                                   validator: (value) {
                                                     if (value == null) {
-                                                      return 'Inquiry Status is required'; // Error message
+                                                      return 'Follow-up Status is required'; // Error message
                                                     }
                                                     return null; // No error if a value is selected
                                                   },
@@ -1653,23 +1642,15 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                                   }).toList(),
                                                   onChanged: (FollowUpStatus? value) {
                                                     setState(() {
-                                                      selectedinquiry_status = value;
-
-
+                                                      selectedfollowup_type = value;
                                                     });
                                                   },
                                                 )
-
                                                 // Switch for isQualified
-
                                               ])),
-
-
                                     ],
                                   ),
                                 ), // follow up type
-
-
 
                                   Container(
                                     child: Column(
@@ -1763,7 +1744,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                     ),
                                   ), // next follow up date
 
-                                Container(
+                                /*Container(
                                   padding: const EdgeInsets.only(left: 20.0, right: 20, top: 15),
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -1822,12 +1803,12 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                       ),
                                     ],
                                   ),
-                                ),
+                                ),*/
 
 
 
 
-                                Container(
+                                /*Container(
                                   margin: EdgeInsets.only( top:15,
                                       bottom: 0,
                                       left: 20,
@@ -1851,9 +1832,9 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                       ),
                                     ],
                                   ),
-                                ),  // unit type
+                                ),*/  // unit type
 
-                                Padding(
+                                /*Padding(
                                   padding: EdgeInsets.only(top: 0, left: 20, right: 20, bottom: 0),
                                   child: GestureDetector(
                                     onTap: () => _openUnitTypeDropdown(context), // Open the custom dropdown
@@ -1894,7 +1875,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                       },
                                     ),
                                   ),
-                                ),
+                                ),*/
 
                                 /*Padding(padding: EdgeInsets.only(top:0,left: 20,right: 20,bottom: 0),
 
@@ -1957,7 +1938,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
 
                                 ),*/
 
-                                Container(
+                                /*Container(
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
@@ -2028,7 +2009,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                       )
 
 
-                                      /*Padding(
+                                      *//*Padding(
                                         padding: EdgeInsets.only(top:0,left:20,right:20,bottom :0),
 
                                         child: DropdownButtonFormField<dynamic>(
@@ -2076,13 +2057,13 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                             return null; // No error if a value is selected
                                           },
                                         ),
-                                      ),*/
+                                      ),*//*
 
                                     ],
                                   ),
-                                ),
+                                ),*/
 
-                                Container(
+                                /*Container(
                                   margin: EdgeInsets.only( top:15,
                                       bottom: 0,
                                       left: 20,
@@ -2106,9 +2087,9 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                       ),
                                     ],
                                   ),
-                                ),
+                                ),*/
 
-                                Padding(
+                                /*Padding(
                                   padding: EdgeInsets.only(top: 0, left: 20, right: 20, bottom: 0),
                                   child: GestureDetector(
                                     onTap: selectedEmiratesList.isNotEmpty
@@ -2234,7 +2215,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                 ),
 
                                 Container(
-                                  padding: const EdgeInsets.only(left: 20.0, right: 20, top: 10),
+                                  padding: const EdgeInsets.only(left: 20.0, right: 20, top: 0),
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
@@ -2310,7 +2291,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                     ],
                                   ),
                                 ),
-
+*/
                                 /*Padding(padding: EdgeInsets.only(top:0,left: 20,right: 20,bottom: 0),
 
                                     child: TextFormField(
@@ -2458,6 +2439,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                 ),
                               ),*/
 
+
                                 Container(
                                   margin: EdgeInsets.only( top:15,
                                       bottom: 0,
@@ -2566,55 +2548,12 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                               setState(() {
 
                                                 _formKey.currentState?.reset();
-                                                selectedfollowup_type = followuptype_list.first;
 
                                                 /*print(_selectedrole['role_name']);*/
 
-                                                for (var emirate in emirates) {
-                                                  emirate['isSelected'] = false;
-                                                }
-
-                                                // If no emirates are selected, clear all areas
-                                                if (emirates.every((emirate) => !emirate['isSelected'])) {
-
-                                                  selectedAreas.clear();
-                                                  selectedAreasString = "Select Area";
-
-                                                  // Reset all area states
-                                                  areas.forEach((key, areaList) {
-                                                    for (var area in areaList) {
-                                                      area['isSelected'] = false;
-                                                    }
-                                                  });
-                                                }
-
-                                                isAllEmiratesSelected = false;
-
-                                                // Update the selected Emirates text field
-                                                selectedEmirates = emirates
-                                                    .where((emirate) => emirate['isSelected'])
-                                                    .map((emirate) => emirate['label'])
-                                                    .join(', ') ?? "Select Emirate";
-
-                                                selectedEmiratesList.clear();
-
-                                                updateSelectedAreasString(filteredAreas!);
-
-                                                for (var unit in unitTypes) {
-                                                  unit['isSelected'] = false;
-                                                }
-
-                                                selectedUnitType = "Select Unit Types";  // Reset if no selection
-                                                isUnitSelected = false;  // Mark as not selected
-
-                                                selectedfollowup_status = null;
                                                 nextFollowUpDate = null;
                                                 selectedfollowup_type = null;
-
-
-
-
-                                                /*updateEmiratesSelection();  // Update Emirates selection text*/
+                                                selectedfollowup_type = null;
                                                 remarksController.clear();
 
                                               });

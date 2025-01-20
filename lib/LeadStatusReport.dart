@@ -170,11 +170,11 @@ class _LeadStatusReportState extends State<LeadStatusReport> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          backgroundColor: Colors.blueGrey[50],
+          backgroundColor: appbar_color[50],
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           title: Text(
             "Lead Status",
-            style: TextStyle(color: Colors.blueGrey[900]),
+            style: TextStyle(color: appbar_color[900]),
           ),
           content: Form(
             key: _formKey,
@@ -184,7 +184,7 @@ class _LeadStatusReportState extends State<LeadStatusReport> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text("Is Qualified", style: TextStyle(color: Colors.blueGrey[900])),
+                    Text("Is Qualified", style: TextStyle(color: appbar_color[900])),
                     Switch(
                       value: isQualified,
                       onChanged: (value) {
@@ -194,7 +194,7 @@ class _LeadStatusReportState extends State<LeadStatusReport> {
                           showLeadStatusDialog();
                         });
                       },
-                      activeColor: Colors.blueGrey,
+                      activeColor: appbar_color,
                     ),
                   ],
                 ),
@@ -212,12 +212,12 @@ class _LeadStatusReportState extends State<LeadStatusReport> {
                   },
                   decoration: InputDecoration(
                     labelText: "Lead Status Name",
-                    labelStyle: TextStyle(color: Colors.blueGrey),
+                    labelStyle: TextStyle(color: appbar_color),
                     focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.blueGrey),
+                      borderSide: BorderSide(color: appbar_color),
                     ),
                     enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.blueGrey[200]!),
+                      borderSide: BorderSide(color: appbar_color[200]!),
                     ),
                   ),
                 ),
@@ -230,7 +230,7 @@ class _LeadStatusReportState extends State<LeadStatusReport> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: Text("Cancel", style: TextStyle(color: Colors.blueGrey)),
+              child: Text("Cancel", style: TextStyle(color: appbar_color)),
             ),
             ElevatedButton(
               onPressed: () {
@@ -244,7 +244,7 @@ class _LeadStatusReportState extends State<LeadStatusReport> {
                 }
 
               },
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.blueGrey),
+              style: ElevatedButton.styleFrom(backgroundColor: appbar_color),
               child: Text("Submit",style: TextStyle(color: Colors.white)),
             ),
           ],
@@ -271,11 +271,11 @@ class _LeadStatusReportState extends State<LeadStatusReport> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          backgroundColor: Colors.blueGrey[50],
+          backgroundColor: appbar_color[50],
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           title: Text(
             "Edit Lead Status",
-            style: TextStyle(color: Colors.blueGrey[900],
+            style: TextStyle(color: appbar_color[900],
                 ),
           ),
           content: Form(
@@ -286,7 +286,7 @@ class _LeadStatusReportState extends State<LeadStatusReport> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text("Is Qualified", style: TextStyle(color: Colors.blueGrey[900])),
+                    Text("Is Qualified", style: TextStyle(color: appbar_color[900])),
                     Switch(
                       value: isQualified,
                       onChanged: (value) {
@@ -304,7 +304,7 @@ class _LeadStatusReportState extends State<LeadStatusReport> {
                           showEditLeadStatusDialog(id, leadStatusController.text,is_qualified);
                         });
                       },
-                      activeColor: Colors.blueGrey,
+                      activeColor: appbar_color,
                     ),
                   ],
                 ),
@@ -322,12 +322,12 @@ class _LeadStatusReportState extends State<LeadStatusReport> {
                   },
                   decoration: InputDecoration(
                     labelText: "Lead Status Name",
-                    labelStyle: TextStyle(color: Colors.blueGrey),
+                    labelStyle: TextStyle(color: appbar_color),
                     focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.blueGrey),
+                      borderSide: BorderSide(color: appbar_color),
                     ),
                     enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.blueGrey[200]!),
+                      borderSide: BorderSide(color: appbar_color[200]!),
                     ),
                   ),
                 ),
@@ -340,7 +340,7 @@ class _LeadStatusReportState extends State<LeadStatusReport> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: Text("Cancel", style: TextStyle(color: Colors.blueGrey)),
+              child: Text("Cancel", style: TextStyle(color: appbar_color)),
             ),
             ElevatedButton(
               onPressed: () {
@@ -354,7 +354,7 @@ class _LeadStatusReportState extends State<LeadStatusReport> {
                 }
 
               },
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.blueGrey),
+              style: ElevatedButton.styleFrom(backgroundColor: appbar_color),
               child: Text("Submit",style: TextStyle(color: Colors.white)),
             ),
           ],
@@ -457,20 +457,20 @@ class _LeadStatusReportState extends State<LeadStatusReport> {
         style: TextStyle(
           color: Colors.white
         ),),
-        backgroundColor: Colors.blueGrey,
+        backgroundColor: appbar_color,
 
       ),
       body: isLoading
           ? Center(
         child: CircularProgressIndicator(
-          color: Colors.blueGrey,
+          color: appbar_color,
         ),
       )
           : leadStatuses.isEmpty
           ? Center(
         child: Text(
           'No data available',
-          style: TextStyle(color: Colors.blueGrey, fontSize: 18),
+          style: TextStyle(color: appbar_color, fontSize: 18),
         ),
       )
           : ListView.builder(
@@ -498,7 +498,7 @@ class _LeadStatusReportState extends State<LeadStatusReport> {
                       children: [
                         Icon(
                           Icons.assignment_ind,
-                          color: Colors.blueGrey,
+                          color: appbar_color,
                         ),
 
                         SizedBox(width: 5,),
@@ -506,7 +506,7 @@ class _LeadStatusReportState extends State<LeadStatusReport> {
                           lead['name'] ?? 'Unnamed',
                           style: TextStyle(
                             fontWeight: FontWeight.normal,
-                            color: Colors.blueGrey[800],
+                            color: appbar_color[800],
                           ),
                         ),
                       ],
@@ -555,7 +555,7 @@ class _LeadStatusReportState extends State<LeadStatusReport> {
           isQualified = false;
           showLeadStatusDialog();
         },
-        backgroundColor: Colors.blueGrey,
+        backgroundColor: appbar_color,
         child: Icon(Icons.add,
         color: Colors.white),
       ),

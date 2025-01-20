@@ -283,7 +283,7 @@ class _TenantAccessCardRequestPageState extends State<TenantAccessCardRequest> w
                                 children: [
                                   Card(
 
-                                    surfaceTintColor: Colors.blueGrey,
+                                    surfaceTintColor: appbar_color,
                                     elevation: 10,
                                     margin: EdgeInsets.only(left: 20, right: 20, top: 20),
                                     child: Container(
@@ -305,14 +305,14 @@ class _TenantAccessCardRequestPageState extends State<TenantAccessCardRequest> w
                                                       margin: EdgeInsets.all(8), // Add margin around the icon
                                                       child: Icon(
                                                         Icons.person,
-                                                        color: Colors.blueGrey,
+                                                        color: appbar_color,
                                                         size: 30, // Adjust size for better look
                                                       ),
                                                     ),
                                                     SizedBox(height: 2), // Space between icon and text
                                                     Text(
                                                       "Saadan",
-                                                      style: TextStyle(fontSize: 16, color: Colors.blueGrey),
+                                                      style: TextStyle(fontSize: 16, color: appbar_color),
                                                     ),
                                                   ],
                                                 ),
@@ -323,14 +323,14 @@ class _TenantAccessCardRequestPageState extends State<TenantAccessCardRequest> w
                                                       margin: EdgeInsets.all(8), // Add margin around the icon
                                                       child: Icon(
                                                         Icons.apartment,
-                                                        color: Colors.blueGrey,
+                                                        color: appbar_color,
                                                         size: 30, // Adjust size for better look
                                                       ),
                                                     ),
                                                     SizedBox(height: 2), // Space between icon and text
                                                     Text(
                                                       "Al Khaleej Center",
-                                                      style: TextStyle(fontSize: 16, color: Colors.blueGrey),
+                                                      style: TextStyle(fontSize: 16, color: appbar_color),
                                                     )])])),
                                           SizedBox(width: MediaQuery.of(context).size.width / 5),
                                           Container(
@@ -346,14 +346,14 @@ class _TenantAccessCardRequestPageState extends State<TenantAccessCardRequest> w
                                                       margin: EdgeInsets.all(8), // Add margin around the icon
                                                       child: Icon(
                                                         Icons.home,
-                                                        color: Colors.blueGrey,
+                                                        color: appbar_color,
                                                         size: 30, // Adjust size for better look
                                                       ),
                                                     ),
                                                     SizedBox(height: 2), // Space between icon and text
                                                     Text(
                                                       '101',
-                                                      style: TextStyle(fontSize: 16, color: Colors.blueGrey),
+                                                      style: TextStyle(fontSize: 16, color: appbar_color),
                                                     ),
                                                   ],
                                                 ),
@@ -365,14 +365,14 @@ class _TenantAccessCardRequestPageState extends State<TenantAccessCardRequest> w
                                                       margin: EdgeInsets.all(8), // Add margin around the icon
                                                       child: Icon(
                                                         Icons.public,
-                                                        color: Colors.blueGrey,
+                                                        color: appbar_color,
                                                         size: 30, // Adjust size for better look
                                                       ),
                                                     ),
                                                     SizedBox(height: 2), // Space between icon and text
                                                     Text(
                                                       "Dubai",
-                                                      style: TextStyle(fontSize: 16, color: Colors.blueGrey),
+                                                      style: TextStyle(fontSize: 16, color: appbar_color),
                                                     ),
                                                   ],
                                                 ),
@@ -387,7 +387,7 @@ class _TenantAccessCardRequestPageState extends State<TenantAccessCardRequest> w
                                     top: 30,
                                     right: 30,
                                     child: IconButton(
-                                      icon: Icon(Icons.edit, color: Colors.blueGrey),
+                                      icon: Icon(Icons.edit, color: appbar_color),
                                       onPressed: () {
                                         // Add your edit functionality here
                                         print('Edit icon pressed');

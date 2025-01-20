@@ -163,11 +163,11 @@ class _ActivitySourceReportState extends State<ActivitySourceReport> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          backgroundColor: Colors.blueGrey[50],
+          backgroundColor: appbar_color[50],
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           title: Text(
             "Activity Sources",
-            style: TextStyle(color: Colors.blueGrey[900]),
+            style: TextStyle(color: appbar_color[900]),
           ),
           content: Form(
             key: _formKey,
@@ -187,12 +187,12 @@ class _ActivitySourceReportState extends State<ActivitySourceReport> {
                   },
                   decoration: InputDecoration(
                     labelText: "Activity Source Name",
-                    labelStyle: TextStyle(color: Colors.blueGrey),
+                    labelStyle: TextStyle(color: appbar_color),
                     focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.blueGrey),
+                      borderSide: BorderSide(color: appbar_color),
                     ),
                     enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.blueGrey[200]!),
+                      borderSide: BorderSide(color: appbar_color[200]!),
                     ),
                   ),
                 ),
@@ -205,7 +205,7 @@ class _ActivitySourceReportState extends State<ActivitySourceReport> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: Text("Cancel", style: TextStyle(color: Colors.blueGrey)),
+              child: Text("Cancel", style: TextStyle(color: appbar_color)),
             ),
             ElevatedButton(
               onPressed: () {
@@ -219,7 +219,7 @@ class _ActivitySourceReportState extends State<ActivitySourceReport> {
                 }
 
               },
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.blueGrey),
+              style: ElevatedButton.styleFrom(backgroundColor: appbar_color),
               child: Text("Submit",style: TextStyle(color: Colors.white)),
             ),
           ],
@@ -239,11 +239,11 @@ class _ActivitySourceReportState extends State<ActivitySourceReport> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          backgroundColor: Colors.blueGrey[50],
+          backgroundColor: appbar_color[50],
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           title: Text(
             "Edit Activity Source",
-            style: TextStyle(color: Colors.blueGrey[900],
+            style: TextStyle(color: appbar_color[900],
             ),
           ),
           content: Form(
@@ -264,12 +264,12 @@ class _ActivitySourceReportState extends State<ActivitySourceReport> {
                   },
                   decoration: InputDecoration(
                     labelText: "Activity Source Name",
-                    labelStyle: TextStyle(color: Colors.blueGrey),
+                    labelStyle: TextStyle(color: appbar_color),
                     focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.blueGrey),
+                      borderSide: BorderSide(color: appbar_color),
                     ),
                     enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.blueGrey[200]!),
+                      borderSide: BorderSide(color: appbar_color[200]!),
                     ),
                   ),
                 ),
@@ -280,7 +280,7 @@ class _ActivitySourceReportState extends State<ActivitySourceReport> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: Text("Cancel", style: TextStyle(color: Colors.blueGrey)),
+              child: Text("Cancel", style: TextStyle(color: appbar_color)),
             ),
             ElevatedButton(
               onPressed: () {
@@ -294,7 +294,7 @@ class _ActivitySourceReportState extends State<ActivitySourceReport> {
                 }
 
               },
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.blueGrey),
+              style: ElevatedButton.styleFrom(backgroundColor: appbar_color),
               child: Text("Submit",style: TextStyle(color: Colors.white)),
             ),
           ],
@@ -397,20 +397,20 @@ class _ActivitySourceReportState extends State<ActivitySourceReport> {
           style: TextStyle(
               color: Colors.white
           ),),
-        backgroundColor: Colors.blueGrey,
+        backgroundColor: appbar_color,
 
       ),
       body: isLoading
           ? Center(
         child: CircularProgressIndicator(
-          color: Colors.blueGrey,
+          color: appbar_color,
         ),
       )
           : activitySource_list.isEmpty
           ? Center(
         child: Text(
           'No data available',
-          style: TextStyle(color: Colors.blueGrey, fontSize: 18),
+          style: TextStyle(color: appbar_color, fontSize: 18),
         ),
       )
           : ListView.builder(
@@ -437,7 +437,7 @@ class _ActivitySourceReportState extends State<ActivitySourceReport> {
                       children: [
                         Icon(
                           Icons.assignment_ind,
-                          color: Colors.blueGrey,
+                          color: appbar_color,
                         ),
 
                         SizedBox(width: 5,),
@@ -445,7 +445,7 @@ class _ActivitySourceReportState extends State<ActivitySourceReport> {
                           activitysource['name'] ?? 'Unnamed',
                           style: TextStyle(
                             fontWeight: FontWeight.normal,
-                            color: Colors.blueGrey[800],
+                            color: appbar_color[800],
                           ),
                         ),
                       ],
@@ -496,7 +496,7 @@ class _ActivitySourceReportState extends State<ActivitySourceReport> {
 
           showActivitySourceDialog();
         },
-        backgroundColor: Colors.blueGrey,
+        backgroundColor: appbar_color,
         child: Icon(Icons.add,
             color: Colors.white),
       ),

@@ -16,7 +16,6 @@ const String Serial_Token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwic2
 
 const String Company_Token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwic2VyaWFsX2lkIjoxLCJjb21wYW55X2lkIjoxLCJpYXQiOjE3MzczNTEzNTYsImV4cCI6MTczNzQzNzc1Nn0.MThvFbuJFet9S4p2607XGxoHHzhhQheZSsLilohILlU';
 
-
 /*
 final String uuid = "6e35f08d-8285-45e3-ae32-a0e9efe5407d";
 */

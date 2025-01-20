@@ -3,6 +3,9 @@ import 'package:country_picker/country_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
+import 'package:multi_select_flutter/chip_display/multi_select_chip_display.dart';
+import 'package:multi_select_flutter/dialog/multi_select_dialog_field.dart';
+import 'package:multi_select_flutter/util/multi_select_item.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 import 'SalesInquiryReport.dart';
@@ -150,8 +153,8 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
   final List<Map<String, dynamic>> specialfeatures = [];
   final List<Map<String, dynamic>> amenities = [];
 
-  final Set<int> selectedSpecialFeatures = {};
-  final Set<int> selectedAmenities = {};
+   Set<int> selectedSpecialFeatures = {};
+   Set<int> selectedAmenities = {};
 
   final List<String> interestTypes = ["Rent", "Buy"]; // List of options
 
@@ -173,8 +176,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
   String _selectedCountryFlag = '🇦🇪'; // Default UAE flag emoji
 
   String _hintText = 'Enter Contact No'; // Default hint text
-
-
 
   void updateAreasDisplay() {
     areasToDisplay.clear();
@@ -225,7 +226,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
     }
   }
 
-
   void populateEmiratesList(dynamic jsonResponse) {
     try {
       // Safely extract the "emirates" list
@@ -251,7 +251,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
       print('Error populating Emirates list: $e');
     }
   }
-
 
   void fetchFlatTypes(dynamic jsonResponse) {
     final data = jsonResponse is String
@@ -692,11 +691,11 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                       prefixIcon: Icon(Icons.search),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(color: Colors.blueGrey), // BlueGrey border color
+                        borderSide: BorderSide(color: appbar_color), // BlueGrey border color
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(color: Colors.blueGrey), // BlueGrey focused border color
+                        borderSide: BorderSide(color: appbar_color), // BlueGrey focused border color
                       ),
                     ),
                   ),
@@ -711,7 +710,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                         title: Text("Select All",
                           style: TextStyle(color: Colors.black),
                         ),
-                        activeColor: Colors.blueGrey,
+                        activeColor: appbar_color,
 
                         value: isAllUnitsSelected,
                         onChanged: (bool? value) {
@@ -732,7 +731,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                     children: filteredUnitTypes.map((unit) {
                       return CheckboxListTile(
                         title: Text(unit['label']),
-                        activeColor: Colors.blueGrey,
+                        activeColor: appbar_color,
                         value: unit['isSelected'],
                         onChanged: (bool? value) {
                           setState(() {
@@ -844,28 +843,28 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                     },
                     decoration: InputDecoration(
                       labelText: 'Search Emirate(s)',
-                      prefixIcon: Icon(Icons.search, color: Colors.blueGrey),
-                      labelStyle: TextStyle(color: Colors.blueGrey),
+                      prefixIcon: Icon(Icons.search, color: appbar_color),
+                      labelStyle: TextStyle(color: appbar_color),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(color: Colors.blueGrey),
+                        borderSide: BorderSide(color: appbar_color),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(color: Colors.blueGrey),
+                        borderSide: BorderSide(color: appbar_color),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(color: Colors.blueGrey, width: 2.0),
+                        borderSide: BorderSide(color: appbar_color, width: 2.0),
                       ),
                     ),
-                    cursorColor: Colors.blueGrey,
+                    cursorColor: appbar_color,
                   ),
                 ),
                 CheckboxListTile(
                   title: Text("Select All"),
                   value: isAllEmiratesSelected,
-                  activeColor: Colors.blueGrey,
+                  activeColor: appbar_color,
 
                   onChanged: (bool? value) {
                     setState(() {
@@ -882,7 +881,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                   child: ListView(
                     children: filteredEmirates!.map((emirate) {
                       return CheckboxListTile(
-                        activeColor: Colors.blueGrey,
+                        activeColor: appbar_color,
                         title: Text(emirate['label']),
                         value: emirate['isSelected'],
                         onChanged: (bool? value) {
@@ -904,7 +903,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                   padding: const EdgeInsets.all(16.0),
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blueGrey,
+                      backgroundColor: appbar_color,
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(5),
@@ -993,28 +992,28 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                     },
                     decoration: InputDecoration(
                       labelText: 'Search Areas',
-                      prefixIcon: Icon(Icons.search, color: Colors.blueGrey),
-                      labelStyle: TextStyle(color: Colors.blueGrey),
+                      prefixIcon: Icon(Icons.search, color: appbar_color),
+                      labelStyle: TextStyle(color: appbar_color),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(color: Colors.blueGrey),
+                        borderSide: BorderSide(color: appbar_color),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(color: Colors.blueGrey),
+                        borderSide: BorderSide(color: appbar_color),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(color: Colors.blueGrey, width: 2.0),
+                        borderSide: BorderSide(color: appbar_color, width: 2.0),
                       ),
                     ),
-                    cursorColor: Colors.blueGrey,
+                    cursorColor: appbar_color,
                   ),
                 ),
                 CheckboxListTile(
                   title: Text("Select All"),
                   value: isAllAreasSelected,
-                  activeColor: Colors.blueGrey,
+                  activeColor: appbar_color,
 
                   onChanged: (bool? value) {
                     setState(() {
@@ -1037,7 +1036,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                         }
                       });
                       return CheckboxListTile(
-                        activeColor: Colors.blueGrey,
+                        activeColor: appbar_color,
                         title: Text('${area['label']} - ${emirateName ?? "Unknown"}'), // Label with emirate name
                         value: area['isSelected'],
                         onChanged: (bool? value) {
@@ -1055,7 +1054,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                   padding: const EdgeInsets.all(16.0),
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blueGrey,
+                      backgroundColor: appbar_color,
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(5),
@@ -1264,7 +1263,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                               },
                                               selectedColor: Colors.white, // Text color for selected button
                                               fillColor:
-                                              Colors.blueGrey.shade400, // Background color for selected button
+                                              appbar_color.shade400, // Background color for selected button
                                               color: Colors.black, // Text color for unselected button
                                               children: const [
                                                 Padding(
@@ -1331,7 +1330,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                         ],
                                                       ),
                                                       selected: isSelected,
-                                                      selectedColor: Colors.blueGrey.shade400,
+                                                      selectedColor: appbar_color.shade400,
                                                       onSelected: (bool selected) {
                                                         setState(() {
                                                           selectedPropertyType = selected ? amenity : null; // Ensure only one selection
@@ -1388,7 +1387,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                       return null; // No error if a value is selected
                                                     },
                                                     dropdownColor: Colors.white,
-                                                    icon: Icon(Icons.arrow_drop_down, color: Colors.blueGrey),
+                                                    icon: Icon(Icons.arrow_drop_down, color: appbar_color),
                                                     items: activitysource_list.map((ActivitySource status) {
                                                       return DropdownMenuItem<ActivitySource>(
                                                         value: status,
@@ -1740,7 +1739,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                     return null; // No error if a value is selected
                                                   },
                                                   dropdownColor: Colors.white,
-                                                  icon: Icon(Icons.arrow_drop_down, color: Colors.blueGrey),
+                                                  icon: Icon(Icons.arrow_drop_down, color: appbar_color),
                                                   items: inquirystatus_list.map((FollowUpStatus status) {
                                                     return DropdownMenuItem<FollowUpStatus>(
                                                       value: status,
@@ -1811,13 +1810,13 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                   return Theme(
                                                     data: ThemeData.light().copyWith(
                                                       colorScheme: ColorScheme.light(
-                                                        primary: Colors.blueGrey, // Header background and selected date color
+                                                        primary: appbar_color, // Header background and selected date color
                                                         onPrimary: Colors.white, // Header text color
-                                                        onSurface: Colors.blueGrey, // Calendar text color
+                                                        onSurface: appbar_color, // Calendar text color
                                                       ),
                                                       textButtonTheme: TextButtonThemeData(
                                                         style: TextButton.styleFrom(
-                                                          foregroundColor: Colors.blueGrey, // Button text color
+                                                          foregroundColor: appbar_color, // Button text color
                                                         ),
                                                       ),
                                                     ),
@@ -2188,7 +2187,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                   ),
 
                                   Container(
-                                    padding: const EdgeInsets.only(left: 20.0, right: 20, top: 15),
+                                    padding: const EdgeInsets.only(left: 20.0, right: 20, top: 10),
                                     child: Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
@@ -2201,42 +2200,73 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                           ),
                                         ),
                                         SizedBox(height: 10),
-                                        SingleChildScrollView(
-                                          child: Wrap(
-                                            spacing: 8.0,
-                                            runSpacing: 8.0,
-                                            children: amenities.map((amenity) {
-                                              final isSelected = selectedAmenities.contains(amenity['id']);
-                                              return ChoiceChip(
-                                                label: Text(
-                                                  amenity['name'],
-                                                  style: TextStyle(
-                                                    color: isSelected ? Colors.white : Colors.black,
-                                                  ),
-                                                ),
-                                                selected: isSelected,
-                                                checkmarkColor: Colors.white,
-                                                selectedColor: Colors.blueGrey,
-                                                onSelected: (bool selected) {
-                                                  setState(() {
-                                                    if (selected) {
-                                                      selectedAmenities.add(amenity['id']);
-                                                    } else {
-                                                      selectedAmenities.remove(amenity['id']);
-                                                    }
-                                                  });
-                                                },
-                                                backgroundColor: Colors.white,
-                                              );
-                                            }).toList(),
+
+                                        Container(
+                                          padding: EdgeInsets.symmetric(horizontal: 12),
+                                          margin: EdgeInsets.only(left: 0, right: 0, bottom: 10),
+                                          decoration: BoxDecoration(
+                                            color: Colors.white,
+
+                                            borderRadius: BorderRadius.circular(8),
+                                            border: Border.all(color: Colors.black, width: 0.75),
                                           ),
-                                        ),
+                                          child: MultiSelectDialogField(
+                                            items: amenities
+                                                .map((amenity) =>
+                                                MultiSelectItem<int>(amenity['id'], amenity['name']))
+                                                .toList(),
+
+                                            initialValue: selectedAmenities.toList(),
+                                            title: Text("Amenities"),
+                                            searchable: true,
+                                            selectedColor: appbar_color,
+                                            checkColor: Colors.white,
+                                            confirmText: Text(
+                                              "Confirm",
+                                              style: TextStyle(color: appbar_color), // Custom confirm button
+                                            ),
+                                            cancelText: Text(
+                                              "Cancel",
+                                              style: TextStyle(color: appbar_color), // Custom cancel button
+                                            ),
+                                            buttonIcon: Icon(Icons.arrow_drop_down, color: Colors.black54),
+                                            buttonText: Text(
+                                              "Select Amenities",
+                                              style: TextStyle(color: Colors.black54, fontSize: 16),
+                                            ),
+                                            onConfirm: (values) {
+                                              setState(() {
+                                                selectedAmenities = Set<int>.from(values);
+                                              });
+                                            },
+                                            chipDisplay: MultiSelectChipDisplay(
+                                              textStyle: TextStyle(color: Colors.white), // Selected value text color
+                                              chipColor: appbar_color,
+                                              items: selectedAmenities
+                                                  .map((id) => MultiSelectItem<int>(
+                                                  id, amenities.firstWhere((item) => item['id'] == id)['name']))
+                                                  .toList(),
+                                              onTap: (value) {
+                                                setState(() {
+                                                  selectedAmenities.remove(value);
+                                                });
+                                              },
+                                            ),
+                                            decoration: BoxDecoration(
+                                              border: Border.all(color: Colors.transparent),
+                                            ),
+
+                                          ),
+                                        )
+
+
+
                                       ],
                                     ),
                                   ),
 
                                   Container(
-                                    padding: const EdgeInsets.only(left: 20.0, right: 20, top: 15),
+                                    padding: const EdgeInsets.only(left: 20.0, right: 20, top: 10),
                                     child: Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
@@ -2249,36 +2279,66 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                           ),
                                         ),
                                         SizedBox(height: 10),
-                                        SingleChildScrollView(
-                                          child: Wrap(
-                                            spacing: 8.0,
-                                            runSpacing: 8.0,
-                                            children: specialfeatures.map((amenity) {
-                                              final isSelected = selectedSpecialFeatures.contains(amenity['id']);
-                                              return ChoiceChip(
-                                                label: Text(
-                                                  amenity['name'],
-                                                  style: TextStyle(
-                                                    color: isSelected ? Colors.white : Colors.black,
-                                                  ),
-                                                ),
-                                                selected: isSelected,
-                                                checkmarkColor: Colors.white,
-                                                selectedColor: Colors.blueGrey,
-                                                onSelected: (bool selected) {
-                                                  setState(() {
-                                                    if (selected) {
-                                                      selectedSpecialFeatures.add(amenity['id']);
-                                                    } else {
-                                                      selectedSpecialFeatures.remove(amenity['id']);
-                                                    }
-                                                  });
-                                                },
-                                                backgroundColor: Colors.white,
-                                              );
-                                            }).toList(),
-                                          ),
+
+
+                                    Container(
+                                      padding: EdgeInsets.symmetric(horizontal: 12),
+                                      margin: EdgeInsets.only(left: 0, right: 0, bottom: 10),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+
+                                        borderRadius: BorderRadius.circular(8),
+                                        border: Border.all(color: Colors.black, width: 0.75),
+                                      ),
+                                      child:  MultiSelectDialogField(
+                                        items: specialfeatures
+                                            .map((amenity) =>
+                                            MultiSelectItem<int>(amenity['id'], amenity['name']))
+                                            .toList(),
+                                        initialValue: selectedSpecialFeatures.toList(),
+                                        title: Text("Special Features"),
+                                        searchable: true,
+                                        selectedColor: appbar_color,
+                                        checkColor: Colors.white,
+                                        confirmText: Text(
+                                          "Confirm",
+                                          style: TextStyle(color: appbar_color),
                                         ),
+                                        cancelText: Text(
+                                          "Cancel",
+                                          style: TextStyle(color: appbar_color),
+                                        ),
+                                        buttonIcon: Icon(Icons.arrow_drop_down, color: Colors.black54),
+                                        buttonText: Text(
+                                          "Select Special Features",
+                                          style: TextStyle(color: Colors.black54, fontSize: 16),
+                                        ),
+                                        onConfirm: (values) {
+                                          setState(() {
+                                            selectedSpecialFeatures = Set<int>.from(values);
+                                          });
+                                        },
+                                        chipDisplay: MultiSelectChipDisplay(
+                                          textStyle: TextStyle(color: Colors.white),
+                                          chipColor: appbar_color,
+                                          items: selectedSpecialFeatures
+                                              .map((id) => MultiSelectItem<int>(
+                                              id,
+                                              specialfeatures
+                                                  .firstWhere((feature) => feature['id'] == id)['name']))
+                                              .toList(),
+                                          onTap: (value) {
+                                            setState(() {
+                                              selectedSpecialFeatures.remove(value);
+                                            });
+                                          },
+                                        ),
+                                        decoration: BoxDecoration(
+                                          border: Border.all(color: Colors.transparent),
+                                        ),
+                                      ),
+
+                                    )
                                       ],
                                     ),
                                   ),
@@ -2357,8 +2417,8 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                         SizedBox(height:10),
 
                                         RangeSlider(
-                                          activeColor: Colors.blueGrey,
-                                          inactiveColor: Colors.blueGrey.withOpacity(0.4),
+                                          activeColor: appbar_color,
+                                          inactiveColor: appbar_color.withOpacity(0.4),
                                           values: _currentRangeValues!,
                                           min: range_min!,
                                           max: range_max!,

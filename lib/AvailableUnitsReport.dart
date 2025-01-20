@@ -350,7 +350,7 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
                           style: ElevatedButton.styleFrom(
                             shape: CircleBorder(), // Makes the button circular
                             padding: EdgeInsets.all(16), // Adjust padding to control button size
-                            backgroundColor: Colors.blueGrey, // Button background color
+                            backgroundColor: appbar_color, // Button background color
                             shadowColor: Colors.black.withOpacity(1.0), // Shadow color
                             elevation: 6, // Shadow intensity
                           ),
@@ -531,7 +531,7 @@ class AvailableUnitsDialog extends StatelessWidget {
           onPressed: () => Navigator.pop(context),
           child: Text("Close",
             style: TextStyle(
-                color: Colors.blueGrey
+                color: appbar_color
             ),),
         ),
       ],

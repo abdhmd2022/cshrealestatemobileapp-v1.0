@@ -173,7 +173,7 @@ class _LandlordDashboardScreenState extends State<LandlordDashboardScreen> with 
                           child: Container(
                             decoration: BoxDecoration(
                               gradient: LinearGradient(
-                                colors: [Colors.blueGrey.shade100, Colors.blueGrey.shade500],
+                                colors: [appbar_color.shade100, appbar_color.shade500],
                                 begin: Alignment.topCenter,
                                 end: Alignment.bottomCenter,
                               ),

@@ -167,11 +167,11 @@ class _AmentiesReportState extends State<AmentiesReport> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          backgroundColor: Colors.blueGrey[50],
+          backgroundColor: appbar_color[50],
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           title: Text(
             "Amenities",
-            style: TextStyle(color: Colors.blueGrey[900]),
+            style: TextStyle(color: appbar_color[900]),
           ),
           content: Form(
             key: _formKey,
@@ -181,7 +181,7 @@ class _AmentiesReportState extends State<AmentiesReport> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text("Special Feature", style: TextStyle(color: Colors.blueGrey[900])),
+                    Text("Special Feature", style: TextStyle(color: appbar_color[900])),
                     Switch(
                       value: isSpecial,
                       onChanged: (value) {
@@ -191,7 +191,7 @@ class _AmentiesReportState extends State<AmentiesReport> {
                           showAmenitiesDialog();
                         });
                       },
-                      activeColor: Colors.blueGrey,
+                      activeColor: appbar_color,
                     ),
                   ],
                 ),
@@ -209,12 +209,12 @@ class _AmentiesReportState extends State<AmentiesReport> {
                   },
                   decoration: InputDecoration(
                     labelText: "Amenity Name",
-                    labelStyle: TextStyle(color: Colors.blueGrey),
+                    labelStyle: TextStyle(color: appbar_color),
                     focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.blueGrey),
+                      borderSide: BorderSide(color: appbar_color),
                     ),
                     enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.blueGrey[200]!),
+                      borderSide: BorderSide(color: appbar_color[200]!),
                     ),
                   ),
                 ),
@@ -227,7 +227,7 @@ class _AmentiesReportState extends State<AmentiesReport> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: Text("Cancel", style: TextStyle(color: Colors.blueGrey)),
+              child: Text("Cancel", style: TextStyle(color: appbar_color)),
             ),
             ElevatedButton(
               onPressed: () {
@@ -241,7 +241,7 @@ class _AmentiesReportState extends State<AmentiesReport> {
                 }
 
               },
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.blueGrey),
+              style: ElevatedButton.styleFrom(backgroundColor: appbar_color),
               child: Text("Submit",style: TextStyle(color: Colors.white)),
             ),
           ],
@@ -268,11 +268,11 @@ class _AmentiesReportState extends State<AmentiesReport> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          backgroundColor: Colors.blueGrey[50],
+          backgroundColor: appbar_color[50],
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           title: Text(
             "Edit Amenity",
-            style: TextStyle(color: Colors.blueGrey[900],
+            style: TextStyle(color: appbar_color[900],
             ),
           ),
           content: Form(
@@ -283,7 +283,7 @@ class _AmentiesReportState extends State<AmentiesReport> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text("Special Feature", style: TextStyle(color: Colors.blueGrey[900])),
+                    Text("Special Feature", style: TextStyle(color: appbar_color[900])),
                     Switch(
                       value: isSpecial,
                       onChanged: (value) {
@@ -301,7 +301,7 @@ class _AmentiesReportState extends State<AmentiesReport> {
                           showEditAmenitiesDialog(id, amenityController.text,is_special);
                         });
                       },
-                      activeColor: Colors.blueGrey,
+                      activeColor: appbar_color,
                     ),
                   ],
                 ),
@@ -319,12 +319,12 @@ class _AmentiesReportState extends State<AmentiesReport> {
                   },
                   decoration: InputDecoration(
                     labelText: "Amenity Name",
-                    labelStyle: TextStyle(color: Colors.blueGrey),
+                    labelStyle: TextStyle(color: appbar_color),
                     focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.blueGrey),
+                      borderSide: BorderSide(color: appbar_color),
                     ),
                     enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.blueGrey[200]!),
+                      borderSide: BorderSide(color: appbar_color[200]!),
                     ),
                   ),
                 ),
@@ -335,7 +335,7 @@ class _AmentiesReportState extends State<AmentiesReport> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: Text("Cancel", style: TextStyle(color: Colors.blueGrey)),
+              child: Text("Cancel", style: TextStyle(color: appbar_color)),
             ),
             ElevatedButton(
               onPressed: () {
@@ -349,7 +349,7 @@ class _AmentiesReportState extends State<AmentiesReport> {
                 }
 
               },
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.blueGrey),
+              style: ElevatedButton.styleFrom(backgroundColor: appbar_color),
               child: Text("Submit",style: TextStyle(color: Colors.white)),
             ),
           ],
@@ -452,20 +452,20 @@ class _AmentiesReportState extends State<AmentiesReport> {
           style: TextStyle(
               color: Colors.white
           ),),
-        backgroundColor: Colors.blueGrey,
+        backgroundColor: appbar_color,
 
       ),
       body: isLoading
           ? Center(
         child: CircularProgressIndicator(
-          color: Colors.blueGrey,
+          color: appbar_color,
         ),
       )
           : amenities.isEmpty
           ? Center(
         child: Text(
           'No data available',
-          style: TextStyle(color: Colors.blueGrey, fontSize: 18),
+          style: TextStyle(color: appbar_color, fontSize: 18),
         ),
       )
           : ListView.builder(
@@ -493,7 +493,7 @@ class _AmentiesReportState extends State<AmentiesReport> {
                       children: [
                         Icon(
                           Icons.assignment_ind,
-                          color: Colors.blueGrey,
+                          color: appbar_color,
                         ),
 
                         SizedBox(width: 5,),
@@ -501,7 +501,7 @@ class _AmentiesReportState extends State<AmentiesReport> {
                           amenity['name'] ?? 'Unnamed',
                           style: TextStyle(
                             fontWeight: FontWeight.normal,
-                            color: Colors.blueGrey[800],
+                            color: appbar_color[800],
                           ),
                         ),
                       ],
@@ -521,7 +521,7 @@ class _AmentiesReportState extends State<AmentiesReport> {
                             'Yes' ?? 'Unnamed',
                             style: TextStyle(
                               fontWeight: FontWeight.normal,
-                              color: Colors.blueGrey[800],
+                              color: appbar_color[800],
                             ),
                           ),
 
@@ -530,7 +530,7 @@ class _AmentiesReportState extends State<AmentiesReport> {
                             'No' ?? 'Unnamed',
                             style: TextStyle(
                               fontWeight: FontWeight.normal,
-                              color: Colors.blueGrey[800],
+                              color: appbar_color[800],
                             ),
                           ),
 
@@ -581,7 +581,7 @@ class _AmentiesReportState extends State<AmentiesReport> {
           isSpecial = false;
           showAmenitiesDialog();
         },
-        backgroundColor: Colors.blueGrey,
+        backgroundColor: appbar_color,
         child: Icon(Icons.add,
             color: Colors.white),
       ),

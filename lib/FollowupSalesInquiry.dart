@@ -772,11 +772,11 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                       prefixIcon: Icon(Icons.search),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(color: Colors.blueGrey), // BlueGrey border color
+                        borderSide: BorderSide(color: appbar_color), // BlueGrey border color
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(color: Colors.blueGrey), // BlueGrey focused border color
+                        borderSide: BorderSide(color: appbar_color), // BlueGrey focused border color
                       ),
                     ),
                   ),
@@ -791,7 +791,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                         title: Text("Select All",
                           style: TextStyle(color: Colors.black),
                         ),
-                        activeColor: Colors.blueGrey,
+                        activeColor: appbar_color,
 
                         value: isAllUnitsSelected,
                         onChanged: (bool? value) {
@@ -812,7 +812,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                     children: filteredUnitTypes.map((unit) {
                       return CheckboxListTile(
                         title: Text(unit['label']),
-                        activeColor: Colors.blueGrey,
+                        activeColor: appbar_color,
                         value: unit['isSelected'],
                         onChanged: (bool? value) {
                           setState(() {
@@ -924,28 +924,28 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                     },
                     decoration: InputDecoration(
                       labelText: 'Search Emirate(s)',
-                      prefixIcon: Icon(Icons.search, color: Colors.blueGrey),
-                      labelStyle: TextStyle(color: Colors.blueGrey),
+                      prefixIcon: Icon(Icons.search, color: appbar_color),
+                      labelStyle: TextStyle(color: appbar_color),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(color: Colors.blueGrey),
+                        borderSide: BorderSide(color: appbar_color),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(color: Colors.blueGrey),
+                        borderSide: BorderSide(color: appbar_color),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(color: Colors.blueGrey, width: 2.0),
+                        borderSide: BorderSide(color: appbar_color, width: 2.0),
                       ),
                     ),
-                    cursorColor: Colors.blueGrey,
+                    cursorColor: appbar_color,
                   ),
                 ),
                 CheckboxListTile(
                   title: Text("Select All"),
                   value: isAllEmiratesSelected,
-                  activeColor: Colors.blueGrey,
+                  activeColor: appbar_color,
 
                   onChanged: (bool? value) {
                     setState(() {
@@ -962,7 +962,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                   child: ListView(
                     children: filteredEmirates!.map((emirate) {
                       return CheckboxListTile(
-                        activeColor: Colors.blueGrey,
+                        activeColor: appbar_color,
                         title: Text(emirate['label']),
                         value: emirate['isSelected'],
                         onChanged: (bool? value) {
@@ -984,7 +984,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                   padding: const EdgeInsets.all(16.0),
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blueGrey,
+                      backgroundColor: appbar_color,
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(5),
@@ -1073,28 +1073,28 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                     },
                     decoration: InputDecoration(
                       labelText: 'Search Areas',
-                      prefixIcon: Icon(Icons.search, color: Colors.blueGrey),
-                      labelStyle: TextStyle(color: Colors.blueGrey),
+                      prefixIcon: Icon(Icons.search, color: appbar_color),
+                      labelStyle: TextStyle(color: appbar_color),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(color: Colors.blueGrey),
+                        borderSide: BorderSide(color: appbar_color),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(color: Colors.blueGrey),
+                        borderSide: BorderSide(color: appbar_color),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(color: Colors.blueGrey, width: 2.0),
+                        borderSide: BorderSide(color: appbar_color, width: 2.0),
                       ),
                     ),
-                    cursorColor: Colors.blueGrey,
+                    cursorColor: appbar_color,
                   ),
                 ),
                 CheckboxListTile(
                   title: Text("Select All"),
                   value: isAllAreasSelected,
-                  activeColor: Colors.blueGrey,
+                  activeColor: appbar_color,
 
                   onChanged: (bool? value) {
                     setState(() {
@@ -1117,7 +1117,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                         }
                       });
                       return CheckboxListTile(
-                        activeColor: Colors.blueGrey,
+                        activeColor: appbar_color,
                         title: Text('${area['label']} - ${emirateName ?? "Unknown"}'), // Label with emirate name
                         value: area['isSelected'],
                         onChanged: (bool? value) {
@@ -1135,7 +1135,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                   padding: const EdgeInsets.all(16.0),
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blueGrey,
+                      backgroundColor: appbar_color,
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(5),
@@ -1645,7 +1645,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                                     return null; // No error if a value is selected
                                                   },
                                                   dropdownColor: Colors.white,
-                                                  icon: Icon(Icons.arrow_drop_down, color: Colors.blueGrey),
+                                                  icon: Icon(Icons.arrow_drop_down, color: appbar_color),
                                                   items: followuptype_list.map((FollowUpStatus status) {
                                                     return DropdownMenuItem<FollowUpStatus>(
                                                       value: status,
@@ -1717,13 +1717,13 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                                   return Theme(
                                                     data: ThemeData.light().copyWith(
                                                       colorScheme: ColorScheme.light(
-                                                        primary: Colors.blueGrey, // Header background and selected date color
+                                                        primary: appbar_color, // Header background and selected date color
                                                         onPrimary: Colors.white, // Header text color
-                                                        onSurface: Colors.blueGrey, // Calendar text color
+                                                        onSurface: appbar_color, // Calendar text color
                                                       ),
                                                       textButtonTheme: TextButtonThemeData(
                                                         style: TextButton.styleFrom(
-                                                          foregroundColor: Colors.blueGrey, // Button text color
+                                                          foregroundColor: appbar_color, // Button text color
                                                         ),
                                                       ),
                                                     ),
@@ -1811,7 +1811,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                                 ],
                                               ),
                                               selected: isSelected,
-                                              selectedColor: Colors.blueGrey,
+                                              selectedColor: appbar_color,
                                               onSelected: (bool selected) {
                                                 setState(() {
                                                   selectedPropertyType = selected ? amenity : null; // Ensure only one selection
@@ -2187,7 +2187,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                               ),
                                               selected: isSelected,
                                               checkmarkColor: Colors.white,
-                                              selectedColor: Colors.blueGrey,
+                                              selectedColor: appbar_color,
                                               onSelected: (bool selected) {
                                                 setState(() {
                                                   if (selected) {
@@ -2235,7 +2235,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                               ),
                                               selected: isSelected,
                                               checkmarkColor: Colors.white,
-                                              selectedColor: Colors.blueGrey,
+                                              selectedColor: appbar_color,
                                               onSelected: (bool selected) {
                                                 setState(() {
                                                   if (selected) {

@@ -320,14 +320,14 @@ class _SalesInquiryTransferPageState extends State<SalesInquiryTransfer> with Ti
                                                       margin: EdgeInsets.all(8), // Add margin around the icon
                                                       child: Icon(
                                                         Icons.person,
-                                                        color: Colors.blueGrey,
+                                                        color: appbar_color,
                                                         size: 30, // Adjust size for better look
                                                       ),
                                                     ),
                                                     SizedBox(height: 2), // Space between icon and text
                                                     Text(
                                                       "Saadan",
-                                                      style: TextStyle(fontSize: 16, color: Colors.blueGrey),
+                                                      style: TextStyle(fontSize: 16, color: appbar_color),
                                                     ),
                                                   ],
                                                 ),
@@ -338,14 +338,14 @@ class _SalesInquiryTransferPageState extends State<SalesInquiryTransfer> with Ti
                                                       margin: EdgeInsets.all(8), // Add margin around the icon
                                                       child: Icon(
                                                         Icons.apartment,
-                                                        color: Colors.blueGrey,
+                                                        color: appbar_color,
                                                         size: 30, // Adjust size for better look
                                                       ),
                                                     ),
                                                     SizedBox(height: 2), // Space between icon and text
                                                     Text(
                                                       "Al Khaleej Center",
-                                                      style: TextStyle(fontSize: 16, color: Colors.blueGrey),
+                                                      style: TextStyle(fontSize: 16, color: appbar_color),
                                                     ),
                                                   ],
                                                 ),
@@ -366,14 +366,14 @@ class _SalesInquiryTransferPageState extends State<SalesInquiryTransfer> with Ti
                                                       margin: EdgeInsets.all(8), // Add margin around the icon
                                                       child: Icon(
                                                         Icons.home,
-                                                        color: Colors.blueGrey,
+                                                        color: appbar_color,
                                                         size: 30, // Adjust size for better look
                                                       ),
                                                     ),
                                                     SizedBox(height: 2), // Space between icon and text
                                                     Text(
                                                       '101',
-                                                      style: TextStyle(fontSize: 16, color: Colors.blueGrey),
+                                                      style: TextStyle(fontSize: 16, color: appbar_color),
                                                     ),
                                                   ],
                                                 ),
@@ -385,14 +385,14 @@ class _SalesInquiryTransferPageState extends State<SalesInquiryTransfer> with Ti
                                                       margin: EdgeInsets.all(8), // Add margin around the icon
                                                       child: Icon(
                                                         Icons.public,
-                                                        color: Colors.blueGrey,
+                                                        color: appbar_color,
                                                         size: 30, // Adjust size for better look
                                                       ),
                                                     ),
                                                     SizedBox(height: 2), // Space between icon and text
                                                     Text(
                                                       "Dubai",
-                                                      style: TextStyle(fontSize: 16, color: Colors.blueGrey),
+                                                      style: TextStyle(fontSize: 16, color: appbar_color),
                                                     ),
                                                   ],
                                                 ),
@@ -418,7 +418,7 @@ class _SalesInquiryTransferPageState extends State<SalesInquiryTransfer> with Ti
 
                                         _buildDecentButton('Edit',
                                             Icons.edit,
-                                            Colors.blueGrey.shade300,
+                                            appbar_color.shade300,
                                                 ()
                                             {
 

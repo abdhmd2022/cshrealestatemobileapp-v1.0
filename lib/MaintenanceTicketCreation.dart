@@ -332,14 +332,14 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                                 padding: EdgeInsets.only(left:10,right:10, top: 5, bottom: 5),
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(30.0),
-                                  color: Colors.blueGrey.shade400,
+                                  color: appbar_color.shade400,
                                   border: Border.all(
-                                    color: Colors.blueGrey.shade300.withOpacity(0.3),
+                                    color: appbar_color.shade300.withOpacity(0.3),
                                     width: 1.5,
                                   ),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Colors.blueGrey.shade300.withOpacity(0.1),
+                                      color: appbar_color.shade300.withOpacity(0.1),
                                       blurRadius: 8.0,
                                       offset: Offset(0, 4),
                                     ),
@@ -355,14 +355,14 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                                 padding: EdgeInsets.only(left:10,right:10, top: 5, bottom: 5),
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(30.0),
-                                  color: Colors.blueGrey.shade400,
+                                  color: appbar_color.shade400,
                                   border: Border.all(
-                                    color: Colors.blueGrey.shade300.withOpacity(0.3),
+                                    color: appbar_color.shade300.withOpacity(0.3),
                                     width: 1.5,
                                   ),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Colors.blueGrey.shade300.withOpacity(0.1),
+                                      color: appbar_color.shade300.withOpacity(0.1),
                                       blurRadius: 8.0,
                                       offset: Offset(0, 4),
                                     ),
@@ -383,7 +383,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                             padding: EdgeInsets.only(top: 20),
                             child:  Icon(
                               Icons.edit,
-                              color: Colors.blueGrey,
+                              color: appbar_color,
                               size: 20,
                             )
                           )
@@ -440,14 +440,14 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                             initialValue: selectedMaintenanceTypes,
                             title: Text("Maintenance Type(s)"),
                             searchable: true,
-                            selectedColor: Colors.blueGrey,
+                            selectedColor: appbar_color,
                             confirmText: Text(
                               "Confirm",
-                              style: TextStyle(color: Colors.blueGrey), // Custom confirm button text color
+                              style: TextStyle(color: appbar_color), // Custom confirm button text color
                             ),
                             cancelText: Text(
                               "Cancel",
-                              style: TextStyle(color: Colors.blueGrey), // Custom cancel button text color
+                              style: TextStyle(color: appbar_color), // Custom cancel button text color
                             ),
                             buttonIcon: Icon(Icons.arrow_drop_down, color: Colors.black54),
                             buttonText: Text(

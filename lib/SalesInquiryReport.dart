@@ -279,7 +279,7 @@ class _SalesInquiryReportState
       floatingActionButton: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [Colors.blueGrey.shade300, Colors.blueGrey.shade200],
+            colors: [appbar_color.shade300, appbar_color.shade200],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),

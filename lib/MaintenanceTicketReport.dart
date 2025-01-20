@@ -1,6 +1,7 @@
 import 'package:cshrealestatemobile/MaintenanceTicketCreation.dart';
 import 'package:cshrealestatemobile/SalesDashboard.dart';
 import 'package:cshrealestatemobile/TenantDashboard.dart';
+import 'package:cshrealestatemobile/constants.dart';
 import 'package:flutter/material.dart';
 import 'Sidebar.dart';
 
@@ -101,7 +102,7 @@ class _MaintenanceTicketReportState
             color: Colors.white,
           ),),
 
-        backgroundColor: Colors.blueGrey,
+        backgroundColor: appbar_color,
         centerTitle: true,
         title: Text(
           'Maintenance Tickets',
@@ -134,7 +135,7 @@ class _MaintenanceTicketReportState
       floatingActionButton: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [Colors.blueGrey, Colors.blueGrey],
+            colors: [appbar_color, appbar_color],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),

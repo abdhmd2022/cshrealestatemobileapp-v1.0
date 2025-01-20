@@ -137,7 +137,7 @@ class _SalesDashboardScreenState extends State<SalesDashboardScreen> with Ticker
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   gradient: LinearGradient(
-                    colors: [Colors.blueGrey.shade300, Colors.blueGrey.shade400],
+                    colors: [appbar_color.shade300, appbar_color.shade400],
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                   ),
@@ -236,7 +236,7 @@ class _SalesDashboardScreenState extends State<SalesDashboardScreen> with Ticker
                                     ),
                                   ],
                                 ),
-                                backgroundColor: Colors.blueGrey.shade500,
+                                backgroundColor: appbar_color.shade500,
                                 behavior: SnackBarBehavior.floating,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(10),
@@ -294,7 +294,7 @@ class _SalesDashboardScreenState extends State<SalesDashboardScreen> with Ticker
                           padding: EdgeInsets.all(16),
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
-                            colors: [Colors.blueGrey.shade300, Colors.blueGrey.shade400], // Gradient background
+                            colors: [appbar_color.shade300, appbar_color.shade400], // Gradient background
                             begin: Alignment.topCenter,
                             end: Alignment.bottomCenter,
                           ),
@@ -340,7 +340,7 @@ class _SalesDashboardScreenState extends State<SalesDashboardScreen> with Ticker
                           padding: EdgeInsets.all(16),
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
-                              colors: [Colors.blueGrey.shade300, Colors.blueGrey.shade400], // Gradient background
+                              colors: [appbar_color.shade300, appbar_color.shade400], // Gradient background
                               begin: Alignment.topCenter,
                               end: Alignment.bottomCenter,
                             ),
@@ -412,7 +412,7 @@ class _SalesDashboardScreenState extends State<SalesDashboardScreen> with Ticker
                                 height: double.infinity, // Ensure container fills the button space
                                 decoration: BoxDecoration(
                                   gradient: LinearGradient(
-                                    colors: [Colors.blueGrey.shade300, Colors.blueGrey.shade400], // Gradient background
+                                    colors: [appbar_color.shade300, appbar_color.shade400], // Gradient background
                                     begin: Alignment.topCenter,
                                     end: Alignment.bottomCenter,
                                   ),
@@ -464,7 +464,7 @@ class _SalesDashboardScreenState extends State<SalesDashboardScreen> with Ticker
                                 height: double.infinity,
                                 decoration: BoxDecoration(
                                   gradient: LinearGradient(
-                                    colors: [Colors.blueGrey.shade300, Colors.blueGrey.shade400], // Gradient background
+                                    colors: [appbar_color.shade300, appbar_color.shade400], // Gradient background
                                     begin: Alignment.topCenter,
                                     end: Alignment.bottomCenter,
                                   ),
@@ -527,7 +527,7 @@ class _SalesDashboardScreenState extends State<SalesDashboardScreen> with Ticker
                             padding: EdgeInsets.all(16),
                               decoration: BoxDecoration(
                                 gradient: LinearGradient(
-                                  colors: [Colors.blueGrey.shade300, Colors.blueGrey.shade400], // Gradient background
+                                  colors: [appbar_color.shade300, appbar_color.shade400], // Gradient background
                                   begin: Alignment.topCenter,
                                   end: Alignment.bottomCenter,
                                 ),
@@ -603,7 +603,7 @@ class SalesBarChart extends StatelessWidget {
                       toY: sales[i].toDouble(), // Use sales data dynamically
                       width: 40,
                       gradient: LinearGradient(
-                        colors: [Colors.blueGrey.shade300, Colors.blueGrey.shade400], // Gradient background
+                        colors: [appbar_color.shade300, appbar_color.shade400], // Gradient background
                         begin: Alignment.topLeft,
                         end: Alignment.topRight,
                       ),

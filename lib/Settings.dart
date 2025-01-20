@@ -85,7 +85,7 @@ class _SettingsScreenState extends State<SettingsScreen> with TickerProviderStat
                 Navigator.of(context).pop();
               },
               child: Text('Cancel',
-              style: TextStyle(color: Colors.blueGrey)),
+              style: TextStyle(color: appbar_color)),
             ),
 
 
@@ -95,7 +95,7 @@ class _SettingsScreenState extends State<SettingsScreen> with TickerProviderStat
                 _saveRangeValues();
                 Navigator.of(context).pop();
               },
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.blueGrey),
+              style: ElevatedButton.styleFrom(backgroundColor: appbar_color),
               child: Text("Save",style: TextStyle(color: Colors.white)),
             ),
 
@@ -115,7 +115,7 @@ class _SettingsScreenState extends State<SettingsScreen> with TickerProviderStat
         style: TextStyle(
           color: Colors.white
         ),),
-        backgroundColor: Colors.blueGrey,
+        backgroundColor: appbar_color,
         leading: IconButton(
           icon: Icon(Icons.menu, color: Colors.white),
           onPressed: () {

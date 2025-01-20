@@ -113,7 +113,7 @@ class _TenantComplaintPageState extends State<TenantComplaint> with TickerProvid
                       children: [
                         Card
                           (
-                            surfaceTintColor: Colors.blueGrey,
+                            surfaceTintColor: appbar_color,
                             elevation: 10,
                             margin: EdgeInsets.only(left: 20,right: 20, top: 20),
                             child:  Container(
@@ -135,13 +135,13 @@ class _TenantComplaintPageState extends State<TenantComplaint> with TickerProvid
                                                 children: [
                                                   Icon(
                                                     Icons.person,
-                                                    color: Colors.blueGrey,
+                                                    color: appbar_color,
                                                   ),
                                                   SizedBox(height: 2), // Add space between icon and text
                                                   Text(
                                                     'Saadan',
                                                     style: TextStyle(fontSize: 16,
-                                                        color: Colors.blueGrey),
+                                                        color: appbar_color),
                                                   )])])),
 
                                         SizedBox(width: MediaQuery.of(context).size.width/5,),
@@ -156,13 +156,13 @@ class _TenantComplaintPageState extends State<TenantComplaint> with TickerProvid
                                                 children: [
                                                   Icon(
                                                     Icons.phone,
-                                                    color: Colors.blueGrey,
+                                                    color: appbar_color,
                                                   ),
                                                   SizedBox(height: 2), // Add space between icon and text
                                                   Text(
                                                     '+971 500000000',
                                                     style: TextStyle(fontSize: 16,
-                                                        color: Colors.blueGrey),
+                                                        color: appbar_color),
                                                   )])]))]),
 
                                     SizedBox(height: 30,),
@@ -172,13 +172,13 @@ class _TenantComplaintPageState extends State<TenantComplaint> with TickerProvid
                                       children: [
                                         Icon(
                                           Icons.email_outlined,
-                                          color: Colors.blueGrey,
+                                          color: appbar_color,
                                         ),
                                         SizedBox(height: 2), // Add space between icon and text
                                         Text(
                                           'saadan@ca-eim.com',
                                           style: TextStyle(fontSize: 16,
-                                              color: Colors.blueGrey),
+                                              color: appbar_color),
                                         )])]))),
 
                         Container(

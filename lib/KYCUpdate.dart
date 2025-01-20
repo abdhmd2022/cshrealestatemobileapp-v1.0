@@ -89,7 +89,7 @@ class _DecentTenantKYCFormState extends State<DecentTenantKYCForm> {
             Card
               (
                 color: Colors.white,
-                surfaceTintColor: Colors.blueGrey,
+                surfaceTintColor: appbar_color,
                 elevation: 10,
                 margin: EdgeInsets.only(left: 20,right: 20, top: 20),
                 child:  Container(
@@ -112,13 +112,13 @@ class _DecentTenantKYCFormState extends State<DecentTenantKYCForm> {
                                     children: [
                                       Icon(
                                         Icons.person,
-                                        color: Colors.blueGrey,
+                                        color: appbar_color,
                                       ),
                                       SizedBox(height: 2), // Add space between icon and text
                                       Text(
                                         'Saadan',
                                         style: TextStyle(fontSize: 16,
-                                            color: Colors.blueGrey),
+                                            color: appbar_color),
                                       ),
                                     ],
                                   ),
@@ -137,13 +137,13 @@ class _DecentTenantKYCFormState extends State<DecentTenantKYCForm> {
                                     children: [
                                       Icon(
                                         Icons.phone,
-                                        color: Colors.blueGrey,
+                                        color: appbar_color,
                                       ),
                                       SizedBox(height: 2), // Add space between icon and text
                                       Text(
                                         '+971 500000000',
                                         style: TextStyle(fontSize: 16,
-                                            color: Colors.blueGrey),
+                                            color: appbar_color),
                                       ),
                                     ],
                                   ),
@@ -160,13 +160,13 @@ class _DecentTenantKYCFormState extends State<DecentTenantKYCForm> {
                           children: [
                             Icon(
                               Icons.email_outlined,
-                              color: Colors.blueGrey,
+                              color: appbar_color,
                             ),
                             SizedBox(height: 2), // Add space between icon and text
                             Text(
                               'saadan@ca-eim.com',
                               style: TextStyle(fontSize: 16,
-                                  color: Colors.blueGrey),
+                                  color: appbar_color),
                             ),
                           ],
                         ),
@@ -280,7 +280,7 @@ class _DecentTenantKYCFormState extends State<DecentTenantKYCForm> {
       padding: const EdgeInsets.symmetric(vertical: 4.0),
       child: Row(
         children: [
-          Icon(icon, size: 20, color: Colors.blueGrey),
+          Icon(icon, size: 20, color: appbar_color),
           const SizedBox(width: 8),
           Text(
             text,

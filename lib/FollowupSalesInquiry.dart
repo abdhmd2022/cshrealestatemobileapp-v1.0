@@ -34,6 +34,25 @@ class FollowUpStatus {
   }
 }
 
+class FollowUpType {
+  final int id;
+  final String name;
+
+  FollowUpType({
+    required this.id,
+    required this.name,
+  });
+
+  // Factory method to create a FollowUpStatus object from JSON
+  factory FollowUpType.fromJson(Map<String, dynamic> json) {
+    return FollowUpType(
+      id: json['id'],
+      name: json['name'],
+    );
+  }
+}
+
+
 class ActivitySource {
   final int id;
   final String name;
@@ -124,7 +143,10 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
 
   double? range_min, range_max;
 
-  FollowUpStatus? selectedfollowup_type;
+  FollowUpStatus? selectedfollowup_status;
+
+  FollowUpType? selectedfollowup_type;
+
 
   ActivitySource? selectedactivity_source;
 
@@ -209,16 +231,21 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
     {"label": "Fujairah", "isSelected": false},
   ];
 
-  List<FollowUpStatus> followuptype_list = [
+  List<FollowUpStatus> followupstatus_list = [
 
   ];
 
+
+  List<FollowUpType> followuptype_list = [
+
+    FollowUpType(id: 1, name: 'Email-in'),
+    FollowUpType(id: 2, name: 'Email-out')
+
+
+  ];
   String? selectedPropertyType;
 
-  List<String> followupstatus_list = [
 
-
-  ];
 
   List<Map<String, dynamic>> unitTypes = [
 
@@ -477,7 +504,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
       "mobile_no": '$_selectedCountryCode${customercontactnocontroller.text}',
       "areas": areasIds,
       "flatTypes": selectedUnitIds,
-      "lead_status_id": selectedfollowup_type!.id,
+      "lead_status_id": selectedfollowup_status!.id,
       "next_followup_date": formattedDate,
       "property_type": selectedPropertyType,
       "interest_type": interestTypes[selectedInterestType ?? 0],
@@ -637,7 +664,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
 
   Future<void> fetchLeadStatus() async {
 
-    followuptype_list.clear();
+    followupstatus_list.clear();
 
     final url = '$BASE_URL_config/v1/leadStatus'; // Replace with your API endpoint
     String token = 'Bearer $Serial_Token'; // auth token for request
@@ -661,7 +688,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
             FollowUpStatus followUpStatus = FollowUpStatus.fromJson(status);
 
             // Add the object to the list
-            followuptype_list.add(followUpStatus);
+            followupstatus_list.add(followUpStatus);
 
 
             // Optionally, you can print the object for verification
@@ -1568,61 +1595,63 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                     )),
 
                                 Container(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Padding(
-                                          padding: EdgeInsets.only(top:20,left:20,right:20,bottom :0),
-                                          child: Column(
-                                              mainAxisAlignment: MainAxisAlignment.start,
-                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                              children: [
-                                                DropdownButtonFormField<FollowUpStatus>(
-                                                  value: selectedfollowup_type,  // This should be an object of FollowUpStatus
-                                                  decoration: InputDecoration(
-                                                    hintText: 'Select Follow-up Status (required)',
-                                                    label: Text(
-                                                      'Follow-up Status',
-                                                      style: TextStyle(
-                                                        fontWeight: FontWeight.normal,
-                                                        color: Colors.black,
-                                                      ),
-                                                    ),
-                                                    border: OutlineInputBorder(
-                                                      borderSide: BorderSide(color: Colors.black54),
-                                                      borderRadius: BorderRadius.circular(10.0),
-                                                    ),
-                                                    focusedBorder: OutlineInputBorder(
-                                                      borderSide: BorderSide(color: appbar_color),
-                                                      borderRadius: BorderRadius.circular(10.0),
-                                                    ),
-                                                    enabledBorder: OutlineInputBorder(
-                                                      borderRadius: BorderRadius.circular(10.0),
-                                                      borderSide: BorderSide(color: Colors.black54),
-                                                    ),
-                                                    contentPadding: EdgeInsets.symmetric(horizontal: 10),
-                                                  ),
-                                                  validator: (value) {
-                                                    if (value == null) {
-                                                      return 'Follow-up Status is required'; // Error message
-                                                    }
-                                                    return null; // No error if a value is selected
-                                                  },
-                                                  dropdownColor: Colors.white,
-                                                  icon: Icon(Icons.arrow_drop_down, color: appbar_color),
-                                                  items: followuptype_list.map((FollowUpStatus status) {
-                                                    return DropdownMenuItem<FollowUpStatus>(
-                                                      value: status,
-                                                      child: Text(
-                                                        status.name,  // Display the 'name'
-                                                        style: TextStyle(color: Colors.black87),
-                                                      ),
-                                                    );
-                                                  }).toList(),
-                                                  onChanged: (FollowUpStatus? value) {
-                                                    setState(() {
-                                                      selectedfollowup_type = value;
-                                                    });})]))])), // follow up type
+                                    child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Padding(
+                                              padding: EdgeInsets.only(top:20,left:20,right:20,bottom :0),
+                                              child: Column(
+                                                  mainAxisAlignment: MainAxisAlignment.start,
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  children: [
+                                                    DropdownButtonFormField<FollowUpType>(
+                                                        value: selectedfollowup_type,  // This should be an object of FollowUpStatus
+                                                        decoration: InputDecoration(
+                                                          hintText: 'Select Follow-up Type*',
+                                                          label: Text(
+                                                            'Follow-up Type*',
+                                                            style: TextStyle(
+                                                              fontWeight: FontWeight.normal,
+                                                              color: Colors.black,
+                                                            ),
+                                                          ),
+                                                          border: OutlineInputBorder(
+                                                            borderSide: BorderSide(color: Colors.black54),
+                                                            borderRadius: BorderRadius.circular(10.0),
+                                                          ),
+                                                          focusedBorder: OutlineInputBorder(
+                                                            borderSide: BorderSide(color: appbar_color),
+                                                            borderRadius: BorderRadius.circular(10.0),
+                                                          ),
+                                                          enabledBorder: OutlineInputBorder(
+                                                            borderRadius: BorderRadius.circular(10.0),
+                                                            borderSide: BorderSide(color: Colors.black54),
+                                                          ),
+                                                          contentPadding: EdgeInsets.symmetric(horizontal: 10),
+                                                        ),
+                                                        validator: (value) {
+                                                          if (value == null) {
+                                                            return 'Follow-up Type is required'; // Error message
+                                                          }
+                                                          return null; // No error if a value is selected
+                                                        },
+                                                        dropdownColor: Colors.white,
+                                                        icon: Icon(Icons.arrow_drop_down, color: appbar_color),
+                                                        items: followuptype_list.map((FollowUpType status) {
+                                                          return DropdownMenuItem<FollowUpType>(
+                                                            value: status,
+                                                            child: Text(
+                                                              status.name,  // Display the 'name'
+                                                              style: TextStyle(color: Colors.black87),
+                                                            ),
+                                                          );
+                                                        }).toList(),
+                                                        onChanged: (FollowUpType? value) {
+                                                          setState(() {
+                                                            selectedfollowup_type = value;
+                                                          });})]))])),
+
+                                 // follow up type
 
                                   Container(
                                     child: Column(
@@ -1715,6 +1744,63 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                       ],
                                     ),
                                   ), // next follow up date
+
+                                Container(
+                                    child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Padding(
+                                              padding: EdgeInsets.only(top:20,left:20,right:20,bottom :0),
+                                              child: Column(
+                                                  mainAxisAlignment: MainAxisAlignment.start,
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  children: [
+                                                    DropdownButtonFormField<FollowUpStatus>(
+                                                        value: selectedfollowup_status,  // This should be an object of FollowUpStatus
+                                                        decoration: InputDecoration(
+                                                          hintText: 'Select Follow-up Status*',
+                                                          label: Text(
+                                                            'Follow-up Status*',
+                                                            style: TextStyle(
+                                                              fontWeight: FontWeight.normal,
+                                                              color: Colors.black,
+                                                            ),
+                                                          ),
+                                                          border: OutlineInputBorder(
+                                                            borderSide: BorderSide(color: Colors.black54),
+                                                            borderRadius: BorderRadius.circular(10.0),
+                                                          ),
+                                                          focusedBorder: OutlineInputBorder(
+                                                            borderSide: BorderSide(color: appbar_color),
+                                                            borderRadius: BorderRadius.circular(10.0),
+                                                          ),
+                                                          enabledBorder: OutlineInputBorder(
+                                                            borderRadius: BorderRadius.circular(10.0),
+                                                            borderSide: BorderSide(color: Colors.black54),
+                                                          ),
+                                                          contentPadding: EdgeInsets.symmetric(horizontal: 10),
+                                                        ),
+                                                        validator: (value) {
+                                                          if (value == null) {
+                                                            return 'Follow-up Status is required'; // Error message
+                                                          }
+                                                          return null; // No error if a value is selected
+                                                        },
+                                                        dropdownColor: Colors.white,
+                                                        icon: Icon(Icons.arrow_drop_down, color: appbar_color),
+                                                        items: followupstatus_list.map((FollowUpStatus status) {
+                                                          return DropdownMenuItem<FollowUpStatus>(
+                                                            value: status,
+                                                            child: Text(
+                                                              status.name,  // Display the 'name'
+                                                              style: TextStyle(color: Colors.black87),
+                                                            ),
+                                                          );
+                                                        }).toList(),
+                                                        onChanged: (FollowUpStatus? value) {
+                                                          setState(() {
+                                                            selectedfollowup_status = value;
+                                                          });})]))])),
 
                                 /*Container(
                                   padding: const EdgeInsets.only(left: 20.0, right: 20, top: 15),
@@ -2524,8 +2610,8 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                                 /*print(_selectedrole['role_name']);*/
 
                                                 nextFollowUpDate = null;
-                                                selectedfollowup_type = null;
-                                                selectedfollowup_type = null;
+                                                selectedfollowup_status = null;
+                                                selectedfollowup_status = null;
                                                 remarksController.clear();
 
                                               });

@@ -26,11 +26,12 @@ class InquiryModel {
   final String description;
   final String contactNo;
   final String email;
-  final int inquiryNo;
+  final String inquiryNo;
   final String creationDate;
   final double minPrice;
   final double maxPrice;
   final String status;
+  final String leadStatusCategory;
   final List<Map<String, dynamic>> preferredAreas;
   final List<Map<String, dynamic>> preferredFlatTypes;
   final List<Map<String, dynamic>> preferredAmenities;
@@ -44,6 +45,8 @@ class InquiryModel {
     required this.contactNo,
     required this.email,
     required this.inquiryNo,
+    required this.leadStatusCategory,
+
     required this.creationDate,
     required this.minPrice,
     required this.maxPrice,
@@ -63,7 +66,8 @@ class InquiryModel {
 
     // Fetch and concatenate emirates
     final emirates = (json['preferred_areas'] as List<dynamic>?)
-        ?.map((area) => area['areas']['emirates_masterid'].toString())
+        ?.map((area) => area['areas']['emirates']['state_name'].toString())
+        .toSet() // Use a Set to ensure uniqueness
         .join(', ') ??
         'No emirates specified';
 
@@ -71,6 +75,24 @@ class InquiryModel {
         ?.map((flatType) => flatType['flat_types']['flat_type'])
         .join(', ') ??
         'No unit type specified';
+
+    final List<dynamic>? leadsFollowup = json['leads_followup'];
+
+    String leadStatusName= '';// Extract the last follow-up and its lead status name
+    String leadStatusCategory= '';
+    if (leadsFollowup != null && leadsFollowup.isNotEmpty) {
+
+
+
+      final lastFollowup = leadsFollowup.first;
+      leadStatusName = lastFollowup['lead_status']?['name'] ?? 'Unknown';
+      leadStatusCategory = lastFollowup['lead_status']?['is_qualified'] ?? 'Unknown';
+
+      print('Last Lead Status Name: $leadStatusName');
+    } else {
+      print('No follow-up records found.');
+    }
+
 
     return InquiryModel(
 
@@ -81,12 +103,13 @@ class InquiryModel {
       description: json['description'] ?? 'No description',
       contactNo: json['mobile_no'] ?? 'N/A',
       email: json['email'] ?? 'N/A',
-      inquiryNo: json['id'] ?? '',
+      inquiryNo: json['id'].toString() ?? '',
       creationDate: formattedDate,
+      leadStatusCategory: leadStatusCategory,
 
       minPrice: (json['min_price'] as num?)?.toDouble() ?? 0.0,
       maxPrice: (json['max_price'] as num?)?.toDouble() ?? 0.0,
-      status: json['status'] ?? 'In Progress',
+      status: leadStatusName ?? 'In Progress',
       preferredAreas: (json['preferred_areas'] as List<dynamic>?)
           ?.map((area) => area as Map<String, dynamic>)
           .toList() ??
@@ -157,6 +180,7 @@ class _SalesInquiryReportState
 
     filteredInquiries.clear();
     salesinquiry.clear();
+    _expandedinquirys.clear();
 
     final url = '$BASE_URL_config/v1/leads'; // Replace with your API endpoint
     String token = 'Bearer $Company_Token'; // auth token for request
@@ -347,7 +371,7 @@ class _SalesInquiryReportState
                       children: [
 
 
-                        if(inquiry.status == 'In Progress' )
+                        if(inquiry.leadStatusCategory == 'true' )
                         Row(children: [
 
                           _buildDecentButton(
@@ -362,6 +386,8 @@ class _SalesInquiryReportState
                               List<String> unittype = inquiry.unitType.split(',').map((e) => e.trim()).toList();
                               String contactno = inquiry.contactNo;
                               String email = inquiry.email;
+                              String id = inquiry.inquiryNo;
+
 
                               final RegExp regExp = RegExp(r"^\+\d{1,3}");
 
@@ -374,7 +400,7 @@ class _SalesInquiryReportState
                               Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(builder: (context) =>
-                                      FollowupSalesInquiry(name: name, unittype: unittype, existingAreaList: areaList, existingEmirateList: emiratesList, contactno: processedNumber, email: email)));
+                                      FollowupSalesInquiry(id:id,name: name, unittype: unittype, existingAreaList: areaList, existingEmirateList: emiratesList, contactno: processedNumber, email: email)));
                             },
                           ),
                           SizedBox(width:5),
@@ -479,7 +505,7 @@ class _SalesInquiryReportState
             ),
           ],
         ),
-        _getStatusBadge(inquiry.status),
+        _getStatusBadge(inquiry.leadStatusCategory,inquiry.status),
       ],
     );
   }
@@ -527,13 +553,13 @@ class _SalesInquiryReportState
     );
   }
 
-  Widget _getStatusBadge(String status) {
+  Widget _getStatusBadge(String category, String status) {
     Color color;
-    switch (status) {
-      case 'In Progress':
-        color = Colors.orange;
+    switch (category) {
+      case 'false':
+        color = Colors.red;
         break;
-      case 'Closed':
+      case 'true':
         color = Colors.green;
         break;
       default:

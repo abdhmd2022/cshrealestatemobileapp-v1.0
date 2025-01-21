@@ -12,9 +12,9 @@ const String authTokenBase = r'!1--3*%*%*%*9$api$8*%*%*%*5--0!X19fIUBBUyQlYXMxOT
 
 const String BASE_URL_config = "http://192.168.2.157:4000/api";
 
-const String Serial_Token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwic2VyaWFsX2lkIjoxLCJpYXQiOjE3MzczNTEzNTYsImV4cCI6MTczNzQzNzc1Nn0.Hwq-A4_J6t240cwa2HR7teN5ermPYN16Xhv_yJN8UJU';
+const String Serial_Token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwic2VyaWFsX2lkIjoxLCJpYXQiOjE3Mzc0Mzc2MjAsImV4cCI6MTczNzUyNDAyMH0.UVUdUT2uX-z__9KVh5lbqcV1WC6cg8lAdgaIYe-EkJI';
 
-const String Company_Token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwic2VyaWFsX2lkIjoxLCJjb21wYW55X2lkIjoxLCJpYXQiOjE3MzczNTEzNTYsImV4cCI6MTczNzQzNzc1Nn0.MThvFbuJFet9S4p2607XGxoHHzhhQheZSsLilohILlU';
+const String Company_Token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwic2VyaWFsX2lkIjoxLCJjb21wYW55X2lkIjoxLCJpYXQiOjE3Mzc0Mzc2MjAsImV4cCI6MTczNzUyNDAyMH0.EV4Jwo5dlcmw4IZvSnmuFpjL3yI0croWDuAhBpcHAJs';
 
 /*
 final String uuid = "6e35f08d-8285-45e3-ae32-a0e9efe5407d";

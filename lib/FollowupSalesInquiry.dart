@@ -37,10 +37,12 @@ class FollowUpStatus {
 class FollowUpType {
   final int id;
   final String name;
+  final int serial_id;
 
   FollowUpType({
     required this.id,
     required this.name,
+    required this.serial_id
   });
 
   // Factory method to create a FollowUpStatus object from JSON
@@ -48,6 +50,7 @@ class FollowUpType {
     return FollowUpType(
       id: json['id'],
       name: json['name'],
+      serial_id:json['serial_id']
     );
   }
 }
@@ -79,6 +82,7 @@ class FollowupSalesInquiry extends StatefulWidget {
   final List<String> existingEmirateList;
   final String contactno;
   final String email;
+  final String id;
 
   const FollowupSalesInquiry({
     Key? key,
@@ -88,6 +92,8 @@ class FollowupSalesInquiry extends StatefulWidget {
     required this.existingEmirateList,
     required this.contactno,
     required this.email,
+    required this.id,
+
 
   }) : super(key: key);
   @override
@@ -238,8 +244,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
 
   List<FollowUpType> followuptype_list = [
 
-    FollowUpType(id: 1, name: 'Email-in'),
-    FollowUpType(id: 2, name: 'Email-out')
+
 
 
   ];
@@ -265,21 +270,75 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
   List<Map<String, dynamic>> areasToDisplay = []; // Global variable
 
 
-  void _preSelectUnitTypes() {
-    List<String> preSelectedUnitTypes = widget.unittype; // The list of pre-selected unit types
 
-    setState(() {
-      for (var unit in unitTypes) {
-        // Check if the unit type is in the pre-selected list and set 'isSelected' to true if it is
-        unit['isSelected'] = preSelectedUnitTypes.contains(unit['label']);
+  Future<void> sendFollowupInquiryRequest() async {
+
+
+
+    // Replace with your API endpoint
+    final String url = "$BASE_URL_config/v1/leadFollowUp";
+
+    var uuid = Uuid();
+
+    // Generate a v4 (random) UUID
+    String uuidValue = uuid.v4();
+
+    DateTime today = DateTime.now();
+
+    // Format the date to yyyy-MM-dd
+    String formattedDate = DateFormat('yyyy-MM-dd').format(today);
+
+    final DateFormat formatter = DateFormat('yyyy-MM-dd');
+    String nextfollowupdate = formatter.format(nextFollowUpDate!);
+
+    // Constructing the JSON body
+
+
+    final Map<String, dynamic> requestBody = {
+      "uuid": uuidValue,
+      "lead_id":widget.id,
+      "date":formattedDate,
+      "lead_status_id":selectedfollowup_status!.id,
+      "next_followup_date": nextfollowupdate,
+      "followup_type_id":selectedfollowup_type!.id,
+      "remarks" : remarksController.text
+    };
+
+    print('create request body $requestBody');
+
+    try {
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $Company_Token",
+        },
+        body: jsonEncode(requestBody),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        // Request was successful
+        print("Response Data: ${response.body}");
+        setState(() {
+          _formKey.currentState?.reset();
+
+          /*print(_selectedrole['role_name']);*/
+
+          nextFollowUpDate = null;
+          selectedfollowup_status = null;
+          selectedfollowup_type = null;
+          remarksController.clear();
+        });
+
+      } else {
+        // Error occurred
+        print("Error: ${response.statusCode}");
+        print("Message: ${response.body}");
+
       }
-
-      // Update the selected unit type display string
-      selectedUnitType = preSelectedUnitTypes.isNotEmpty
-          ? preSelectedUnitTypes.join(', ')
-          : "Select Unit Type(s)";
-      isUnitSelected = preSelectedUnitTypes.isNotEmpty; // Update selection status
-    });
+    } catch (error) {
+      print("Exception: $error");
+    }
   }
 
 
@@ -468,79 +527,6 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
     });
   }
 
-  Future<void> sendCreateInquiryRequest() async {
-
-
-    // converting amenities set to list
-    final List<int> amenitiesList = selectedSpecialFeatures.union(selectedAmenities).toList();
-
-    List<int> emiratesIds = selectedEmiratesList.map((emirate) => emirate['id'] as int).toList();
-
-    List<int> areasIds = selectedAreas.map((area) => area['id'] as int).toList();
-
-
-    //converting date to yyyy-MM-dd format
-    String? formattedDate;
-    if (nextFollowUpDate != null) {
-      final DateFormat formatter = DateFormat('yyyy-MM-dd');
-      formattedDate = formatter.format(nextFollowUpDate!);
-    } else {
-      formattedDate = null;
-    }
-
-    // Replace with your API endpoint
-    final String url = "$BASE_URL_config/v1/leads";
-
-    var uuid = Uuid();
-
-    // Generate a v4 (random) UUID
-    String uuidValue = uuid.v4();
-
-    // Constructing the JSON body
-    final Map<String, dynamic> requestBody = {
-      "uuid": uuidValue,
-      "name": customernamecontroller.text,
-      "email": emailcontroller.text,
-      "mobile_no": '$_selectedCountryCode${customercontactnocontroller.text}',
-      "areas": areasIds,
-      "flatTypes": selectedUnitIds,
-      "lead_status_id": selectedfollowup_status!.id,
-      "next_followup_date": formattedDate,
-      "property_type": selectedPropertyType,
-      "interest_type": interestTypes[selectedInterestType ?? 0],
-      "max_price": _currentRangeValues!.end.round().toString(),
-      "min_price": _currentRangeValues!.start.round().toString(),
-      "amenities": amenitiesList,
-      "description" : remarksController.text,
-      'activity_source_id' : selectedactivity_source!.id
-    };
-
-    print('create request body $requestBody');
-
-
-    try {
-      final response = await http.post(
-        Uri.parse(url),
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": "Bearer $Company_Token",
-        },
-        body: jsonEncode(requestBody),
-      );
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        // Request was successful
-        print("Response Data: ${response.body}");
-      } else {
-        // Error occurred
-        print("Error: ${response.statusCode}");
-        print("Message: ${response.body}");
-
-      }
-    } catch (error) {
-      print("Exception: $error");
-    }
-  }
 
   Future<void> fetchUnitTypes() async {
 
@@ -704,6 +690,50 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
 
 
   }
+
+  Future<void> fetchLeadType() async {
+
+    followuptype_list.clear();
+
+    final url = '$BASE_URL_config/v1/leadFollowUpTypes'; // Replace with your API endpoint
+    String token = 'Bearer $Serial_Token'; // auth token for request
+
+    Map<String, String> headers = {
+      'Authorization': token,
+      "Content-Type": "application/json"
+    };
+    try {
+      final response = await http.get(Uri.parse(url),
+        headers: headers,);
+      if (response.statusCode == 200) {
+
+        final data = json.decode(response.body);
+
+        setState(() {
+          List<dynamic> followuplist = data['data']['followUpTypes'];
+
+          for (var followup in followuplist) {
+            // Create a FollowUpStatus object from JSON
+            FollowUpType followUpType = FollowUpType.fromJson(followup);
+
+            // Add the object to the list
+            followuptype_list.add(followUpType);
+
+
+            // Optionally, you can print the object for verification
+          }
+        });
+      } else {
+        throw Exception('Failed to load data');
+      }
+    } catch (e) {
+
+      print('Error fetching data: $e');
+    }
+
+
+  }
+
 
   void updateEmiratesSelection() {
     setState(() {
@@ -1231,12 +1261,9 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
       startController.text = _currentRangeValues!.start.toStringAsFixed(0);
       endController.text = _currentRangeValues!.end.toStringAsFixed(0);
     });
-    fetchActivitySources();
-    fetchEmirates();
-    fetchAreas();
-    fetchUnitTypes();
+
     fetchLeadStatus();
-    fetchAmenities();
+    fetchLeadType();
 
     /*_preSelectUnitTypes();*/
 
@@ -1677,8 +1704,8 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                               DateTime? pickedDate = await showDatePicker(
                                                 context: context,
 
-                                                initialDate: nextFollowUpDate ?? DateTime.now(),
-                                                firstDate: DateTime.now(), // Restrict past dates
+                                                initialDate: nextFollowUpDate ?? DateTime.now().add(Duration(days:1)),
+                                                firstDate: DateTime.now().add(Duration(days:1)), // Restrict past dates
                                                 lastDate: DateTime(2100),
                                                 builder: (BuildContext context, Widget? child) {
                                                   return Theme(
@@ -2627,8 +2654,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                                   _isFocused_email = false;
                                                   _isFocus_name = false;
                                                 });
-                                                /*userRegistration(serial_no!,fetched_email,fetched_password,fetched_role,fetched_name);*/
-
+                                                sendFollowupInquiryRequest();
                                               }},
                                             child: Text('Submit'),
                                           ),

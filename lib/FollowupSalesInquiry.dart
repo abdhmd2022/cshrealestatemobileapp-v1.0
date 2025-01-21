@@ -2596,7 +2596,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
 
                                                 nextFollowUpDate = null;
                                                 selectedfollowup_status = null;
-                                                selectedfollowup_status = null;
+                                                selectedfollowup_type = null;
                                                 remarksController.clear();
 
                                               });

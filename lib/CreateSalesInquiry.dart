@@ -423,6 +423,65 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
       if (response.statusCode == 200 || response.statusCode == 201) {
         // Request was successful
         print("Response Data: ${response.body}");
+        setState(() {
+
+          _formKey.currentState?.reset();
+          selectedasignedto = asignedto.first;
+          selectedinquiry_status = null;
+          selectedInterestType = null;
+          selectedPropertyType = null;
+          selectedactivity_source = null;
+          nextFollowUpDate = null;
+          selectedUnitIds.clear();
+
+          selectedUnitType = "Select Unit Types";
+          selectedEmiratesString = "Select Emirate";
+          selectedEmiratesList.clear();
+
+          for (var emirate in emirates) {
+            emirate['isSelected'] = false;
+          }
+          isAllEmiratesSelected = false;
+
+          // Reset areas automatically
+          clearAreas();
+
+
+
+          updateAreasDisplay();
+
+          updateAreasSelection();
+
+          selectedAmenities.clear();
+          selectedSpecialFeatures.clear();
+
+          range_min = prefs!.getDouble('range_min') ?? 10000;
+          range_max = prefs!.getDouble('range_max') ?? 100000;
+
+          double range_start = range_min! + (range_min! / 0.8);
+          double range_end = range_max! - (range_max! * 0.2);
+
+          _currentRangeValues = RangeValues(range_start, range_end);
+
+          startController.text = _currentRangeValues!.start.toStringAsFixed(0);
+          endController.text = _currentRangeValues!.end.toStringAsFixed(0);
+
+          isAllEmiratesSelected = false;
+
+          _selectedCountryCode = '+971'; // Default to UAE country code
+          _selectedCountryISO = 'AE'; // Default to UAE ISO code
+          _selectedCountryFlag = '🇦🇪'; // Default UAE flag emoji
+
+
+          customernamecontroller.clear();
+          customercontactnocontroller.clear();
+          emailcontroller.clear();
+          unittypecontroller.clear();
+          areacontroller.clear();
+          descriptioncontroller.clear();
+
+        });
+
       } else {
         // Error occurred
         print("Error: ${response.statusCode}");
@@ -433,6 +492,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
       print("Exception: $error");
     }
   }
+
 
   Future<void> fetchUnitTypes() async {
 
@@ -2199,7 +2259,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                             color: Colors.black,
                                           ),
                                         ),
-                                        SizedBox(height: 10),
+                                        SizedBox(height: 5),
 
                                         Container(
                                           padding: EdgeInsets.symmetric(horizontal: 12),
@@ -2278,7 +2338,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                             color: Colors.black,
                                           ),
                                         ),
-                                        SizedBox(height: 10),
+                                        SizedBox(height: 5),
 
 
                                     Container(

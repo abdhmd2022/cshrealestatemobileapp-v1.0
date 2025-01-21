@@ -269,11 +269,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
 
   List<Map<String, dynamic>> areasToDisplay = []; // Global variable
 
-
-
   Future<void> sendFollowupInquiryRequest() async {
-
-
 
     // Replace with your API endpoint
     final String url = "$BASE_URL_config/v1/leadFollowUp";

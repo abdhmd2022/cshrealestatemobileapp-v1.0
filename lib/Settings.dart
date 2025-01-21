@@ -1,5 +1,6 @@
 import 'package:cshrealestatemobile/AmenitiesReport.dart';
 import 'package:cshrealestatemobile/LeadStatusReport.dart';
+import 'package:cshrealestatemobile/LeadTypeReport.dart';
 import 'package:cshrealestatemobile/constants.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert'; // For JSON encoding
@@ -140,7 +141,7 @@ class _SettingsScreenState extends State<SettingsScreen> with TickerProviderStat
           Padding(padding: EdgeInsets.only(top: 5,bottom: 5),
               child: ListTile(
                   title: Text('Lead Status'),
-                  subtitle: Text('Manage lead status masters for the app'),
+                  subtitle: Text('Manage lead/follow-up status masters for the app'),
                   onTap: ()
                 {
                   Navigator.pushReplacement
@@ -184,7 +185,23 @@ class _SettingsScreenState extends State<SettingsScreen> with TickerProviderStat
               ],
             ),
           ),
+          Divider(),
 
+          Padding(padding: EdgeInsets.only(top: 5,bottom: 5),
+              child: ListTile(
+                title: Text('Lead Follow-up Type'),
+                subtitle: Text('Manage lead follow-up type masters for the app'),
+                onTap: ()
+                {
+                  Navigator.pushReplacement
+
+                    (
+                    context,
+                    MaterialPageRoute(builder: (context) => LeadFollowupTypeReport()), // navigate to company and serial select screen
+                  );
+
+                },
+              )),
           Divider(),
 
           Padding(padding: EdgeInsets.only(top: 5,bottom: 5),

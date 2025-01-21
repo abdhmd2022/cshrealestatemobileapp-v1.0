@@ -528,7 +528,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
   }
 
-
   Future<void> fetchActivitySources() async {
 
     activitysource_list.clear();
@@ -572,7 +571,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
 
   }
-
 
   Future<void> fetchAmenities() async {
 
@@ -1863,8 +1861,8 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                               DateTime? pickedDate = await showDatePicker(
                                                 context: context,
 
-                                                initialDate: nextFollowUpDate ?? DateTime.now(),
-                                                firstDate: DateTime.now(), // Restrict past dates
+                                                initialDate: nextFollowUpDate ?? DateTime.now().add(Duration(days:1)),
+                                                firstDate: DateTime.now().add(Duration(days:1)), // Restrict past dates
                                                 lastDate: DateTime(2100),
                                                 builder: (BuildContext context, Widget? child) {
                                                   return Theme(

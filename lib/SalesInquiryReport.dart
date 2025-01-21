@@ -29,6 +29,8 @@ class InquiryModel {
   final String inquiryNo;
   final String creationDate;
   final double minPrice;
+  final int created_by;
+  final int assigned_to;
   final double maxPrice;
   final String status;
   final String leadStatusCategory;
@@ -41,6 +43,8 @@ class InquiryModel {
     required this.unitType,
     required this.area,
     required this.emirate,
+    required this.created_by,
+    required this.assigned_to,
     required this.description,
     required this.contactNo,
     required this.email,
@@ -103,6 +107,9 @@ class InquiryModel {
       description: json['description'] ?? 'No description',
       contactNo: json['mobile_no'] ?? 'N/A',
       email: json['email'] ?? 'N/A',
+      created_by: json['created_by'] ?? 0,
+      assigned_to: json['assigned_to'] ?? 0,
+
       inquiryNo: json['id'].toString() ?? '',
       creationDate: formattedDate,
       leadStatusCategory: leadStatusCategory,
@@ -411,16 +418,13 @@ class _SalesInquiryReportState
                                   () {
 
                                 String name = inquiry.customerName;
-                                String emirate = inquiry.emirate;
-                                String area = inquiry.area;
-                                String unittype = inquiry.unitType;
-                                String contactno = inquiry.contactNo;
+                                String id = inquiry.inquiryNo;
                                 String email = inquiry.email;
 
                                 Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(builder: (context) =>
-                                        SalesInquiryTransfer(name: name, unittype: unittype, area: area, emirate: emirate)));
+                                        SalesInquiryTransfer(name: name, email: email, id: id,)));
                               },
                             ),
                           SizedBox(width:5)
@@ -519,6 +523,10 @@ class _SalesInquiryReportState
         _buildInfoRow('Email:', inquiry.email),
         _buildInfoRow('Area:', inquiry.area),
         _buildInfoRow('Date:', inquiry.creationDate),
+        _buildInfoRow('Created By (using for testing):', inquiry.created_by.toString()),
+        _buildInfoRow('Assigned To (using for testing):', inquiry.assigned_to.toString()),
+
+
       ],
     );
   }

@@ -1,25 +1,67 @@
+import 'dart:convert';
+
 import 'package:cshrealestatemobile/constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
+import 'package:intl/intl.dart';
+import 'package:uuid/uuid.dart';
 import 'SalesInquiryReport.dart';
 import 'Sidebar.dart';
+
+class User {
+  final String email;
+  final int id;
+  final String name;
+  final String isAdmin;
+  final String createdAt;
+  final String alteredAt;
+  final String isActive;
+  final int serialId;
+  final int? externalRoleId;
+
+  User({
+    required this.email,
+    required this.id,
+    required this.name,
+    required this.isAdmin,
+    required this.createdAt,
+    required this.alteredAt,
+    required this.isActive,
+    required this.serialId,
+    this.externalRoleId,
+  });
+
+  factory User.fromJson(Map<String, dynamic> json) {
+    return User(
+      email: json['email'],
+      id: json['id'],
+      name: json['name'],
+      isAdmin: json['is_admin'],
+      createdAt: json['created_at'],
+      alteredAt: json['altered_at'],
+      isActive: json['is_active'],
+      serialId: json['serial_id'],
+      externalRoleId: json['external_role_id'],
+    );
+  }
+}
 
 class SalesInquiryTransfer extends StatefulWidget
 {
   final String name;
-  final String unittype;
-  final String area;
-  final String emirate;
+  final String id;
+  final String email;
 
   const SalesInquiryTransfer({
     Key? key,
     required this.name,
-    required this.unittype,
-    required this.area,
-    required this.emirate,
+    required this.id,
+    required this.email,
   }) : super(key: key);
 
   @override
@@ -28,12 +70,9 @@ class SalesInquiryTransfer extends StatefulWidget
 
 class _SalesInquiryTransferPageState extends State<SalesInquiryTransfer> with TickerProviderStateMixin {
 
-  String? selectedTransferTo; // To store the selec// ted dropdown value
-  final List<String> transfer_to_list = [
-    'Saadan',
-    'Padam',
-    'Sumit',
-    'Varuni',
+  int? selectedTransferToId; // To store the selec// ted dropdown value
+   List<User> transfer_to_list = [
+
   ];
 
   TextEditingController _remarksController = TextEditingController();
@@ -52,175 +91,91 @@ class _SalesInquiryTransferPageState extends State<SalesInquiryTransfer> with Ti
 
   String name = "",email = "";
 
-  /*List<File> _attachment = []; // List to store selected images
-  final ImagePicker _picker = ImagePicker();*/
+  Future<void> fetchUsers() async {
 
-  /*Future<void> _pickImages(ImageSource source) async {
-    final List<XFile>? pickedFiles = await _picker.pickMultiImage(); // Pick multiple images
-    if (pickedFiles != null) {
-      setState(() {
-        // Add all selected images to the attachments list
-        _attachment.addAll(pickedFiles.map((file) => File(file.path)).toList());
-      });
+    transfer_to_list.clear();
+
+    final url = '$BASE_URL_config/v1/users'; // Replace with your API endpoint
+    String token = 'Bearer $Serial_Token'; // auth token for request
+
+    Map<String, String> headers = {
+      'Authorization': token,
+      "Content-Type": "application/json"
+    };
+    try {
+      final response = await http.get(Uri.parse(url),
+        headers: headers,);
+      if (response.statusCode == 200) {
+
+        final data = json.decode(response.body);
+
+        setState(() {
+
+          final usersJson = List<Map<String, dynamic>>.from(data['data']['users']);
+          transfer_to_list = usersJson.map((userJson) => User.fromJson(userJson)).toList();
+
+        });
+      } else {
+        throw Exception('Failed to load data');
+      }
+    } catch (e) {
+
+      print('Error fetching data: $e');
     }
-  }*/
 
 
-  /*void _showAttachmentOptions() {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
-      ),
-      builder: (BuildContext context) {
-        return Padding(
-          padding: const EdgeInsets.only(left: 16,top: 20,right: 20,bottom: 50),
-          child: Wrap(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.pop(context);
-                      _pickImages(ImageSource.gallery); // Open gallery to pick multiple images
-                    },
-                    child: Column(
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white, // Set the background color
-                            shape: BoxShape.circle, // Make it round
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black26, // Shadow color
-                                blurRadius: 8, // Shadow blur
-                                offset: Offset(4, 4), // Shadow position
-                              ),
-                            ],
-                          ),
-                          padding: EdgeInsets.all(16),
-                          child: Icon(Icons.upload, size: 40, color: Colors.blueAccent),
-                        ),
-                        SizedBox(height: 8),
-                        Text('Upload'),
-                      ],
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.pop(context);
-                      _pickImages(ImageSource.gallery); // Open gallery to pick multiple images
-                    },
-                    child: Column(
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white, // Set the background color
-                            shape: BoxShape.circle, // Make it round
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black26, // Shadow color
-                                blurRadius: 8, // Shadow blur
-                                offset: Offset(4, 4), // Shadow position
-                              ),
-                            ],
-                          ),
-                          padding: EdgeInsets.all(16),
-                          child: Icon(Icons.camera_alt, size: 40, color: Colors.blueAccent),
-                        ),
-                        SizedBox(height: 8),
-                        Text('Capture'),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }*/
+  }
 
-  /*void _showAttachmentOptions() {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true, // Control the height based on content
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
-      ),
-      builder: (BuildContext context) {
-        return Padding(
-          padding: const EdgeInsets.only(left: 16,top: 20,right: 20,bottom: 50),
-          child: Wrap(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.pop(context);
-                      _pickImages(ImageSource.gallery); // Open gallery to pick multiple images
-                    },
-                    child: Column(
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Colors.black, // Set the background color
-                            shape: BoxShape.circle, // Make it round
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black26, // Shadow color
-                                blurRadius: 8, // Shadow blur
-                                offset: Offset(4, 4), // Shadow position
-                              ),
-                            ],
-                          ),
-                          padding: EdgeInsets.all(16),
-                          child: Icon(Icons.upload, size: 40, color: Colors.white),
-                        ),
-                        SizedBox(height: 8),
-                        Text('Upload'),
-                      ],
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.pop(context);
-                      _pickImages(ImageSource.gallery); // Open gallery to pick multiple images
-                    },
-                    child: Column(
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Colors.black, // Set the background color
-                            shape: BoxShape.circle, // Make it round
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black26, // Shadow color
-                                blurRadius: 8, // Shadow blur
-                                offset: Offset(4, 4), // Shadow position
-                              ),
-                            ],
-                          ),
-                          padding: EdgeInsets.all(16),
-                          child: Icon(Icons.camera_alt, size: 40, color: Colors.white),
-                        ),
-                        SizedBox(height: 8),
-                        Text('Capture'),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }*/
+  Future<void> sendTransferInquiryRequest() async {
+
+
+
+    // Replace with your API endpoint
+    final String url = "$BASE_URL_config/v1/leads/${widget.id}";
+
+    var uuid = Uuid();
+
+    // Generate a v4 (random) UUID
+    String uuidValue = uuid.v4();
+
+    // Constructing the JSON body
+    final Map<String, dynamic> requestBody = {
+      "uuid": uuidValue,
+      "assigned_to":selectedTransferToId,
+
+    };
+
+    print('create request body $requestBody');
+
+    try {
+      final response = await http.patch(
+        Uri.parse(url),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $Company_Token",
+        },
+        body: jsonEncode(requestBody),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        // Request was successful
+        print("Response Data: ${response.body}");
+        setState(() {
+          _formKey.currentState?.reset();
+        });
+
+      } else {
+        // Error occurred
+        print("Error: ${response.statusCode}");
+        print("Message: ${response.body}");
+
+      }
+    } catch (error) {
+      print("Exception: $error");
+    }
+  }
+
+
 
   @override
   void initState() {
@@ -230,6 +185,7 @@ class _SalesInquiryTransferPageState extends State<SalesInquiryTransfer> with Ti
 
   Future<void> _initSharedPreferences() async {
 
+    fetchUsers();
   }
 
   @override
@@ -292,145 +248,74 @@ class _SalesInquiryTransferPageState extends State<SalesInquiryTransfer> with Ti
                       child: ListView(
                           children: [
 
-                            Stack(
-                              children: [
-                                Card(
-                                  color: Colors.white,
-                                  surfaceTintColor: Colors.white,
-                                  elevation: 10,
-                                  margin: EdgeInsets.only(left: 20, right: 20, top: 20),
-                                  child: Container(
-                                    padding: EdgeInsets.all(20),
-                                    child: Column(children: [
+                            SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child:  Container(
+                                padding: EdgeInsets.only(top:20),
+                                child:Row(
+                                  children: [
 
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        crossAxisAlignment: CrossAxisAlignment.center,
-                                        children: [
-                                          Container(
-                                            margin: EdgeInsets.only(bottom: 5),
-                                            child: Column(
-                                              mainAxisAlignment: MainAxisAlignment.center,
-                                              crossAxisAlignment: CrossAxisAlignment.center,
-                                              children: [
-                                                Column(
-                                                  mainAxisSize: MainAxisSize.min,
-                                                  children: [
-                                                    Container(
-                                                      margin: EdgeInsets.all(8), // Add margin around the icon
-                                                      child: Icon(
-                                                        Icons.person,
-                                                        color: appbar_color,
-                                                        size: 30, // Adjust size for better look
-                                                      ),
-                                                    ),
-                                                    SizedBox(height: 2), // Space between icon and text
-                                                    Text(
-                                                      "Saadan",
-                                                      style: TextStyle(fontSize: 16, color: appbar_color),
-                                                    ),
-                                                  ],
-                                                ),
-                                                SizedBox(height: 30),
-                                                Column(
-                                                  children: [
-                                                    Container(
-                                                      margin: EdgeInsets.all(8), // Add margin around the icon
-                                                      child: Icon(
-                                                        Icons.apartment,
-                                                        color: appbar_color,
-                                                        size: 30, // Adjust size for better look
-                                                      ),
-                                                    ),
-                                                    SizedBox(height: 2), // Space between icon and text
-                                                    Text(
-                                                      "Al Khaleej Center",
-                                                      style: TextStyle(fontSize: 16, color: appbar_color),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ],
+                                    Row(mainAxisSize: MainAxisSize.min,
+
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      children: [
+
+                                        Container(
+                                            margin: EdgeInsets.only(left: 20,right: 5, top: 20),
+                                            padding: EdgeInsets.only(left:10,right:10, top: 5, bottom: 5),
+                                            decoration: BoxDecoration(
+                                              color: appbar_color.withOpacity(0.2),
+                                              borderRadius: BorderRadius.circular(16.0),
                                             ),
-                                          ),
-                                          SizedBox(width: MediaQuery.of(context).size.width / 5),
-                                          Container(
-                                            margin: EdgeInsets.only(bottom: 5),
-                                            child: Column(
-                                              mainAxisAlignment: MainAxisAlignment.center,
-                                              crossAxisAlignment: CrossAxisAlignment.center,
+                                            child:Row(
                                               children: [
-                                                Column(
-                                                  mainAxisSize: MainAxisSize.min,
-                                                  children: [
-                                                    Container(
-                                                      margin: EdgeInsets.all(8), // Add margin around the icon
-                                                      child: Icon(
-                                                        Icons.home,
-                                                        color: appbar_color,
-                                                        size: 30, // Adjust size for better look
-                                                      ),
-                                                    ),
-                                                    SizedBox(height: 2), // Space between icon and text
-                                                    Text(
-                                                      '101',
-                                                      style: TextStyle(fontSize: 16, color: appbar_color),
-                                                    ),
-                                                  ],
+                                                Icon(
+                                                    Icons.person_outlined,
+                                                    color: appbar_color.shade600
                                                 ),
-                                                SizedBox(height: 30),
-                                                Column(
-                                                  mainAxisSize: MainAxisSize.min,
-                                                  children: [
-                                                    Container(
-                                                      margin: EdgeInsets.all(8), // Add margin around the icon
-                                                      child: Icon(
-                                                        Icons.public,
-                                                        color: appbar_color,
-                                                        size: 30, // Adjust size for better look
-                                                      ),
-                                                    ),
-                                                    SizedBox(height: 2), // Space between icon and text
-                                                    Text(
-                                                      "Dubai",
-                                                      style: TextStyle(fontSize: 16, color: appbar_color),
-                                                    ),
-                                                  ],
-                                                ),
-
+                                                SizedBox(width: 5,),
+                                                Text(widget.name,
+                                                    style: TextStyle(
+                                                        color: appbar_color.shade600,
+                                                        fontWeight: FontWeight.bold
+                                                    ))
 
                                               ],
+                                            )
+                                        ),
+
+                                        Container(
+                                            margin: EdgeInsets.only(left: 0,right: 5, top: 20),
+                                            padding: EdgeInsets.only(left:10,right:10, top: 5, bottom: 5),
+                                            decoration: BoxDecoration(
+                                              color: appbar_color.withOpacity(0.2),
+                                              borderRadius: BorderRadius.circular(16.0),
                                             ),
-                                          ),
+                                            child:Row(
+                                              children: [
+                                                Icon(
+                                                    Icons.email_outlined,
+                                                    color: appbar_color.shade600
+                                                ),
+                                                SizedBox(width: 5,),
+                                                Text(widget.email,
+                                                    style: TextStyle(
+                                                        color: appbar_color.shade600,
+                                                        fontWeight: FontWeight.bold
+                                                    ))
 
+                                              ],
+                                            )
+                                        ),
+                                      ],),
 
-                                        ],
-                                      ),
-
-
-                                      // edit button for card
-                                      /*SizedBox(height: 10,),
-
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        crossAxisAlignment: CrossAxisAlignment.center,
-
-                                        children: [
-
-                                        _buildDecentButton('Edit',
-                                            Icons.edit,
-                                            appbar_color.shade300,
-                                                ()
-                                            {
-
-                                            })
-                                      ],)*/
-                                    ],),
-
-                                  ),
+                                  ],
                                 ),
-
-                              ],
+                              ),
                             ),
+
+
 
                             Container(
                               margin: EdgeInsets.only(left: 20,right: 20,top: 30),
@@ -470,30 +355,31 @@ class _SalesInquiryTransferPageState extends State<SalesInquiryTransfer> with Ti
                                       borderRadius: BorderRadius.circular(8),
                                       border: Border.all(color: Colors.grey.shade300, width: 1.5),
                                     ),
-                                    child: DropdownButtonFormField<String>(
+                                    child: DropdownButtonFormField<int>(
                                       decoration: InputDecoration(
                                         border: InputBorder.none, // Remove default border
                                         contentPadding: EdgeInsets.zero, // Remove extra padding
                                       ),
-                                      value: selectedTransferTo, // Replace with your variable
+                                      value: selectedTransferToId, // Replace with your variable
                                       hint: Text('Select an option'),
 
                                       validator: (value) {
-                                        if (value == null || value.isEmpty) {
+                                        if (value == null) {
                                           return 'Transfer to is required'; // Custom error message
                                         }
                                         return null;
                                       },
 
-                                      items: transfer_to_list.map((String item) { // Replace 'items' with your list
-                                        return DropdownMenuItem<String>(
-                                          value: item,
-                                          child: Text(item),
+                                      items: transfer_to_list.map((User item) { // Replace 'items' with your list
+                                        return DropdownMenuItem<int>(
+                                          value: item.id,
+                                          child: Text(item.name),
                                         );
                                       }).toList(),
-                                      onChanged: (String? newValue) {
+                                      onChanged: (int? newValue) {
                                         setState(() {
-                                          selectedTransferTo = newValue; // Replace with your state logic
+                                          selectedTransferToId = newValue; // Replace with your state logic
+                                          print(' transfer to id $selectedTransferToId');
                                         });
                                       },
                                       icon: Icon(Icons.arrow_drop_down, color: Colors.grey),
@@ -533,13 +419,8 @@ class _SalesInquiryTransferPageState extends State<SalesInquiryTransfer> with Ti
                                     ),
                                   ),
 
-                                  Container(
-                                      margin: EdgeInsets.only(
-                                          top:0,
-                                          bottom: 0,
-                                          left: 20,
-                                          right: 20
-                                      ),
+                                  Padding(
+                                      padding: EdgeInsets.only(top:0,left: 20,right: 20,bottom: 0),
                                       child: TextFormField(
                                           controller: _remarksController,
                                           keyboardType: TextInputType.multiline,
@@ -561,9 +442,13 @@ class _SalesInquiryTransferPageState extends State<SalesInquiryTransfer> with Ti
                                               ),
                                             ),
                                             focusedBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(10),
                                               borderSide: BorderSide(
                                                 color:  Colors.black, // Set the focused border color
                                               ),
+                                            ),
+                                            labelStyle: TextStyle(
+                                              color: Colors.black,
                                             ),
                                           ),
                                           style: TextStyle(
@@ -645,7 +530,7 @@ class _SalesInquiryTransferPageState extends State<SalesInquiryTransfer> with Ti
                                       _formKey.currentState!.validate()) {
                                     _formKey.currentState!.save();
 
-
+                                    sendTransferInquiryRequest();
 
                                   }},
                                 child: Text('Transfer',

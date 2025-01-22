@@ -2292,6 +2292,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                             checkColor: Colors.white,
                                             confirmText: Text(
                                               "Confirm",
+                                              
                                               style: TextStyle(color: appbar_color), // Custom confirm button
                                             ),
                                             cancelText: Text(

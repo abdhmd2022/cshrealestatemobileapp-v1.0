@@ -162,6 +162,9 @@ class _SalesInquiryTransferPageState extends State<SalesInquiryTransfer> with Ti
         print("Response Data: ${response.body}");
         setState(() {
           _formKey.currentState?.reset();
+          selectedTransferToId = null;
+          _remarksController.clear();
+
         });
 
       } else {

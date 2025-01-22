@@ -2249,13 +2249,24 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                     child: Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
-                                        Text(
-                                          "Amenities:",
-                                          style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.black,
-                                          ),
+                                        Row(
+                                          children: [
+                                            Text("Amenities:",
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 16
+
+                                                )
+                                            ),
+                                            SizedBox(width: 2),
+                                            Text(
+                                              '*', // Red asterisk for required field
+                                              style: TextStyle(
+                                                fontSize: 20,
+                                                color: Colors.red, // Red color for the asterisk
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                         SizedBox(height: 5),
 
@@ -2266,7 +2277,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                             color: Colors.white,
 
                                             borderRadius: BorderRadius.circular(8),
-                                            border: Border.all(color: Colors.black, width: 0.75),
+                                            border: Border.all(color: Colors.black54, width: 0.75),
                                           ),
                                           child: MultiSelectDialogField(
                                             items: amenities
@@ -2328,13 +2339,24 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                     child: Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
-                                        Text(
-                                          "Special Features:",
-                                          style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.black,
-                                          ),
+                                        Row(
+                                          children: [
+                                            Text("Special Features:",
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 16
+
+                                                )
+                                            ),
+                                            SizedBox(width: 2),
+                                            Text(
+                                              '*', // Red asterisk for required field
+                                              style: TextStyle(
+                                                fontSize: 20,
+                                                color: Colors.red, // Red color for the asterisk
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                         SizedBox(height: 5),
 
@@ -2346,7 +2368,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                         color: Colors.white,
 
                                         borderRadius: BorderRadius.circular(8),
-                                        border: Border.all(color: Colors.black, width: 0.75),
+                                        border: Border.all(color: Colors.black54, width: 0.75),
                                       ),
                                       child:  MultiSelectDialogField(
                                         items: specialfeatures
@@ -2441,7 +2463,12 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                 controller: startController,
                                                 keyboardType: TextInputType.number,
                                                 decoration: InputDecoration(
-                                                  border: OutlineInputBorder(),
+                                                  border: OutlineInputBorder(
+                                                    borderRadius: BorderRadius.circular(8),
+                                                    borderSide: BorderSide(color: Colors.black54,width: 0.75),
+
+                                                  ),
+
                                                 ),
                                                 onChanged: (value) => _updateRangeFromTextFields(),
                                               ),
@@ -2464,7 +2491,11 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                 controller: endController,
                                                 keyboardType: TextInputType.number,
                                                 decoration: InputDecoration(
-                                                  border: OutlineInputBorder(),
+                                                  border: OutlineInputBorder(
+                                                      borderRadius: BorderRadius.circular(8),
+                                                    borderSide: BorderSide(color: Colors.black54,width: 0.75),
+
+                                                  ),
                                                 ),
                                                 onChanged: (value) => _updateRangeFromTextFields(),
                                               ),

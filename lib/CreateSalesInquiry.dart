@@ -1988,7 +1988,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                     ),
                                   ),
 
-
                                   /*Padding(padding: EdgeInsets.only(top:0,left: 20,right: 20,bottom: 0),
 
                                     child: TextFormField(
@@ -2070,11 +2069,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                 style: TextStyle(
                                                   fontSize: 20,
                                                   color: Colors.red, // Red color for the asterisk
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
+                                                ))])),
 
                                         Padding(
                                           padding: EdgeInsets.only(top: 0, left: 20, right: 20, bottom: 0),
@@ -2292,7 +2287,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                             checkColor: Colors.white,
                                             confirmText: Text(
                                               "Confirm",
-                                              
+
                                               style: TextStyle(color: appbar_color), // Custom confirm button
                                             ),
                                             cancelText: Text(
@@ -2324,16 +2319,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                             ),
                                             decoration: BoxDecoration(
                                               border: Border.all(color: Colors.transparent),
-                                            ),
-
-                                          ),
-                                        )
-
-
-
-                                      ],
-                                    ),
-                                  ),
+                                            )))])),
 
                                   Container(
                                     padding: const EdgeInsets.only(left: 20.0, right: 20, top: 0),
@@ -2346,7 +2332,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                 style: TextStyle(
                                                     fontWeight: FontWeight.bold,
                                                     fontSize: 16
-
                                                 )
                                             ),
                                             SizedBox(width: 2),
@@ -2359,15 +2344,13 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                             ),
                                           ],
                                         ),
-                                        SizedBox(height: 5),
-
+                                    SizedBox(height: 5),
 
                                     Container(
                                       padding: EdgeInsets.symmetric(horizontal: 12),
                                       margin: EdgeInsets.only(left: 0, right: 0, bottom: 10),
                                       decoration: BoxDecoration(
                                         color: Colors.white,
-
                                         borderRadius: BorderRadius.circular(8),
                                         border: Border.all(color: Colors.black54, width: 0.75),
                                       ),
@@ -2416,14 +2399,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                         ),
                                         decoration: BoxDecoration(
                                           border: Border.all(color: Colors.transparent),
-                                        ),
-                                      ),
-
-                                    )
-                                      ],
-                                    ),
-                                  ),
-
+                                        )))])),
 
                                   Container(
                                     padding: const EdgeInsets.only(left: 20.0, right: 20, top: 0),
@@ -2433,11 +2409,9 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                         Row(
                                           children: [
                                             Text("Price Range:",
-
                                                 style: TextStyle(
                                                     fontWeight: FontWeight.bold,
                                                     fontSize: 16
-
                                                 )
                                             ),
                                             SizedBox(width: 2),
@@ -2467,9 +2441,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                   border: OutlineInputBorder(
                                                     borderRadius: BorderRadius.circular(8),
                                                     borderSide: BorderSide(color: Colors.black54,width: 0.75),
-
                                                   ),
-
                                                 ),
                                                 onChanged: (value) => _updateRangeFromTextFields(),
                                               ),
@@ -2486,7 +2458,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                   if (value!.isEmpty) {
                                                     return 'To Price is required';
                                                   }
-
                                                   return null;
                                                 },
                                                 controller: endController,
@@ -2513,7 +2484,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                           min: range_min!,
                                           max: range_max!,
                                           divisions: 20,
-
                                           onChanged: (RangeValues values) {
                                             setState(() {
                                               _currentRangeValues = values;
@@ -2676,7 +2646,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                             style: TextStyle(
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 16
-
                                             )
                                         ),
                                         SizedBox(width: 2),
@@ -2706,8 +2675,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                         decoration: InputDecoration(
                                           hintText: 'Enter Description',
                                           contentPadding: EdgeInsets.all(15),
-
-
                                           border: OutlineInputBorder(
                                             borderRadius: BorderRadius.circular(10), // Set the border radius
                                             borderSide: BorderSide(

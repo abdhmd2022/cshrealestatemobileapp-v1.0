@@ -51,7 +51,6 @@ class ActivitySource {
   }
 }
 
-
 class CreateSalesInquiry extends StatefulWidget {
 
   @override
@@ -81,7 +80,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
   final TextEditingController startController = TextEditingController();
   final TextEditingController endController = TextEditingController();
 
-
   String? selectedasignedto;
 
   bool isUnitSelected = false;
@@ -94,7 +92,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
   ActivitySource? selectedactivity_source;
 
-
   DateTime? nextFollowUpDate;
 
   bool isEmirateSelected = false;
@@ -104,14 +101,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
   RangeValues? _currentRangeValues;
 
   SharedPreferences? prefs;
-
-
-  List<String> followuptype_list = [
-    'Email',
-    'Phone Call',
-    'Whatsapp',
-    'Social Media'
-  ];
 
   List<FollowUpStatus> inquirystatus_list = [];
 
@@ -553,11 +542,8 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
             // Create a FollowUpStatus object from JSON
             ActivitySource activitySource = ActivitySource.fromJson(status);
 
-            // Add the object to the list
             activitysource_list.add(activitySource);
 
-
-            // Optionally, you can print the object for verification
             print('ID: ${activitySource.id}, Name: ${activitySource.name}');
           }
         });
@@ -568,8 +554,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
       print('Error fetching data: $e');
     }
-
-
   }
 
   Future<void> fetchAmenities() async {
@@ -778,11 +762,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                             for (var unit in unitTypes) {
                               unit['isSelected'] = isAllUnitsSelected;
                             }
-                          });
-                        },
-                      ),
-                    ),
-                  ),
+                          });}))),
                 SizedBox(height: 15),
                 Expanded(
                   child: ListView(

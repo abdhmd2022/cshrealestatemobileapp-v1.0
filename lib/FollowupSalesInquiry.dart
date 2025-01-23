@@ -1270,7 +1270,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: appbar_color,
+        backgroundColor: appbar_color.withOpacity(0.9),
 
         leading: GestureDetector(
           onTap: ()

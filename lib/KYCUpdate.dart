@@ -66,7 +66,7 @@ class _DecentTenantKYCFormState extends State<DecentTenantKYCForm> {
         title: Text('KYC Update', style: TextStyle(color: Colors.white)),
         centerTitle: true,
         elevation: 1,
-        backgroundColor: appbar_color,
+        backgroundColor: appbar_color.withOpacity(0.9),
         iconTheme: IconThemeData(color: Colors.white),
 
         leading: GestureDetector(

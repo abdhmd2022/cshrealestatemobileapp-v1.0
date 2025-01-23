@@ -196,7 +196,7 @@ class _SalesInquiryTransferPageState extends State<SalesInquiryTransfer> with Ti
     return Scaffold(
         key: _scaffoldKey,
         appBar: AppBar(
-          backgroundColor: appbar_color,
+          backgroundColor: appbar_color.withOpacity(0.9),
           automaticallyImplyLeading: false,
 
           leading: GestureDetector(
@@ -268,19 +268,20 @@ class _SalesInquiryTransferPageState extends State<SalesInquiryTransfer> with Ti
                                             margin: EdgeInsets.only(left: 20,right: 5, top: 20),
                                             padding: EdgeInsets.only(left:10,right:10, top: 5, bottom: 5),
                                             decoration: BoxDecoration(
-                                              color: appbar_color.withOpacity(0.2),
+                                              color: appbar_color.withOpacity(0.1),
+
                                               borderRadius: BorderRadius.circular(16.0),
                                             ),
                                             child:Row(
                                               children: [
                                                 Icon(
                                                     Icons.person_outlined,
-                                                    color: appbar_color.shade600
+                                                    color: appbar_color.withOpacity(1)
                                                 ),
                                                 SizedBox(width: 5,),
                                                 Text(widget.name,
                                                     style: TextStyle(
-                                                        color: appbar_color.shade600,
+                                                        color: appbar_color.withOpacity(1),
                                                         fontWeight: FontWeight.bold
                                                     ))
 
@@ -292,19 +293,20 @@ class _SalesInquiryTransferPageState extends State<SalesInquiryTransfer> with Ti
                                             margin: EdgeInsets.only(left: 0,right: 5, top: 20),
                                             padding: EdgeInsets.only(left:10,right:10, top: 5, bottom: 5),
                                             decoration: BoxDecoration(
-                                              color: appbar_color.withOpacity(0.2),
+
+                                              color: appbar_color.withOpacity(0.1),
                                               borderRadius: BorderRadius.circular(16.0),
                                             ),
                                             child:Row(
                                               children: [
                                                 Icon(
                                                     Icons.email_outlined,
-                                                    color: appbar_color.shade600
+                                                    color: appbar_color.withOpacity(1)
                                                 ),
                                                 SizedBox(width: 5,),
                                                 Text(widget.email,
                                                     style: TextStyle(
-                                                        color: appbar_color.shade600,
+                                                        color: appbar_color.withOpacity(1),
                                                         fontWeight: FontWeight.bold
                                                     ))
 

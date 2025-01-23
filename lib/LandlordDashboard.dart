@@ -70,7 +70,7 @@ class _LandlordDashboardScreenState extends State<LandlordDashboardScreen> with 
       key: _scaffoldKey,
       backgroundColor: const Color(0xFFF2F4F8),
       appBar: AppBar(
-        backgroundColor: appbar_color,
+        backgroundColor: appbar_color.withOpacity(0.9),
         title: Text('Landlord Dashboard',
             style: TextStyle(color: Colors.white)),
         centerTitle: true,
@@ -138,7 +138,7 @@ class _LandlordDashboardScreenState extends State<LandlordDashboardScreen> with 
                           width: 15,
                           height: 15,
                           decoration: BoxDecoration(
-                            color: Colors.blueAccent.shade200,
+                            color: appbar_color.withOpacity(0.7),
                             shape: BoxShape.circle, // Make it round
                           ),
                         ),
@@ -173,7 +173,7 @@ class _LandlordDashboardScreenState extends State<LandlordDashboardScreen> with 
                           child: Container(
                             decoration: BoxDecoration(
                               gradient: LinearGradient(
-                                colors: [appbar_color.shade100, appbar_color.shade500],
+                                colors: [appbar_color.withOpacity(0.5), appbar_color.withOpacity(0.9)],
                                 begin: Alignment.topCenter,
                                 end: Alignment.bottomCenter,
                               ),
@@ -320,8 +320,9 @@ class BarGraph extends StatelessWidget {
                     fromY: 0,
                     toY: availableUnits[index].toDouble(),
                     gradient: LinearGradient(
-                      colors: [Colors.blueAccent.shade100,Colors.blueAccent.shade200, Colors.blueAccent.shade200], // Gradient background
+                      colors: [appbar_color.withOpacity(0.5),appbar_color.withOpacity(0.7), appbar_color.withOpacity(0.9)], // Gradient background
                       begin: Alignment.topCenter,
+                      
                       end: Alignment.bottomCenter,
                     ),
                     width: barWidth,

@@ -225,7 +225,7 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
       key: _scaffoldKey,
       backgroundColor: const Color(0xFFF2F4F8),
       appBar: AppBar(
-        backgroundColor: appbar_color,
+        backgroundColor: appbar_color.withOpacity(0.9),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 8.0),
@@ -242,7 +242,7 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   gradient: LinearGradient(
-                    colors: [appbar_color.shade300, appbar_color.shade400],
+                    colors: [appbar_color.shade200, appbar_color.shade700],
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                   ),
@@ -348,7 +348,7 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
                                         ),
                                       ],
                                     ),
-                                    backgroundColor: appbar_color.shade500,
+                                    backgroundColor: appbar_color.shade700,
                                     behavior: SnackBarBehavior.floating,
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(10),
@@ -464,7 +464,7 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
                           padding: EdgeInsets.all(16),
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
-                              colors: [appbar_color.shade300, appbar_color.shade400], // Gradient background
+                              colors: [appbar_color.withOpacity(0.6), appbar_color.withOpacity(0.8)], // Gradient background
                               begin: Alignment.topCenter,
                               end: Alignment.bottomCenter,
                             ),
@@ -534,7 +534,7 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
                                 height: double.infinity, // Ensure container fills the button space
                                 decoration: BoxDecoration(
                                   gradient: LinearGradient(
-                                    colors: [appbar_color.shade300, appbar_color.shade400], // Gradient background
+                                    colors: [appbar_color.withOpacity(0.6), appbar_color.withOpacity(0.8)], // Gradient background
                                     begin: Alignment.topCenter,
                                     end: Alignment.bottomCenter,
                                   ),
@@ -583,7 +583,7 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
                                 height: double.infinity,
                                 decoration: BoxDecoration(
                                   gradient: LinearGradient(
-                                    colors: [appbar_color.shade300, appbar_color.shade400], // Gradient background
+                                    colors: [appbar_color.withOpacity(0.6), appbar_color.withOpacity(0.8)], // Gradient background
                                     begin: Alignment.topCenter,
                                     end: Alignment.bottomCenter,
                                   ),
@@ -632,7 +632,7 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
                               padding: EdgeInsets.all(16),
                               decoration: BoxDecoration(
                                 gradient: LinearGradient(
-                                  colors: [appbar_color.shade300, appbar_color.shade400], // Gradient background
+                                  colors: [appbar_color.withOpacity(0.6), appbar_color.withOpacity(0.8)], // Gradient background
                                   begin: Alignment.topCenter,
                                   end: Alignment.bottomCenter,
                                 ),
@@ -684,7 +684,7 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
                                 padding: EdgeInsets.all(16),
                                 decoration: BoxDecoration(
                                   gradient: LinearGradient(
-                                    colors: [appbar_color.shade300, appbar_color.shade400], // Gradient background
+                                    colors: [appbar_color.withOpacity(0.6), appbar_color.withOpacity(0.8)], // Gradient background
                                     begin: Alignment.topCenter,
                                     end: Alignment.bottomCenter,
                                   ),
@@ -733,7 +733,7 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
                                 padding: EdgeInsets.all(16),
                                 decoration: BoxDecoration(
                                   gradient: LinearGradient(
-                                    colors: [appbar_color.shade300, appbar_color.shade400], // Gradient background
+                                    colors: [appbar_color.withOpacity(0.6), appbar_color.withOpacity(0.8)], // Gradient background
                                     begin: Alignment.topCenter,
                                     end: Alignment.bottomCenter,
                                   ),
@@ -863,7 +863,7 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
 
 }
 
-class SalesBarChart extends StatelessWidget {
+/*class SalesBarChart extends StatelessWidget {
   final Map<String, Map<String, int>> salesData;
   final String selectedYear;
 
@@ -899,7 +899,7 @@ class SalesBarChart extends StatelessWidget {
                       toY: sales[i].toDouble(), // Use sales data dynamically
                       width: 40,
                       gradient: LinearGradient(
-                        colors: [appbar_color.shade300, appbar_color.shade400], // Gradient background
+                        colors: [appbar_color.withOpacity(0.1), appbar_color.withOpacity(0.5)], // Gradient background
                         begin: Alignment.topLeft,
                         end: Alignment.topRight,
                       ),
@@ -960,7 +960,7 @@ class SalesBarChart extends StatelessWidget {
     String month = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][index];
     return "$month-${year.substring(2)}"; // Format as 'MMM-yy'
   }
-}
+}*/
 
 
 double _getReservedSize(List<int> salesValues) {
@@ -1021,7 +1021,7 @@ class ApartmentBarChart extends StatelessWidget {
                       toY: amounts[i],
                       width: 40,
                       gradient: LinearGradient(
-                        colors: [appbar_color.shade300, appbar_color.shade500],
+                        colors: [appbar_color.withOpacity(0.6), appbar_color.withOpacity(0.8)],
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                       ),

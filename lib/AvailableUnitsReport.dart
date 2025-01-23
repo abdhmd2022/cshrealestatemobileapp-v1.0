@@ -188,7 +188,7 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
                   overflow: TextOverflow.ellipsis, // Truncate text if it overflows
                   maxLines: 2, // Display only one line of text
                 ),
-                backgroundColor: appbar_color,
+                backgroundColor: appbar_color.withOpacity(0.9),
                 automaticallyImplyLeading: false,
                 centerTitle: true,
                 leading: IconButton(
@@ -531,7 +531,7 @@ class AvailableUnitsDialog extends StatelessWidget {
           onPressed: () => Navigator.pop(context),
           child: Text("Close",
             style: TextStyle(
-                color: appbar_color
+                color: appbar_color.withOpacity(0.9)
             ),),
         ),
       ],

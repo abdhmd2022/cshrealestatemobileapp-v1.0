@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 
 const String app_name = "Real Estate";
 
-const MaterialColor appbar_color = Colors.blueGrey;
+const MaterialAccentColor appbar_color = Colors.blueAccent;
+
+
 
 const String company_name = 'Company';
 

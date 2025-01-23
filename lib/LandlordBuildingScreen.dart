@@ -54,7 +54,7 @@ class BuildingReportScreen extends StatelessWidget {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        backgroundColor: appbar_color,
+        backgroundColor: appbar_color.withOpacity(0.9),
         title: Text(buildingName,
             style: TextStyle(color: Colors.white)),
         centerTitle: true,

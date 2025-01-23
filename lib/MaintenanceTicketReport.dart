@@ -102,7 +102,7 @@ class _MaintenanceTicketReportState
             color: Colors.white,
           ),),
 
-        backgroundColor: appbar_color,
+        backgroundColor: appbar_color.withOpacity(0.9),
         centerTitle: true,
         title: Text(
           'Maintenance Tickets',
@@ -134,11 +134,8 @@ class _MaintenanceTicketReportState
       ),
       floatingActionButton: Container(
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [appbar_color, appbar_color],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
+          color: appbar_color.withOpacity(0.9),
+
           borderRadius: BorderRadius.circular(30.0),
         ),
         child: FloatingActionButton.extended(

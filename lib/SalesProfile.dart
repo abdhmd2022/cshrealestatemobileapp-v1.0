@@ -32,7 +32,8 @@ class SalesProfileScreen extends StatelessWidget {
           color: Colors.white
         ),),
         centerTitle: true,
-        backgroundColor: appbar_color,
+        backgroundColor: appbar_color.withOpacity(0.9),
+        
         elevation: 0,
       ),
       body: SingleChildScrollView(
@@ -42,8 +43,9 @@ class SalesProfileScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.only(top: 20.0, bottom: 20, left: 40, right: 40),
               margin: const EdgeInsets.only(top: 40.0),
-              decoration: const BoxDecoration(
-                color: appbar_color,
+              decoration:  BoxDecoration(
+                color: appbar_color.withOpacity(0.7),
+                
                 borderRadius: BorderRadius.only(
                   bottomLeft: Radius.circular(30),
                   bottomRight: Radius.circular(30),
@@ -60,19 +62,20 @@ class SalesProfileScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 10),
-                  const Text(
+                   Text(
                     'Saadan',
                     style: TextStyle(
                       color: Colors.white,
+
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(height: 5),
-                  const Text(
+                   SizedBox(height: 5),
+                   Text(
                     'saadan@ca-eim.com',
                     style: TextStyle(
-                      color: Colors.white70,
+                      color: Colors.white,
                       fontSize: 16,
                     ),
                   ),
@@ -80,7 +83,7 @@ class SalesProfileScreen extends StatelessWidget {
                   const Text(
                     '+971 500000000',
                     style: TextStyle(
-                      color: Colors.white70,
+                      color: Colors.white,
                       fontSize: 16,
                     ),
                   ),

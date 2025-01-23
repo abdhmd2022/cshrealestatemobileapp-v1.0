@@ -144,7 +144,7 @@ class _LoginPageState extends State<Login> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          backgroundColor: appbar_color,
+          backgroundColor: appbar_color.withOpacity(0.9),
           title: Text(widget.title,
           style: TextStyle(
             color: Colors.white

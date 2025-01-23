@@ -276,7 +276,7 @@ class _SalesInquiryReportState
             color: Colors.white,
           ),),
 
-        backgroundColor: appbar_color,
+        backgroundColor: appbar_color.withOpacity(0.9),
         centerTitle: true,
 
         title: Text(
@@ -309,11 +309,8 @@ class _SalesInquiryReportState
       ),
       floatingActionButton: Container(
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [appbar_color.shade300, appbar_color.shade200],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
+          color: appbar_color.withOpacity(0.9),
+
           borderRadius: BorderRadius.circular(30.0),
         ),
         child: FloatingActionButton.extended(

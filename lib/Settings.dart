@@ -116,7 +116,7 @@ class _SettingsScreenState extends State<SettingsScreen> with TickerProviderStat
         style: TextStyle(
           color: Colors.white
         ),),
-        backgroundColor: appbar_color,
+        backgroundColor: appbar_color.withOpacity(0.9),
         leading: IconButton(
           icon: Icon(Icons.menu, color: Colors.white),
           onPressed: () {

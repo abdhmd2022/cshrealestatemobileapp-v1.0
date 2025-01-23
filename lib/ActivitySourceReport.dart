@@ -164,6 +164,7 @@ class _ActivitySourceReportState extends State<ActivitySourceReport> {
       builder: (context) {
         return AlertDialog(
           backgroundColor: appbar_color[50],
+
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           title: Text(
             "Activity Sources",
@@ -187,12 +188,12 @@ class _ActivitySourceReportState extends State<ActivitySourceReport> {
                   },
                   decoration: InputDecoration(
                     labelText: "Activity Source Name",
-                    labelStyle: TextStyle(color: appbar_color),
+                    labelStyle: TextStyle(color: Colors.black54.withOpacity(0.5)),
                     focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: appbar_color),
+                      borderSide: BorderSide(color: appbar_color.withOpacity(0.5)),
                     ),
                     enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: appbar_color[200]!),
+                      borderSide: BorderSide(color: Colors.black54!),
                     ),
                   ),
                 ),
@@ -219,7 +220,7 @@ class _ActivitySourceReportState extends State<ActivitySourceReport> {
                 }
 
               },
-              style: ElevatedButton.styleFrom(backgroundColor: appbar_color),
+              style: ElevatedButton.styleFrom(backgroundColor: appbar_color.withOpacity(0.5)),
               child: Text("Submit",style: TextStyle(color: Colors.white)),
             ),
           ],
@@ -264,12 +265,12 @@ class _ActivitySourceReportState extends State<ActivitySourceReport> {
                   },
                   decoration: InputDecoration(
                     labelText: "Activity Source Name",
-                    labelStyle: TextStyle(color: appbar_color),
+                    labelStyle: TextStyle(color: Colors.black54),
                     focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: appbar_color),
+                      borderSide: BorderSide(color: appbar_color.withOpacity(0.5)),
                     ),
                     enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: appbar_color[200]!),
+                      borderSide: BorderSide(color: Colors.black54!),
                     ),
                   ),
                 ),
@@ -294,7 +295,7 @@ class _ActivitySourceReportState extends State<ActivitySourceReport> {
                 }
 
               },
-              style: ElevatedButton.styleFrom(backgroundColor: appbar_color),
+              style: ElevatedButton.styleFrom(backgroundColor: appbar_color.withOpacity(0.5)),
               child: Text("Submit",style: TextStyle(color: Colors.white)),
             ),
           ],
@@ -397,20 +398,20 @@ class _ActivitySourceReportState extends State<ActivitySourceReport> {
           style: TextStyle(
               color: Colors.white
           ),),
-        backgroundColor: appbar_color,
+        backgroundColor: appbar_color.withOpacity(0.9),
 
       ),
       body: isLoading
           ? Center(
         child: CircularProgressIndicator(
-          color: appbar_color,
+          color: appbar_color.withOpacity(0.9),
         ),
       )
           : activitySource_list.isEmpty
           ? Center(
         child: Text(
           'No data available',
-          style: TextStyle(color: appbar_color, fontSize: 18),
+          style: TextStyle(color: appbar_color.withOpacity(0.9), fontSize: 18),
         ),
       )
           : ListView.builder(
@@ -437,7 +438,7 @@ class _ActivitySourceReportState extends State<ActivitySourceReport> {
                       children: [
                         Icon(
                           Icons.assignment_ind,
-                          color: appbar_color,
+                          color: appbar_color.withOpacity(0.9),
                         ),
 
                         SizedBox(width: 5,),
@@ -480,11 +481,8 @@ class _ActivitySourceReportState extends State<ActivitySourceReport> {
                         ),
                         SizedBox(width:5)
                       ],),
-
                   ],),
               ),
-
-
             ),
           );
         },
@@ -496,7 +494,7 @@ class _ActivitySourceReportState extends State<ActivitySourceReport> {
 
           showActivitySourceDialog();
         },
-        backgroundColor: appbar_color,
+        backgroundColor: appbar_color.withOpacity(0.9),
         child: Icon(Icons.add,
             color: Colors.white),
       ),

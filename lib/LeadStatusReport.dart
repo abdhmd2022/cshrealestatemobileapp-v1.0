@@ -212,12 +212,12 @@ class _LeadStatusReportState extends State<LeadStatusReport> {
                   },
                   decoration: InputDecoration(
                     labelText: "Lead Status Name",
-                    labelStyle: TextStyle(color: appbar_color),
+                    labelStyle: TextStyle(color: Colors.black54),
                     focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: appbar_color),
+                      borderSide: BorderSide(color: appbar_color.withOpacity(0.9)),
                     ),
                     enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: appbar_color[200]!),
+                      borderSide: BorderSide(color: Colors.black54!),
                     ),
                   ),
                 ),
@@ -244,7 +244,7 @@ class _LeadStatusReportState extends State<LeadStatusReport> {
                 }
 
               },
-              style: ElevatedButton.styleFrom(backgroundColor: appbar_color),
+              style: ElevatedButton.styleFrom(backgroundColor: appbar_color.withOpacity(0.5)),
               child: Text("Submit",style: TextStyle(color: Colors.white)),
             ),
           ],
@@ -322,12 +322,12 @@ class _LeadStatusReportState extends State<LeadStatusReport> {
                   },
                   decoration: InputDecoration(
                     labelText: "Lead Status Name",
-                    labelStyle: TextStyle(color: appbar_color),
+                    labelStyle: TextStyle(color: Colors.black54),
                     focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: appbar_color),
+                      borderSide: BorderSide(color: appbar_color.withOpacity(0.5)),
                     ),
                     enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: appbar_color[200]!),
+                      borderSide: BorderSide(color: Colors.black54!),
                     ),
                   ),
                 ),
@@ -354,10 +354,11 @@ class _LeadStatusReportState extends State<LeadStatusReport> {
                 }
 
               },
-              style: ElevatedButton.styleFrom(backgroundColor: appbar_color),
+              style: ElevatedButton.styleFrom(backgroundColor: appbar_color.withOpacity(0.5)),
               child: Text("Submit",style: TextStyle(color: Colors.white)),
             ),
           ],
+
         );
       },
     );
@@ -457,20 +458,20 @@ class _LeadStatusReportState extends State<LeadStatusReport> {
         style: TextStyle(
           color: Colors.white
         ),),
-        backgroundColor: appbar_color,
+        backgroundColor: appbar_color.withOpacity(0.9),
 
       ),
       body: isLoading
           ? Center(
         child: CircularProgressIndicator(
-          color: appbar_color,
+          color: appbar_color.withOpacity(0.9),
         ),
       )
           : leadStatuses.isEmpty
           ? Center(
         child: Text(
           'No data available',
-          style: TextStyle(color: appbar_color, fontSize: 18),
+          style: TextStyle(color: appbar_color.withOpacity(0.9), fontSize: 18),
         ),
       )
           : ListView.builder(
@@ -498,7 +499,8 @@ class _LeadStatusReportState extends State<LeadStatusReport> {
                       children: [
                         Icon(
                           Icons.assignment_ind,
-                          color: appbar_color,
+                          color: appbar_color.withOpacity(0.9),
+
                         ),
 
                         SizedBox(width: 5,),
@@ -555,7 +557,8 @@ class _LeadStatusReportState extends State<LeadStatusReport> {
           isQualified = false;
           showLeadStatusDialog();
         },
-        backgroundColor: appbar_color,
+        backgroundColor: appbar_color.withOpacity(0.9),
+        
         child: Icon(Icons.add,
         color: Colors.white),
       ),

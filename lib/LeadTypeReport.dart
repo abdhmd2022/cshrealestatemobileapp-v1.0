@@ -191,12 +191,12 @@ class _LeadFollowupTypeReportState extends State<LeadFollowupTypeReport> {
                   },
                   decoration: InputDecoration(
                     labelText: "Lead Follow-up Name",
-                    labelStyle: TextStyle(color: appbar_color),
+                    labelStyle: TextStyle(color: Colors.black54),
                     focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: appbar_color),
+                      borderSide: BorderSide(color: appbar_color.withOpacity(0.5)),
                     ),
                     enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: appbar_color[200]!),
+                      borderSide: BorderSide(color: Colors.black54!),
                     ),
                   ),
                 ),
@@ -223,7 +223,7 @@ class _LeadFollowupTypeReportState extends State<LeadFollowupTypeReport> {
                 }
 
               },
-              style: ElevatedButton.styleFrom(backgroundColor: appbar_color),
+              style: ElevatedButton.styleFrom(backgroundColor: appbar_color.withOpacity(0.5)),
               child: Text("Submit",style: TextStyle(color: Colors.white)),
             ),
           ],
@@ -270,12 +270,12 @@ class _LeadFollowupTypeReportState extends State<LeadFollowupTypeReport> {
                   },
                   decoration: InputDecoration(
                     labelText: "Lead Follow-up Name",
-                    labelStyle: TextStyle(color: appbar_color),
+                    labelStyle: TextStyle(color: Colors.black54),
                     focusedBorder: OutlineInputBorder(
                       borderSide: BorderSide(color: appbar_color),
                     ),
                     enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: appbar_color[200]!),
+                      borderSide: BorderSide(color: Colors.black54!),
                     ),
                   ),
                 ),
@@ -302,7 +302,7 @@ class _LeadFollowupTypeReportState extends State<LeadFollowupTypeReport> {
                 }
 
               },
-              style: ElevatedButton.styleFrom(backgroundColor: appbar_color),
+              style: ElevatedButton.styleFrom(backgroundColor: appbar_color.withOpacity(0.5)),
               child: Text("Submit",style: TextStyle(color: Colors.white)),
             ),
           ],
@@ -405,20 +405,20 @@ class _LeadFollowupTypeReportState extends State<LeadFollowupTypeReport> {
           style: TextStyle(
               color: Colors.white
           ),),
-        backgroundColor: appbar_color,
+        backgroundColor: appbar_color.withOpacity(0.9),
 
       ),
       body: isLoading
           ? Center(
         child: CircularProgressIndicator(
-          color: appbar_color,
+          color: appbar_color.withOpacity(0.9),
         ),
       )
           : leadFollowupTypes.isEmpty
           ? Center(
         child: Text(
           'No data available',
-          style: TextStyle(color: appbar_color, fontSize: 18),
+          style: TextStyle(color: appbar_color.withOpacity(0.9), fontSize: 18),
         ),
       )
           : ListView.builder(
@@ -445,7 +445,7 @@ class _LeadFollowupTypeReportState extends State<LeadFollowupTypeReport> {
                       children: [
                         Icon(
                           Icons.assignment_ind,
-                          color: appbar_color,
+                          color: appbar_color.withOpacity(0.9),
                         ),
 
                         SizedBox(width: 5,),
@@ -501,7 +501,7 @@ class _LeadFollowupTypeReportState extends State<LeadFollowupTypeReport> {
           leadFollowupTypeController.clear();
           showLeadFollowupDialog();
         },
-        backgroundColor: appbar_color,
+        backgroundColor: appbar_color.withOpacity(0.9),
         child: Icon(Icons.add,
             color: Colors.white),
       ),

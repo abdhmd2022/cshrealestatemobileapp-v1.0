@@ -60,7 +60,7 @@ class _TenantComplaintPageState extends State<TenantComplaint> with TickerProvid
     return Scaffold(
         key: _scaffoldKey,
         appBar: AppBar(
-          backgroundColor: appbar_color,
+          backgroundColor: appbar_color.withOpacity(0.9),
           automaticallyImplyLeading: false,
           leading: GestureDetector(
             onTap: ()

@@ -730,14 +730,17 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                     },
                     decoration: InputDecoration(
                       labelText: 'Search Unit Types',
+                      labelStyle: TextStyle(color: Colors.black54),
                       prefixIcon: Icon(Icons.search),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(color: appbar_color), // BlueGrey border color
+
+                        borderSide: BorderSide(color: appbar_color.withOpacity(0.5)), // BlueGrey border color
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(color: appbar_color), // BlueGrey focused border color
+                        borderSide: BorderSide(color: appbar_color.withOpacity(0.5)),
+                        // BlueGrey focused border color
                       ),
                     ),
                   ),
@@ -881,19 +884,20 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                     },
                     decoration: InputDecoration(
                       labelText: 'Search Emirate(s)',
-                      prefixIcon: Icon(Icons.search, color: appbar_color),
-                      labelStyle: TextStyle(color: appbar_color),
+                      labelStyle: TextStyle(color: Colors.black54),
+                      prefixIcon: Icon(Icons.search, color: Colors.black54),
+
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(color: appbar_color),
+                        borderSide: BorderSide(color: Colors.black54),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(color: appbar_color),
+                        borderSide: BorderSide(color: Colors.black54),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(color: appbar_color, width: 2.0),
+                        borderSide: BorderSide(color: appbar_color.withOpacity(0.5), width: 2.0),
                       ),
                     ),
                     cursorColor: appbar_color,
@@ -1030,19 +1034,20 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                     },
                     decoration: InputDecoration(
                       labelText: 'Search Areas',
-                      prefixIcon: Icon(Icons.search, color: appbar_color),
-                      labelStyle: TextStyle(color: appbar_color),
+                      labelStyle: TextStyle(color: Colors.black54),
+
+                      prefixIcon: Icon(Icons.search, color: Colors.black54),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(color: appbar_color),
+                        borderSide: BorderSide(color: Colors.black54),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(color: appbar_color),
+                        borderSide: BorderSide(color: Colors.black54),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(color: appbar_color, width: 2.0),
+                        borderSide: BorderSide(color: appbar_color.withOpacity(0.5), width: 2.0),
                       ),
                     ),
                     cursorColor: appbar_color,
@@ -1174,7 +1179,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
     return Scaffold(
         appBar: AppBar(
-          backgroundColor: appbar_color,
+          backgroundColor: appbar_color.withOpacity(0.9),
           leading: GestureDetector(
             onTap: ()
             {
@@ -2420,7 +2425,15 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                 decoration: InputDecoration(
                                                   border: OutlineInputBorder(
                                                     borderRadius: BorderRadius.circular(8),
-                                                    borderSide: BorderSide(color: Colors.black54,width: 0.75),
+                                                    borderSide: BorderSide(color: Colors.black54),
+                                                  ),
+                                                  enabledBorder: OutlineInputBorder(
+                                                    borderRadius: BorderRadius.circular(8),
+                                                    borderSide: BorderSide(color: Colors.black54),
+                                                  ),
+                                                  focusedBorder: OutlineInputBorder(
+                                                    borderRadius: BorderRadius.circular(8),
+                                                    borderSide: BorderSide(color: appbar_color.withOpacity(0.5), width: 2.0),
                                                   ),
                                                 ),
                                                 onChanged: (value) => _updateRangeFromTextFields(),
@@ -2444,9 +2457,16 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                 keyboardType: TextInputType.number,
                                                 decoration: InputDecoration(
                                                   border: OutlineInputBorder(
-                                                      borderRadius: BorderRadius.circular(8),
-                                                    borderSide: BorderSide(color: Colors.black54,width: 0.75),
-
+                                                    borderRadius: BorderRadius.circular(8),
+                                                    borderSide: BorderSide(color: Colors.black54),
+                                                  ),
+                                                  enabledBorder: OutlineInputBorder(
+                                                    borderRadius: BorderRadius.circular(8),
+                                                    borderSide: BorderSide(color: Colors.black54),
+                                                  ),
+                                                  focusedBorder: OutlineInputBorder(
+                                                    borderRadius: BorderRadius.circular(8),
+                                                    borderSide: BorderSide(color: appbar_color.withOpacity(0.5), width: 2.0),
                                                   ),
                                                 ),
                                                 onChanged: (value) => _updateRangeFromTextFields(),

@@ -247,7 +247,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
 
         backgroundColor: const Color(0xFFF2F4F8),
         appBar: AppBar(
-          backgroundColor: appbar_color,
+          backgroundColor: appbar_color.withOpacity(0.9),
           automaticallyImplyLeading: false,
 
           leading: GestureDetector(
@@ -332,14 +332,15 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                                 padding: EdgeInsets.only(left:10,right:10, top: 5, bottom: 5),
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(30.0),
-                                  color: appbar_color.shade400,
+                                  color: appbar_color.withOpacity(0.1),
                                   border: Border.all(
-                                    color: appbar_color.shade300.withOpacity(0.3),
-                                    width: 1.5,
+                                    color: appbar_color.shade200.withOpacity(0.3),
+                                    width: 1,
                                   ),
+
                                   boxShadow: [
                                     BoxShadow(
-                                      color: appbar_color.shade300.withOpacity(0.1),
+                                      color: appbar_color.shade200.withOpacity(0.1),
                                       blurRadius: 8.0,
                                       offset: Offset(0, 4),
                                     ),
@@ -347,7 +348,8 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                                 ),
                                 child:Text('Unit 101',
                                     style: TextStyle(
-                                        color: Colors.white
+                                        color: appbar_color.withOpacity(0.9),
+                                            fontWeight: FontWeight.bold
                                     ))),
 
                               Container(
@@ -355,14 +357,14 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                                 padding: EdgeInsets.only(left:10,right:10, top: 5, bottom: 5),
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(30.0),
-                                  color: appbar_color.shade400,
+                                  color: appbar_color.withOpacity(0.1),
                                   border: Border.all(
-                                    color: appbar_color.shade300.withOpacity(0.3),
-                                    width: 1.5,
+                                    color: appbar_color.shade200.withOpacity(0.3),
+                                    width: 1.0,
                                   ),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: appbar_color.shade300.withOpacity(0.1),
+                                      color: appbar_color.shade200.withOpacity(0.1),
                                       blurRadius: 8.0,
                                       offset: Offset(0, 4),
                                     ),
@@ -370,7 +372,8 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                                 ),
 
                                 child:Text('Building Al Khaleej Center',style: TextStyle(
-                                  color: Colors.white
+                                  color: appbar_color.withOpacity(0.9),
+                                  fontWeight: FontWeight.bold
                                 ),),),
                             ],),
                           SizedBox(width: 10,),

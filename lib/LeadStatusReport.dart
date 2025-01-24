@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:uuid/uuid.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+
 
 class LeadStatusReport extends StatefulWidget {
   @override
@@ -12,16 +14,28 @@ class LeadStatusReport extends StatefulWidget {
 
 class _LeadStatusReportState extends State<LeadStatusReport> {
   List<dynamic> leadStatuses = [];
+  List<String> categories_list= [
+    'Normal',
+  'Drop',
+  'Close'
+
+  ];
+
+  String? selectedCategory;
   bool isLoading = true;
 
-  bool isQualified = false;
   TextEditingController leadStatusController = TextEditingController();
+
 
   @override
   void initState() {
     super.initState();
     fetchLeadStatus();
   }
+
+
+
+
 
   Future<void> sendLeadStatus() async {
     var uuid = Uuid();
@@ -31,11 +45,11 @@ class _LeadStatusReportState extends State<LeadStatusReport> {
     final Map<String, dynamic> jsonBody = {
       "uuid": uuidValue,
       "name": leadStatusController.text,
-      "is_qualified": isQualified ? 1 : 0,
+      'category': selectedCategory,
+      'color' : '#fff'
     };
 
     String token = 'Bearer $Serial_Token'; // auth token for request
-
 
     Map<String, String> headers = {
       'Authorization': token,
@@ -85,12 +99,9 @@ class _LeadStatusReportState extends State<LeadStatusReport> {
     {
 
     }
-
-
-
   }
 
-  Future<void> editLeadStatus(int id, String status_name, bool is_qualified ) async {
+  Future<void> editLeadStatus(int id, String status_name, String category) async {
 
     var uuid = Uuid();
 
@@ -99,7 +110,10 @@ class _LeadStatusReportState extends State<LeadStatusReport> {
     final Map<String, dynamic> jsonBody = {
       "uuid": uuidValue,
       "name": status_name,
-      "is_qualified": is_qualified ? 1 : 0,
+      "category": selectedCategory,
+      'color': '#f00'
+
+
     };
 
     print('jsonbody $jsonBody ');
@@ -180,49 +194,106 @@ class _LeadStatusReportState extends State<LeadStatusReport> {
             key: _formKey,
             child: Column(
               mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+
+
+                // Dropdown for Categories
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text("Is Qualified", style: TextStyle(color: appbar_color[900])),
-                    Switch(
-                      value: isQualified,
-                      onChanged: (value) {
-                        setState(() {
-                          isQualified = value;
-                          Navigator.of(context).pop();
-                          showLeadStatusDialog();
-                        });
-                      },
-                      activeColor: appbar_color,
+                    Text(
+                      "Category:",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black.withOpacity(0.8),
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: Colors.white70,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: Colors.black54,
+                          width: 1,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 6,
+                            offset: Offset(2, 4),
+                          ),
+                        ],
+                      ),
+                      child: DropdownButtonHideUnderline(
+                        child: DropdownButton<String>(
+                          value: selectedCategory,
+                          hint: Text(
+                            "Select a category",
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.black54,
+                            ),
+                          ),
+                          icon: Icon(
+                            Icons.arrow_drop_down,
+                            color: Colors.black54,
+                          ),
+                          isExpanded: true,
+                          items: categories_list.map((String category) {
+                            return DropdownMenuItem<String>(
+                              value: category,
+                              child: Text(
+                                category,
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                          onChanged: (String? newValue) {
+                            setState(() {
+                              selectedCategory = newValue;
+                              Navigator.of(context).pop();
+                              showLeadStatusDialog();
+
+                            });
+                          },
+                        ),
+                      ),
                     ),
                   ],
                 ),
 
-                SizedBox(height: 10,),
+                SizedBox(height: 20),
+
+                // Lead Status Name Input Field
                 TextFormField(
                   controller: leadStatusController,
                   validator: (value) {
-                    if (value == null || value.isEmpty)
-                    {
+                    if (value == null || value.isEmpty) {
                       return 'Please enter lead status name';
                     }
-
                     return null;
                   },
                   decoration: InputDecoration(
                     labelText: "Lead Status Name",
+                    fillColor: Colors.white70, // Background color set to white
+                    filled: true, // Ensures the fill color is applied
                     labelStyle: TextStyle(color: Colors.black54),
                     focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: appbar_color.withOpacity(0.9)),
+                      borderSide: BorderSide(color: appbar_color.withOpacity(0.5)),
                     ),
                     enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.black54!),
+                      borderSide: BorderSide(color: Colors.black54),
                     ),
                   ),
                 ),
-
-
               ],
             ),
           ),
@@ -253,16 +324,10 @@ class _LeadStatusReportState extends State<LeadStatusReport> {
     );
   }
 
-  void showEditLeadStatusDialog(int id, String old_status_name, String is_qualified) {
+  void showEditLeadStatusDialog(int id, String old_status_name, String category,String color) {
     final _formKey = GlobalKey<FormState>();
 
-    bool isQualified = false;
 
-    if(is_qualified.toLowerCase() == "true")
-      {
-        isQualified = true;
-
-      }
     TextEditingController leadStatusController = TextEditingController();
 
     leadStatusController.text = old_status_name;
@@ -282,57 +347,105 @@ class _LeadStatusReportState extends State<LeadStatusReport> {
             key: _formKey,
             child: Column(
               mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+
+
+                // Dropdown for Categories
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text("Is Qualified", style: TextStyle(color: appbar_color[900])),
-                    Switch(
-                      value: isQualified,
-                      onChanged: (value) {
-                        setState(() {
-                          isQualified = value;
-                          Navigator.of(context).pop();
-                          if(isQualified == true)
-                            {
-                              is_qualified = "true";
-                            }
-                          else
-                            {
-                              is_qualified = "false";
-                            }
-                          showEditLeadStatusDialog(id, leadStatusController.text,is_qualified);
-                        });
-                      },
-                      activeColor: appbar_color,
+                    Text(
+                      "Category:",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black.withOpacity(0.8),
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: Colors.white70,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: Colors.black54,
+                          width: 1,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 6,
+                            offset: Offset(2, 4),
+                          ),
+                        ],
+                      ),
+                      child: DropdownButtonHideUnderline(
+                        child: DropdownButton<String>(
+                          value: selectedCategory,
+                          hint: Text(
+                            "Select a category",
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.black54,
+                            ),
+                          ),
+                          icon: Icon(
+                            Icons.arrow_drop_down,
+                            color: Colors.black54,
+                          ),
+                          isExpanded: true,
+                          items: categories_list.map((String category) {
+                            return DropdownMenuItem<String>(
+                              value: category,
+                              child: Text(
+                                category,
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                          onChanged: (String? newValue) {
+                            setState(() {
+                              selectedCategory = newValue;
+                              Navigator.of(context).pop();
+                              showEditLeadStatusDialog(id, old_status_name, category, color);
+                            });
+                          },
+                        ),
+                      ),
                     ),
                   ],
                 ),
 
-                SizedBox(height: 10,),
+                SizedBox(height: 20),
+
+                // Lead Status Name Input Field
                 TextFormField(
                   controller: leadStatusController,
                   validator: (value) {
-                    if (value == null || value.isEmpty)
-                    {
+                    if (value == null || value.isEmpty) {
                       return 'Please enter lead status name';
                     }
-
                     return null;
                   },
                   decoration: InputDecoration(
                     labelText: "Lead Status Name",
+                    fillColor: Colors.white70, // Background color set to white
+                    filled: true, // Ensures the fill color is applied
                     labelStyle: TextStyle(color: Colors.black54),
                     focusedBorder: OutlineInputBorder(
                       borderSide: BorderSide(color: appbar_color.withOpacity(0.5)),
                     ),
                     enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.black54!),
+                      borderSide: BorderSide(color: Colors.black54),
                     ),
                   ),
                 ),
-
-
               ],
             ),
           ),
@@ -348,7 +461,7 @@ class _LeadStatusReportState extends State<LeadStatusReport> {
                     _formKey.currentState!.validate()) {
                   _formKey.currentState!.save();
 
-                    editLeadStatus(id, leadStatusController.text, isQualified) ;
+                    editLeadStatus(id, leadStatusController.text, category) ;
                     Navigator.pop(context);
 
                 }
@@ -478,7 +591,6 @@ class _LeadStatusReportState extends State<LeadStatusReport> {
         itemCount: leadStatuses.length,
         itemBuilder: (context, index) {
           final lead = leadStatuses[index];
-          final isQualified = lead['is_qualified'] == 'true';
           return Card(
             color: Colors.white,
             margin: const EdgeInsets.symmetric(
@@ -497,10 +609,12 @@ class _LeadStatusReportState extends State<LeadStatusReport> {
 
                     Row(
                       children: [
-                        Icon(
-                          Icons.assignment_ind,
-                          color: appbar_color.withOpacity(0.9),
-
+                        Text(
+                          'Name:',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: appbar_color[800],
+                          ),
                         ),
 
                         SizedBox(width: 5,),
@@ -517,6 +631,30 @@ class _LeadStatusReportState extends State<LeadStatusReport> {
                     SizedBox(height: 10),
 
                     Row(
+                      children: [
+                        Text(
+                          'Category:',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: appbar_color[800],
+                          ),
+                        ),
+
+                        SizedBox(width: 5,),
+                        Text(
+                          lead['category'] ?? 'Unnamed',
+                          style: TextStyle(
+                            fontWeight: FontWeight.normal,
+                            color: appbar_color[800],
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    SizedBox(height: 10),
+
+
+                    Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
@@ -526,8 +664,11 @@ class _LeadStatusReportState extends State<LeadStatusReport> {
                           Icons.edit,
                           Colors.blue,
                               () {
+                            setState(() {
+                              selectedCategory = lead['category'] ?? 'Normal';
+                            });
 
-                                showEditLeadStatusDialog(lead['id'],lead['name'],lead['is_qualified']);
+                                showEditLeadStatusDialog(lead['id'],lead['name'],lead['category'],lead['color']);
                               },
                         ),
                         SizedBox(width:5),
@@ -554,7 +695,8 @@ class _LeadStatusReportState extends State<LeadStatusReport> {
         onPressed:()
         {
           leadStatusController.clear();
-          isQualified = false;
+          selectedCategory = categories_list.first;
+
           showLeadStatusDialog();
         },
         backgroundColor: appbar_color.withOpacity(0.9),

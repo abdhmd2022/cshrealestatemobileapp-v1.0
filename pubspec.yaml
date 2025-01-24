@@ -44,7 +44,7 @@ dependencies:
   url_launcher:
   country_picker:
   uuid:
-
+  flutter_colorpicker:
 dev_dependencies:
   flutter_test:
     sdk: flutter

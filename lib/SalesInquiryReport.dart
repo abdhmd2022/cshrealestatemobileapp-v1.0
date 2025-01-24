@@ -29,11 +29,12 @@ class InquiryModel {
   final String inquiryNo;
   final String creationDate;
   final double minPrice;
-  final int created_by;
-  final int assigned_to;
+  final String created_by;
+  final String assigned_to;
   final double maxPrice;
   final String status;
   final String leadStatusCategory;
+  final String color;
   final List<Map<String, dynamic>> preferredAreas;
   final List<Map<String, dynamic>> preferredFlatTypes;
   final List<Map<String, dynamic>> preferredAmenities;
@@ -46,6 +47,7 @@ class InquiryModel {
     required this.created_by,
     required this.assigned_to,
     required this.description,
+    required this.color,
     required this.contactNo,
     required this.email,
     required this.inquiryNo,
@@ -84,13 +86,21 @@ class InquiryModel {
 
     String leadStatusName= '';// Extract the last follow-up and its lead status name
     String leadStatusCategory= '';
+    String leadStatusColor= '';
+
+
+    final created_by = (json['created_user'] as Map<String, dynamic>?)?['name'] ?? 'N/A';
+
+    final assigned_to = (json['assigned_to_user'] as Map<String, dynamic>?)?['name'] ?? 'N/A';
+
+
     if (leadsFollowup != null && leadsFollowup.isNotEmpty) {
-
-
 
       final lastFollowup = leadsFollowup.first;
       leadStatusName = lastFollowup['lead_status']?['name'] ?? 'Unknown';
-      leadStatusCategory = lastFollowup['lead_status']?['is_qualified'] ?? 'Unknown';
+      leadStatusCategory = lastFollowup['lead_status']?['category'] ?? 'Unknown';
+      leadStatusColor = lastFollowup['lead_status']?['color'] ?? 'Unknown';
+
 
       print('Last Lead Status Name: $leadStatusName');
     } else {
@@ -107,8 +117,9 @@ class InquiryModel {
       description: json['description'] ?? 'No description',
       contactNo: json['mobile_no'] ?? 'N/A',
       email: json['email'] ?? 'N/A',
-      created_by: json['created_by'] ?? 0,
-      assigned_to: json['assigned_to'] ?? 0,
+      created_by: created_by ?? 'N/A',
+      assigned_to: assigned_to ?? 'N/A',
+      color: leadStatusColor,
 
       inquiryNo: json['id'].toString() ?? '',
       creationDate: formattedDate,
@@ -375,7 +386,7 @@ class _SalesInquiryReportState
                       children: [
 
 
-                        if(inquiry.leadStatusCategory == 'true' )
+                        if(inquiry.leadStatusCategory == 'Normal' )
                         Row(children: [
 
                           _buildDecentButton(
@@ -558,14 +569,28 @@ class _SalesInquiryReportState
     );
   }
 
+/*  Color parseColor(String hexColor) {
+    if (hexColor.length == 4) {
+      final r = hexColor[1] * 2;
+      final g = hexColor[2] * 2;
+      final b = hexColor[3] * 2;
+      hexColor = "#$r$g$b";
+    }
+    return Color(int.parse(hexColor.replaceFirst('#', '0xff')));
+  }*/
+
   Widget _getStatusBadge(String category, String status) {
     Color color;
     switch (category) {
-      case 'false':
+      case 'Normal':
+        color = Colors.green;
+        break;
+      case 'Drop':
         color = Colors.red;
         break;
-      case 'true':
-        color = Colors.green;
+
+      case 'Close':
+        color = Colors.red;
         break;
       default:
         color = Colors.grey;

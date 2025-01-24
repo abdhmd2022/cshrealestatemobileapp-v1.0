@@ -285,7 +285,16 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
     String formattedDate = DateFormat('yyyy-MM-dd').format(today);
 
     final DateFormat formatter = DateFormat('yyyy-MM-dd');
-    String nextfollowupdate = formatter.format(nextFollowUpDate!);
+    String? nextfollowupdate = '';
+    if(nextFollowUpDate!=null)
+      {
+         nextfollowupdate = formatter.format(nextFollowUpDate!);
+      }
+    else
+      {
+        nextfollowupdate = null;
+      }
+
 
     // Constructing the JSON body
 
@@ -1679,15 +1688,22 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                                       fontSize: 16
 
                                                   )
-                                              ),
-                                              SizedBox(width: 2),
+                                              ),/*SizedBox(width: 2),
                                               Text(
                                                 '*', // Red asterisk for required field
                                                 style: TextStyle(
                                                   fontSize: 20,
                                                   color: Colors.red, // Red color for the asterisk
                                                 ),
-                                              ),
+                                              ),*/
+                                              /*SizedBox(width: 2),
+                                              Text(
+                                                '*', // Red asterisk for required field
+                                                style: TextStyle(
+                                                  fontSize: 20,
+                                                  color: Colors.red, // Red color for the asterisk
+                                                ),
+                                              ),*/
                                             ],
                                           ),
                                         ),

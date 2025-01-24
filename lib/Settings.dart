@@ -1,6 +1,7 @@
 import 'package:cshrealestatemobile/AmenitiesReport.dart';
 import 'package:cshrealestatemobile/LeadStatusReport.dart';
 import 'package:cshrealestatemobile/LeadTypeReport.dart';
+import 'package:cshrealestatemobile/MaintenanceTypeMastersReport.dart';
 import 'package:cshrealestatemobile/constants.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert'; // For JSON encoding
@@ -215,6 +216,24 @@ class _SettingsScreenState extends State<SettingsScreen> with TickerProviderStat
                     (
                     context,
                     MaterialPageRoute(builder: (context) => ActivitySourceReport()), // navigate to company and serial select screen
+                  );
+
+                },
+              )),
+
+          Divider(),
+
+          Padding(padding: EdgeInsets.only(top: 5,bottom: 5),
+              child: ListTile(
+                title: Text('Maintenance Types'),
+                subtitle: Text('Manage maintenance types masters for the app'),
+                onTap: ()
+                {
+                  Navigator.pushReplacement
+
+                    (
+                    context,
+                    MaterialPageRoute(builder: (context) => MaintenanceTypeMastersReport()), // navigate to company and serial select screen
                   );
 
                 },

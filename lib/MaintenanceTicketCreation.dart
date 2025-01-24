@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:cshrealestatemobile/MaintenanceTicketReport.dart';
 import 'package:cshrealestatemobile/constants.dart';
@@ -9,6 +10,31 @@ import 'package:flutter/widgets.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:multi_select_flutter/multi_select_flutter.dart';
 import 'Sidebar.dart';
+import 'package:http/http.dart' as http;
+
+
+
+class MaintanceType {
+  final int id;
+  final String name;
+  final int serial_id;
+
+  MaintanceType({
+    required this.id,
+    required this.name,
+    required this.serial_id
+  });
+
+  // Factory method to create a FollowUpStatus object from JSON
+  factory MaintanceType.fromJson(Map<String, dynamic> json) {
+    return MaintanceType(
+        id: json['id'],
+        name: json['name'],
+        serial_id:json['serial_id']
+    );
+  }
+}
+
 
 class MaintenanceTicketCreation extends StatefulWidget
 {
@@ -19,16 +45,10 @@ class MaintenanceTicketCreation extends StatefulWidget
 
 class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreation> with TickerProviderStateMixin {
 
-  List<String> selectedMaintenanceTypes = [];
+  List<MaintanceType> selectedMaintenanceTypes = [];
 
-  final List<String> maintenance_types_list = [
-    'Electrical Works',
-    'A/C Works',
-    'Plumbing Works',
-    'Paint Works',
-    'Pest Control',
-    'Tile Works',
-    'Others'
+   List<MaintanceType> maintenance_types_list = [
+
   ];
 
   TextEditingController _descriptionController = TextEditingController();
@@ -48,12 +68,56 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
 
   bool selectAll = false;
 
+  Future<void> fetchMaintenanceTypes() async {
+
+    maintenance_types_list.clear();
+
+    final url = '$BASE_URL_config/v1/maintenanceTypes'; // Replace with your API endpoint
+    String token = 'Bearer $Serial_Token'; // auth token for request
+
+    Map<String, String> headers = {
+      'Authorization': token,
+      "Content-Type": "application/json"
+    };
+    try {
+      final response = await http.get(Uri.parse(url),
+        headers: headers,);
+      if (response.statusCode == 200) {
+
+        final data = json.decode(response.body);
+
+        setState(() {
+          List<dynamic> followuplist = data['data']['maintenanceTypes'];
+
+          for (var followup in followuplist) {
+            // Create a FollowUpStatus object from JSON
+            MaintanceType maintenanceType = MaintanceType.fromJson(followup);
+
+            // Add the object to the list
+            maintenance_types_list.add(maintenanceType);
+
+
+            // Optionally, you can print the object for verification
+          }
+        });
+      } else {
+        throw Exception('Failed to load data');
+      }
+    } catch (e) {
+
+      print('Error fetching data: $e');
+    }
+
+
+  }
+
+
   // Function to toggle Select All option
   void toggleSelectAll() {
     setState(() {
       selectAll = !selectAll;
       if (selectAll) {
-        selectedMaintenanceTypes = List<String>.from(maintenance_types_list);
+        selectedMaintenanceTypes = List<MaintanceType>.from(maintenance_types_list);
       } else {
         selectedMaintenanceTypes.clear();
       }
@@ -238,6 +302,8 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
   }
 
   Future<void> _initSharedPreferences() async {
+
+    fetchMaintenanceTypes();
   }
 
   @override
@@ -438,7 +504,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                           child: MultiSelectDialogField(
 
                             items: maintenance_types_list
-                                .map((type) => MultiSelectItem<String>(type, type))
+                                .map((type) => MultiSelectItem<MaintanceType>(type, type.name))
                                 .toList(),
                             initialValue: selectedMaintenanceTypes,
                             title: Text("Maintenance Type(s)"),
@@ -459,13 +525,14 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                             ),
                             onConfirm: (values) {
                               setState(() {
-                                selectedMaintenanceTypes = List<String>.from(values);
+                                selectedMaintenanceTypes = List<MaintanceType>.from(values); // Correct type
                               });
                             },
                             chipDisplay: MultiSelectChipDisplay(
                               onTap: (value) {
                                 setState(() {
                                   selectedMaintenanceTypes.remove(value);
+
                                 });
                               },
                             ),

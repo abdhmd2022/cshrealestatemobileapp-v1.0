@@ -2289,9 +2289,10 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                 selectedAmenities = Set<int>.from(values);
                                               });
                                             },
+
+
+
                                             chipDisplay: MultiSelectChipDisplay(
-                                              textStyle: TextStyle(color: Colors.white), // Selected value text color
-                                              chipColor: appbar_color,
                                               items: selectedAmenities
                                                   .map((id) => MultiSelectItem<int>(
                                                   id, amenities.firstWhere((item) => item['id'] == id)['name']))
@@ -2368,8 +2369,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                           });
                                         },
                                         chipDisplay: MultiSelectChipDisplay(
-                                          textStyle: TextStyle(color: Colors.white),
-                                          chipColor: appbar_color,
+
                                           items: selectedSpecialFeatures
                                               .map((id) => MultiSelectItem<int>(
                                               id,

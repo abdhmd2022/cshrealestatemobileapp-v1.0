@@ -241,21 +241,14 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
 
   ];
 
-
   List<FollowUpType> followuptype_list = [
-
-
-
 
   ];
   String? selectedPropertyType;
 
-
-
   List<Map<String, dynamic>> unitTypes = [
 
   ];
-
 
   Map<String, List<Map<String, dynamic>>> areas = {
 
@@ -344,8 +337,6 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
       print("Exception: $error");
     }
   }
-
-
 
   void updateAreasDisplay() {
     areasToDisplay.clear();

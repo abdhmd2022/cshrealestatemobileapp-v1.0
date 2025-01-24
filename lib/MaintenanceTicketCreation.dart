@@ -68,6 +68,78 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
 
   bool selectAll = false;
 
+   List<dynamic> flats = [];
+
+  Map<String, dynamic>? selectedFlat; // Stores the selected flat object
+
+  void _showFlatPicker() {
+    showCupertinoModalPopup(
+      context: context,
+      builder: (context) => Container(
+        height: MediaQuery.of(context).size.height/2,
+        width: double.infinity, // Ensure the modal occupies full width
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        child: Column(
+          children: [
+            // Picker Header
+            Padding(
+              padding: const EdgeInsets.all(26.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Unit(s)',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold,
+                      color: appbar_color.withOpacity(0.9),),
+                  ),
+                  GestureDetector(
+                    onTap: () => Navigator.pop(context),
+                    child: Text(
+                      'Done',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: appbar_color.withOpacity(0.9),
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            // Cupertino Picker
+            Expanded(
+              child: CupertinoPicker(
+                scrollController: FixedExtentScrollController(
+                  initialItem: flats.indexOf(selectedFlat), // Pre-select current flat
+                ),
+                itemExtent: 40,
+                onSelectedItemChanged: (index) {
+                  setState(() {
+                    selectedFlat = flats[index]; // Update the selected flat
+
+                    print('selected id of flat ${flats[index]['cost_centre_masterid']}');
+                  });
+                },
+                children: flats.map((flat) {
+                  return Center(
+                    child: Text(
+                      'Unit ${flat['flat_name']} | Building ${flat['building_masterid']}',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  );
+                }).toList(),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+
   Future<void> fetchMaintenanceTypes() async {
 
     maintenance_types_list.clear();
@@ -110,6 +182,39 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
 
 
   }
+
+  Future<void> fetchUnits() async {
+
+    flats.clear();
+
+    final url = '$BASE_URL_config/v1/serials/flats'; // Replace with your API endpoint
+    String token = 'Bearer $Serial_Token'; // auth token for request
+
+    Map<String, String> headers = {
+      'Authorization': token,
+      "Content-Type": "application/json"
+    };
+    try {
+      final response = await http.get(Uri.parse(url),
+        headers: headers,);
+      if (response.statusCode == 200) {
+
+        final Map<String, dynamic> data = json.decode(response.body);
+        setState(() {
+          flats = data['data']['flats'];
+          selectedFlat = flats[0];
+        });
+      } else {
+        throw Exception('Failed to load data');
+      }
+    } catch (e) {
+
+      print('Error fetching data: $e');
+    }
+
+
+  }
+
 
 
   // Function to toggle Select All option
@@ -303,6 +408,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
 
   Future<void> _initSharedPreferences() async {
 
+    fetchUnits();
     fetchMaintenanceTypes();
   }
 
@@ -384,85 +490,39 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
 
                     Container(
                       padding: EdgeInsets.only(top:20),
-                      child:Row(
-                        children: [
-
-                          Row(mainAxisSize: MainAxisSize.min,
-
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
+                      child:GestureDetector(
+                        onTap: _showFlatPicker,
+                        child: Container(
+                          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                          margin: EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(30.0),
+                            color: Colors.blue.withOpacity(0.1),
+                            border: Border.all(
+                              color: Colors.blue.withOpacity(0.3),
+                              width: 1.0,
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-
-                              Container(
-                                margin: EdgeInsets.only(left: 20,right: 5, top: 20),
-                                padding: EdgeInsets.only(left:10,right:10, top: 5, bottom: 5),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(30.0),
-                                  color: appbar_color.withOpacity(0.1),
-                                  border: Border.all(
-                                    color: appbar_color.shade200.withOpacity(0.3),
-                                    width: 1,
-                                  ),
-
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: appbar_color.shade200.withOpacity(0.1),
-                                      blurRadius: 8.0,
-                                      offset: Offset(0, 4),
-                                    ),
-                                  ],
+                              Text(
+                                'Unit ${selectedFlat?['flat_name']} | Building ${selectedFlat?['building_masterid']}',
+                                style: TextStyle(
+                                  color: Colors.blue.shade700,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
                                 ),
-                                child:Text('Unit 101',
-                                    style: TextStyle(
-                                        color: appbar_color.withOpacity(0.9),
-                                            fontWeight: FontWeight.bold
-                                    ))),
-
-                              Container(
-                                margin: EdgeInsets.only(left: 0,right: 0, top: 20),
-                                padding: EdgeInsets.only(left:10,right:10, top: 5, bottom: 5),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(30.0),
-                                  color: appbar_color.withOpacity(0.1),
-                                  border: Border.all(
-                                    color: appbar_color.shade200.withOpacity(0.3),
-                                    width: 1.0,
-                                  ),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: appbar_color.shade200.withOpacity(0.1),
-                                      blurRadius: 8.0,
-                                      offset: Offset(0, 4),
-                                    ),
-                                  ],
-                                ),
-
-                                child:Text('Building Al Khaleej Center',style: TextStyle(
-                                  color: appbar_color.withOpacity(0.9),
-                                  fontWeight: FontWeight.bold
-                                ),),),
-                            ],),
-                          SizedBox(width: 10,),
-
-
-                          GestureDetector(child:
-
-
-                          Container(
-                            padding: EdgeInsets.only(top: 20),
-                            child:  Icon(
-                              Icons.edit,
-                              color: appbar_color,
-                              size: 20,
-                            )
-                          )
-                         ,)
-                        ],
+                              ),
+                              Icon(Icons.arrow_drop_down, color: Colors.blue),
+                            ],
+                          ),
+                        ),
                       ),
                     ),
 
                     Container(
-                      margin: EdgeInsets.only(left: 20,right: 20,top: 20),
+                      margin: EdgeInsets.only(left: 20,right: 20,top: 0),
                       child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -532,7 +592,6 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                               onTap: (value) {
                                 setState(() {
                                   selectedMaintenanceTypes.remove(value);
-
                                 });
                               },
                             ),

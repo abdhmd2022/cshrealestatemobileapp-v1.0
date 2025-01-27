@@ -213,7 +213,6 @@ class _SalesInquiryReportState
       if (response.statusCode == 200) {
 
         setState(() {
-
           print(response.body);
           final jsonResponse = json.decode(response.body);
           salesinquiry = parseInquiries(jsonResponse);
@@ -231,7 +230,6 @@ class _SalesInquiryReportState
       print('Error fetching data: $e');
     }
   }
-
 
   void _updateSearchQuery(String query) {
     setState(() {
@@ -569,7 +567,7 @@ class _SalesInquiryReportState
     );
   }
 
-/*  Color parseColor(String hexColor) {
+  /*  Color parseColor(String hexColor) {
     if (hexColor.length == 4) {
       final r = hexColor[1] * 2;
       final g = hexColor[2] * 2;

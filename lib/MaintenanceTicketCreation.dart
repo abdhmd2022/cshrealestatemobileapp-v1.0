@@ -216,6 +216,10 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
         selectedMaintenanceTypes.clear();
       }
     });
+
+
+
+
   }
 
 
@@ -226,12 +230,27 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
     final List<XFile>? pickedFiles = await _picker.pickMultiImage(); // Pick multiple images
     if (pickedFiles != null) {
       setState(() {
-        // Add all selected images to the attachments list
-        _attachment.addAll(pickedFiles.map((file) => File(file.path)).toList());
+        for (var file in pickedFiles) {
+          File newFile = File(file.path);
+
+          // Debug print to check paths
+          print('Existing paths: ${_attachment.map((file) => file.path).toList()}');
+          print('New file path: ${newFile.path}');
+
+          // Check if the image is already in the list
+          if (!_attachment.any((existingFile) => existingFile.path == newFile.path)) {
+            _attachment.add(newFile); // Add the image if it's not a duplicate
+            print('Added: ${newFile.path}'); // Debug to confirm addition
+          } else {
+            print('Skipped duplicate: ${newFile.path}'); // Debug for duplicates
+          }
+        }
       });
     }
   }
-  
+
+
+
   void _showAttachmentOptions(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -712,80 +731,131 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
 
       SizedBox(height: 20),
                           Container(
-                            margin: EdgeInsets.only(left:20,right: 20),
+                            margin: EdgeInsets.symmetric(horizontal: 20),
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 if (_attachment.isNotEmpty)
-                              Column(
-                          children: [
-                            SingleChildScrollView(
-                                scrollDirection: Axis.horizontal,
-                                child: Row(
-                                  children: _attachment
-                                      .map((attachment) => Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Image.file(
-                                      attachment,
-                                      width: 100,
-                                      height: 100,
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ))
-                                      .toList(),
-                                ),),
+                                  Column(
+                                    children: [
+                                      Wrap(
+                                        spacing: 12.0, // Horizontal space between items
+                                        runSpacing: 12.0, // Vertical space between rows
+                                        children: [
+                                          ..._attachment.asMap().entries.map((entry) {
+                                            int index = entry.key;
+                                            File attachment = entry.value;
+                                            return Stack(
+                                              children: [
+                                                Container(
+                                                  decoration: BoxDecoration(
+                                                    borderRadius: BorderRadius.circular(12),
+                                                    boxShadow: [
+                                                      BoxShadow(
+                                                        color: Colors.grey.withOpacity(0.5),
+                                                        spreadRadius: 2,
+                                                        blurRadius: 5,
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  child: ClipRRect(
+                                                    borderRadius: BorderRadius.circular(12),
+                                                    child: Image.file(
+                                                      attachment, // Use Image.file for actual file
+                                                      width: 75,
+                                                      height: 75,
+                                                      fit: BoxFit.cover,
+                                                    ),
+                                                  ),
+                                                ),
+                                                Positioned(
+                                                  top: 4,
+                                                  right: 4,
+                                                  child: GestureDetector(
+                                                    onTap: () {
+                                                      setState(() {
+                                                        _attachment.removeAt(index);
+                                                      });
+                                                    },
+                                                    child: Container(
+                                                      decoration: BoxDecoration(
+                                                        shape: BoxShape.circle,
+                                                        color: Colors.black.withOpacity(0.7), // Semi-transparent black
+                                                        boxShadow: [
+                                                          BoxShadow(
+                                                            color: Colors.black.withOpacity(0.3), // Soft shadow
+                                                            blurRadius: 4,
+                                                            spreadRadius: 1,
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      padding: EdgeInsets.all(4), // Slightly larger padding for better touch target
 
-                                SizedBox(height: 10),
 
-                                ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                shape: CircleBorder(), // Makes the button round
-                                padding: EdgeInsets.all(16), // Adds padding around the icon
-                                elevation: 5, // Adds elevation for the shadow effect
-                                backgroundColor: Colors.white, // Button background color
-                                 ),
-                                onPressed: ()
-                                  {
-                                    _showAttachmentOptions(context); // Trigger image picker
-                                  },
-                                child: Icon(
-                                Icons.add,
-                                size: 30, // Icon size
-                                color: Colors.blueAccent, // Icon color
-                                ),
-                                ),
-                                ],
-                                )
 
+                                                      child: Icon(
+                                                        Icons.close,
+                                                        size: 15,
+                                                        color: Colors.white70, // Soft white color for the icon
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            );
+                                          }).toList(),
+                                          ElevatedButton(
+                                            style: ElevatedButton.styleFrom(
+                                              shape: CircleBorder(),
+                                              padding: EdgeInsets.all(16),
+                                              elevation: 5,
+                                              backgroundColor: Colors.white,
+                                            ),
+                                            onPressed: () {
+                                              _showAttachmentOptions(context);
+                                            },
+                                            child: Icon(
+                                              Icons.add,
+                                              size: 30,
+                                              color: Colors.blueAccent,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  )
                                 else
                                   Column(
-                                    children: [ElevatedButton(
-                                      style: ElevatedButton.styleFrom(
-                                        shape: CircleBorder(), // Makes the button round
-                                        padding: EdgeInsets.all(16), // Adds padding around the icon
-                                        elevation: 8, // Adds elevation for the shadow effect
-                                        backgroundColor: Colors.white, // Button background color
+                                    children: [
+                                      ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                          shape: CircleBorder(),
+                                          padding: EdgeInsets.all(16),
+                                          elevation: 8,
+                                          backgroundColor: Colors.white,
+                                        ),
+                                        onPressed: () {
+                                          _showAttachmentOptions(context);
+                                        },
+                                        child: Icon(
+                                          Icons.attach_file,
+                                          size: 30,
+                                          color: Colors.blueAccent,
+                                        ),
                                       ),
-                                      onPressed: ()
-                                      {
-                                        _showAttachmentOptions(context); // Trigger image picker
-                                      },
-                                      child: Icon(
-                                        Icons.attach_file,
-                                        size: 30, // Icon size
-                                        color: Colors.blueAccent, // Icon color
-                                      ),
-                                    ),
                                       SizedBox(height: 20),
-
-                                      Text('No attachment selected'),],
+                                      Text('No attachment selected'),
+                                    ],
                                   ),
                               ],
-                            ),)
+                            ),
+                          )
 
 
 
-      ]),
+
+
+                        ]),
 
                   /*  SizedBox(height: 10),
 

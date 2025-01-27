@@ -590,7 +590,7 @@ class _SalesInquiryReportState
         break;
 
       case 'Close':
-        color = Colors.red;
+        color = Colors.green;
         break;
       default:
         color = Colors.grey;

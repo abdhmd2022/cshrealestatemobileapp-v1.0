@@ -93,7 +93,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                   Text(
                     'Unit(s)',
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold,
-                      color: appbar_color.withOpacity(0.9),),
+                      color: appbar_color.withOpacity(1.0),),
                   ),
                   GestureDetector(
                     onTap: () => Navigator.pop(context),
@@ -101,7 +101,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                       'Done',
                       style: TextStyle(
                         fontSize: 16,
-                        color: appbar_color.withOpacity(0.9),
+                        color: appbar_color.withOpacity(1.0),
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -201,7 +201,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
       print('Error fetching data: $e');
     }
   }
-
+  
   // Function to toggle Select All option
   void toggleSelectAll() {
     setState(() {
@@ -227,7 +227,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
       });
     }
   }
-
+  
   void _showAttachmentOptions() {
     showModalBottomSheet(
       context: context,
@@ -294,7 +294,12 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                         ),
                         SizedBox(height: 8),
                         Text('Capture'),
-                      ]))])]));});}
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ] ));});}
 
   /*void _showAttachmentOptions() {
     showModalBottomSheet(

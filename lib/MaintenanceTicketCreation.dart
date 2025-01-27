@@ -119,7 +119,6 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                 onSelectedItemChanged: (index) {
                   setState(() {
                     selectedFlat = flats[index]; // Update the selected flat
-
                     print('selected id of flat ${flats[index]['cost_centre_masterid']}');
                   });
                 },
@@ -131,13 +130,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                     ),
                   );
                 }).toList(),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+              ))])));}
 
 
   Future<void> fetchMaintenanceTypes() async {
@@ -162,14 +155,12 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
           List<dynamic> followuplist = data['data']['maintenanceTypes'];
 
           for (var followup in followuplist) {
-            // Create a FollowUpStatus object from JSON
+
             MaintanceType maintenanceType = MaintanceType.fromJson(followup);
 
             // Add the object to the list
             maintenance_types_list.add(maintenanceType);
 
-
-            // Optionally, you can print the object for verification
           }
         });
       } else {
@@ -179,8 +170,6 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
 
       print('Error fetching data: $e');
     }
-
-
   }
 
   Future<void> fetchUnits() async {
@@ -211,11 +200,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
 
       print('Error fetching data: $e');
     }
-
-
   }
-
-
 
   // Function to toggle Select All option
   void toggleSelectAll() {
@@ -242,7 +227,6 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
       });
     }
   }
-
 
   void _showAttachmentOptions() {
     showModalBottomSheet(
@@ -310,17 +294,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                         ),
                         SizedBox(height: 8),
                         Text('Capture'),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
+                      ]))])]));});}
 
   /*void _showAttachmentOptions() {
     showModalBottomSheet(

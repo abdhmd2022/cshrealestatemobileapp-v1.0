@@ -980,8 +980,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
     }
 
     // Print the final body
-    print('Request Fields:');
-    request.fields.forEach((key, value) {
+    print('Request Fields:');request.fields.forEach((key, value) {
       print('$key: $value');
     });
 

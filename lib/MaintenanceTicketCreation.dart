@@ -963,7 +963,6 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
 
     // Add text fields
     request.fields['uuid'] = uuidValue;
-
     request.fields['maintenance_type_id'] = selectedMaintenanceTypes.map((type) => type.id).join(',');
     request.fields['flat_masterid'] = selectedFlat?['cost_centre_masterid']?.toString() ?? '';
     request.fields['description'] = _descriptionController.text;

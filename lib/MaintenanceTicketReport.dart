@@ -1,9 +1,13 @@
+import 'dart:convert';
+
 import 'package:cshrealestatemobile/MaintenanceTicketCreation.dart';
 import 'package:cshrealestatemobile/SalesDashboard.dart';
 import 'package:cshrealestatemobile/TenantDashboard.dart';
 import 'package:cshrealestatemobile/constants.dart';
 import 'package:flutter/material.dart';
 import 'Sidebar.dart';
+import 'package:http/http.dart' as http;
+
 
 class MaintenanceTicketReport extends StatefulWidget {
   @override
@@ -15,42 +19,62 @@ class _MaintenanceTicketReportState
     extends State<MaintenanceTicketReport> with TickerProviderStateMixin {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  final List<Map<String, dynamic>> tickets = [
-    {
-      'ticketNumber': 'MT-001',
-      'unitNumber': '101',
-      'buildingName': 'Al Khaleej Center',
-      'emirate': 'Dubai',
-      'status': 'In Progress',
-      'date': '24-12.2024',
-      'maintenanceType': 'Electrical',
-      'description': 'Fixing electrical wiring in the unit.',
-    },
-    {
-      'ticketNumber': 'MT-002',
-      'unitNumber': '402',
-      'buildingName': 'Al Musalla Tower',
-      'emirate': 'Dubai',
-      'status': 'Resolved',
-      'date': '20-12-2024',
-      'maintenanceType': 'Carpentry',
-      'description': 'Fixing the wooden door and frame.',
-    },
-  ];
-
+  List<Map<String, dynamic>> tickets = [];
   List<Map<String, dynamic>> filteredTickets = [];
-  String searchQuery = "";
-
   List<bool> _expandedTickets = [];
+  String searchQuery = "";
 
   @override
   void initState() {
     super.initState();
     // Initialize all tickets to be collapsed by default
-    _expandedTickets = List.generate(tickets.length, (index) => false);
-    filteredTickets = tickets;
+   fetchTickets();
   }
 
+  Future<void> fetchTickets() async {
+    final String url = "$BASE_URL_config/v1/maintenance";
+    try {
+      final Map<String, String> headers = {
+        'Authorization': 'Bearer $Company_Token', // Example of an Authorization header
+        'Content-Type': 'application/json', // Example Content-Type header
+        // Add other headers as required
+      };
+      final response = await http.get(Uri.parse(url), headers: headers);
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> responseBody = json.decode(response.body);
+        if (responseBody['success'] == true) {
+          // Transform the API data to match your UI format
+          final List<dynamic> apiTickets = responseBody['data']['tickets'];
+          final List<Map<String, dynamic>> formattedTickets = apiTickets.map((apiTicket) {
+            return {
+              'ticketNumber': apiTicket['id'].toString() ?? '',
+              'unitNumber': apiTicket['flat_masterid'].toString(),
+              'buildingName': "N/A", // Update this based on the actual data
+              'emirate': "N/A",      // Update this based on the actual data
+              'status': "N/A",       // Update this based on the actual data
+              'date': apiTicket['created_at']?.split('T')[0] ?? '',
+              'maintenanceType': apiTicket['maintenance_types']['name'] ?? '',
+              'description': apiTicket['description'] ?? '',
+            };
+          }).toList();
+
+          setState(() {
+            tickets = formattedTickets;
+            filteredTickets = tickets; // Initially set to show all tickets
+            _expandedTickets = List<bool>.filled(tickets.length, false);
+          });
+        } else {
+          print("API returned success: false");
+        }
+      } else {
+        print("Error fetching data: ${response.statusCode}");
+        print("Error fetching data: ${response.body}");
+
+      }
+    } catch (e) {
+      print("Error fetching data: $e");
+    }
+  }
   void _updateSearchQuery(String query) {
     setState(() {
       searchQuery = query;
@@ -65,7 +89,6 @@ class _MaintenanceTicketReportState
           .toList();
     });
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -161,6 +184,7 @@ class _MaintenanceTicketReportState
     );
   }
 
+
   Widget _buildTicketCard(Map<String, dynamic> ticket, int index) {
     return GestureDetector(
       onTap: () {
@@ -188,11 +212,7 @@ class _MaintenanceTicketReportState
             _buildTicketHeader(ticket),
             Divider(color: Colors.grey[300]),
             _buildTicketDetails(ticket),
-
-
-
-            if (_expandedTickets[index])
-              _buildExpandedTicketView(ticket),
+            if (_expandedTickets[index]) _buildExpandedTicketView(ticket),
             SizedBox(height: 10), // Top space before the toggle
             Align(
               alignment: Alignment.center,
@@ -204,10 +224,7 @@ class _MaintenanceTicketReportState
                 },
                 child: Container(
                   padding: const EdgeInsets.symmetric(vertical: 0.0, horizontal: 20.0),
-                  decoration: BoxDecoration(
-                      color: Colors.transparent
-
-                  ),
+                  decoration: BoxDecoration(color: Colors.transparent),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -230,7 +247,6 @@ class _MaintenanceTicketReportState
                 ),
               ),
             ),
-
           ],
         ),
       ),
@@ -288,14 +304,13 @@ class _MaintenanceTicketReportState
           Expanded(
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
-              child:Text(
+              child: Text(
                 value,
                 style: TextStyle(
                   color: Colors.black87,
                 ),
-
-              ) ,
-            )
+              ),
+            ),
           ),
         ],
       ),
@@ -338,10 +353,10 @@ class _MaintenanceTicketReportState
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildInfoRow('Description:', ticket['description']),
-
         ],
       ),
     );
   }
-
 }
+
+

@@ -45,6 +45,7 @@ dependencies:
   country_picker:
   uuid:
   flutter_colorpicker:
+  path:
 dev_dependencies:
   flutter_test:
     sdk: flutter

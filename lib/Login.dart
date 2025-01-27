@@ -30,7 +30,6 @@ class _LoginPageState extends State<Login> {
   final emailController = TextEditingController();
 
   final _emailFocusNode = FocusNode();
-
   final _passwordFocusNode = FocusNode();
 
   bool _obscureText = true;

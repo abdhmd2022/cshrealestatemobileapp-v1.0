@@ -9,8 +9,12 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:multi_select_flutter/multi_select_flutter.dart';
+import 'package:uuid/uuid.dart';
 import 'Sidebar.dart';
 import 'package:http/http.dart' as http;
+import 'package:path/path.dart';
+import 'package:http_parser/http_parser.dart';
+
 
 
 
@@ -72,7 +76,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
 
   Map<String, dynamic>? selectedFlat; // Stores the selected flat object
 
-  void _showFlatPicker() {
+  void _showFlatPicker(BuildContext context) {
     showCupertinoModalPopup(
       context: context,
       builder: (context) => Container(
@@ -228,7 +232,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
     }
   }
   
-  void _showAttachmentOptions() {
+  void _showAttachmentOptions(BuildContext context) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -470,7 +474,10 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                     Container(
                       padding: EdgeInsets.only(top:20),
                       child:GestureDetector(
-                        onTap: _showFlatPicker,
+                        onTap: ()
+                          {
+                            _showFlatPicker(context);
+                          },
                         child: Container(
                           padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
                           margin: EdgeInsets.all(16),
@@ -737,7 +744,10 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                                 elevation: 5, // Adds elevation for the shadow effect
                                 backgroundColor: Colors.white, // Button background color
                                  ),
-                                onPressed: _showAttachmentOptions, // Trigger image picker
+                                onPressed: ()
+                                  {
+                                    _showAttachmentOptions(context); // Trigger image picker
+                                  },
                                 child: Icon(
                                 Icons.add,
                                 size: 30, // Icon size
@@ -756,7 +766,10 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                                         elevation: 8, // Adds elevation for the shadow effect
                                         backgroundColor: Colors.white, // Button background color
                                       ),
-                                      onPressed: _showAttachmentOptions, // Trigger image picker
+                                      onPressed: ()
+                                      {
+                                        _showAttachmentOptions(context); // Trigger image picker
+                                      },
                                       child: Icon(
                                         Icons.attach_file,
                                         size: 30, // Icon size
@@ -840,7 +853,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                       ),
                       onPressed: () {
                         {
-
+                          sendFormData();
                         }
                       },
                       child: Text('Submit',
@@ -851,7 +864,83 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                   ])
             )
             )
-    );}}
+    );}
+
+
+  bool isValidImage(File file) {
+    final validExtensions = ['jpg', 'jpeg', 'png'];
+    final extension = file.path.split('.').last.toLowerCase();
+    return validExtensions.contains(extension);
+  }
+
+  Future<void> sendFormData() async {
+
+    final String urll = "$BASE_URL_config/v1/maintenance";
+
+    final url = Uri.parse(urll); // Replace with your API URL
+
+    var uuid = Uuid();
+
+    // Generate a v4 (random) UUID
+    String uuidValue = uuid.v4();
+
+
+    final request = http.MultipartRequest('POST', url);
+
+    request.headers.addAll({
+      'Authorization': 'Bearer $Company_Token', // Replace with your token
+      'Content-Type': 'multipart/form-data', // Optional, depends on the server
+    });
+
+    // Add text fields
+    request.fields['uuid'] = uuidValue;
+
+    request.fields['maintenance_type_id'] = selectedMaintenanceTypes.map((type) => type.id).join(',');
+    request.fields['flat_masterid'] = selectedFlat?['cost_centre_masterid']?.toString() ?? '';
+    request.fields['description'] = _descriptionController.text;
+
+    _attachment = _attachment.where(isValidImage).toList();
+
+    // Add images from _attachment
+    for (var file in _attachment) {
+      request.files.add(await http.MultipartFile.fromPath(
+        'images', // The field name the backend expects
+        file.path,
+        filename: basename(file.path),
+        contentType: MediaType('image', 'jpeg'), // Specify MIME type (e.g., 'image/jpeg', 'image/png')
+      ));
+    }
+
+    // Print the final body
+    print('Request Fields:');
+    request.fields.forEach((key, value) {
+      print('$key: $value');
+    });
+
+    print('\nRequest Files:');
+    for (var file in request.files) {
+      print('Field Name: ${file.field}');
+      print('File Name: ${file.filename}');
+      print('File Length: ${file.length}');
+    }
+
+    // Send the request
+    try {
+      final response = await request.send();
+      if (response.statusCode == 201) {
+        print('Upload successful');
+      } else {
+        print('Upload failed with status code: ${response.statusCode}');
+        print('Upload failed with status body: ${response.request}');
+
+      }
+    } catch (e) {
+      print('Error during upload: $e');
+    }
+  }
+
+}
+
 
 Widget _buildDecentButton(
     String label, IconData icon, Color color, VoidCallback onPressed) {

@@ -27,10 +27,10 @@ class _LoginPageState extends State<Login> {
 
   dynamic response_getusers;
 
-
   final emailController = TextEditingController();
 
   final _emailFocusNode = FocusNode();
+
   final _passwordFocusNode = FocusNode();
 
   bool _obscureText = true;
@@ -93,7 +93,6 @@ class _LoginPageState extends State<Login> {
         'password': password
       });
 
-
       response_getusers = await http.post(
           Uri.parse(url),
           body: body,
@@ -103,14 +102,11 @@ class _LoginPageState extends State<Login> {
       print('response code ${response_getusers.statusCode}');
       if (response_getusers.statusCode == 200)
       {
-
         Navigator.pushReplacement
-
           (
           context,
           MaterialPageRoute(builder: (context) => SalesDashboard()), // navigate to company and serial select screen
         );
-
       }
       else
       {
@@ -138,7 +134,6 @@ class _LoginPageState extends State<Login> {
       });
     }
   }
-
 
   @override
   Widget build(BuildContext context) {

@@ -250,7 +250,6 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
   }
 
 
-
   void _showAttachmentOptions(BuildContext context) {
     showModalBottomSheet(
       context: context,

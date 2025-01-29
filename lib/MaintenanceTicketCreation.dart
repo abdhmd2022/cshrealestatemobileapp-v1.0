@@ -948,12 +948,10 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
     try {
     final String url = "$BASE_URL_config/v1/maintenance";
 
-
     var uuid = Uuid();
 
     // Generate a v4 (random) UUID
     String uuidValue = uuid.v4();
-
 
     final Map<String, dynamic> requestBody = {
       "uuid": uuidValue,
@@ -990,10 +988,9 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
 
   Future<void> sendImageData(int id) async {
 
-    final String urll = "$BASE_URL_config/v1/uploads/$id";
+    final String urll = "$BASE_URL_config/v1/maintenance/uploads/$id";
 
     final url = Uri.parse(urll); // Replace with your API URL
-
 
     final request = http.MultipartRequest('POST', url);
 
@@ -1013,11 +1010,6 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
         contentType: MediaType('image', 'jpeg'), // Specify MIME type (e.g., 'image/jpeg', 'image/png')
       ));
     }
-
-    // Print the final body
-    print('Request Fields:');request.fields.forEach((key, value) {
-      print('$key: $value');
-    });
 
     print('\nRequest Files:');
     for (var file in request.files) {

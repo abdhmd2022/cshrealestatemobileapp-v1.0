@@ -8,12 +8,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:multi_select_flutter/multi_select_flutter.dart';
 import 'package:uuid/uuid.dart';
 import 'Sidebar.dart';
 import 'package:flutter/foundation.dart'; // For kIsWeb
 import 'package:mime/mime.dart'; // For MIME type checking
-
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart';
 import 'package:http_parser/http_parser.dart';
@@ -132,7 +130,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                 children: flats.map((flat) {
                   return Center(
                     child: Text(
-                      '${flat['flat_name']} | ${flat['buildings']['building_name']}',
+                      '${flat['flat_name']} | ${flat['buildings']['building_name']} | ${flat['buildings']['areas']['area_name']} | ${flat['buildings']['areas']['emirates']}',
                       style: TextStyle(fontSize: 16),
                     ),
                   );

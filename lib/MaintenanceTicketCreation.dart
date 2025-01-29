@@ -944,14 +944,55 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
 
   Future<void> sendFormData() async {
 
-    final String urll = "$BASE_URL_config/v1/maintenance";
+    // Send the request
+    try {
+    final String url = "$BASE_URL_config/v1/maintenance";
 
-    final url = Uri.parse(urll); // Replace with your API URL
 
     var uuid = Uuid();
 
     // Generate a v4 (random) UUID
     String uuidValue = uuid.v4();
+
+
+    final Map<String, dynamic> requestBody = {
+      "uuid": uuidValue,
+      "maintenance_type_id": selectedMaintenanceTypes.map((type) => type.id).join(','),
+      "flat_masterid": selectedFlat?['cost_centre_masterid'],
+      "description": _descriptionController.text,
+    };
+
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $Company_Token",
+        },
+        body: jsonEncode(requestBody),
+      );
+      if (response.statusCode == 201) {
+
+        print('ticket successful');
+        Map<String, dynamic> decodedResponse = jsonDecode(response.body);
+        int ticketId = decodedResponse['data']['ticket']['id'];
+        sendImageData(ticketId);
+
+      }
+      else {
+        print('Upload failed with status code: ${response.statusCode}');
+        print('Upload failed with status body: ${response.request}');
+
+      }
+    } catch (e) {
+      print('Error during upload: $e');
+    }
+  }
+
+  Future<void> sendImageData(int id) async {
+
+    final String urll = "$BASE_URL_config/v1/uploads/$id";
+
+    final url = Uri.parse(urll); // Replace with your API URL
 
 
     final request = http.MultipartRequest('POST', url);
@@ -960,12 +1001,6 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
       'Authorization': 'Bearer $Company_Token', // Replace with your token
       'Content-Type': 'multipart/form-data', // Optional, depends on the server
     });
-
-    // Add text fields
-    request.fields['uuid'] = uuidValue;
-    request.fields['maintenance_type_id'] = selectedMaintenanceTypes.map((type) => type.id).join(',');
-    request.fields['flat_masterid'] = selectedFlat?['cost_centre_masterid']?.toString() ?? '';
-    request.fields['description'] = _descriptionController.text;
 
     _attachment = _attachment.where(isValidImage).toList();
 
@@ -1005,7 +1040,6 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
       print('Error during upload: $e');
     }
   }
-
 }
 
 

@@ -5,6 +5,7 @@ import 'package:cshrealestatemobile/SalesDashboard.dart';
 import 'package:cshrealestatemobile/TenantDashboard.dart';
 import 'package:cshrealestatemobile/constants.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'Sidebar.dart';
 import 'package:http/http.dart' as http;
 
@@ -283,7 +284,7 @@ class _MaintenanceTicketReportState
         _buildInfoRow('Building:', ticket['buildingName']),
         _buildInfoRow('Emirate:', ticket['emirate']),
         _buildInfoRow('Type:', ticket['maintenanceType']),
-        _buildInfoRow('Date:', ticket['date']),
+        _buildInfoRow('Date:', DateFormat('dd-MMM-yyyy').format(DateTime.parse(ticket['date']))),
       ],
     );
   }

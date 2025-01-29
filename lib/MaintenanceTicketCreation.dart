@@ -48,16 +48,14 @@ class MaintenanceTicketCreation extends StatefulWidget
 
 class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreation> with TickerProviderStateMixin {
 
-  Uint8List? _imageBytes;
-
   MaintanceType? selectedMaintenanceType;
 
-   List<MaintanceType> maintenance_types_list = [
+  List<MaintanceType> maintenance_types_list = [
 
   ];
 
   TextEditingController _descriptionController = TextEditingController();
-  TextEditingController _totalamountController = TextEditingController();
+  // TextEditingController _totalamountController = TextEditingController();
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -76,6 +74,10 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
    List<dynamic> flats = [];
 
   Map<String, dynamic>? selectedFlat; // Stores the selected flat object
+
+  List<dynamic> _attachment = []; // List to store selected images
+
+  final ImagePicker _picker = ImagePicker();
 
   void _showFlatPicker(BuildContext context) {
     showCupertinoModalPopup(
@@ -136,7 +138,6 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                   );
                 }).toList(),
               ))])));}
-
 
   Future<void> fetchMaintenanceTypes() async {
 
@@ -206,11 +207,6 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
       print('Error fetching data: $e');
     }
   }
-
-
-
-  List<dynamic> _attachment = []; // List to store selected images
-  final ImagePicker _picker = ImagePicker();
 
   Future<void> _pickImages({bool fromCamera = false}) async {
     List<XFile>? pickedFiles;
@@ -301,6 +297,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
       },
     );
   }
+
   /*void _showAttachmentOptions() {
     showModalBottomSheet(
       context: context,
@@ -395,12 +392,10 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-
         backgroundColor: const Color(0xFFF2F4F8),
         appBar: AppBar(
           backgroundColor: appbar_color.withOpacity(0.9),
           automaticallyImplyLeading: false,
-
           leading: GestureDetector(
             onTap: ()
             {
@@ -687,10 +682,8 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                             ),
                           ),
 
+                          SizedBox(height: 20),
 
-
-
-      SizedBox(height: 20),
                           Container(
                             margin: EdgeInsets.symmetric(horizontal: 20),
                             child: Column(
@@ -812,19 +805,9 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                                       ),
                                       SizedBox(height: 20),
                                       Text('No attachment selected'),
-                                    ],
-                                  ),
-                              ],
-                            ),
-                          )
+                                    ])]))]),
 
-
-
-
-
-                        ]),
-
-                  /*  SizedBox(height: 10),
+                    /*  SizedBox(height: 10),
 
                     Column(
                         mainAxisAlignment: MainAxisAlignment.start,
@@ -898,70 +881,72 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                               color: Colors.white
                           )),
                     ),)
-                  ])
-            )
-            )
-    );}
+                    ])
+                    )
+                    )
+                    );}
 
 
-  bool isValidImage(dynamic file) {
-    final validExtensions = ['jpg', 'jpeg', 'png'];
+          bool isValidImage(dynamic file) {
+            final validExtensions = ['jpg', 'jpeg', 'png'];
 
-    if (file is File) {
-      // For mobile, check the file extension
+            if (file is File) {
+              // For mobile, check the file extension
 
-      final extension = file.path.split('.').last.toLowerCase();
-      return validExtensions.contains(extension);
-    } else if (file is Uint8List) {
-      // For web, check the MIME type
-      final mimeType = lookupMimeType('', headerBytes: file);
-      return mimeType != null && mimeType.startsWith('image/');
-    }
-    return false;
-  }
+              final extension = file.path.split('.').last.toLowerCase();
+              return validExtensions.contains(extension);
+            } else if (file is Uint8List) {
+              // For web, check the MIME type
+              final mimeType = lookupMimeType('', headerBytes: file);
+              return mimeType != null && mimeType.startsWith('image/');
+            }
+            return false;
+          }
 
-  Future<void> sendFormData() async {
-    try {
-      final String url = "$BASE_URL_config/v1/maintenance";
+          Future<void> sendFormData() async {
 
-      var uuid = Uuid();
-      String uuidValue = uuid.v4();
+          try {
+            final String url = "$BASE_URL_config/v1/maintenance";
 
-      final Map<String, dynamic> requestBody = {
-        "uuid": uuidValue,
-        "maintenance_type_id": selectedMaintenanceType!.id,
-        "flat_masterid": selectedFlat?['cost_centre_masterid'],
-        "description": _descriptionController.text,
-      };
+            var uuid = Uuid();
+            String uuidValue = uuid.v4();
 
-      final response = await http.post(
-        Uri.parse(url),
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": "Bearer $Company_Token",
-        },
-        body: jsonEncode(requestBody),
-      );
+            final Map<String, dynamic> requestBody = {
+              "uuid": uuidValue,
+              "maintenance_type_id": selectedMaintenanceType!.id,
+              "flat_masterid": selectedFlat?['cost_centre_masterid'],
+              "description": _descriptionController.text,
+            };
 
-      if (response.statusCode == 201) {
-        print('Ticket successful');
-        Map<String, dynamic> decodedResponse = jsonDecode(response.body);
-        int ticketId = decodedResponse['data']['ticket']['id'];
+            final response = await http.post(
+              Uri.parse(url),
+              headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer $Company_Token",
+              },
+              body: jsonEncode(requestBody),
+            );
 
-        // ✅ Call sendImageData in a separate request
-        await sendImageData(ticketId);
-      } else {
-        print('Upload failed with status code: ${response.statusCode}');
-        print('Upload failed with response: ${response.body}');
-      }
-    } catch (e) {
-      print('Error during upload: $e');
-    }
-  }
-  String getMimeType(String path) {
-    final mimeType = lookupMimeType(path);
-    return mimeType?.split('/').last ?? 'jpeg'; // Default to JPEG
-  }
+            if (response.statusCode == 201) {
+              print('Ticket successful');
+              Map<String, dynamic> decodedResponse = jsonDecode(response.body);
+              int ticketId = decodedResponse['data']['ticket']['id'];
+
+              // ✅ Call sendImageData in a separate request
+              await sendImageData(ticketId);
+            } else {
+              print('Upload failed with status code: ${response.statusCode}');
+              print('Upload failed with response: ${response.body}');
+            }
+          } catch (e) {
+            print('Error during upload: $e');
+          }
+        }
+
+        String getMimeType(String path) {
+          final mimeType = lookupMimeType(path);
+          return mimeType?.split('/').last ?? 'jpeg'; // Default to JPEG
+        }
 
   Future<void> sendImageData(int id) async {
     try {

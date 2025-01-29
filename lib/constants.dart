@@ -8,7 +8,7 @@ const String company_name = 'Company';
 
 const String authTokenBase = r'!1--3*%*%*%*9$api$8*%*%*%*5--0!X19fIUBBUyQlYXMxOTI4MzdfX18=KSgqL2FzZGFzZGlvQ0VEQUZf';
 
-const String BASE_URL_config = "http://192.168.2.104:4000/api";
+const String BASE_URL_config = "http://192.168.2.126:4000/api";
 
 const String Serial_Token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwic2VyaWFsX2lkIjoxLCJpYXQiOjE3MzgxMjc3OTcsImV4cCI6MTczODIxNDE5N30.P9JTahqPoDby71vmzWMeyFXmotgHQsdA8icj-oRSMoM';
 

@@ -11,12 +11,12 @@ import 'package:image_picker/image_picker.dart';
 import 'package:multi_select_flutter/multi_select_flutter.dart';
 import 'package:uuid/uuid.dart';
 import 'Sidebar.dart';
+import 'package:flutter/foundation.dart'; // For kIsWeb
+import 'package:mime/mime.dart'; // For MIME type checking
+
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart';
 import 'package:http_parser/http_parser.dart';
-
-
-
 
 class MaintanceType {
   final int id;
@@ -39,7 +39,6 @@ class MaintanceType {
   }
 }
 
-
 class MaintenanceTicketCreation extends StatefulWidget
 {
   const MaintenanceTicketCreation({Key? key}) : super(key: key);
@@ -48,6 +47,8 @@ class MaintenanceTicketCreation extends StatefulWidget
 }
 
 class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreation> with TickerProviderStateMixin {
+
+  Uint8List? _imageBytes;
 
   List<MaintanceType> selectedMaintenanceTypes = [];
 
@@ -129,7 +130,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                 children: flats.map((flat) {
                   return Center(
                     child: Text(
-                      'Unit ${flat['flat_name']} | Building ${flat['building_masterid']}',
+                      '${flat['flat_name']} | ${flat['buildings']['building_name']}',
                       style: TextStyle(fontSize: 16),
                     ),
                   );
@@ -223,32 +224,57 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
   }
 
 
-  List<File> _attachment = []; // List to store selected images
+  List<dynamic> _attachment = []; // List to store selected images
   final ImagePicker _picker = ImagePicker();
 
-  Future<void> _pickImages(ImageSource source) async {
-    final List<XFile>? pickedFiles = await _picker.pickMultiImage(); // Pick multiple images
-    if (pickedFiles != null) {
-      setState(() {
-        for (var file in pickedFiles) {
-          File newFile = File(file.path);
+  Future<void> _pickImages({bool fromCamera = false}) async {
+    List<XFile>? pickedFiles;
 
-          // Debug print to check paths
-          print('Existing paths: ${_attachment.map((file) => file.path).toList()}');
-          print('New file path: ${newFile.path}');
+    if (fromCamera) {
+      // Capture a single image
+      final XFile? file = await _picker.pickImage(source: ImageSource.camera);
+      if (file != null) {
+        pickedFiles = [file]; // Convert single file to a list
+      }
+    } else {
+      // Pick multiple images from gallery (works for Web & Mobile)
+      pickedFiles = await _picker.pickMultiImage();
+    }
 
-          // Check if the image is already in the list
-          if (!_attachment.any((existingFile) => existingFile.path == newFile.path)) {
-            _attachment.add(newFile); // Add the image if it's not a duplicate
-            print('Added: ${newFile.path}'); // Debug to confirm addition
+    if (pickedFiles != null && pickedFiles.isNotEmpty) {
+      for (var file in pickedFiles) {
+        setState(() {
+          if (kIsWeb) {
+            _handleWebFile(file);
           } else {
-            print('Skipped duplicate: ${newFile.path}'); // Debug for duplicates
+            _handleMobileFile(file);
           }
-        }
-      });
+        });
+      }
     }
   }
 
+  // Handle mobile image selection
+  void _handleMobileFile(XFile file) {
+    File newFile = File(file.path);
+
+    setState(() {
+      if (!_attachment.any((existingFile) => existingFile is File && existingFile.path == newFile.path)) {
+        _attachment.add(newFile);
+      }
+    });
+  }
+
+  // Handle web image selection
+  Future<void> _handleWebFile(XFile file) async {
+    Uint8List bytes = await file.readAsBytes();
+
+    setState(() {
+      if (!_attachment.any((existingFile) => existingFile is Uint8List && listEquals(existingFile, bytes))) {
+        _attachment.add(bytes);
+      }
+    });
+  }
 
   void _showAttachmentOptions(BuildContext context) {
     showModalBottomSheet(
@@ -259,70 +285,37 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
       ),
       builder: (BuildContext context) {
         return Padding(
-          padding: const EdgeInsets.only(left: 16,top: 20,right: 20,bottom: 50),
+          padding: const EdgeInsets.only(left: 16, top: 20, right: 20, bottom: 50),
           child: Wrap(
             children: [
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  GestureDetector(
+                  _attachmentOption(
+                    icon: Icons.upload,
+                    label: 'Upload',
                     onTap: () {
                       Navigator.pop(context);
-                      _pickImages(ImageSource.gallery); // Open gallery to pick multiple images
+                      _pickImages(); // Pick images from gallery (works for Web & Mobile)
                     },
-                    child: Column(
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white, // Set the background color
-                            shape: BoxShape.circle, // Make it round
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black26, // Shadow color
-                                blurRadius: 8, // Shadow blur
-                                offset: Offset(4, 4), // Shadow position
-                              ),
-                            ],
-                          ),
-                          padding: EdgeInsets.all(16),
-                          child: Icon(Icons.upload, size: 40, color: Colors.blueAccent),
-                        ),
-                        SizedBox(height: 8),
-                        Text('Upload'),
-                      ],
-                    ),
                   ),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.pop(context);
-                      _pickImages(ImageSource.gallery); // Open gallery to pick multiple images
-                    },
-                    child: Column(
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white, // Set the background color
-                            shape: BoxShape.circle, // Make it round
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black26, // Shadow color
-                                blurRadius: 8, // Shadow blur
-                                offset: Offset(4, 4), // Shadow position
-                              ),
-                            ],
-                          ),
-                          padding: EdgeInsets.all(16),
-                          child: Icon(Icons.camera_alt, size: 40, color: Colors.blueAccent),
-                        ),
-                        SizedBox(height: 8),
-                        Text('Capture'),
-                      ],
+                  if (!kIsWeb) // Camera option is not supported on Web
+                    _attachmentOption(
+                      icon: Icons.camera_alt,
+                      label: 'Capture',
+                      onTap: () {
+                        Navigator.pop(context);
+                        _pickImages(fromCamera: true); // Capture image using camera
+                      },
                     ),
-                  ),
                 ],
               ),
-            ] ));});}
-
+            ],
+          ),
+        );
+      },
+    );
+  }
   /*void _showAttachmentOptions() {
     showModalBottomSheet(
       context: context,
@@ -511,7 +504,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                'Unit ${selectedFlat?['flat_name']} | Building ${selectedFlat?['building_masterid']}',
+                                '${selectedFlat?['flat_name']} | ${selectedFlat?['buildings']['building_name']}',
                                 style: TextStyle(
                                   color: Colors.blue.shade700,
                                   fontSize: 16,
@@ -743,7 +736,8 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                                         children: [
                                           ..._attachment.asMap().entries.map((entry) {
                                             int index = entry.key;
-                                            File attachment = entry.value;
+                                            var attachment = entry.value; // Can be File (mobile) or Uint8List (web)
+
                                             return Stack(
                                               children: [
                                                 Container(
@@ -759,8 +753,15 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                                                   ),
                                                   child: ClipRRect(
                                                     borderRadius: BorderRadius.circular(12),
-                                                    child: Image.file(
-                                                      attachment, // Use Image.file for actual file
+                                                    child: attachment is File
+                                                        ? Image.file(
+                                                      attachment, // ✅ Use Image.file for Mobile (File)
+                                                      width: 75,
+                                                      height: 75,
+                                                      fit: BoxFit.cover,
+                                                    )
+                                                        : Image.memory(
+                                                      attachment as Uint8List, // ✅ Use Image.memory for Web (Uint8List)
                                                       width: 75,
                                                       height: 75,
                                                       fit: BoxFit.cover,
@@ -789,9 +790,6 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                                                         ],
                                                       ),
                                                       padding: EdgeInsets.all(4), // Slightly larger padding for better touch target
-
-
-
                                                       child: Icon(
                                                         Icons.close,
                                                         size: 15,
@@ -821,6 +819,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                                           ),
                                         ],
                                       ),
+
                                     ],
                                   )
                                 else
@@ -936,29 +935,35 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
     );}
 
 
-  bool isValidImage(File file) {
+  bool isValidImage(dynamic file) {
     final validExtensions = ['jpg', 'jpeg', 'png'];
-    final extension = file.path.split('.').last.toLowerCase();
-    return validExtensions.contains(extension);
+
+    if (file is File) {
+      // For mobile, check the file extension
+
+      final extension = file.path.split('.').last.toLowerCase();
+      return validExtensions.contains(extension);
+    } else if (file is Uint8List) {
+      // For web, check the MIME type
+      final mimeType = lookupMimeType('', headerBytes: file);
+      return mimeType != null && mimeType.startsWith('image/');
+    }
+    return false;
   }
 
   Future<void> sendFormData() async {
-
-    // Send the request
     try {
-    final String url = "$BASE_URL_config/v1/maintenance";
+      final String url = "$BASE_URL_config/v1/maintenance";
 
-    var uuid = Uuid();
+      var uuid = Uuid();
+      String uuidValue = uuid.v4();
 
-    // Generate a v4 (random) UUID
-    String uuidValue = uuid.v4();
-
-    final Map<String, dynamic> requestBody = {
-      "uuid": uuidValue,
-      "maintenance_type_id": selectedMaintenanceTypes.map((type) => type.id).join(','),
-      "flat_masterid": selectedFlat?['cost_centre_masterid'],
-      "description": _descriptionController.text,
-    };
+      final Map<String, dynamic> requestBody = {
+        "uuid": uuidValue,
+        "maintenance_type_id": selectedMaintenanceTypes.map((type) => type.id).join(','),
+        "flat_masterid": selectedFlat?['cost_centre_masterid'],
+        "description": _descriptionController.text,
+      };
 
       final response = await http.post(
         Uri.parse(url),
@@ -968,69 +973,104 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
         },
         body: jsonEncode(requestBody),
       );
-      if (response.statusCode == 201) {
 
-        print('ticket successful');
+      if (response.statusCode == 201) {
+        print('Ticket successful');
         Map<String, dynamic> decodedResponse = jsonDecode(response.body);
         int ticketId = decodedResponse['data']['ticket']['id'];
-        sendImageData(ticketId);
 
-      }
-      else {
+        // ✅ Call sendImageData in a separate request
+        await sendImageData(ticketId);
+      } else {
         print('Upload failed with status code: ${response.statusCode}');
-        print('Upload failed with status body: ${response.request}');
-
+        print('Upload failed with response: ${response.body}');
       }
     } catch (e) {
       print('Error during upload: $e');
     }
+  }
+  String getMimeType(String path) {
+    final mimeType = lookupMimeType(path);
+    return mimeType?.split('/').last ?? 'jpeg'; // Default to JPEG
   }
 
   Future<void> sendImageData(int id) async {
-
-    final String urll = "$BASE_URL_config/v1/maintenance/uploads/$id";
-
-    final url = Uri.parse(urll); // Replace with your API URL
-
-    final request = http.MultipartRequest('POST', url);
-
-    request.headers.addAll({
-      'Authorization': 'Bearer $Company_Token', // Replace with your token
-      'Content-Type': 'multipart/form-data', // Optional, depends on the server
-    });
-
-    _attachment = _attachment.where(isValidImage).toList();
-
-    // Add images from _attachment
-    for (var file in _attachment) {
-      request.files.add(await http.MultipartFile.fromPath(
-        'images', // The field name the backend expects
-        file.path,
-        filename: basename(file.path),
-        contentType: MediaType('image', 'jpeg'), // Specify MIME type (e.g., 'image/jpeg', 'image/png')
-      ));
-    }
-
-    print('\nRequest Files:');
-    for (var file in request.files) {
-      print('Field Name: ${file.field}');
-      print('File Name: ${file.filename}');
-      print('File Length: ${file.length}');
-    }
-
-    // Send the request
     try {
-      final response = await request.send();
+      final String urll = "$BASE_URL_config/v1/maintenance/uploads/$id";
+      final url = Uri.parse(urll);
+
+      final request = http.MultipartRequest('POST', url);
+
+      request.headers.addAll({
+        'Authorization': 'Bearer $Company_Token', // Authentication token
+      });
+
+      // ✅ Ensure only valid images are uploaded
+      _attachment = _attachment.where(isValidImage).toList();
+
+      for (var file in _attachment) {
+        if (file is File) {
+          // ✅ Mobile (iOS & Android) - Use file path
+          request.files.add(
+            await http.MultipartFile.fromPath(
+              'images',
+              file.path,
+              filename: basename(file.path),
+              contentType: MediaType('image', getMimeType(file.path)),
+            ),
+          );
+        } else if (file is Uint8List) {
+          // ✅ Web - Use in-memory file
+          request.files.add(
+            http.MultipartFile.fromBytes(
+              'images',
+              file,
+              filename: 'web_image_${DateTime.now().millisecondsSinceEpoch}.png',
+              contentType: MediaType('image', 'png'), // Defaulting to PNG
+            ),
+          );
+        }
+      }
+
+      // ✅ Send request & handle response
+      var streamedResponse = await request.send();
+      var response = await http.Response.fromStream(streamedResponse);
+
       if (response.statusCode == 201) {
-        print('Upload successful');
+        print('Image upload successful');
       } else {
         print('Upload failed with status code: ${response.statusCode}');
-        print('Upload failed with status body: ${response.request}');
-
+        print('Response body: ${response.body}');
       }
     } catch (e) {
       print('Error during upload: $e');
     }
   }
-}
 
+// Helper widget for attachment options
+Widget _attachmentOption({required IconData icon, required String label, required VoidCallback onTap}) {
+  return GestureDetector(
+    onTap: onTap,
+    child: Column(
+      children: [
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            shape: BoxShape.circle,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black26,
+                blurRadius: 8,
+                offset: Offset(4, 4),
+              ),
+            ],
+          ),
+          padding: EdgeInsets.all(16),
+          child: Icon(icon, size: 40, color: Colors.blueAccent),
+        ),
+        SizedBox(height: 8),
+        Text(label),
+      ],
+    ),
+  );
+}}

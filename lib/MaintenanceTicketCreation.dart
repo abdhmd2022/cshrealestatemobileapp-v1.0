@@ -50,7 +50,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
 
   Uint8List? _imageBytes;
 
-  List<MaintanceType> selectedMaintenanceTypes = [];
+  MaintanceType? selectedMaintenanceType;
 
    List<MaintanceType> maintenance_types_list = [
 
@@ -206,22 +206,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
       print('Error fetching data: $e');
     }
   }
-  
-  // Function to toggle Select All option
-  void toggleSelectAll() {
-    setState(() {
-      selectAll = !selectAll;
-      if (selectAll) {
-        selectedMaintenanceTypes = List<MaintanceType>.from(maintenance_types_list);
-      } else {
-        selectedMaintenanceTypes.clear();
-      }
-    });
 
-
-
-
-  }
 
 
   List<dynamic> _attachment = []; // List to store selected images
@@ -554,50 +539,34 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                           margin: EdgeInsets.only(left: 0, right: 0, bottom: 20),
                           decoration: BoxDecoration(
                             color: Colors.white,
-
                             borderRadius: BorderRadius.circular(8),
                             border: Border.all(color: Colors.black, width: 0.75),
                           ),
-                          child: MultiSelectDialogField(
-
-                            items: maintenance_types_list
-                                .map((type) => MultiSelectItem<MaintanceType>(type, type.name))
-                                .toList(),
-                            initialValue: selectedMaintenanceTypes,
-                            title: Text("Maintenance Type(s)"),
-                            searchable: true,
-                            selectedColor: appbar_color,
-                            confirmText: Text(
-                              "Confirm",
-                              style: TextStyle(color: appbar_color), // Custom confirm button text color
+                          child: DropdownButtonFormField<MaintanceType>(
+                            value: selectedMaintenanceType, // Single selected value
+                            items: maintenance_types_list.map((type) {
+                              return DropdownMenuItem<MaintanceType>(
+                                value: type,
+                                child: Text(type.name),
+                              );
+                            }).toList(),
+                            decoration: InputDecoration(
+                              border: InputBorder.none, // Remove the default border
+                              contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 14),
                             ),
-                            cancelText: Text(
-                              "Cancel",
-                              style: TextStyle(color: appbar_color), // Custom cancel button text color
-                            ),
-                            buttonIcon: Icon(Icons.arrow_drop_down, color: Colors.black54),
-                            buttonText: Text(
-                              "Select Maintenance Type(s)",
+                            icon: Icon(Icons.arrow_drop_down, color: Colors.black54),
+                            hint: Text(
+                              "Select Maintenance Type",
                               style: TextStyle(color: Colors.black54, fontSize: 16),
                             ),
-                            onConfirm: (values) {
+                            onChanged: (value) {
                               setState(() {
-                                selectedMaintenanceTypes = List<MaintanceType>.from(values); // Correct type
+                                selectedMaintenanceType = value; // Store a single value
                               });
                             },
-                            chipDisplay: MultiSelectChipDisplay(
-                              onTap: (value) {
-                                setState(() {
-                                  selectedMaintenanceTypes.remove(value);
-                                });
-                              },
-                            ),
-                            decoration: BoxDecoration(
-                              border: Border.all(color: Colors.transparent),
-                            ),
-                            // We manage Select All outside of MultiSelectDialogField
                           ),
                         )
+
                         /* Container(
                           padding: EdgeInsets.symmetric(horizontal: 12),
                           margin: EdgeInsets.only(left: 00,right: 0,bottom: 20),
@@ -960,7 +929,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
 
       final Map<String, dynamic> requestBody = {
         "uuid": uuidValue,
-        "maintenance_type_id": selectedMaintenanceTypes.map((type) => type.id).join(','),
+        "maintenance_type_id": selectedMaintenanceType!.id,
         "flat_masterid": selectedFlat?['cost_centre_masterid'],
         "description": _descriptionController.text,
       };

@@ -65,75 +65,84 @@ class _SidebarState extends State<Sidebar> {
     return Drawer(
       child: Column(
         children: [
-          // ✅ Drawer Header - User Profile Section
-          Container(
-            padding: EdgeInsets.all(20),
-            margin: EdgeInsets.only(top: 90, left: 0, right: 20, bottom: 0),
-            width: double.infinity,
-            decoration: BoxDecoration(
-              color: Colors.transparent,
-              borderRadius: BorderRadius.all(Radius.circular(20)),
+
+
+          Card(
+            color: appbar_color,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+
             ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Container(
-                  width: 50,
-                  height: 50,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: LinearGradient(
-                      colors: [appbar_color.shade200, appbar_color.shade700],
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.2),
-                        blurRadius: 5,
-                        offset: Offset(0, 2),
+            elevation: 4,
+            margin: EdgeInsets.only(top:70,left: 16,right: 16),
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Container(
+                    width: 50,
+                    height: 50,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: LinearGradient(
+                        colors: [Colors.white.withOpacity(0.8), Colors.white.withOpacity(0.9)],
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
                       ),
-                    ],
-                  ),
-                  child: Icon(
-                    Icons.person,
-                    color: Colors.white,
-                  ),
-                ),
-                SizedBox(width: 15),
-                Expanded(  // Ensures the Column takes available space and wraps text properly
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        userName,
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: appbar_color,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.2),
+                          blurRadius: 5,
+                          offset: Offset(0, 2),
                         ),
-                        overflow: TextOverflow.ellipsis, // Optional: Adds '...' if text is too long
-                        maxLines: 1,
-                      ),
-                      SizedBox(height: 2),
-                      Text(
-                        userEmail,
-                        style: TextStyle(fontSize: 14, color: appbar_color),
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 1,
-                      ),
-                      SizedBox(height: 2),
-                      Text(
-                        'ID: $userID (for testing purpose)',
-                        style: TextStyle(fontSize: 14, color: appbar_color),
-                        softWrap: true, // Allows text to wrap instead of overflowing
-                      ),
-                    ],
+                      ],
+                    ),
+                    child: Icon(
+                      Icons.person,
+                      color: appbar_color,
+                    ),
                   ),
-                ),
-              ],
+                  SizedBox(width: 15),
+                  Expanded(  // Ensures the Column takes available space and wraps text properly
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          userName,
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                          overflow: TextOverflow.ellipsis, // Optional: Adds '...' if text is too long
+                          maxLines: 1,
+                        ),
+                        SizedBox(height: 2),
+                        Text(
+                          userEmail,
+                          style: TextStyle(fontSize: 14, color: Colors.white),
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                        ),
+                        SizedBox(height: 2),
+                        Text(
+                          'ID: $userID (for testing purpose)',
+                          style: TextStyle(fontSize: 14, color: Colors.white),
+                          softWrap: true, // Allows text to wrap instead of overflowing
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
+
+
+
+
+          SizedBox(height: 10),
 
 
           Card(

@@ -193,8 +193,10 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
 
     print('user id $user_id');
 
-    final url = '$BASE_URL_config/v1/users/$user_id'; // Replace with your API endpoint
+    final url = '$BASE_URL_config/v1/users/$user_id?company_id=$company_id'; // Replace with your API endpoint
     String token = 'Bearer $Serial_Token'; // auth token for request
+
+    print('url $url');
 
     Map<String, String> headers = {
       'Authorization': token,

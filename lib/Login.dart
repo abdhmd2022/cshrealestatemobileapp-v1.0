@@ -258,6 +258,7 @@ class _LoginPageState extends State<Login> {
                         child: Icon(
                           Icons.real_estate_agent_outlined,
                           size: 120,
+                          color: appbar_color,
                         )
                     ),
 

@@ -47,6 +47,7 @@ dependencies:
   flutter_colorpicker:
   path:
   mime:
+  google_fonts:
 dev_dependencies:
   flutter_test:
     sdk: flutter

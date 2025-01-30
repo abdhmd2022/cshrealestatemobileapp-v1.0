@@ -17,6 +17,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.black),
         useMaterial3: true,
+        textTheme: globalTextTheme, // ✅ Apply global text theme without fixed sizes
       ),
-      home: SalesDashboard(),
+      home: Login(title: app_name,),
     );}}

@@ -7,14 +7,18 @@ import 'package:cshrealestatemobile/MaintenanceTicketReport.dart';
 import 'package:cshrealestatemobile/SalesDashboard.dart';
 import 'package:cshrealestatemobile/SalesInquiryReport.dart';
 import 'package:cshrealestatemobile/SalesProfile.dart';
+import 'package:cshrealestatemobile/SerialSelect.dart';
 import 'package:cshrealestatemobile/Settings.dart';
 import 'package:cshrealestatemobile/TenantAccessCardRequest.dart';
 import 'package:cshrealestatemobile/TenantComplaint.dart';
 import 'package:cshrealestatemobile/TenantDashboard.dart';
 import 'package:cshrealestatemobile/TenantProfile.dart';
 import 'package:cshrealestatemobile/TenantmoveinoutRequest.dart';
+import 'package:cshrealestatemobile/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'Login.dart';
 
 
 class Sidebar extends StatelessWidget {
@@ -164,6 +168,23 @@ class Sidebar extends StatelessWidget {
                             (
                             context,
                             MaterialPageRoute(builder: (context) => LandlordDashboardScreen()), // navigate to company and serial select screen
+                          );
+
+                          // navigate to companies screen
+                        },
+                      ),
+
+                      ListTile(
+                        title: Text('Companies'),
+                        leading: Icon(Icons.business,
+                          color: Colors.black,
+                        ),
+                        onTap: () async {
+                          Navigator.pushReplacement
+
+                            (
+                            context,
+                            MaterialPageRoute(builder: (context) => SerialNoSelection()), // navigate to company and serial select screen
                           );
 
                           // navigate to companies screen
@@ -404,7 +425,7 @@ class Sidebar extends StatelessWidget {
                         child: Text(
                           'No',
                           style: TextStyle(
-                            color: Color(0xFF30D5C8), // Change the text color here
+                            color: appbar_color, // Change the text color here
                           ),
                         ),
                         onPressed: () {
@@ -414,33 +435,18 @@ class Sidebar extends StatelessWidget {
                         child: Text(
                           'Yes',
                           style: TextStyle(
-                            color: Color(0xFF30D5C8), // Change the text color here
+                            color: appbar_color, // Change the text color here
                           ),
                         ),
                         onPressed: () async {
                           final prefs = await SharedPreferences.getInstance();
 
-                          prefs.remove('username_remember');
-                          prefs.remove('password_remember');
-                          prefs.remove('username');
-                          prefs.remove('password');
-                          prefs.remove('serial_no');
-                          prefs.remove('company_name');
-                          prefs.remove('startfrom');
-                          prefs.remove('serial_no');
-                          prefs.remove('inactiveparties_days');
+                          Navigator.pushReplacement
 
-                          final jsonPayload = {
-                            'username': username_prefs,
-                            'password': password_prefs,
-                            'macId': deviceIdentifier,
-                          };
-                          Navigator.of(context).pop();
+                            (
+                            context,
+                            MaterialPageRoute(builder: (context) => Login(title: app_name,)), // navigate to company and serial select screen
+                          );
 
-                          /*socket.emit('deleteMyId', jsonPayload);*/
-                          /*emitDeleteMyId(jsonPayload, () {
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(builder: (context) => Login(username: '',password: '')),
-                            );})*/;}
+                          }
                     ),]));});}}

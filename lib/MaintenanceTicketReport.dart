@@ -147,16 +147,27 @@ class _MaintenanceTicketReportState
           Email: "",
           tickerProvider: this),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-        child: ListView.builder(
-          itemCount: filteredTickets.length,
-          itemBuilder: (context, index) {
-            final ticket = filteredTickets[index];
-            return _buildTicketCard(ticket, index);
-          },
-        ),
-      ),
-      floatingActionButton: Container(
+    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+    child: filteredTickets.isEmpty
+    ? Center(
+    child: Text(
+    "No data available",
+    style: TextStyle(
+    fontSize: 18,
+    color: Colors.grey,
+    fontWeight: FontWeight.bold,
+    ),
+    ),
+    )
+        : ListView.builder(
+    itemCount: filteredTickets.length,
+    itemBuilder: (context, index) {
+    final ticket = filteredTickets[index];
+    return _buildTicketCard(ticket, index);
+    },
+    ),
+    ),
+    floatingActionButton: Container(
         decoration: BoxDecoration(
           color: appbar_color.withOpacity(0.9),
 

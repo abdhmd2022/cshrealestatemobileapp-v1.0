@@ -3,7 +3,11 @@ import 'package:http/http.dart' as http;
 import 'package:cshrealestatemobile/SalesDashboard.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'SerialSelect.dart';
 import 'constants.dart';
+import 'models/serial_model.dart'; // ✅ Import common Serial model
+
 
 class Login extends StatefulWidget {
   const Login({super.key, required this.title});
@@ -11,6 +15,46 @@ class Login extends StatefulWidget {
 
   @override
   State<Login> createState() => _LoginPageState();
+}
+
+class ApiResponse {
+  final bool success;
+  final List<Serial> serials;
+  final List<RegisteredCompany> companies;
+
+  ApiResponse({required this.success, required this.serials, required this.companies});
+
+  factory ApiResponse.fromJson(Map<String, dynamic> json) {
+    List<Serial> allSerials = [];
+    List<RegisteredCompany> allCompanies = [];
+
+    if (json['data'] != null && json['data']['users'] != null) {
+      for (var user in json['data']['users']) {
+        if (user['serials'] != null) {
+          try {
+            Serial serial = Serial.fromJson(user['serials']);
+            allSerials.add(serial);
+
+            for (var company in serial.registeredCompanies) {
+              allCompanies.add(company);
+            }
+          } catch (e) {
+            print("Error parsing serial data: $e");
+          }
+        }
+      }
+
+      // name and email saving
+
+
+    }
+
+    return ApiResponse(
+      success: json['success'] ?? false,
+      serials: allSerials,
+      companies: allCompanies,
+    );
+  }
 }
 
 class _LoginPageState extends State<Login> {
@@ -25,7 +69,7 @@ class _LoginPageState extends State<Login> {
 
   final passwordController = TextEditingController();
 
-  dynamic response_getusers;
+  dynamic response_login;
 
   final emailController = TextEditingController();
 
@@ -92,34 +136,65 @@ class _LoginPageState extends State<Login> {
         'password': password
       });
 
-      response_getusers = await http.post(
+      response_login = await http.post(
           Uri.parse(url),
           body: body,
           headers:headers
       );
 
-      print('response code ${response_getusers.statusCode}');
-      if (response_getusers.statusCode == 200)
-      {
-        Navigator.pushReplacement
-          (
-          context,
-          MaterialPageRoute(builder: (context) => SalesDashboard()), // navigate to company and serial select screen
-        );
+      if (response_login.statusCode == 200) {
+
+        final Map<String, dynamic> responseData = json.decode(response_login.body);
+
+        if (responseData['success']) {
+          ApiResponse apiResponse = ApiResponse.fromJson(responseData);
+
+          // Extract User Info (First User in List)
+          if (responseData['data']['users'] != null && responseData['data']['users'].isNotEmpty) {
+            String name = responseData['data']['users'][0]['name'] ?? "Unknown";
+            String email = responseData['data']['users'][0]['email'] ?? "Unknown";
+
+            // Save Name & Email to SharedPreferences
+            SharedPreferences prefs = await SharedPreferences.getInstance();
+            await prefs.setString("user_name", name);
+            await prefs.setString("user_email", email);
+
+            // Save Serial & Company List as JSON in SharedPreferences
+            // ✅ Convert serials and companies to JSON format before saving
+            List<Map<String, dynamic>> serialsJson =
+            apiResponse.serials.map((serial) => serial.toJson()).toList();
+            List<Map<String, dynamic>> companiesJson =
+            apiResponse.companies.map((company) => company.toJson()).toList();
+
+            // ✅ Store in SharedPreferences
+            await prefs.setString("serials_list", jsonEncode(serialsJson));
+            await prefs.setString("companies_list", jsonEncode(companiesJson));
+
+            print("Serials and Companies saved successfully!");
+          }
+
+          print("Serials Count: ${apiResponse.serials.length}");
+          print("Companies Count: ${apiResponse.companies.length}");
+
+          if (apiResponse.serials.isNotEmpty && apiResponse.companies.isNotEmpty) {
+            // Navigate to Serial Selection Screen
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => SerialNoSelection()),
+            );
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text("No serials or companies found.")),
+            );
+          }
+        } else {
+          throw Exception("Invalid login credentials");
+
+        }
+      } else {
+        throw Exception("Failed to login");
       }
-      else
-      {
-        final error = jsonDecode(response_getusers.body)['error'];
-        /*print(error);*/
-        _scaffoldMessengerKey.currentState?.showSnackBar(
-          SnackBar(
-            content: Text('$error'),
-          ),
-        );
-      }
-      setState(() {
-        _isLoading = false;
-      });
     }
     catch (e)
     {

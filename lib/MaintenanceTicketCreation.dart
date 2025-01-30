@@ -130,7 +130,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                 children: flats.map((flat) {
                   return Center(
                     child: Text(
-                      '${flat['flat_name']} | ${flat['buildings']['building_name']} | ${flat['buildings']['areas']['area_name']} | ${flat['buildings']['areas']['emirates']}',
+                      '${flat['flat_name']} | ${flat['buildings']['building_name']}',
                       style: TextStyle(fontSize: 16),
                     ),
                   );
@@ -233,7 +233,6 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
     }
   }
 
-  // Handle mobile image selection
   void _handleMobileFile(XFile file) {
     File newFile = File(file.path);
 
@@ -244,7 +243,6 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
     });
   }
 
-  // Handle web image selection
   Future<void> _handleWebFile(XFile file) async {
     Uint8List bytes = await file.readAsBytes();
 
@@ -823,7 +821,6 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 16
-
                                 )
                             ),),
 
@@ -878,7 +875,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                           style: TextStyle(
                               color: Colors.white
                           )),
-                    ),)
+                    ))
                     ])
                     )
                     )

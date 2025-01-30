@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 const String app_name = "Real Estate";
 
@@ -10,10 +12,40 @@ const String authTokenBase = r'!1--3*%*%*%*9$api$8*%*%*%*5--0!X19fIUBBUyQlYXMxOT
 
 const String BASE_URL_config = "http://192.168.2.126:4000/api";
 
-const String Serial_Token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwic2VyaWFsX2lkIjoxLCJpYXQiOjE3MzgxMjc3OTcsImV4cCI6MTczODIxNDE5N30.P9JTahqPoDby71vmzWMeyFXmotgHQsdA8icj-oRSMoM';
+// Serial & Company Tokens (Loaded Dynamically)
+late String Serial_Token;
+late String Company_Token;
+late String user_email;
+late String user_name;
 
-const String Company_Token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwic2VyaWFsX2lkIjoxLCJjb21wYW55X2lkIjoxLCJpYXQiOjE3MzgxMjc3OTcsImV4cCI6MTczODIxNDE5N30.fuYnHSd2P9x3wjUxxO9e61JGZ66YlEyqFofSPa1eoCI';
+/// Load tokens from SharedPreferences
+Future<void> loadTokens() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  Serial_Token = prefs.   getString("serial_token") ?? "";
+  Company_Token = prefs.getString("company_token") ?? "";
+  user_email = prefs.getString("user_email") ?? "";
+  user_name = prefs.getString("user_name") ?? "";
 
+  print("Loaded Serial Token: $Serial_Token");
+  print("Loaded Company Token: $Company_Token");
+}
+
+// Global Font Family
+final TextTheme globalTextTheme = TextTheme(
+  headline1: GoogleFonts.poppins(),
+  headline2: GoogleFonts.poppins(),
+  headline3: GoogleFonts.poppins(),
+  headline4: GoogleFonts.poppins(),
+  headline5: GoogleFonts.poppins(),
+  headline6: GoogleFonts.poppins(),
+  subtitle1: GoogleFonts.poppins(),
+  subtitle2: GoogleFonts.poppins(),
+  bodyText1: GoogleFonts.poppins(),
+  bodyText2: GoogleFonts.poppins(),
+  button: GoogleFonts.poppins(),
+  caption: GoogleFonts.poppins(),
+  overline: GoogleFonts.poppins(),
+);
 /*
 final String uuid = "6e35f08d-8285-45e3-ae32-a0e9efe5407d";
 */

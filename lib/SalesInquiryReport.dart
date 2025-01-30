@@ -308,7 +308,18 @@ class _SalesInquiryReportState
           tickerProvider: this),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
-        child: ListView.builder(
+        child: filteredInquiries.isEmpty
+            ? Center(
+          child: Text(
+            "No data available",
+            style: TextStyle(
+              fontSize: 18,
+              color: Colors.grey,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        )
+            : ListView.builder(
           itemCount: filteredInquiries.length,
           itemBuilder: (context, index) {
             final inquiry = filteredInquiries[index];
@@ -316,6 +327,7 @@ class _SalesInquiryReportState
           },
         ),
       ),
+
       floatingActionButton: Container(
         decoration: BoxDecoration(
           color: appbar_color.withOpacity(0.9),

@@ -63,7 +63,7 @@ class SalesProfileScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 10),
                    Text(
-                    'Saadan',
+                    user_name,
                     style: TextStyle(
                       color: Colors.white,
 
@@ -73,7 +73,7 @@ class SalesProfileScreen extends StatelessWidget {
                   ),
                    SizedBox(height: 5),
                    Text(
-                    'saadan@ca-eim.com',
+                    user_email,
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 16,

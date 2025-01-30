@@ -60,8 +60,8 @@ class TenantProfile extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 10),
-                  const Text(
-                    'Saadan',
+                   Text(
+                    user_name,
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 22,
@@ -69,8 +69,8 @@ class TenantProfile extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 5),
-                  const Text(
-                    'saadan@ca-eim.com',
+                   Text(
+                    user_email,
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 16,

@@ -33,10 +33,6 @@ class _LeadStatusReportState extends State<LeadStatusReport> {
     fetchLeadStatus();
   }
 
-
-
-
-
   Future<void> sendLeadStatus() async {
     var uuid = Uuid();
 
@@ -46,7 +42,6 @@ class _LeadStatusReportState extends State<LeadStatusReport> {
       "uuid": uuidValue,
       "name": leadStatusController.text,
       'category': selectedCategory,
-      'color' : '#fff'
     };
 
     String token = 'Bearer $Serial_Token'; // auth token for request

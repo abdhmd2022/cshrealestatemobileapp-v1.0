@@ -34,9 +34,11 @@ class ApiResponse {
           try {
             // ✅ Extract correct `userToken`
             String userToken = user['token'] ?? '';
+            int userId = user['id'] ?? '';
+
 
             // ✅ Pass `userToken` while creating the `Serial` object
-            Serial serial = Serial.fromJson(user['serials'], userToken: userToken);
+            Serial serial = Serial.fromJson(user['serials'], userToken: userToken,userId: userId);
             allSerials.add(serial);
 
             // ✅ Extract registered companies
@@ -167,9 +169,14 @@ class _LoginPageState extends State<Login> {
             List<Map<String, dynamic>> companiesJson =
             apiResponse.companies.map((company) => company.toJson()).toList();
 
-            print("✅ Extracted Serials Before Saving:");
+             print("✅ Extracted Serials Before Saving:");
             for (var serial in apiResponse.serials) {
-              print("📌 Serial: ${serial.serialNo}, Token: ${serial.userToken}");
+               print("📌 Serial: ${serial.serialNo}, Token: ${serial.userToken}");
+            }
+
+            print("✅ Extracted Companies Before Saving:");
+            for (var company in apiResponse.companies) {
+              print("📌 Company: ${company.name}, Token: ${company.token}");
             }
 
 

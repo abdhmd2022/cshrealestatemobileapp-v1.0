@@ -17,17 +17,27 @@ late String Serial_Token;
 late String Company_Token;
 late String user_email;
 late String user_name;
+late int company_id;
+late int serial_id;
+late int user_id;
 
 /// Load tokens from SharedPreferences
 Future<void> loadTokens() async {
+
   SharedPreferences prefs = await SharedPreferences.getInstance();
   Serial_Token = prefs.   getString("serial_token") ?? "";
   Company_Token = prefs.getString("company_token") ?? "";
   user_email = prefs.getString("user_email") ?? "";
   user_name = prefs.getString("user_name") ?? "";
+  company_id = prefs.getInt("company_id") ?? 0;
+  serial_id = prefs.getInt("serial_id") ?? 0;
+  user_id = prefs.getInt("user_id") ?? 0;
 
   print("Loaded Serial Token: $Serial_Token");
   print("Loaded Company Token: $Company_Token");
+  print("Loaded Serial ID: $serial_id");
+  print("Loaded Company ID: $company_id");
+  print("Loaded User ID: $user_id");
 }
 
 // Global Font Family
@@ -46,6 +56,3 @@ final TextTheme globalTextTheme = TextTheme(
   caption: GoogleFonts.poppins(),
   overline: GoogleFonts.poppins(),
 );
-/*
-final String uuid = "6e35f08d-8285-45e3-ae32-a0e9efe5407d";
-*/

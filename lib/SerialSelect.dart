@@ -30,7 +30,11 @@ class _SerialNoSelectionState extends State<SerialNoSelection> {
 
     // ✅ Load user token (debugging)
     String? userToken = prefs.getString("user_token");
+    int? userId = prefs.getInt("user_id");
+
     print("🔑 Loaded User Token from SharedPreferences: $userToken");
+    print("🔑 Loaded User ID from SharedPreferences: $userId");
+
 
     String? serialsJson = prefs.getString("serials_list");
     String? companiesJson = prefs.getString("companies_list");
@@ -38,7 +42,7 @@ class _SerialNoSelectionState extends State<SerialNoSelection> {
     if (serialsJson != null) {
       List<dynamic> serialsList = jsonDecode(serialsJson);
       setState(() {
-        serials = serialsList.map((data) => Serial.fromJson(data, userToken: userToken ?? '')).toList();
+        serials = serialsList.map((data) => Serial.fromJson(data, userToken: userToken ?? '',userId: userId ?? 0)).toList();
       });
     }
 
@@ -72,7 +76,16 @@ class _SerialNoSelectionState extends State<SerialNoSelection> {
     }
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    // saving prefs values
     await prefs.setString("serial_token", selectedSerial!.userToken);
+
+    await prefs.setInt("company_id", selectedCompany!.id);
+
+    await prefs.setInt("serial_id", selectedSerial!.id);
+
+    await prefs.setInt("user_id", selectedSerial!.userId);
+
     await prefs.setString("company_token", selectedCompany!.token);
 
     await loadTokens();
@@ -135,10 +148,13 @@ class _SerialNoSelectionState extends State<SerialNoSelection> {
 
                       // ✅ Fetch the correct token from selected serial
                       String userToken = newSerial.userToken;
+                      int userID = newSerial.userId;
 
                       // ✅ Print the correct Serial Number & User Token
                       print("✅ Selected Serial No: ${newSerial.serialNo}");
                       print("🔑 User Token: $userToken");
+                      print("🔑 User ID: $userID");
+
                     }
                   },
                   items: serials.map((Serial serial) {
@@ -175,6 +191,14 @@ class _SerialNoSelectionState extends State<SerialNoSelection> {
                     setState(() {
                       selectedCompany = newCompany;
                     });
+                    String userToken = newCompany!.token;
+                    int userID = newCompany!.id;
+
+                    // ✅ Print the correct Serial Number & User Token
+                    print("✅ Selected Company: ${newCompany.name}");
+                    print("🔑 Company Token: $userToken");
+                    print("🔑 Company ID: $userID");
+
                   },
                   hint: Text(
                       'Select Company'

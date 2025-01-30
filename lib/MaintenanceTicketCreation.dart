@@ -78,64 +78,75 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
   final ImagePicker _picker = ImagePicker();
 
   void _showFlatPicker(BuildContext context) {
+    if (flats == null || flats.isEmpty) {
+      print("Flats list is empty or null: $flats"); // Debugging statement
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("No flats available to select."))
+      );
+      return;
+    }
+
     showCupertinoModalPopup(
       context: context,
       builder: (context) => Container(
-        height: MediaQuery.of(context).size.height/2,
-        width: double.infinity, // Ensure the modal occupies full width
+        height: MediaQuery.of(context).size.height / 2,
+        width: double.infinity,
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
         ),
         child: Column(
           children: [
-            // Picker Header
             Padding(
-              padding: const EdgeInsets.all(26.0),
+              padding: const EdgeInsets.all(20.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
                     'Unit(s)',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold,
-                      color: appbar_color.withOpacity(1.0),),
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: appbar_color),
                   ),
                   GestureDetector(
                     onTap: () => Navigator.pop(context),
                     child: Text(
                       'Done',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: appbar_color.withOpacity(1.0),
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: TextStyle(fontSize: 16, color: appbar_color, fontWeight: FontWeight.bold),
                     ),
                   ),
                 ],
               ),
             ),
-            // Cupertino Picker
+            Divider(height: 1, color: Colors.grey[300]),
+
             Expanded(
               child: CupertinoPicker(
                 scrollController: FixedExtentScrollController(
-                  initialItem: flats.indexOf(selectedFlat), // Pre-select current flat
+                  initialItem: flats.indexWhere((flat) =>
+                  flat['flat_masterid'] == (selectedFlat?['flat_masterid'] ?? 0)),
                 ),
                 itemExtent: 40,
                 onSelectedItemChanged: (index) {
                   setState(() {
-                    selectedFlat = flats[index]; // Update the selected flat
-                    print('selected id of flat ${flats[index]['cost_centre_masterid']}');
+                    selectedFlat = flats[index];
+                    print('Selected flat ID: ${flats[index]['flat_masterid']}');
                   });
                 },
                 children: flats.map((flat) {
                   return Center(
                     child: Text(
-                      '${flat['flat_name']} | ${flat['buildings']['building_name']}',
+                      '${flat['flats']['flat_name'] ?? "Unknown"} | '
+                          '${flat['flats']['building_masterid']?.toString() ?? "N/A"}',
                       style: TextStyle(fontSize: 16),
                     ),
                   );
                 }).toList(),
-              ))])));}
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
   Future<void> fetchMaintenanceTypes() async {
 
@@ -180,7 +191,9 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
 
     flats.clear();
 
-    final url = '$BASE_URL_config/v1/serials/flats'; // Replace with your API endpoint
+    print('user id $user_id');
+
+    final url = '$BASE_URL_config/v1/users/$user_id'; // Replace with your API endpoint
     String token = 'Bearer $Serial_Token'; // auth token for request
 
     Map<String, String> headers = {
@@ -193,9 +206,16 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
       if (response.statusCode == 200) {
 
         final Map<String, dynamic> data = json.decode(response.body);
+        print('data: $data');
         setState(() {
-          flats = data['data']['flats'];
-          selectedFlat = flats[0];
+          Map<String, dynamic> user = data['data']['user'];
+
+           flats = user['allowed_flats'];
+
+          // Select first flat
+           selectedFlat = flats.isNotEmpty ? flats[0] : {};
+
+
         });
       } else {
         throw Exception('Failed to load data');
@@ -457,12 +477,11 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                     ),*/
 
                     Container(
-                      padding: EdgeInsets.only(top:20),
-                      child:GestureDetector(
-                        onTap: ()
-                          {
-                            _showFlatPicker(context);
-                          },
+                      padding: EdgeInsets.only(top: 20),
+                      child: GestureDetector(
+                        onTap: () {
+                          _showFlatPicker(context);
+                        },
                         child: Container(
                           padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
                           margin: EdgeInsets.all(16),
@@ -478,7 +497,9 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                '${selectedFlat?['flat_name']} | ${selectedFlat?['buildings']['building_name']}',
+                                '${selectedFlat != null && selectedFlat!['flats'] != null ? selectedFlat!['flats']['flat_name'] ?? "Select Flat" : "Select Flat"}'
+                                    ' | '
+                                    '${selectedFlat != null && selectedFlat!['flats'] != null ? selectedFlat!['flats']['building_masterid']?.toString() ?? "N/A" : "N/A"}',
                                 style: TextStyle(
                                   color: appbar_color.shade700,
                                   fontSize: 16,
@@ -907,7 +928,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
             final Map<String, dynamic> requestBody = {
               "uuid": uuidValue,
               "maintenance_type_id": selectedMaintenanceType!.id,
-              "flat_masterid": selectedFlat?['cost_centre_masterid'],
+              "flat_masterid": selectedFlat?['flat_masterid'],
               "description": _descriptionController.text,
             };
 
@@ -916,6 +937,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
               headers: {
                 "Content-Type": "application/json",
                 "Authorization": "Bearer $Company_Token",
+
               },
               body: jsonEncode(requestBody),
             );

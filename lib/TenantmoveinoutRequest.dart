@@ -252,9 +252,7 @@ class _TenantmoveinoutRequestPageState extends State<TenantmoveinoutRequest> wit
             isRolesEnable: isRolesEnable,
             isUserEnable: isUserEnable,
             isUserVisible: isUserVisible,
-            Username: name,
-            Email: email,
-            tickerProvider: this),
+            ),
 
         body: Container(
             height: MediaQuery.of(context).size.height,

@@ -278,9 +278,7 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
         isRolesEnable: true,
         isUserEnable: true,
         isUserVisible: true,
-        Username: "",
-        Email: "",
-        tickerProvider: this,
+
       ),
       body: SingleChildScrollView(
         child: Padding(

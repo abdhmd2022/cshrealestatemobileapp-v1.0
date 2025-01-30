@@ -30,24 +30,30 @@ class ApiResponse {
 
     if (json['data'] != null && json['data']['users'] != null) {
       for (var user in json['data']['users']) {
-        if (user['serials'] != null) {
+        if (user['serials'] != null && user['serials'] is Map<String, dynamic>) {
           try {
-            Serial serial = Serial.fromJson(user['serials']);
+            // ✅ Extract correct `userToken`
+            String userToken = user['token'] ?? '';
+
+            // ✅ Pass `userToken` while creating the `Serial` object
+            Serial serial = Serial.fromJson(user['serials'], userToken: userToken);
             allSerials.add(serial);
 
-            for (var company in serial.registeredCompanies) {
-              allCompanies.add(company);
-            }
+            // ✅ Extract registered companies
+            allCompanies.addAll(serial.registeredCompanies);
+
+            // ✅ Debugging: Print the correct serial and token
+            print("✅ Extracted Serial: ${serial.serialNo}, Token: ${serial.userToken}");
+
           } catch (e) {
-            print("Error parsing serial data: $e");
+            print("❌ Error parsing serial data: $e");
           }
         }
       }
-
-      // name and email saving
-
-
     }
+
+    print("✅ Total Serials Parsed: ${allSerials.length}");
+    print("✅ Total Companies Parsed: ${allCompanies.length}");
 
     return ApiResponse(
       success: json['success'] ?? false,
@@ -62,6 +68,7 @@ class _LoginPageState extends State<Login> {
   bool isVisibleLoginForm= true,_isLoading = false,isButtonDisabled = false;
 
   Color _buttonColor = appbar_color;
+
 
   final _formKey = GlobalKey<FormState>();
 
@@ -115,19 +122,16 @@ class _LoginPageState extends State<Login> {
   }
 
   Future<void> _directlogin(String email, String password) async {
-
-    String url = "$BASE_URL_config/v1/auth/login";  // url for request
-    String token = 'Bearer $authTokenBase'; // auth token for request
+    String url = "$BASE_URL_config/v1/auth/login";
+    String token = 'Bearer $authTokenBase';
 
     setState(() {
       _isLoading = true;
-
     });
 
-    try
-    {
-      Map<String,String> headers = {
-        'Authorization' : token,
+    try {
+      Map<String, String> headers = {
+        'Authorization': token,
         "Content-Type": "application/json"
       };
 
@@ -137,72 +141,76 @@ class _LoginPageState extends State<Login> {
       });
 
       response_login = await http.post(
-          Uri.parse(url),
-          body: body,
-          headers:headers
+        Uri.parse(url),
+        body: body,
+        headers: headers,
       );
 
       if (response_login.statusCode == 200) {
-
         final Map<String, dynamic> responseData = json.decode(response_login.body);
+
+
 
         if (responseData['success']) {
           ApiResponse apiResponse = ApiResponse.fromJson(responseData);
 
-          // Extract User Info (First User in List)
           if (responseData['data']['users'] != null && responseData['data']['users'].isNotEmpty) {
             String name = responseData['data']['users'][0]['name'] ?? "Unknown";
             String email = responseData['data']['users'][0]['email'] ?? "Unknown";
 
-            // Save Name & Email to SharedPreferences
             SharedPreferences prefs = await SharedPreferences.getInstance();
             await prefs.setString("user_name", name);
             await prefs.setString("user_email", email);
 
-            // Save Serial & Company List as JSON in SharedPreferences
-            // ✅ Convert serials and companies to JSON format before saving
             List<Map<String, dynamic>> serialsJson =
             apiResponse.serials.map((serial) => serial.toJson()).toList();
             List<Map<String, dynamic>> companiesJson =
             apiResponse.companies.map((company) => company.toJson()).toList();
 
-            // ✅ Store in SharedPreferences
+            print("✅ Extracted Serials Before Saving:");
+            for (var serial in apiResponse.serials) {
+              print("📌 Serial: ${serial.serialNo}, Token: ${serial.userToken}");
+            }
+
+
             await prefs.setString("serials_list", jsonEncode(serialsJson));
             await prefs.setString("companies_list", jsonEncode(companiesJson));
 
-            print("Serials and Companies saved successfully!");
-          }
+            // print("✅ Saved Serials JSON: ${jsonEncode(serialsJson)}");
+            // print("✅ Saved Companies JSON: ${jsonEncode(companiesJson)}");
 
-          print("Serials Count: ${apiResponse.serials.length}");
-          print("Companies Count: ${apiResponse.companies.length}");
+            // Debugging serials and companies count
+            // print("✅ Serials Count: ${apiResponse.serials.length}");
+           //  print("✅ Companies Count: ${apiResponse.companies.length}");
 
-          if (apiResponse.serials.isNotEmpty && apiResponse.companies.isNotEmpty) {
-            // Navigate to Serial Selection Screen
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (context) => SerialNoSelection()),
-            );
-          } else {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text("No serials or companies found.")),
-            );
+            // Check if we should navigate
+            if (apiResponse.serials.isNotEmpty && apiResponse.companies.isNotEmpty) {
+              if (!mounted) return; // Prevent calling pushReplacement if widget is unmounted
+
+              // print("🚀 Navigating to SerialNoSelection...");
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => SerialNoSelection()),
+              );
+            } else {
+              print("❌ No serials or companies found, showing Snackbar...");
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text("No serials or companies found.")),
+              );
+            }
           }
         } else {
           throw Exception("Invalid login credentials");
-
         }
       } else {
         throw Exception("Failed to login");
       }
-    }
-    catch (e)
-    {
+    } catch (e) {
+      print("❌ Exception: $e"); // Debugging exception
       _scaffoldMessengerKey.currentState?.showSnackBar(
-        SnackBar(
-          content: Text(e.toString()),
-        ),
+        SnackBar(content: Text("Error: ${e.toString()}")),
       );
+    } finally {
       setState(() {
         _isLoading = false;
       });
@@ -213,8 +221,11 @@ class _LoginPageState extends State<Login> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
+          centerTitle: true,
           backgroundColor: appbar_color.withOpacity(0.9),
+          automaticallyImplyLeading:false,
           title: Text(widget.title,
+
           style: TextStyle(
             color: Colors.white
           ),),

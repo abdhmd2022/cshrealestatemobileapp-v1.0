@@ -131,9 +131,7 @@ class _SettingsScreenState extends State<SettingsScreen> with TickerProviderStat
         isRolesEnable: true,
         isUserEnable: true,
         isUserVisible: true,
-        Username: "",
-        Email: "",
-        tickerProvider: this,
+
       ),
       body: ListView(
         children: [

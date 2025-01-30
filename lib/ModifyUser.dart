@@ -532,9 +532,7 @@ class _ModifyUserPageState extends State<ModifyUser> with TickerProviderStateMix
             isRolesEnable: isRolesEnable,
             isUserEnable: isUserEnable,
             isUserVisible: isUserVisible,
-            Username: name,
-            Email: email,
-            tickerProvider: this),
+            ),
         body:Stack(
           children: [
             Visibility(

@@ -204,9 +204,7 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
                 isRolesEnable: isRolesEnable,
                 isUserEnable: isUserEnable,
                 isUserVisible: isUserVisible,
-                Username: name,
-                Email: email,
-                tickerProvider: this
+                
             ),
             body: RefreshIndicator(
                 onRefresh: _refresh,

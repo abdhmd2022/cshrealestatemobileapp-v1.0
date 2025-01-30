@@ -530,10 +530,7 @@ class _AddUserPageState extends State<AddUser> with TickerProviderStateMixin {
             isRolesVisible: isRolesVisible,
             isRolesEnable: isRolesEnable,
             isUserEnable: isUserEnable,
-            isUserVisible: isUserVisible,
-            Username: name,
-            Email: email,
-            tickerProvider: this),
+            isUserVisible: isUserVisible,),
         body:Stack(
           children: [
             Visibility(

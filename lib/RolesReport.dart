@@ -328,9 +328,7 @@ class _RolesReportPageState extends State<RolesReport> with TickerProviderStateM
                 isRolesEnable: isRolesEnable,
                 isUserEnable: isUserEnable,
                 isUserVisible: isUserVisible,
-                Username: name,
-                Email: email,
-                tickerProvider: this),
+                ),
             body: RefreshIndicator(
                 onRefresh: _refresh,
                 child:Stack(

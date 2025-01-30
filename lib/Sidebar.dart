@@ -1,452 +1,182 @@
-import 'dart:io';
-import 'package:cshrealestatemobile/AvailableUnitsReport.dart';
-import 'package:cshrealestatemobile/KYCUpdate.dart';
-import 'package:cshrealestatemobile/LandlordDashboard.dart';
-
-import 'package:cshrealestatemobile/MaintenanceTicketReport.dart';
-import 'package:cshrealestatemobile/SalesDashboard.dart';
-import 'package:cshrealestatemobile/SalesInquiryReport.dart';
-import 'package:cshrealestatemobile/SalesProfile.dart';
-import 'package:cshrealestatemobile/SerialSelect.dart';
-import 'package:cshrealestatemobile/Settings.dart';
-import 'package:cshrealestatemobile/TenantAccessCardRequest.dart';
-import 'package:cshrealestatemobile/TenantComplaint.dart';
-import 'package:cshrealestatemobile/TenantDashboard.dart';
-import 'package:cshrealestatemobile/TenantProfile.dart';
-import 'package:cshrealestatemobile/TenantmoveinoutRequest.dart';
-import 'package:cshrealestatemobile/constants.dart';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'constants.dart';
 import 'Login.dart';
+import 'SalesDashboard.dart';
+import 'TenantDashboard.dart';
+import 'LandlordDashboard.dart';
+import 'SerialSelect.dart';
+import 'Settings.dart';
+class Sidebar extends StatefulWidget {
+  final bool isDashEnable, isRolesVisible, isUserEnable, isRolesEnable, isUserVisible;
 
+  Sidebar({
+    Key? key,
+    required this.isDashEnable,
+    required this.isRolesVisible,
+    required this.isRolesEnable,
+    required this.isUserEnable,
+    required this.isUserVisible,
+  }) : super(key: key);
 
-class Sidebar extends StatelessWidget {
-  final bool isDashEnable,isRolesVisible,isUserEnable ,isRolesEnable,isUserVisible;
-/*
-  bool isSalesEntryVisible = false,isSalesEntryEnable = true,isReceiptEntryVisible = false,isReceiptEntryEnable = true;
-*/
-  String? Username = "", Email = "",SalesEntryHolder = '',username_prefs ='',password_prefs = '',ReceiptEntryHolder = '';
+  @override
+  _SidebarState createState() => _SidebarState();
+}
 
-  String socketId = ''; // To store the socket ID.
-  String deviceIdentifier = '';
+class _SidebarState extends State<Sidebar> {
+  String userName = "Loading...";
+  String userEmail = "Loading...";
 
-  Sidebar(
-      {
-        Key? key,
-        required this.isDashEnable,
-        required this.isRolesVisible,
-        required this.isRolesEnable,
-        required this.isUserEnable,
-        required this.Username,
-        required this.Email,
-        required this.tickerProvider,
-        required this.isUserVisible,
-      }
-      ) : super(key: key)
-  {
-    _loadSharedPreferences();
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
   }
 
-
-  void _loadSharedPreferences() async {
-    final prefs = await SharedPreferences.getInstance();
-
+  /// ✅ Fetch User Data from SharedPreferences
+  Future<void> _loadUserData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      userName = prefs.getString("user_name") ?? "Guest User";
+      userEmail = prefs.getString("user_email") ?? "guest@example.com";
+    });
   }
-
-  final TickerProvider tickerProvider ;
 
   @override
   Widget build(BuildContext context) {
     return Drawer(
-        child: Column(
-          children: [
-
-            Expanded(
-                child: ListView(
-                    padding: EdgeInsets.zero,
-                    children: <Widget>[
-                      DrawerHeader(
-                          margin: EdgeInsets.zero,
-                          padding: EdgeInsets.zero,
-                          child: Padding(
-                              padding: EdgeInsets.all(20.0),
-                              child: Row(
-                                  children: [
-                                    CircleAvatar(
-                                      backgroundColor: Colors.transparent, // set the background color to red
-                                      radius: 30.0,
-                                      child: SizedBox(
-                                        height: 50.0,
-                                        width: 50,
-                                        child: Icon(Icons.person),
-                                      ),
-                                    ),
-                                    SizedBox(width: 10.0),
-                                    Padding(padding: EdgeInsets.only(top:30.0),
-                                        child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            mainAxisAlignment: MainAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                Username!,
-                                                style: TextStyle(
-                                                  color: Colors.black,
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 15.0,
-                                                ),
-                                              ),
-                                              SizedBox(width: 15.0,
-                                                height: 3.0,),
-
-                                              Text(
-                                                  Email!,
-                                                  style: TextStyle
-                                                    (
-                                                    color: Colors.black,
-                                                    fontSize: 13.0,
-                                                  ))]))]))),
-                      ListTile
-                        (
-                        title: Text('Sales'),
-                        leading: Icon(Icons.dashboard,
-                          color: Colors.black,
-                        ),
-                        enabled: isDashEnable, // disable the item based on the parameter
-
-                        onTap: () {
-                          Navigator.pushReplacement
-
-                            (
-                            context,
-                            MaterialPageRoute(builder: (context) => SalesDashboard()), // navigate to company and serial select screen
-                          );
-                        },
-                      ),
-                      /*ListTile(
-                title: Text('Maintenance Ticket'),
-                leading: Icon(Icons.hardware,
-                  color: Colors.black,
-                ),
-                onTap: () async {
-                  Navigator.pushReplacement
-
-                    (
-                    context,
-                    MaterialPageRoute(builder: (context) => MaintenanceTicketReport()), // navigate to company and serial select screen
-                  );
-
-                  // navigate to companies screen
-                },
-              ),
-*/
-                      ListTile(
-                        title: Text('Tenant'),
-                        leading: Icon(Icons.dashboard,
-                          color: Colors.black,
-                        ),
-                        onTap: () async {
-                          Navigator.pushReplacement
-
-                            (
-                            context,
-                            MaterialPageRoute(builder: (context) => TenantDashboardScreen()), // navigate to company and serial select screen
-                          );
-
-                          // navigate to companies screen
-                        },
-                      ),
-
-                      ListTile(
-                        title: Text('Landlord'),
-                        leading: Icon(Icons.dashboard,
-                          color: Colors.black,
-                        ),
-                        onTap: () async {
-                          Navigator.pushReplacement
-
-                            (
-                            context,
-                            MaterialPageRoute(builder: (context) => LandlordDashboardScreen()), // navigate to company and serial select screen
-                          );
-
-                          // navigate to companies screen
-                        },
-                      ),
-
-                      ListTile(
-                        title: Text('Companies'),
-                        leading: Icon(Icons.business,
-                          color: Colors.black,
-                        ),
-                        onTap: () async {
-                          Navigator.pushReplacement
-
-                            (
-                            context,
-                            MaterialPageRoute(builder: (context) => SerialNoSelection()), // navigate to company and serial select screen
-                          );
-
-                          // navigate to companies screen
-                        },
-                      ),
-
-                      ListTile(
-                        title: Text('Settings'),
-                        leading: Icon(Icons.settings,
-                          color: Colors.black,
-                        ),
-                        onTap: () async {
-                          Navigator.pushReplacement
-
-                            (
-                            context,
-                            MaterialPageRoute(builder: (context) => SettingsScreen()), // navigate to company and serial select screen
-                          );
-
-                          // navigate to companies screen
-                        },
-                      ),
-
-                      /*Visibility(
-                visible: isSalesEntryVisible,
-                child:  ListTile(
-                  title: Text('Sales Entry'),
-                  leading: Icon(Icons.point_of_sale,
-                    color: Colors.black,
-                  ),
-                  enabled: isSalesEntryEnable,
-                  onTap: () {
-                    Navigator.pop(context);
-
-                    */
-                      /*Fluttertoast.showToast(msg: 'Coming Soon');*//*
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (context) => PendingSalesEntry()),
-                    );
-                    *//*ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text("Coming Soon"),
-                      ),
-                    );*//*
-                  },
-                )
+      child: Column(
+        children: [
+          // ✅ Drawer Header - User Profile Section
+          Container(
+            padding: EdgeInsets.all(20),
+            margin: EdgeInsets.only(top: 90,left: 0,right: 20,bottom: 20),
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: Colors.transparent,
+              borderRadius: BorderRadius.all(Radius.circular(20)),
             ),
-
-            Visibility(
-                visible: isReceiptEntryVisible,
-                child:  ListTile(
-                  title: Text('Receipts Entry'),
-                  leading: Icon(Icons.receipt_long,
-
-                    color: Colors.black,
-                  ),
-                  enabled: isReceiptEntryEnable,
-                  onTap: () {
-                    Navigator.pop(context);
-
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (context) => PendingReceiptEntry()),
-                    );
-                    *//*Fluttertoast.showToast(msg: 'Coming Soon');*//*
-
-                    *//*ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text("Coming Soon"),
-                      ),
-                    );*//*
-                  },
-                )
-            ),*/
-                      /*Visibility(
-                  visible: isRolesVisible,
-                  child:  ListTile(
-                    title: Text('Roles'),
-                    leading: Icon(Icons.group,
-                      color: Colors.black,
+            child: Row(
+              children: [
+                CircleAvatar(
+                  radius: 35,
+                  backgroundColor: Colors.white70,
+                  child: Icon(Icons.person, size: 40, color: appbar_color),
+                ),
+                SizedBox(width: 15),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      userName,
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: appbar_color),
                     ),
-                    enabled: isRolesEnable,
-                    onTap: ()
-                    {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(builder: (context) => RolesReport()),          // navigate to roles screen
-                      );
-                    },
-                  )
-              ),
-
-              Visibility(
-                  visible: isUserVisible,
-                  child: ListTile(
-                      title: Text('Users'),
-                      leading: Icon(Icons.person,
-                        color: Colors.black,
-                      ),
-                      enabled: isUserEnable,
-                      onTap: () {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(builder: (context) => UsersReport()),          // navigate to users screen
-                        );
-                      })),*/
-
-                      /*ListTile(
-                  title: Text('Sales Inquiry'),
-                  leading: Icon(Icons.note_add,
-                    color: Colors.black,
-                  ),
-                  enabled: true,
-                  onTap: () {
-                    Navigator.pushReplacement(
-                      context,
-
-                      MaterialPageRoute(builder: (context) => SalesInquiryReport()),          // navigate to users screen
-                    );
-                  }),*/
-
-                      /*ListTile(
-                  title: Text('Available Units'),
-                  leading: Icon(Icons.layers,
-                    color: Colors.black,
-                  ),
-                  enabled: true,
-                  onTap: () {
-                    Navigator.pushReplacement(
-                      context,
-
-                      MaterialPageRoute(builder: (context) => AvailableUnitsReport()),          // navigate to users screen
-                    );
-                  }),*/
-
-
-
-
-
-
-
-
-                      /*ListTile(
-                  title: Text('Settings'),
-                  leading: Icon(Icons.settings,
-                    color: Colors.black,
-                  ),
-                  onTap: () {
-                    Navigator.pop(context); // Close the dialog
-                    *//*Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (context) => Settings()),         // navigate to settings screen
-                    );*//*
-                  }),*/
-                      Divider(),
-
-                      ListTile(
-                          title: Text('Help'),
-                          leading: Icon(Icons.contact_support,
-                            color: Colors.black,
-                          ),
-                          onTap: ()
-                          {
-                            Navigator.pop(context); // Close the dialog
-                            /*Navigator.push
-                      (
-                      context,
-                      MaterialPageRoute(builder: (context) => Help()), // navigate to help screen
-                    );*/
-                          }
-                      ),
-
-                      ListTile
-                        (
-                          title: Text('Logout'),
-                          leading: Icon(Icons.logout,
-                            color: Colors.black,
-                          ),
-                          onTap: ()
-                          {
-                            _showConfirmationDialogAndNavigate(context);
-                          })])
-            ),
-
-            Padding(
-              padding: const EdgeInsets.all(25.0),
-              child: Align(
-                alignment: Alignment.bottomCenter,
-                child: Text(
-                  "v1.0",
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey,
-                    fontWeight: FontWeight.bold
-                  ),
+                    SizedBox(height: 4),
+                    Text(
+                      userEmail,
+                      style: TextStyle(fontSize: 14, color: appbar_color),
+                    ),
+                  ],
                 ),
+              ],
+            ),
+          ),
+
+          // ✅ Sidebar Menu Items
+          Expanded(
+            child: ListView(
+              padding: EdgeInsets.zero,
+              children: [
+                _buildDrawerItem(Icons.dashboard, "Sales", widget.isDashEnable, () {
+                  _navigateTo(context, SalesDashboard());
+                }),
+                _buildDrawerItem(Icons.dashboard, "Tenant", true, () {
+                  _navigateTo(context, TenantDashboardScreen());
+                }),
+                _buildDrawerItem(Icons.dashboard, "Landlord", true, () {
+                  _navigateTo(context, LandlordDashboardScreen());
+                }),
+                _buildDrawerItem(Icons.business, "Companies", true, () {
+                  _navigateTo(context, SerialNoSelection());
+                }),
+                _buildDrawerItem(Icons.settings, "Settings", true, () {
+                  _navigateTo(context, SettingsScreen());
+                }),
+                Divider(),
+                _buildDrawerItem(Icons.contact_support, "Help", true, () {
+                  _showHelpDialog(context);
+                }),
+                _buildDrawerItem(Icons.logout, "Logout", true, () {
+                  _showLogoutDialog(context);
+                }),
+              ],
+            ),
+          ),
+
+          // ✅ Sidebar Footer - Version Number
+          Padding(
+            padding: const EdgeInsets.all(15.0),
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: Text(
+                "v1.0",
+                style: TextStyle(fontSize: 14, color: Colors.grey, fontWeight: FontWeight.bold),
               ),
             ),
-          ],
-        )
-        );
+          ),
+        ],
+      ),
+    );
   }
 
-  /*void emitDeleteMyId(Map<String, dynamic> jsonPayload, Function() onComplete) {
-    socket.emit('deleteMyId', jsonPayload);
+  /// ✅ Reusable Drawer Menu Item
+  Widget _buildDrawerItem(IconData icon, String title, bool enabled, VoidCallback onTap) {
+    return ListTile(
+      leading: Icon(icon, color: enabled ? Colors.black : Colors.grey),
+      title: Text(title, style: TextStyle(color: enabled ? Colors.black : Colors.grey)),
+      enabled: enabled,
+      onTap: enabled ? onTap : null,
+    );
+  }
 
-    if (onComplete != null) {
-      onComplete();
-    }
-  }*/
+  /// ✅ Function to Navigate to Different Screens
+  void _navigateTo(BuildContext context, Widget screen) {
+    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => screen));
+  }
 
-  Future<void> _showConfirmationDialogAndNavigate(BuildContext context) async { // logout dialog function
-    await showDialog<void>(
-        context: context,
-        barrierDismissible: false, // user must tap button to close dialog
-        builder: (context) {
-          return ScaleTransition(
-              scale: CurvedAnimation(
-                parent: AnimationController(
-                  duration: const Duration(milliseconds: 500),
-                  vsync: tickerProvider,
-                )..forward(),
-                curve: Curves.fastOutSlowIn,
-              ),
-              child: AlertDialog(
-                  title: Text('Logout Confirmation'),
-                  content: SingleChildScrollView(
-                    child: ListBody(
-                      children: <Widget>[
-                        Text('Do you really want to Logout?'),
-                      ],
-                    ),
-                  ),
-                  actions: <Widget>[
+  /// ✅ Logout Confirmation Dialog
+  Future<void> _showLogoutDialog(BuildContext context) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return AlertDialog(
+          title: Text("Logout Confirmation"),
+          content: Text("Do you really want to logout?"),
+          actions: [
+            TextButton(
+              child: Text("No", style: TextStyle(color: appbar_color)),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+            TextButton(
+              child: Text("Yes", style: TextStyle(color: appbar_color)),
+              onPressed: () async {
+                final prefs = await SharedPreferences.getInstance();
+                await prefs.clear();
+                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Login(title: app_name)));
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
-                    TextButton(
-                        child: Text(
-                          'No',
-                          style: TextStyle(
-                            color: appbar_color, // Change the text color here
-                          ),
-                        ),
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        }),
-                    TextButton(
-                        child: Text(
-                          'Yes',
-                          style: TextStyle(
-                            color: appbar_color, // Change the text color here
-                          ),
-                        ),
-                        onPressed: () async {
-                          final prefs = await SharedPreferences.getInstance();
-
-                          Navigator.pushReplacement
-
-                            (
-                            context,
-                            MaterialPageRoute(builder: (context) => Login(title: app_name,)), // navigate to company and serial select screen
-                          );
-
-                          }
-                    ),]));});}}
+  /// ✅ Placeholder for Help Dialog
+  void _showHelpDialog(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Help section coming soon!")),
+    );
+  }
+}

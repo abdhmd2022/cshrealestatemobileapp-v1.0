@@ -87,9 +87,7 @@ class _LandlordDashboardScreenState extends State<LandlordDashboardScreen> with 
         isRolesEnable: true,
         isUserEnable: true,
         isUserVisible: true,
-        Username: "",
-        Email: "",
-        tickerProvider: this,
+
       ),
       body: SingleChildScrollView(
         child: Container(

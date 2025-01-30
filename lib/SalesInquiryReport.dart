@@ -303,9 +303,7 @@ class _SalesInquiryReportState
           isRolesEnable: true,
           isUserEnable: true,
           isUserVisible: true,
-          Username: "",
-          Email: "",
-          tickerProvider: this),
+          ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
         child: filteredInquiries.isEmpty

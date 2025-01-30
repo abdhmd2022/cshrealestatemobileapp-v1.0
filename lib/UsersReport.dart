@@ -348,9 +348,7 @@ class _UserReportPageState extends State<UsersReport> with TickerProviderStateMi
                 isRolesEnable: isRolesEnable,
                 isUserEnable: isUserEnable,
                 isUserVisible: isUserVisible,
-                Username: name,
-                Email: email,
-                tickerProvider: this
+                
             ),
             body: RefreshIndicator(
                 onRefresh: _refresh,

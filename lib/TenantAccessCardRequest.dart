@@ -252,9 +252,7 @@ class _TenantAccessCardRequestPageState extends State<TenantAccessCardRequest> w
             isRolesEnable: isRolesEnable,
             isUserEnable: isUserEnable,
             isUserVisible: isUserVisible,
-            Username: name,
-            Email: email,
-            tickerProvider: this),
+            ),
 
         body: Container(
             height: MediaQuery.of(context).size.height,

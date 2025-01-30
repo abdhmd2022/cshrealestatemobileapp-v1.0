@@ -28,22 +28,24 @@ class _SerialNoSelectionState extends State<SerialNoSelection> {
   Future<void> _loadSerialsAndCompanies() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
+    // ✅ Load user token (debugging)
+    String? userToken = prefs.getString("user_token");
+    print("🔑 Loaded User Token from SharedPreferences: $userToken");
+
     String? serialsJson = prefs.getString("serials_list");
     String? companiesJson = prefs.getString("companies_list");
 
     if (serialsJson != null) {
+      List<dynamic> serialsList = jsonDecode(serialsJson);
       setState(() {
-        serials = (jsonDecode(serialsJson) as List)
-            .map((data) => Serial.fromJson(data))
-            .toList();
+        serials = serialsList.map((data) => Serial.fromJson(data, userToken: userToken ?? '')).toList();
       });
     }
 
     if (companiesJson != null) {
+      List<dynamic> companiesList = jsonDecode(companiesJson);
       setState(() {
-        companies = (jsonDecode(companiesJson) as List)
-            .map((data) => RegisteredCompany.fromJson(data))
-            .toList();
+        companies = companiesList.map((data) => RegisteredCompany.fromJson(data)).toList();
       });
     }
   }
@@ -70,7 +72,7 @@ class _SerialNoSelectionState extends State<SerialNoSelection> {
     }
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString("serial_token", selectedSerial!.token);
+    await prefs.setString("serial_token", selectedSerial!.userToken);
     await prefs.setString("company_token", selectedCompany!.token);
 
     await loadTokens();
@@ -81,9 +83,6 @@ class _SerialNoSelectionState extends State<SerialNoSelection> {
       context,
       MaterialPageRoute(builder: (context) => SalesDashboard()), // navigate to company and serial select screen
     );
-
-
-
   }
 
   @override
@@ -91,6 +90,7 @@ class _SerialNoSelectionState extends State<SerialNoSelection> {
     return Scaffold(
       backgroundColor: Color(0xFFF5F7FA), // Light modern background
       appBar: AppBar(
+        automaticallyImplyLeading:false,
         title: Text("Select Serial & Company", style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,color: Colors.white
@@ -123,13 +123,22 @@ class _SerialNoSelectionState extends State<SerialNoSelection> {
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
                   ),
                   value: selectedSerial,
-                  hint: Text(
-                      'Select Serial No.'
-                  ),
+                  hint: Text('Select Serial No.'),
                   isExpanded: true,
-                  onChanged: (Serial? newSerial) {
+                  onChanged: (Serial? newSerial) async {
                     if (newSerial != null) {
-                      updateCompaniesList(newSerial);
+                      setState(() {
+                        selectedSerial = newSerial;
+                        filteredCompanies = newSerial.registeredCompanies;
+                        selectedCompany = null;
+                      });
+
+                      // ✅ Fetch the correct token from selected serial
+                      String userToken = newSerial.userToken;
+
+                      // ✅ Print the correct Serial Number & User Token
+                      print("✅ Selected Serial No: ${newSerial.serialNo}");
+                      print("🔑 User Token: $userToken");
                     }
                   },
                   items: serials.map((Serial serial) {
@@ -140,6 +149,7 @@ class _SerialNoSelectionState extends State<SerialNoSelection> {
                   }).toList(),
                 ),
               ),
+
 
               SizedBox(height: 20),
               Text("Choose Company", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: appbar_color[900])),

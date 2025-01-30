@@ -1,21 +1,21 @@
 class Serial {
   final int id;
   final String serialNo;
-  final String token;
+  final String userToken;  // ✅ Store the user token
   final List<RegisteredCompany> registeredCompanies;
 
   Serial({
     required this.id,
     required this.serialNo,
-    required this.token,
+    required this.userToken,  // ✅ Ensure token is stored
     required this.registeredCompanies,
   });
 
-  factory Serial.fromJson(Map<String, dynamic> json) {
+  factory Serial.fromJson(Map<String, dynamic> json, {required String userToken}) {
     return Serial(
       id: json['id'] ?? 0,
       serialNo: json['serial_no'] ?? '',
-      token: json['token'] ?? '',
+      userToken: json['user_token'] ?? userToken,  // ✅ Ensure token is assigned
       registeredCompanies: (json['registered_companies'] as List?)
           ?.map((company) => RegisteredCompany.fromJson(company))
           .toList() ??
@@ -23,12 +23,11 @@ class Serial {
     );
   }
 
-  /// ✅ Convert Serial object to JSON format
   Map<String, dynamic> toJson() {
     return {
       'id': id,
       'serial_no': serialNo,
-      'token': token,
+      'user_token': userToken,  // ✅ Ensure token is saved
       'registered_companies': registeredCompanies.map((e) => e.toJson()).toList(),
     };
   }

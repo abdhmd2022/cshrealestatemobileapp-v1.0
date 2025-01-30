@@ -234,14 +234,14 @@ class _SalesDashboardScreenState extends State<SalesDashboardScreen> with Ticker
                                     ),
                                   ],
                                 ),
-                                backgroundColor: appbar_color.withOpacity(1.0),
+                                backgroundColor: Colors.redAccent.withOpacity(1.0),
                                 behavior: SnackBarBehavior.floating,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(10),
                                 ),
                                 action: SnackBarAction(
                                   label: 'Got it',
-                                  textColor: Colors.lightGreenAccent,
+                                  textColor: Colors.white,
                                   onPressed: () {
                                     // Optional: Add action logic
                                   },

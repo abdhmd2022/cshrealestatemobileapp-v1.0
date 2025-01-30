@@ -66,12 +66,10 @@ class _SidebarState extends State<Sidebar> {
       child: Column(
         children: [
 
-
           Card(
             color: appbar_color,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
-
             ),
             elevation: 4,
             margin: EdgeInsets.only(top:70,left: 16,right: 16),
@@ -139,11 +137,7 @@ class _SidebarState extends State<Sidebar> {
             ),
           ),
 
-
-
-
           SizedBox(height: 10),
-
 
           Card(
             color: appbar_color,
@@ -180,6 +174,7 @@ class _SidebarState extends State<Sidebar> {
               ),
             ),
           ),
+
           SizedBox(height: 10),
 
           // ✅ Sidebar Menu Items

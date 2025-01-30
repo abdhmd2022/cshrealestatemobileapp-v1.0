@@ -28,6 +28,15 @@ class _SidebarState extends State<Sidebar> {
   String userName = "Loading...";
   String userEmail = "Loading...";
 
+  String companyName = "Loading...";
+  String serialNo = "Loading...";
+
+  int serialID = 0;
+
+  int companyID = 0;
+
+  int userID = 0;
+
   @override
   void initState() {
     super.initState();
@@ -40,6 +49,14 @@ class _SidebarState extends State<Sidebar> {
     setState(() {
       userName = prefs.getString("user_name") ?? "Guest User";
       userEmail = prefs.getString("user_email") ?? "guest@example.com";
+      companyName = prefs.getString("company_name") ?? "Unknown";
+
+      serialNo = prefs.getString("serial_no") ?? "Unknown";
+      serialID = prefs.getInt("serial_id") ?? 0;
+      companyID = prefs.getInt("company_id") ?? 0;
+      userID = prefs.getInt("user_id") ?? 0;
+
+
     });
   }
 
@@ -51,13 +68,14 @@ class _SidebarState extends State<Sidebar> {
           // ✅ Drawer Header - User Profile Section
           Container(
             padding: EdgeInsets.all(20),
-            margin: EdgeInsets.only(top: 90,left: 0,right: 20,bottom: 20),
+            margin: EdgeInsets.only(top: 90, left: 0, right: 20, bottom: 0),
             width: double.infinity,
             decoration: BoxDecoration(
               color: Colors.transparent,
               borderRadius: BorderRadius.all(Radius.circular(20)),
             ),
             child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Container(
                   width: 50,
@@ -83,23 +101,77 @@ class _SidebarState extends State<Sidebar> {
                   ),
                 ),
                 SizedBox(width: 15),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      userName,
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: appbar_color),
-                    ),
-                    SizedBox(height: 2),
-                    Text(
-                      userEmail,
-                      style: TextStyle(fontSize: 14, color: appbar_color),
-                    ),
-                  ],
+                Expanded(  // Ensures the Column takes available space and wraps text properly
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        userName,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: appbar_color,
+                        ),
+                        overflow: TextOverflow.ellipsis, // Optional: Adds '...' if text is too long
+                        maxLines: 1,
+                      ),
+                      SizedBox(height: 2),
+                      Text(
+                        userEmail,
+                        style: TextStyle(fontSize: 14, color: appbar_color),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                      ),
+                      SizedBox(height: 2),
+                      Text(
+                        'ID: $userID (for testing purpose)',
+                        style: TextStyle(fontSize: 14, color: appbar_color),
+                        softWrap: true, // Allows text to wrap instead of overflowing
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
           ),
+
+
+          Card(
+            color: appbar_color,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+
+            ),
+            elevation: 4,
+            margin: EdgeInsets.symmetric(vertical: 0, horizontal: 16),
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '$serialNo (ID: $serialID (for testing purpose only)',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                  Divider(),
+
+                  Text(
+                    '$companyName (ID: $companyID (for testing purpose only)',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          SizedBox(height: 10),
 
           // ✅ Sidebar Menu Items
           Expanded(

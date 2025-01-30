@@ -88,6 +88,10 @@ class _SerialNoSelectionState extends State<SerialNoSelection> {
 
     await prefs.setString("company_token", selectedCompany!.token);
 
+    await prefs.setString("company_name", selectedCompany!.name);
+
+    await prefs.setString("serial_no", selectedSerial!.serialNo);
+
     await loadTokens();
 
     Navigator.pushReplacement

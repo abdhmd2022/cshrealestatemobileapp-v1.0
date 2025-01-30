@@ -59,10 +59,28 @@ class _SidebarState extends State<Sidebar> {
             ),
             child: Row(
               children: [
-                CircleAvatar(
-                  radius: 35,
-                  backgroundColor: Colors.white70,
-                  child: Icon(Icons.person, size: 40, color: appbar_color),
+                Container(
+                  width: 50,
+                  height: 50,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: LinearGradient(
+                      colors: [appbar_color.shade200, appbar_color.shade700],
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.2),
+                        blurRadius: 5,
+                        offset: Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Icon(
+                    Icons.person,
+                    color: Colors.white,
+                  ),
                 ),
                 SizedBox(width: 15),
                 Column(
@@ -70,9 +88,9 @@ class _SidebarState extends State<Sidebar> {
                   children: [
                     Text(
                       userName,
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: appbar_color),
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: appbar_color),
                     ),
-                    SizedBox(height: 4),
+                    SizedBox(height: 2),
                     Text(
                       userEmail,
                       style: TextStyle(fontSize: 14, color: appbar_color),

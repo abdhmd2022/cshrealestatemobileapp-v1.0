@@ -91,8 +91,7 @@ class _SerialNoSelectionState extends State<SerialNoSelection> {
     await loadTokens();
 
     Navigator.pushReplacement
-
-      (
+    (
       context,
       MaterialPageRoute(builder: (context) => SalesDashboard()), // navigate to company and serial select screen
     );
@@ -112,130 +111,139 @@ class _SerialNoSelectionState extends State<SerialNoSelection> {
         elevation: 4,
         centerTitle: true,
       ),
-      body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 24, vertical: 30),
-        child: Center(
-          child:  Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text("Choose Serial Number", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: appbar_color[900])),
-              SizedBox(height: 10),
-
-              // Serial Number Dropdown
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                  boxShadow: [
-                    BoxShadow(color: Colors.black12, blurRadius: 5, spreadRadius: 1),
-                  ],
+      body: Center(
+        child: Container(
+          margin: EdgeInsets.only(left:20,right: 20),
+          child: Card(
+            elevation: 8,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [appbar_color.shade200, appbar_color.shade400],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
                 ),
-                child: DropdownButtonFormField<Serial>(
-                  decoration: InputDecoration(
-                    contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
-                  ),
-                  value: selectedSerial,
-                  hint: Text('Select Serial No.'),
-                  isExpanded: true,
-                  onChanged: (Serial? newSerial) async {
-                    if (newSerial != null) {
-                      setState(() {
-                        selectedSerial = newSerial;
-                        filteredCompanies = newSerial.registeredCompanies;
-                        selectedCompany = null;
-                      });
-
-                      // ✅ Fetch the correct token from selected serial
-                      String userToken = newSerial.userToken;
-                      int userID = newSerial.userId;
-
-                      // ✅ Print the correct Serial Number & User Token
-                      print("✅ Selected Serial No: ${newSerial.serialNo}");
-                      print("🔑 User Token: $userToken");
-                      print("🔑 User ID: $userID");
-
-                    }
-                  },
-                  items: serials.map((Serial serial) {
-                    return DropdownMenuItem<Serial>(
-                      value: serial,
-                      child: Text(serial.serialNo),
-                    );
-                  }).toList(),
-                ),
+                borderRadius: BorderRadius.circular(16), // Ensure gradient follows card shape
               ),
-
-
-              SizedBox(height: 20),
-              Text("Choose Company", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: appbar_color[900])),
-              SizedBox(height: 10),
-
-              // Company Dropdown
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                  boxShadow: [
-                    BoxShadow(color: Colors.black12, blurRadius: 5, spreadRadius: 1),
-                  ],
-                ),
-                child: DropdownButtonFormField<RegisteredCompany>(
-                  decoration: InputDecoration(
-                    contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
-                  ),
-                  value: selectedCompany,
-                  isExpanded: true,
-                  onChanged: (RegisteredCompany? newCompany) {
-                    setState(() {
-                      selectedCompany = newCompany;
-                    });
-                    String userToken = newCompany!.token;
-                    int userID = newCompany!.id;
-
-                    // ✅ Print the correct Serial Number & User Token
-                    print("✅ Selected Company: ${newCompany.name}");
-                    print("🔑 Company Token: $userToken");
-                    print("🔑 Company ID: $userID");
-
-                  },
-                  hint: Text(
-                      'Select Company'
-                  ),
-                  items: filteredCompanies.map((RegisteredCompany company) {
-                    return DropdownMenuItem<RegisteredCompany>(
-                      value: company,
-                      child: Text(company.name),
-                    );
-                  }).toList(),
-                ),
-              ),
-
-              SizedBox(height: 30),
-
-              // Save Selection Button
-              Center(
-                child: ElevatedButton(
-                  onPressed: saveSelection,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: appbar_color,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+              padding: EdgeInsets.all(24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min, // To avoid unnecessary expansion
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Choose Serial Number",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.white,
                     ),
-                    padding: EdgeInsets.symmetric(horizontal: 40, vertical: 14),
                   ),
-                  child: Text(
-                    "Proceed",
-                    style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.white),
+                  SizedBox(height: 10),
+                  _buildDropdown<Serial>(
+                    selectedSerial,
+                    "Select Serial No.",
+                    serials.map((serial) => DropdownMenuItem(value: serial, child: Text(serial.serialNo))).toList(),
+                        (Serial? newSerial) {
+                      if (newSerial != null) {
+                        setState(() {
+                          selectedSerial = newSerial;
+                          filteredCompanies = newSerial.registeredCompanies;
+                          selectedCompany = null;
+                        });
+
+                        print("✅ Selected Serial No: ${newSerial.serialNo}");
+                        print("🔑 User Token: ${newSerial.userToken}");
+                        print("🔑 User ID: ${newSerial.userId}");
+                      }
+                    },
                   ),
-                ),
+                  SizedBox(height: 20),
+                  Text(
+                    "Choose Company",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.white,
+                    ),
+                  ),
+                  SizedBox(height: 10),
+                  _buildDropdown<RegisteredCompany>(
+                    selectedCompany,
+                    "Select Company",
+                    filteredCompanies
+                        .map((company) => DropdownMenuItem(value: company, child: Text(company.name)))
+                        .toList(),
+                        (RegisteredCompany? newCompany) {
+                      if (newCompany != null) {
+                        setState(() {
+                          selectedCompany = newCompany;
+                        });
+
+                        print("✅ Selected Company: ${newCompany.name}");
+                        print("🔑 Company Token: ${newCompany.token}");
+                        print("🔑 Company ID: ${newCompany.id}");
+                      }
+                    },
+                  ),
+                  SizedBox(height: 30),
+                  Center(
+                    child: ElevatedButton(
+                      onPressed: saveSelection,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white.withOpacity(1.0),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        padding: EdgeInsets.symmetric(horizontal: 40, vertical: 14),
+                      ),
+                      child: Text(
+                        "Proceed",
+                        style: GoogleFonts.poppins(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: appbar_color,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
-
+        
       ),
     );
   }
 }
+Widget _buildDropdown<T>(
+    T? selectedValue,
+    String hint,
+    List<DropdownMenuItem<T>> items,
+    void Function(T?) onChanged,
+    ) {
+  return Container(
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(12),
+      boxShadow: [
+        BoxShadow(color: Colors.black12, blurRadius: 5, spreadRadius: 1),
+      ],
+    ),
+    child: DropdownButtonFormField<T>(
+      decoration: InputDecoration(
+        contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+      ),
+      value: selectedValue,
+      hint: Text(hint),
+      isExpanded: true,
+      onChanged: onChanged,
+      items: items,
+    ),
+  );
+}
+

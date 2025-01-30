@@ -468,9 +468,9 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                           margin: EdgeInsets.all(16),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(30.0),
-                            color: Colors.blue.withOpacity(0.1),
+                            color: appbar_color.withOpacity(0.1),
                             border: Border.all(
-                              color: Colors.blue.withOpacity(0.3),
+                              color: appbar_color.withOpacity(0.3),
                               width: 1.0,
                             ),
                           ),
@@ -480,12 +480,12 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                               Text(
                                 '${selectedFlat?['flat_name']} | ${selectedFlat?['buildings']['building_name']}',
                                 style: TextStyle(
-                                  color: Colors.blue.shade700,
+                                  color: appbar_color.shade700,
                                   fontSize: 16,
                                   fontWeight: FontWeight.w500,
                                 ),
                               ),
-                              Icon(Icons.arrow_drop_down, color: Colors.blue),
+                              Icon(Icons.arrow_drop_down, color: appbar_color),
                             ],
                           ),
                         ),
@@ -1013,7 +1013,7 @@ Widget _attachmentOption({required IconData icon, required String label, require
             ],
           ),
           padding: EdgeInsets.all(16),
-          child: Icon(icon, size: 40, color: Colors.blueAccent),
+          child: Icon(icon, size: 40, color: appbar_color),
         ),
         SizedBox(height: 8),
         Text(label),

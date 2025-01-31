@@ -189,9 +189,7 @@ class _SerialNoSelectionState extends State<SerialNoSelection> {
                         print("✅ Selected Company: ${newCompany.name}");
                         print("🔑 Company Token: ${newCompany.token}");
                         print("🔑 Company ID: ${newCompany.id}");
-                      }
-                    },
-                  ),
+                      }}),
                   SizedBox(height: 30),
                   Center(
                     child: ElevatedButton(
@@ -209,20 +207,15 @@ class _SerialNoSelectionState extends State<SerialNoSelection> {
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
                           color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+                        ))))]),
             ),
           ),
         ),
-        
       ),
     );
   }
 }
+
 Widget _buildDropdown<T>(
     T? selectedValue,
     String hint,

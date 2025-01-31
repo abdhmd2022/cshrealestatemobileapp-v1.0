@@ -11,7 +11,6 @@ class Serial {
     required this.serialNo,
     required this.userToken,  // ✅ Ensure token is stored
     required this.userId,  // ✅ Ensure id is stored
-
     required this.registeredCompanies,
   });
 
@@ -21,7 +20,6 @@ class Serial {
       serialNo: json['serial_no'] ?? '',
       userToken: json['user_token'] ?? userToken,  // ✅ Ensure token is assigned
       userId: json['user_id'] ?? userId,  // ✅ Ensure id is assigned
-
       registeredCompanies: (json['registered_companies'] as List?)
           ?.map((company) => RegisteredCompany.fromJson(company))
           .toList() ??
@@ -37,8 +35,7 @@ class Serial {
       'user_id': userId,  // ✅ Ensure id is saved
       'registered_companies': registeredCompanies.map((e) => e.toJson()).toList(),
     };
-  }
-}
+  }}
 
 class RegisteredCompany {
   final int id;

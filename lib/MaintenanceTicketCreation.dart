@@ -62,7 +62,6 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
       isUserEnable = true,
       isUserVisible = true,
       isRolesEnable = true,
-      _isLoading = false,
       isVisibleNoRoleFound = false;
 
   String name = "",email = "";

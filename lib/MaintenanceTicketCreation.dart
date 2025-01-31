@@ -727,9 +727,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                                                       width: 75,
                                                       height: 75,
                                                       fit: BoxFit.cover,
-                                                    ),
-                                                  ),
-                                                ),
+                                                    ))),
                                                 Positioned(
                                                   top: 4,
                                                   right: 4,

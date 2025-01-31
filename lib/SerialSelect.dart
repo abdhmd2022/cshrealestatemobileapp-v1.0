@@ -126,7 +126,7 @@ class _SerialNoSelectionState extends State<SerialNoSelection> {
             child: Container(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [appbar_color.shade200, appbar_color.shade400],
+                  colors: [Colors.white70, Colors.white70],
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                 ),
@@ -142,7 +142,7 @@ class _SerialNoSelectionState extends State<SerialNoSelection> {
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
-                      color: Colors.white,
+                      color: Colors.black,
                     ),
                   ),
                   SizedBox(height: 10),
@@ -170,7 +170,7 @@ class _SerialNoSelectionState extends State<SerialNoSelection> {
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
-                      color: Colors.white,
+                      color: Colors.black,
                     ),
                   ),
                   SizedBox(height: 10),
@@ -197,7 +197,7 @@ class _SerialNoSelectionState extends State<SerialNoSelection> {
                     child: ElevatedButton(
                       onPressed: saveSelection,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white.withOpacity(1.0),
+                        backgroundColor: appbar_color.withOpacity(1.0),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -208,7 +208,7 @@ class _SerialNoSelectionState extends State<SerialNoSelection> {
                         style: GoogleFonts.poppins(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
-                          color: appbar_color,
+                          color: Colors.white,
                         ),
                       ),
                     ),

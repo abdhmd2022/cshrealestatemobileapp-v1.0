@@ -939,7 +939,6 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
               headers: {
                 "Content-Type": "application/json",
                 "Authorization": "Bearer $Company_Token",
-
               },
               body: jsonEncode(requestBody),
             );

@@ -177,7 +177,7 @@ class _MaintenanceTicketReportState
               context,
               MaterialPageRoute(builder: (context) => MaintenanceTicketCreation()),
 
-            );
+              );
           },
           label: Text(
             'New Ticket',

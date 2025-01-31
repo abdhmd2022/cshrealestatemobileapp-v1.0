@@ -48,9 +48,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
 
   MaintanceType? selectedMaintenanceType;
 
-  List<MaintanceType> maintenance_types_list = [
-
-  ];
+  List<MaintanceType> maintenance_types_list = [];
 
   TextEditingController _descriptionController = TextEditingController();
   // TextEditingController _totalamountController = TextEditingController();
@@ -573,10 +571,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                             onChanged: (value) {
                               setState(() {
                                 selectedMaintenanceType = value; // Store a single value
-                              });
-                            },
-                          ),
-                        )
+                              });}))
 
                         /* Container(
                           padding: EdgeInsets.symmetric(horizontal: 12),
@@ -606,15 +601,12 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                             },
                             icon: Icon(Icons.arrow_drop_down, color: Colors.grey),
                           ),
-                        ),*/
-                      ],
-                    ),),
+                        ),*/])),
 
                     Column(
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children:[
-
                           Container(
                             margin: EdgeInsets.only( top:0,
                                 bottom: 5,
@@ -626,20 +618,14 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 16
-
-                                    )
-                                ),
+                                    )),
                                 SizedBox(width: 2),
                                 Text(
                                   '*', // Red asterisk for required field
                                   style: TextStyle(
                                     fontSize: 20,
                                     color: Colors.red, // Red color for the asterisk
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
+                                  ))])),
 
                           Container(
                               margin: EdgeInsets.only(
@@ -649,12 +635,10 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                                   right: 20
                               ),
                               child: TextFormField(
-
                                   controller: _descriptionController,
                                   keyboardType: TextInputType.multiline,
                                   maxLength: 500, // Limit input to 500 characters
                                   maxLines: 3, // A
-
                                   decoration: InputDecoration(
                                     hintText: 'Enter Description',
                                     contentPadding: EdgeInsets.all(15),
@@ -797,7 +781,6 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                                           ),
                                         ],
                                       ),
-
                                     ],
                                   )
                                 else
@@ -824,7 +807,6 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                                     ])]))]),
 
                     /*  SizedBox(height: 10),
-
                     Column(
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,

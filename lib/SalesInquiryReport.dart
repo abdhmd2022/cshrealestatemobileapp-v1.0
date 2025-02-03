@@ -8,7 +8,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
-
 import 'SalesDashboard.dart';
 import 'Sidebar.dart';
 
@@ -52,7 +51,6 @@ class InquiryModel {
     required this.email,
     required this.inquiryNo,
     required this.leadStatusCategory,
-
     required this.creationDate,
     required this.minPrice,
     required this.maxPrice,
@@ -100,7 +98,6 @@ class InquiryModel {
       leadStatusName = lastFollowup['lead_status']?['name'] ?? 'Unknown';
       leadStatusCategory = lastFollowup['lead_status']?['category'] ?? 'Unknown';
       leadStatusColor = lastFollowup['lead_status']?['color'] ?? 'Unknown';
-
 
       print('Last Lead Status Name: $leadStatusName');
     } else {
@@ -172,7 +169,7 @@ class _SalesInquiryReportState
     extends State<SalesInquiryReport> with TickerProviderStateMixin {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-   List<InquiryModel> salesinquiry = [
+  List<InquiryModel> salesinquiry = [
   ];
 
   List<InquiryModel> filteredInquiries = [];
@@ -193,7 +190,6 @@ class _SalesInquiryReportState
   }
 
   Future<void> fetchInquiries() async {
-
     print('fetching inquiries');
 
     filteredInquiries.clear();
@@ -211,12 +207,12 @@ class _SalesInquiryReportState
       final response = await http.get(Uri.parse(url),
         headers: headers,);
       if (response.statusCode == 200) {
-
         setState(() {
           print(response.body);
           final jsonResponse = json.decode(response.body);
           salesinquiry = parseInquiries(jsonResponse);
-          _expandedinquirys = List.generate(salesinquiry.length, (index) => false);
+          _expandedinquirys =
+              List.generate(salesinquiry.length, (index) => false);
 
           filteredInquiries = salesinquiry;
         });
@@ -226,7 +222,6 @@ class _SalesInquiryReportState
         throw Exception('Failed to load data');
       }
     } catch (e) {
-
       print('Error fetching data: $e');
     }
   }
@@ -241,7 +236,8 @@ class _SalesInquiryReportState
           inquiry.area.toLowerCase().contains(query.toLowerCase()) ||
           inquiry.emirate.toLowerCase().contains(query.toLowerCase()) ||
           inquiry.status.toLowerCase().contains(query.toLowerCase()) ||
-          inquiry.inquiryNo.toString().toLowerCase().contains(query.toLowerCase()))
+          inquiry.inquiryNo.toString().toLowerCase().contains(
+              query.toLowerCase()))
           .toList();
     });
   }
@@ -273,8 +269,7 @@ class _SalesInquiryReportState
           ),
         ),
         leading: GestureDetector(
-          onTap: ()
-          {
+          onTap: () {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(builder: (context) => SalesDashboard()),
@@ -298,12 +293,12 @@ class _SalesInquiryReportState
         ),
       ),
       drawer: Sidebar(
-          isDashEnable: true,
-          isRolesVisible: true,
-          isRolesEnable: true,
-          isUserEnable: true,
-          isUserVisible: true,
-          ),
+        isDashEnable: true,
+        isRolesVisible: true,
+        isRolesEnable: true,
+        isUserEnable: true,
+        isUserVisible: true,
+      ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
         child: filteredInquiries.isEmpty
@@ -384,69 +379,82 @@ class _SalesInquiryReportState
             _buildinquiryDetails(inquiry),
 
             Container(
-              width: MediaQuery.of(context).size.width,
-              child: Center(
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
+                width: MediaQuery
+                    .of(context)
+                    .size
+                    .width,
+                child: Center(
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
 
 
-                        if(inquiry.leadStatusCategory == 'Normal' )
-                        Row(children: [
+                          if(inquiry.leadStatusCategory == 'Normal' )
+                            Row(children: [
 
-                          _buildDecentButton(
-                            'Follow Up',
-                            Icons.schedule,
-                            Colors.blue,
-                                () {
+                              _buildDecentButton(
+                                'Follow Up',
+                                Icons.schedule,
+                                Colors.blue,
+                                    () {
+                                  String name = inquiry.customerName;
+                                  List<String> emiratesList = inquiry.emirate
+                                      .split(',').map((e) => e.trim()).toList();
+                                  List<String> areaList = inquiry.area.split(
+                                      ',').map((e) => e.trim()).toList();
+                                  List<String> unittype = inquiry.unitType
+                                      .split(',').map((e) => e.trim()).toList();
+                                  String contactno = inquiry.contactNo;
+                                  String email = inquiry.email;
+                                  String id = inquiry.inquiryNo;
 
-                              String name = inquiry.customerName;
-                              List<String> emiratesList = inquiry.emirate.split(',').map((e) => e.trim()).toList();
-                              List<String> areaList = inquiry.area.split(',').map((e) => e.trim()).toList();
-                              List<String> unittype = inquiry.unitType.split(',').map((e) => e.trim()).toList();
-                              String contactno = inquiry.contactNo;
-                              String email = inquiry.email;
-                              String id = inquiry.inquiryNo;
+                                  final RegExp regExp = RegExp(r"^\+\d{1,3}");
 
+                                  // Remove the country code
+                                  String processedNumber = contactno.replaceAll(
+                                      regExp, "");
 
-                              final RegExp regExp = RegExp(r"^\+\d{1,3}");
+                                  // Print the result
+                                  print(
+                                      'number $processedNumber'); // Output: 9876543210
 
-                              // Remove the country code
-                              String processedNumber = contactno.replaceAll(regExp, "");
+                                  Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(builder: (context) =>
+                                          FollowupSalesInquiry(id: id,
+                                              name: name,
+                                              unittype: unittype,
+                                              existingAreaList: areaList,
+                                              existingEmirateList: emiratesList,
+                                              contactno: contactno,
+                                              email: email)));
+                                },
+                              ),
+                              SizedBox(width: 5),
+                              _buildDecentButton(
+                                'Transfer',
+                                Icons.swap_horiz,
+                                Colors.orange,
+                                    () {
+                                  String name = inquiry.customerName;
+                                  String id = inquiry.inquiryNo;
+                                  String email = inquiry.email;
 
-                              // Print the result
-                              print('number $processedNumber'); // Output: 9876543210
+                                  Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(builder: (context) =>
+                                          SalesInquiryTransfer(name: name,
+                                            email: email,
+                                            id: id,)));
+                                },
+                              ),
+                              SizedBox(width: 5)
+                            ],),
 
-                              Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(builder: (context) =>
-                                      FollowupSalesInquiry(id:id,name: name, unittype: unittype, existingAreaList: areaList, existingEmirateList: emiratesList, contactno: contactno, email: email)));
-                            },
-                          ),
-                          SizedBox(width:5),
-                            _buildDecentButton(
-                              'Transfer',
-                              Icons.swap_horiz,
-                              Colors.orange,
-                                  () {
-
-                                String name = inquiry.customerName;
-                                String id = inquiry.inquiryNo;
-                                String email = inquiry.email;
-
-                                Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(builder: (context) =>
-                                        SalesInquiryTransfer(name: name, email: email, id: id,)));
-                              },
-                            ),
-                          SizedBox(width:5)
-                        ],),
-
-                        /*_buildDecentButton(
+                          /*_buildDecentButton(
                           'Delete',
                           Icons.delete,
                           Colors.red,
@@ -455,10 +463,10 @@ class _SalesInquiryReportState
                             // Add your delete functionality here
                           },
                         ),*/
-                      ],
-                    ),
+                        ],
+                      ),
+                    )
                 )
-              )
             ),
 
 
@@ -475,9 +483,10 @@ class _SalesInquiryReportState
                   });
                 },
                 child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 0.0, horizontal: 20.0),
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 0.0, horizontal: 20.0),
                   decoration: BoxDecoration(
-                    color: Colors.transparent
+                      color: Colors.transparent
 
                   ),
                   child: Row(
@@ -493,7 +502,8 @@ class _SalesInquiryReportState
                       ),
                       SizedBox(width: 10),
                       Icon(
-                        _expandedinquirys[index] ? Icons.expand_less : Icons.expand_more,
+                        _expandedinquirys[index] ? Icons.expand_less : Icons
+                            .expand_more,
                         color: Colors.black26,
                         size: 16,
                       ),
@@ -525,7 +535,7 @@ class _SalesInquiryReportState
             ),
           ],
         ),
-        _getStatusBadge(inquiry.leadStatusCategory,inquiry.status),
+        _getStatusBadge(inquiry.leadStatusCategory, inquiry.status),
       ],
     );
   }
@@ -539,7 +549,7 @@ class _SalesInquiryReportState
         _buildInfoRow('Email:', inquiry.email),
         _buildInfoRow('Area:', '${inquiry.area}, ${inquiry.emirate}'),
         _buildInfoRow('Date:', inquiry.creationDate),
-       // _buildInfoRow('Created By (using for testing):', inquiry.created_by.toString()),
+        // _buildInfoRow('Created By (using for testing):', inquiry.created_by.toString()),
         //_buildInfoRow('Assigned To (using for testing):', inquiry.assigned_to.toString()),
 
 
@@ -563,13 +573,13 @@ class _SalesInquiryReportState
           Expanded(
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
-                child:Text(
+                child: Text(
                   value,
                   style: TextStyle(
                     color: Colors.black87,
                   ),
 
-                ) ,
+                ),
               )
           ),
         ],
@@ -633,9 +643,8 @@ class _SalesInquiryReportState
     );
   }
 
-  Widget _buildDecentButton(
-      String label, IconData icon, Color color, VoidCallback onPressed) {
-
+  Widget _buildDecentButton(String label, IconData icon, Color color,
+      VoidCallback onPressed) {
     return InkWell(
       onTap: onPressed,
       borderRadius: BorderRadius.circular(30.0),
@@ -676,4 +685,3 @@ class _SalesInquiryReportState
     );
   }
 }
-

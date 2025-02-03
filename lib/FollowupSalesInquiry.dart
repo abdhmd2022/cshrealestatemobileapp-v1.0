@@ -1731,106 +1731,77 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                                           });})]))])),
 
                                  // follow up date
-                                Container(
-                                    child: Column(
+                  Container(
+                  padding: EdgeInsets.only(top: 15, left: 20, right: 20),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    "Next Follow-Up:",
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                  SizedBox(width: 10),
+                  GestureDetector(
+                    onTap: () async {
+                      DateTime? pickedDate = await showDatePicker(
+                        context: context,
+                        initialDate: nextFollowUpDate ?? DateTime.now().add(Duration(days: 1)),
+                        firstDate: DateTime.now().add(Duration(days: 1)), // Restrict past dates
+                        lastDate: DateTime(2100),
+                        builder: (BuildContext context, Widget? child) {
+                          return Theme(
+                            data: ThemeData.light().copyWith(
+                              colorScheme: ColorScheme.light(
+                                primary: appbar_color, // Header background and selected date color
+                                onPrimary: Colors.white, // Header text color
+                                onSurface: Colors.black, // Calendar text color
+                              ),
+                              textButtonTheme: TextButtonThemeData(
+                                style: TextButton.styleFrom(
+                                  foregroundColor: appbar_color, // Button text color
+                                ),
+                              ),
+                            ),
+                            child: child!,
+                          );
+                        },
+                      );
 
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Padding(padding: EdgeInsets.only(top: 15,left:20),
+                      if (pickedDate != null) {
+                        setState(() {
+                          nextFollowUpDate = pickedDate; // Save selected date
+                        });
+                      }
+                    },
+                    child: Row(
+                      children: [
 
-                                          child:Row(
-                                            children: [
-                                              Text("Next Follow-Up:",
-                                                  style: TextStyle(
-                                                      fontWeight: FontWeight.bold,
-                                                      fontSize: 16
+                        if(nextFollowUpDate != null)
+                        Row(children:[
+                          Text(
+                            nextFollowUpDate != null
+                                ? DateFormat("dd-MMM-yyyy").format(nextFollowUpDate!) // Formatting date
+                                : "",
+                            style: TextStyle(fontSize: 16, color: Colors.black87),
+                          ),
+                          SizedBox(width: 10),
 
-                                                  )
-                                              ),/*SizedBox(width: 2),
-                                              Text(
-                                                '*', // Red asterisk for required field
-                                                style: TextStyle(
-                                                  fontSize: 20,
-                                                  color: Colors.red, // Red color for the asterisk
-                                                ),
-                                              ),*/
-                                              /*SizedBox(width: 2),
-                                              Text(
-                                                '*', // Red asterisk for required field
-                                                style: TextStyle(
-                                                  fontSize: 20,
-                                                  color: Colors.red, // Red color for the asterisk
-                                                ),
-                                              ),*/
-                                            ],
-                                          ),
-                                        ),
-
-                                        Padding(
-                                          padding: EdgeInsets.only(top: 0, left: 20, right: 20),
-                                          child: GestureDetector(
-                                            onTap: () async {
-                                              DateTime? pickedDate = await showDatePicker(
-                                                context: context,
-
-                                                initialDate: nextFollowUpDate ?? DateTime.now().add(Duration(days:1)),
-                                                firstDate: DateTime.now().add(Duration(days:1)), // Restrict past dates
-                                                lastDate: DateTime(2100),
-                                                builder: (BuildContext context, Widget? child) {
-                                                  return Theme(
-                                                    data: ThemeData.light().copyWith(
-                                                      colorScheme: ColorScheme.light(
-                                                        primary: appbar_color, // Header background and selected date color
-                                                        onPrimary: Colors.white, // Header text color
-                                                        onSurface: appbar_color, // Calendar text color
-                                                      ),
-                                                      textButtonTheme: TextButtonThemeData(
-                                                        style: TextButton.styleFrom(
-                                                          foregroundColor: appbar_color, // Button text color
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    child: child!,
-                                                  );
-                                                },
-                                              );
-
-                                              if (pickedDate != null) {
-                                                setState(() {
-                                                  nextFollowUpDate = pickedDate; // Save selected date
-                                                });
-                                              }
-                                            },
-                                            child: Container(
-                                              padding: EdgeInsets.symmetric(vertical: 15, horizontal: 10),
-                                              decoration: BoxDecoration(
-                                                border: Border.all(color: Colors.black54),
-                                                borderRadius: BorderRadius.circular(10),
-                                              ),
-                                              child: Row(
-                                                mainAxisAlignment: MainAxisAlignment.start,
-                                                children: [
-                                                  Icon(Icons.calendar_today, color: Colors.black87),
-                                                  SizedBox(width: 10,),
-                                                  Text(
-                                                    nextFollowUpDate != null
-                                                        ? "${nextFollowUpDate!.day}-${nextFollowUpDate!.month}-${nextFollowUpDate!.year}"
-                                                        : "Select Next Follow-Up Date",
-                                                    style: TextStyle(fontSize: 16, color: Colors.black87),
-                                                  ),
-
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                        ),
+                        ]),
+                        Icon(FontAwesomeIcons.calendarPlus, color: Colors.black87, size: 28),
 
 
-                                      ],
-                                    ),
-                                  ), // next follow up date
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
 
-                                // follow up status
+
+              // follow up status
                                 Container(
                                     child: Column(
                                         crossAxisAlignment: CrossAxisAlignment.start,

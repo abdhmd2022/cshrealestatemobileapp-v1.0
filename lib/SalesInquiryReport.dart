@@ -423,7 +423,7 @@ class _SalesInquiryReportState
                               Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(builder: (context) =>
-                                      FollowupSalesInquiry(id:id,name: name, unittype: unittype, existingAreaList: areaList, existingEmirateList: emiratesList, contactno: processedNumber, email: email)));
+                                      FollowupSalesInquiry(id:id,name: name, unittype: unittype, existingAreaList: areaList, existingEmirateList: emiratesList, contactno: contactno, email: email)));
                             },
                           ),
                           SizedBox(width:5),
@@ -537,10 +537,10 @@ class _SalesInquiryReportState
         _buildInfoRow('Name:', inquiry.customerName),
         _buildInfoRow('Unit Type:', inquiry.unitType),
         _buildInfoRow('Email:', inquiry.email),
-        _buildInfoRow('Area:', inquiry.area),
+        _buildInfoRow('Area:', '${inquiry.area}, ${inquiry.emirate}'),
         _buildInfoRow('Date:', inquiry.creationDate),
-        _buildInfoRow('Created By (using for testing):', inquiry.created_by.toString()),
-        _buildInfoRow('Assigned To (using for testing):', inquiry.assigned_to.toString()),
+       // _buildInfoRow('Created By (using for testing):', inquiry.created_by.toString()),
+        //_buildInfoRow('Assigned To (using for testing):', inquiry.assigned_to.toString()),
 
 
       ],
@@ -626,7 +626,6 @@ class _SalesInquiryReportState
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildInfoRow('Emirate:', inquiry.emirate),
           _buildInfoRow('Description:', inquiry.description),
 
         ],

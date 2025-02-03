@@ -8,10 +8,13 @@ import 'package:multi_select_flutter/chip_display/multi_select_chip_display.dart
 import 'package:multi_select_flutter/dialog/multi_select_dialog_field.dart';
 import 'package:multi_select_flutter/util/multi_select_item.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:uuid/uuid.dart';
 import 'SalesInquiryReport.dart';
 import 'constants.dart';
 import 'package:http/http.dart' as http;
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+
 
 class FollowUpStatus {
   final int id;
@@ -157,8 +160,8 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
   ActivitySource? selectedactivity_source;
 
   final TextEditingController startController = TextEditingController();
-  final TextEditingController endController = TextEditingController();
 
+  final TextEditingController endController = TextEditingController();
 
 
   String selectedEmiratesString = "Select Emirate";
@@ -190,9 +193,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
 
    Set<int> selectedAmenities = {};
 
-  String _selectedCountryCode = '+971'; // Default to UAE country code
-  String _selectedCountryISO = 'AE'; // Default to UAE ISO code
-  String _selectedCountryFlag = '🇦🇪'; // Default UAE flag emoji
+  
 
   String _hintText = 'Enter Contact No'; // Default hint text
 
@@ -261,6 +262,49 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
   List<Map<String, dynamic>> selectedAreas = []; // Store objects with 'id' and 'label'
 
   List<Map<String, dynamic>> areasToDisplay = []; // Global variable
+
+  void openEmail(String no) async {
+
+    final String email = emailcontroller.text.trim();
+
+    final Uri emailUri = Uri(
+      scheme: 'mailto',
+      path: email, // Replace with the recipient's email
+      queryParameters: {
+        'subject': 'Inquiry Follow-up ($no)',
+      },
+    );
+
+    if (await canLaunchUrl(emailUri)) {
+      await launchUrl(emailUri);
+    } else {
+      print("Could not open email client");
+    }
+  }
+
+  void openWhatsApp() async {
+    String phone = customercontactnocontroller.text.trim(); // Get number from TextField
+    String message = Uri.encodeComponent("Hello"); // Encode message
+    String url = "https://wa.me/$phone?text=$message"; // Construct WhatsApp URL
+
+    if (await canLaunchUrl(Uri.parse(url))) {
+      await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+    } else {
+      print("Could not open WhatsApp");
+    }
+  }
+
+  Future<void> openCaller() async {
+
+    final String phoneNumber = '${customercontactnocontroller.text}';
+
+    final Uri phoneUri = Uri.parse("tel: $phoneNumber"); // Replace with a valid number
+    if (await canLaunchUrl(phoneUri)) {
+      await launchUrl(phoneUri);
+    } else {
+      throw 'Could not launch $phoneUri';
+    }
+  }
 
   Future<void> sendFollowupInquiryRequest() async {
 
@@ -1409,62 +1453,35 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                         setState(() {
                                           _isFocus_name = false;
                                           _isFocused_email = false;
-                                        });
-                                      },
-                                    )),
+                                        });})),
 
-                                Padding(
-                                  padding: EdgeInsets.only(top:20,left: 20,right: 20,bottom: 0),
+                                Container(
+                                  padding: EdgeInsets.only(top: 20, left: 20, right: 20, bottom: 0),
                                   child: Row(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.center,
                                     children: [
-                                      // Country Picker
-                                      GestureDetector(
-                                        onTap: null,
-                                        child: Container(
-                                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                                          decoration: BoxDecoration(
-                                            border: Border.all(color: Colors.grey, width: 1),
-                                            borderRadius: BorderRadius.circular(10),
-                                          ),
-                                          child: Row(
-                                            children: [
-                                              Text(
-                                                _selectedCountryFlag, // Display the flag emoji
-                                                style: const TextStyle(fontSize: 18), // Adjust font size for the flag
-                                              ),
-                                              const SizedBox(width: 8), // Add spacing between flag and text
-                                              Text(
-                                                '$_selectedCountryCode', // Display the country code
-                                                style: const TextStyle(fontSize: 16,
-                                                color: Colors.grey),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-
-                                      const SizedBox(width: 5),
                                       // Phone Number Input Field
                                       Expanded(
                                         child: TextFormField(
                                           enabled: false,
                                           controller: customercontactnocontroller,
                                           keyboardType: TextInputType.phone,
-                                          validator: (value)
-                                          {
-                                            if (value == null || value.isEmpty) {return 'Contact No. is required';
+                                          validator: (value) {
+                                            if (value == null || value.isEmpty) {
+                                              return 'Contact No. is required';
                                             }
                                             return null; // Show validation message if any
                                           },
                                           decoration: InputDecoration(
                                             hintText: _hintText, // Dynamic hint
                                             contentPadding: EdgeInsets.all(15),
-                                            label: Text('Contact No',
+                                            label: Text(
+                                              'Contact No',
                                               style: TextStyle(
-                                                  fontWeight: FontWeight.normal,
-                                                  color: Colors.black
-                                              ),),
+                                                fontWeight: FontWeight.normal,
+                                                color: Colors.black,
+                                              ),
+                                            ),
                                             border: OutlineInputBorder(
                                               borderRadius: BorderRadius.circular(10),
                                               borderSide: const BorderSide(
@@ -1475,7 +1492,32 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                               borderRadius: BorderRadius.circular(10),
                                               borderSide: const BorderSide(
                                                 color: Colors.black,
-                                              )))))])),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      SizedBox(width: 10),
+
+                                      _buildDecentButton(
+                                        'Whatsapp',
+                                        FontAwesomeIcons.whatsapp,
+                                        Colors.green,
+                                        openWhatsApp,
+                                      ),
+                                      SizedBox(width: 10),
+                                      _buildDecentButton(
+                                        'Call',
+                                        FontAwesomeIcons.phone,
+                                        appbar_color,
+                                        openCaller, // Replace with the call function if needed
+                                      ),
+                                    ],
+                                  ),
+                                ),
+
+
+
 
                                 /* Padding(
                                     padding: EdgeInsets.only(top:10,left: 20,right: 20,bottom: 0),
@@ -1537,73 +1579,98 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                     )),
                                     */
 
-                                Padding(
 
-                                    padding: EdgeInsets.only(top:20,left: 20,right: 20,bottom: 0),
-                                    child: TextFormField(
-                                      controller: emailcontroller,
-                                      enabled: false,
-                                      keyboardType: TextInputType.emailAddress,
-                                      validator: (value) {
-                                        if (value!.isEmpty) {
-                                          return 'Email Address is required';
-                                        }
-                                        if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value))
-                                        {
-                                          return 'Please enter a valid email address';
-                                        }
 
-                                        return null;
-                                      },
-                                      decoration: InputDecoration(
-                                        hintText: 'Enter Email Address',
-                                        label: Text('Email Address',
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.normal,
-                                              color: Colors.black
-                                          ),),
-                                        contentPadding: EdgeInsets.all(15),
-                                        border: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(10), // Set the border radius
-                                          borderSide: BorderSide(
-                                            color: Colors.black, // Set the border color
+                                Container(
+                                  padding: EdgeInsets.only(top: 20, left: 20, right: 20, bottom: 0),
+                                  child: Row(
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
+                                      // Phone Number Input Field
+                                      Expanded(
+                                        child: TextFormField(
+                                          controller: emailcontroller,
+                                          enabled: false,
+                                          keyboardType: TextInputType.emailAddress,
+                                          validator: (value) {
+                                            if (value!.isEmpty) {
+                                              return 'Email Address is required';
+                                            }
+                                            if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value))
+                                            {
+                                              return 'Please enter a valid email address';
+                                            }
+
+                                            return null;
+                                          },
+                                          decoration: InputDecoration(
+                                            hintText: 'Enter Email Address',
+                                            label: Text('Email Address',
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.normal,
+                                                  color: Colors.black
+                                              ),),
+                                            contentPadding: EdgeInsets.all(15),
+                                            border: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(10), // Set the border radius
+                                              borderSide: BorderSide(
+                                                color: Colors.black, // Set the border color
+                                              ),
+                                            ),
+                                            focusedBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(10),
+                                              borderSide: BorderSide(
+                                                color:  Colors.black, // Set the focused border color
+
+                                              ),
+                                            ),
                                           ),
-                                        ),
-                                        focusedBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(10),
-                                          borderSide: BorderSide(
-                                            color:  Colors.black, // Set the focused border color
+                                          onChanged: (value) {
+                                            setState(() {
+                                              _isFocused_email = true;
+                                              _isFocus_name = false;
+                                            });
+                                          },
+                                          onFieldSubmitted: (value) {
+                                            setState(() {
+                                              _isFocused_email = false;
+                                              _isFocus_name = false;
+                                            });
+                                          },
+                                          onTap: () {
+                                            setState(() {
+                                              _isFocused_email = true;
+                                              _isFocus_name = false;
 
-                                          ),
+                                            });
+                                          },
+                                          onEditingComplete: () {
+                                            setState(() {
+                                              _isFocused_email = false;
+                                              _isFocus_name = false;
+                                            });
+                                          },
+
                                         ),
                                       ),
-                                      onChanged: (value) {
-                                        setState(() {
-                                          _isFocused_email = true;
-                                          _isFocus_name = false;
-                                        });
-                                      },
-                                      onFieldSubmitted: (value) {
-                                        setState(() {
-                                          _isFocused_email = false;
-                                          _isFocus_name = false;
-                                        });
-                                      },
-                                      onTap: () {
-                                        setState(() {
-                                          _isFocused_email = true;
-                                          _isFocus_name = false;
+                                      SizedBox(width: 10),
 
-                                        });
-                                      },
-                                      onEditingComplete: () {
-                                        setState(() {
-                                          _isFocused_email = false;
-                                          _isFocus_name = false;
-                                        });
-                                      },
+                                      _buildDecentButtonwithLabel(
+                                        'Send',
+                                        FontAwesomeIcons.envelope,
+                                        appbar_color,
+                                        ()
+                                        {
+                                          openEmail(widget.id.toString());
+                                        },
+                                      ),
 
-                                    )),
+                                    ],
+                                  ),
+                                ),
+
+
+
 
                                 // follow up type
                                 Container(
@@ -2672,3 +2739,96 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
               ,)
         ],
       ) ,);}}
+Widget _buildDecentButton(
+    String label, IconData icon, Color color, VoidCallback onPressed) {
+
+  return InkWell(
+    onTap: onPressed,
+    borderRadius: BorderRadius.circular(30.0),
+    splashColor: color.withOpacity(0.2),
+    highlightColor: color.withOpacity(0.1),
+    child: Container(
+      margin: EdgeInsets.only(top: 10.0),
+      padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(30.0),
+        color: Colors.white,
+        border: Border.all(
+          color: color.withOpacity(0.3),
+          width: 1.5,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: color.withOpacity(0.1),
+            blurRadius: 8.0,
+            offset: Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+
+          FaIcon(icon,color:color),
+          /*SizedBox(width: 8.0),
+          Text(
+            label,
+            style: TextStyle(
+              color: color,
+              fontWeight: FontWeight.w600,
+            ),
+          ),*/
+        ],
+
+      ),
+    ),
+  );
+}
+
+Widget _buildDecentButtonwithLabel(
+    String label, IconData icon, Color color, VoidCallback onPressed) {
+
+  return InkWell(
+    onTap: onPressed,
+    borderRadius: BorderRadius.circular(30.0),
+    splashColor: color.withOpacity(0.2),
+    highlightColor: color.withOpacity(0.1),
+    child: Container(
+      margin: EdgeInsets.only(top: 10.0),
+      padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(30.0),
+        color: Colors.white,
+        border: Border.all(
+          color: color.withOpacity(0.3),
+          width: 1.5,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: color.withOpacity(0.1),
+            blurRadius: 8.0,
+            offset: Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+
+          FaIcon(icon,color:color),
+          SizedBox(width: 8.0),
+          Text(
+            label,
+            style: TextStyle(
+              color: color,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+
+      ),
+    ),
+  );
+}

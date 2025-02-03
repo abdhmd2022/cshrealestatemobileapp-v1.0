@@ -3,7 +3,6 @@ class Serial {
   final String serialNo;
   final String userToken;  // ✅ Store the user token
   final int userId;  // ✅ Store the user id
-
   final List<RegisteredCompany> registeredCompanies;
 
   Serial({

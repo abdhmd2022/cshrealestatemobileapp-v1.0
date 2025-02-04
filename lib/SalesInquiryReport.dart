@@ -546,8 +546,8 @@ class _SalesInquiryReportState
       children: [
         _buildInfoRow('Name:', inquiry.customerName),
         _buildInfoRow('Unit Type:', inquiry.unitType),
-        _buildInfoRow('Email:', inquiry.email),
-        _buildInfoRow('Area:', _formatAreasWithEmirates(inquiry.preferredAreas)),
+        // _buildInfoRow('Email:', inquiry.email),
+        // _buildInfoRow('Area:', _formatAreasWithEmirates(inquiry.preferredAreas)),
         _buildInfoRow('Date:', inquiry.creationDate),
         // _buildInfoRow('Created By (using for testing):', inquiry.created_by.toString()),
         //_buildInfoRow('Assigned To (using for testing):', inquiry.assigned_to.toString()),
@@ -684,14 +684,14 @@ class _SalesInquiryReportState
         child: Row(
           children: [
             Icon(icon, color: color),
-            SizedBox(width: 8.0),
+            /*SizedBox(width: 8.0),
             Text(
               label,
               style: TextStyle(
                 color: color,
                 fontWeight: FontWeight.w600,
               ),
-            ),
+            ),*/
           ],
         ),
       ),

@@ -49,6 +49,7 @@ dependencies:
   mime:
   google_fonts:
   font_awesome_flutter:
+  flutter_switch:
 dev_dependencies:
 
   flutter_test:

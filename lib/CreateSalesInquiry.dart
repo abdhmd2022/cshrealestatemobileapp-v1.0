@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:country_picker/country_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:multi_select_flutter/chip_display/multi_select_chip_display.dart';
 import 'package:multi_select_flutter/dialog/multi_select_dialog_field.dart';
@@ -11,24 +12,25 @@ import 'package:uuid/uuid.dart';
 import 'SalesInquiryReport.dart';
 import 'constants.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter_switch/flutter_switch.dart';
 
-class FollowUpStatus {
+class InquiryStatus {
   final int id;
   final String name;
-  final bool isQualified;
+  final String category;
 
-  FollowUpStatus({
+  InquiryStatus({
     required this.id,
     required this.name,
-    required this.isQualified,
+    required this.category
   });
 
   // Factory method to create a FollowUpStatus object from JSON
-  factory FollowUpStatus.fromJson(Map<String, dynamic> json) {
-    return FollowUpStatus(
+  factory InquiryStatus.fromJson(Map<String, dynamic> json) {
+    return InquiryStatus(
       id: json['id'],
       name: json['name'],
-      isQualified: json['is_qualified'] == 'true',  // Convert to bool
+        category: json['category'],
     );
   }
 }
@@ -88,7 +90,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
   double? range_min, range_max;
 
-  FollowUpStatus? selectedinquiry_status;
+  InquiryStatus? selectedinquiry_status;
 
   ActivitySource? selectedactivity_source;
 
@@ -102,7 +104,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
   SharedPreferences? prefs;
 
-  List<FollowUpStatus> inquirystatus_list = [];
+  List<InquiryStatus> inquirystatus_list = [];
 
   List<ActivitySource> activitysource_list = [
 
@@ -152,6 +154,10 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
     'Residential',
     'Commercial',
   ];
+  int? selectedInterestType = 0;
+
+
+
 
   List<int> selectedUnitIds = [];
 
@@ -417,7 +423,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
           _formKey.currentState?.reset();
           selectedasignedto = asignedto.first;
           selectedinquiry_status = null;
-          selectedInterestType = null;
+          selectedInterestType = 0;
           selectedPropertyType = null;
           selectedactivity_source = null;
           nextFollowUpDate = null;
@@ -616,12 +622,14 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
         final data = json.decode(response.body);
 
+        print(data);
+
         setState(() {
           List<dynamic> leadStatusList = data['data']['leadStatus'];
 
           for (var status in leadStatusList) {
             // Create a FollowUpStatus object from JSON
-            FollowUpStatus followUpStatus = FollowUpStatus.fromJson(status);
+            InquiryStatus followUpStatus = InquiryStatus.fromJson(status);
 
             // Add the object to the list
             inquirystatus_list.add(followUpStatus);
@@ -1172,8 +1180,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
     fetchAmenities();
   }
 
-  int? selectedInterestType;
-
   @override
   Widget build(BuildContext context) {
 
@@ -1294,29 +1300,42 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                 ),
                                               ],
                                             ),
-                                            const SizedBox(height: 5),
-                                            ToggleButtons(
-                                              borderRadius: BorderRadius.circular(10),
-
-                                              isSelected: [selectedInterestType == 0, selectedInterestType == 1],
-                                              onPressed: (int index) {
-                                                setState(() {
-                                                  selectedInterestType = index;
-                                                });
-                                              },
-                                              selectedColor: Colors.white, // Text color for selected button
-                                              fillColor:
-                                              appbar_color.shade400, // Background color for selected button
-                                              color: Colors.black, // Text color for unselected button
-                                              children: const [
-                                                Padding(
-                                                  padding: EdgeInsets.symmetric(horizontal: 16.0),
-                                                  child: Text("Rent"),
+                                            const SizedBox(height: 10),
+                                            Row(
+                                              mainAxisAlignment: MainAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  "Rent",
+                                                  style: TextStyle(
+                                                    color: selectedInterestType == 0 ? appbar_color : Colors.grey,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
                                                 ),
-                                                Padding(
-                                                  padding: EdgeInsets.symmetric(horizontal: 16.0),
-                                                  child: Text("Buy"),
-                                                )])])),
+                                                SizedBox(width: 10),
+                                                FlutterSwitch(
+                                                  width: 60,
+                                                  height: 30,
+                                                  toggleSize: 20,
+                                                  borderRadius: 20,
+                                                  activeColor: appbar_color.shade200, // Background color when Buy is selected
+                                                  inactiveColor: appbar_color.shade200, // Background color when Rent is selected
+                                                  value: selectedInterestType == 1, // true = Buy, false = Rent
+                                                  onToggle: (bool value) {
+                                                    setState(() {
+                                                      selectedInterestType = value ? 1 : 0;
+                                                    });
+                                                  },
+                                                ),
+                                                SizedBox(width: 10),
+                                                Text(
+                                                  "Buy",
+                                                  style: TextStyle(
+                                                    color: selectedInterestType == 1 ? appbar_color : Colors.grey,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                              ],
+                                            )])),
 
                                         Container(
                                           padding: const EdgeInsets.only(left: 20.0, right: 20, top: 8,bottom:10),
@@ -1430,7 +1449,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                       return null; // No error if a value is selected
                                                     },
                                                     dropdownColor: Colors.white,
-                                                    icon: Icon(Icons.arrow_drop_down, color: appbar_color),
+                                                    icon: Icon(Icons.arrow_drop_down, color: Colors.black),
                                                     items: activitysource_list.map((ActivitySource status) {
                                                       return DropdownMenuItem<ActivitySource>(
                                                         value: status,
@@ -1569,7 +1588,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                       }
                                                       return null; // Show validation message if any
                                                     },
-
 
                                                     decoration: InputDecoration(
                                                       hintText: _hintText, // Dynamic hint
@@ -1750,7 +1768,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                               crossAxisAlignment: CrossAxisAlignment.start,
                                               children: [
 
-                                                DropdownButtonFormField<FollowUpStatus>(
+                                                DropdownButtonFormField<InquiryStatus>(
                                                   value: selectedinquiry_status,  // This should be an object of FollowUpStatus
                                                   decoration: InputDecoration(
                                                     hintText: 'Select Inquiry Status (required)',
@@ -1782,9 +1800,9 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                     return null; // No error if a value is selected
                                                   },
                                                   dropdownColor: Colors.white,
-                                                  icon: Icon(Icons.arrow_drop_down, color: appbar_color),
-                                                  items: inquirystatus_list.map((FollowUpStatus status) {
-                                                    return DropdownMenuItem<FollowUpStatus>(
+                                                  icon: Icon(Icons.arrow_drop_down, color: Colors.black),
+                                                  items: inquirystatus_list.map((InquiryStatus status) {
+                                                    return DropdownMenuItem<InquiryStatus>(
                                                       value: status,
                                                       child: Text(
                                                         status.name,  // Display the 'name'
@@ -1792,9 +1810,15 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                       ),
                                                     );
                                                   }).toList(),
-                                                  onChanged: (FollowUpStatus? value) {
+                                                  onChanged: (InquiryStatus? value) {
                                                     setState(() {
                                                       selectedinquiry_status = value;
+
+                                                      if(selectedinquiry_status!='Normal')
+                                                        {
+                                                          nextFollowUpDate = null;
+                                                        }
+
 
 
                                                     });
@@ -1808,7 +1832,74 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
                                   /*if (selectedinquiry_status == 'In Follow-Up' || selectedinquiry_status == 'Contact Later') // Conditionally render based on status
                                     */
-                                  Container(
+
+                                  if(selectedinquiry_status!=null && selectedinquiry_status!.category == 'Normal')
+                                    Container(
+                                      padding: EdgeInsets.only(top: 15, left: 20, right: 20),
+                                      child: Row(
+                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            "Next Follow-Up:",
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 16,
+                                            ),
+                                          ),
+                                          SizedBox(width: 10),
+                                          GestureDetector(
+                                            onTap: () async {
+                                              DateTime? pickedDate = await showDatePicker(
+                                                context: context,
+                                                initialDate: nextFollowUpDate ?? DateTime.now().add(Duration(days: 1)),
+                                                firstDate: DateTime.now().add(Duration(days: 1)), // Restrict past dates
+                                                lastDate: DateTime(2100),
+                                                builder: (BuildContext context, Widget? child) {
+                                                  return Theme(
+                                                    data: ThemeData.light().copyWith(
+                                                      colorScheme: ColorScheme.light(
+                                                        primary: appbar_color, // Header background and selected date color
+                                                        onPrimary: Colors.white, // Header text color
+                                                        onSurface: Colors.black, // Calendar text color
+                                                      ),
+                                                      textButtonTheme: TextButtonThemeData(
+                                                        style: TextButton.styleFrom(
+                                                          foregroundColor: appbar_color, // Button text color
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    child: child!,
+                                                  );
+                                                },
+                                              );
+
+                                              if (pickedDate != null) {
+                                                setState(() {
+                                                  nextFollowUpDate = pickedDate; // Save selected date
+                                                });
+                                              }
+                                            },
+                                            child: Row(
+                                              children: [
+                                                if(nextFollowUpDate != null)
+                                                  Row(children:[
+                                                    Text(
+                                                      nextFollowUpDate != null
+                                                          ? DateFormat("dd-MMM-yyyy").format(nextFollowUpDate!) // Formatting date
+                                                          : "",
+                                                      style: TextStyle(fontSize: 16, color: Colors.black87),
+                                                    ),
+                                                    SizedBox(width: 10),
+
+                                                  ]),
+                                                Icon(FontAwesomeIcons.calendarPlus, color: Colors.black87, size: 28),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  /*Container(
 
                                     child: Column(
 
@@ -1825,18 +1916,19 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
                                                   )
                                               ),
-                                              /*SizedBox(width: 2),
+                                              */
+                                  /*SizedBox(width: 2),
                                               Text(
                                                 '*', // Red asterisk for required field
                                                 style: TextStyle(
                                                   fontSize: 20,
                                                   color: Colors.red, // Red color for the asterisk
                                                 ),
-                                              ),*/
+                                              ),*//*
                                             ],
                                           ),
                                         ),
-                                        
+
                                         SizedBox(height: 5),
 
                                         Padding(
@@ -1855,7 +1947,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                       colorScheme: ColorScheme.light(
                                                         primary: appbar_color, // Header background and selected date color
                                                         onPrimary: Colors.white, // Header text color
-                                                        onSurface: appbar_color, // Calendar text color
+                                                        onSurface: Colors.black, // Calendar text color
                                                       ),
                                                       textButtonTheme: TextButtonThemeData(
                                                         style: TextButton.styleFrom(
@@ -1901,7 +1993,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
                                       ],
                                     ),
-                                  ),
+                                  ),*/
 
 
                                   Container(
@@ -2742,7 +2834,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                   _formKey.currentState?.reset();
                                                   selectedasignedto = asignedto.first;
                                                   selectedinquiry_status = null;
-                                                  selectedInterestType = null;
+                                                  selectedInterestType = 0;
                                                   selectedPropertyType = null;
                                                   selectedactivity_source = null;
                                                   nextFollowUpDate = null;

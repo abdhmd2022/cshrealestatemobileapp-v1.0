@@ -556,6 +556,7 @@ class _SalesInquiryReportState
       ],
     );
   }
+
   String _formatAreasWithEmirates(List<Map<String, dynamic>> preferredAreas) {
     if (preferredAreas.isEmpty) {
       return 'No areas specified';

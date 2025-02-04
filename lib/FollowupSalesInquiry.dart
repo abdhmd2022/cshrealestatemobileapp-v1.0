@@ -19,12 +19,12 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 class FollowUpStatus {
   final int id;
   final String name;
-  final bool isQualified;
+  final String category;
 
   FollowUpStatus({
     required this.id,
     required this.name,
-    required this.isQualified,
+    required this.category,
   });
 
   // Factory method to create a FollowUpStatus object from JSON
@@ -32,7 +32,7 @@ class FollowUpStatus {
     return FollowUpStatus(
       id: json['id'],
       name: json['name'],
-      isQualified: json['is_qualified'] == 'true',  // Convert to bool
+      category: json['category'],  // Convert to bool
     );
   }
 }
@@ -193,7 +193,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
 
    Set<int> selectedAmenities = {};
 
-  
+
 
   String _hintText = 'Enter Contact No'; // Default hint text
 
@@ -1397,106 +1397,63 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                               children: [
 
 
-                                Padding(
-
-                                    padding: EdgeInsets.only(top:30,left: 20,right: 20,bottom: 0),
-                                    child: TextFormField(
-                                      controller: customernamecontroller,
-                                      keyboardType: TextInputType.name,
-                                      enabled: false,
-                                      validator: (value) {
-                                        if (value!.isEmpty) {
-                                          return 'Name is required';
-                                        }
-                                        return null;
-                                      },
-                                      decoration: InputDecoration(
-                                        hintText: 'Enter Name',
-                                        label: Text('Name',
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.normal,
-                                              color: Colors.black
-                                          ),),
-                                        contentPadding: EdgeInsets.all(15),
-                                        border: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(10), // Set the border radius
-                                          borderSide: BorderSide(
-                                            color: Colors.black, // Set the border color
-                                          ),
-                                        ),
-                                        focusedBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(10),
-                                          borderSide: BorderSide(
-                                            color:  Colors.black, // Set the focused border color
-                                          ),
-                                        ),
-                                      ),
-                                      onChanged: (value) {
-                                        setState(() {
-                                          _isFocus_name = true;
-                                          _isFocused_email = false;
-                                        });
-                                      },
-                                      onFieldSubmitted: (value) {
-                                        setState(() {
-                                          _isFocus_name = false;
-                                          _isFocused_email = false;
-                                        });
-                                      },
-                                      onTap: () {
-                                        setState(() {
-                                          _isFocus_name = true;
-                                          _isFocused_email = false;
-                                        });
-                                      },
-                                      onEditingComplete: () {
-                                        setState(() {
-                                          _isFocus_name = false;
-                                          _isFocused_email = false;
-                                        });})),
-
                                 Container(
-                                  padding: EdgeInsets.only(top: 20, left: 20, right: 20, bottom: 0),
+                                  padding: EdgeInsets.only(top: 10, left: 20, right: 20, bottom: 0),
                                   child: Row(
                                     crossAxisAlignment: CrossAxisAlignment.center,
                                     children: [
                                       // Phone Number Input Field
                                       Expanded(
-                                        child: TextFormField(
-                                          enabled: false,
-                                          controller: customercontactnocontroller,
-                                          keyboardType: TextInputType.phone,
-                                          validator: (value) {
-                                            if (value == null || value.isEmpty) {
-                                              return 'Contact No. is required';
-                                            }
-                                            return null; // Show validation message if any
-                                          },
-                                          decoration: InputDecoration(
-                                            hintText: _hintText, // Dynamic hint
-                                            contentPadding: EdgeInsets.all(15),
-                                            label: Text(
-                                              'Contact No',
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.normal,
-                                                color: Colors.black,
-                                              ),
-                                            ),
-                                            border: OutlineInputBorder(
-                                              borderRadius: BorderRadius.circular(10),
-                                              borderSide: const BorderSide(
-                                                color: Colors.black,
-                                              ),
-                                            ),
-                                            focusedBorder: OutlineInputBorder(
-                                              borderRadius: BorderRadius.circular(10),
-                                              borderSide: const BorderSide(
-                                                color: Colors.black,
-                                              ),
+                                        child: Container(
+                                          padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                                          decoration: BoxDecoration(
+                                            color: Colors.grey.shade100, // Subtle background
+                                            borderRadius: BorderRadius.circular(12),
+                                            border: Border.all(color: Colors.grey.shade300),
+                                          ),
+                                          child: Text(
+                                            customernamecontroller.text.isNotEmpty
+                                                ? customernamecontroller.text: '', // Show dynamic hint if empty
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w200,
+                                              color: Colors.black87,
                                             ),
                                           ),
                                         ),
                                       ),
+
+                                    ],
+                                  ),
+                                ),
+
+                                Container(
+                                  padding: EdgeInsets.only(top: 10, left: 20, right: 20, bottom: 0),
+                                  child: Row(
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
+                                      // Phone Number Input Field
+                                      Expanded(
+                                        child: Container(
+                                          padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                                          decoration: BoxDecoration(
+                                            color: Colors.grey.shade100, // Subtle background
+                                            borderRadius: BorderRadius.circular(12),
+                                            border: Border.all(color: Colors.grey.shade300),
+                                          ),
+                                          child: Text(
+                                            customercontactnocontroller.text.isNotEmpty
+                                                ? customercontactnocontroller.text
+                                                : _hintText, // Show dynamic hint if empty
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w200,
+                                              color: Colors.black87,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+
                                       SizedBox(width: 10),
 
                                       _buildDecentButton(
@@ -1580,86 +1537,39 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                     */
 
 
-
                                 Container(
-                                  padding: EdgeInsets.only(top: 20, left: 20, right: 20, bottom: 0),
+                                  padding: EdgeInsets.only(top: 10, left: 20, right: 20, bottom: 0),
                                   child: Row(
                                     crossAxisAlignment: CrossAxisAlignment.center,
                                     children: [
                                       // Phone Number Input Field
                                       Expanded(
-                                        child: TextFormField(
-                                          controller: emailcontroller,
-                                          enabled: false,
-                                          keyboardType: TextInputType.emailAddress,
-                                          validator: (value) {
-                                            if (value!.isEmpty) {
-                                              return 'Email Address is required';
-                                            }
-                                            if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value))
-                                            {
-                                              return 'Please enter a valid email address';
-                                            }
-
-                                            return null;
-                                          },
-                                          decoration: InputDecoration(
-                                            hintText: 'Enter Email Address',
-                                            label: Text('Email Address',
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.normal,
-                                                  color: Colors.black
-                                              ),),
-                                            contentPadding: EdgeInsets.all(15),
-                                            border: OutlineInputBorder(
-                                              borderRadius: BorderRadius.circular(10), // Set the border radius
-                                              borderSide: BorderSide(
-                                                color: Colors.black, // Set the border color
-                                              ),
-                                            ),
-                                            focusedBorder: OutlineInputBorder(
-                                              borderRadius: BorderRadius.circular(10),
-                                              borderSide: BorderSide(
-                                                color:  Colors.black, // Set the focused border color
-
-                                              ),
+                                        child: Container(
+                                          padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                                          decoration: BoxDecoration(
+                                            color: Colors.grey.shade100, // Subtle background
+                                            borderRadius: BorderRadius.circular(12),
+                                            border: Border.all(color: Colors.grey.shade300),
+                                          ),
+                                          child: Text(
+                                            emailcontroller.text.isNotEmpty
+                                                ? emailcontroller.text: '', // Show dynamic hint if empty
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w200,
+                                              color: Colors.black87,
                                             ),
                                           ),
-                                          onChanged: (value) {
-                                            setState(() {
-                                              _isFocused_email = true;
-                                              _isFocus_name = false;
-                                            });
-                                          },
-                                          onFieldSubmitted: (value) {
-                                            setState(() {
-                                              _isFocused_email = false;
-                                              _isFocus_name = false;
-                                            });
-                                          },
-                                          onTap: () {
-                                            setState(() {
-                                              _isFocused_email = true;
-                                              _isFocus_name = false;
-
-                                            });
-                                          },
-                                          onEditingComplete: () {
-                                            setState(() {
-                                              _isFocused_email = false;
-                                              _isFocus_name = false;
-                                            });
-                                          },
-
                                         ),
                                       ),
+
                                       SizedBox(width: 10),
 
                                       _buildDecentButtonwithLabel(
                                         'Send',
                                         FontAwesomeIcons.envelope,
                                         appbar_color,
-                                        ()
+                                            ()
                                         {
                                           openEmail(widget.id.toString());
                                         },
@@ -1668,6 +1578,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                     ],
                                   ),
                                 ),
+
 
 
 
@@ -1730,72 +1641,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                                             selectedfollowup_type = value;
                                                           });})]))])),
 
-                                 // follow up date
-                  Container(
-                  padding: EdgeInsets.only(top: 15, left: 20, right: 20),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(
-                    "Next Follow-Up:",
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                  SizedBox(width: 10),
-                  GestureDetector(
-                    onTap: () async {
-                      DateTime? pickedDate = await showDatePicker(
-                        context: context,
-                        initialDate: nextFollowUpDate ?? DateTime.now().add(Duration(days: 1)),
-                        firstDate: DateTime.now().add(Duration(days: 1)), // Restrict past dates
-                        lastDate: DateTime(2100),
-                        builder: (BuildContext context, Widget? child) {
-                          return Theme(
-                            data: ThemeData.light().copyWith(
-                              colorScheme: ColorScheme.light(
-                                primary: appbar_color, // Header background and selected date color
-                                onPrimary: Colors.white, // Header text color
-                                onSurface: Colors.black, // Calendar text color
-                              ),
-                              textButtonTheme: TextButtonThemeData(
-                                style: TextButton.styleFrom(
-                                  foregroundColor: appbar_color, // Button text color
-                                ),
-                              ),
-                            ),
-                            child: child!,
-                          );
-                        },
-                      );
 
-                      if (pickedDate != null) {
-                        setState(() {
-                          nextFollowUpDate = pickedDate; // Save selected date
-                        });
-                      }
-                    },
-                    child: Row(
-                      children: [
-                        if(nextFollowUpDate != null)
-                        Row(children:[
-                          Text(
-                            nextFollowUpDate != null
-                                ? DateFormat("dd-MMM-yyyy").format(nextFollowUpDate!) // Formatting date
-                                : "",
-                            style: TextStyle(fontSize: 16, color: Colors.black87),
-                          ),
-                          SizedBox(width: 10),
-
-                        ]),
-                        Icon(FontAwesomeIcons.calendarPlus, color: Colors.black87, size: 28),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
 
               // follow up status
             Container(
@@ -1853,7 +1699,114 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                                         onChanged: (FollowUpStatus? value) {
                                                           setState(() {
                                                             selectedfollowup_status = value;
+                                                            if(selectedfollowup_status!.category!='Normal')
+                                                            {
+                                                              nextFollowUpDate = null;
+                                                            }
                                                           });})]))])),
+
+
+                                if(selectedfollowup_status!=null && selectedfollowup_status!.category == 'Normal') // follow up date
+                                  Container(
+                                    padding: EdgeInsets.only(top: 15, left: 20, right: 20),
+                                    child: Row(
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          "Next Follow-Up:",
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16,
+                                          ),
+                                        ),
+                                        SizedBox(width: 10),
+                                        GestureDetector(
+                                          onTap: () async {
+                                            DateTime? pickedDate = await showDatePicker(
+                                              context: context,
+                                              initialDate: nextFollowUpDate ?? DateTime.now().add(Duration(days: 1)),
+                                              firstDate: DateTime.now().add(Duration(days: 1)), // Restrict past dates
+                                              lastDate: DateTime(2100),
+                                              builder: (BuildContext context, Widget? child) {
+                                                return Theme(
+                                                  data: ThemeData.light().copyWith(
+                                                    colorScheme: ColorScheme.light(
+                                                      primary: appbar_color, // Header background and selected date color
+                                                      onPrimary: Colors.white, // Header text color
+                                                      onSurface: Colors.black, // Calendar text color
+                                                    ),
+                                                    textButtonTheme: TextButtonThemeData(
+                                                      style: TextButton.styleFrom(
+                                                        foregroundColor: appbar_color, // Button text color
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  child: child!,
+                                                );
+                                              },
+                                            );
+
+                                            if (pickedDate != null) {
+                                              setState(() {
+                                                nextFollowUpDate = pickedDate; // Save selected date
+                                              });
+                                            }
+                                          },
+                                          child: Row(
+                                            children: [
+                                              if(nextFollowUpDate != null)
+                                                Row(children:[
+                                                  Text(
+                                                    nextFollowUpDate != null
+                                                        ? DateFormat("dd-MMM-yyyy").format(nextFollowUpDate!) // Formatting date
+                                                        : "",
+                                                    style: TextStyle(fontSize: 16, color: Colors.black87),
+                                                  ),
+                                                  SizedBox(width: 10),
+
+                                                ]),
+                                              Container(
+                                                margin: EdgeInsets.only(top: 0.0),
+                                                padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
+                                                decoration: BoxDecoration(
+                                                  borderRadius: BorderRadius.circular(30.0),
+                                                  color: Colors.white,
+                                                  border: Border.all(
+                                                    color: Colors.black.withOpacity(0.3),
+                                                    width: 1.5,
+                                                  ),
+                                                  boxShadow: [
+                                                    BoxShadow(
+                                                      color: Colors.black.withOpacity(0.1),
+                                                      blurRadius: 8.0,
+                                                      offset: Offset(0, 4),
+                                                    ),
+                                                  ],
+                                                ),
+                                                child: Row(
+                                                  mainAxisAlignment: MainAxisAlignment.center,
+                                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                                  children: [
+
+                                                    FaIcon(FontAwesomeIcons.calendarPlus,color:Colors.black),
+                                                    /*SizedBox(width: 8.0),
+          Text(
+            label,
+            style: TextStyle(
+              color: color,
+              fontWeight: FontWeight.w600,
+            ),
+          ),*/
+                                                  ],
+
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
 
                                 /*Container(
                                   padding: const EdgeInsets.only(left: 20.0, right: 20, top: 15),
@@ -2717,7 +2670,7 @@ Widget _buildDecentButton(
     splashColor: color.withOpacity(0.2),
     highlightColor: color.withOpacity(0.1),
     child: Container(
-      margin: EdgeInsets.only(top: 10.0),
+      margin: EdgeInsets.only(top: 0.0),
       padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(30.0),
@@ -2764,7 +2717,7 @@ Widget _buildDecentButtonwithLabel(
     splashColor: color.withOpacity(0.2),
     highlightColor: color.withOpacity(0.1),
     child: Container(
-      margin: EdgeInsets.only(top: 10.0),
+      margin: EdgeInsets.only(top: 0.0),
       padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(30.0),

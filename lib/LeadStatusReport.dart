@@ -319,9 +319,8 @@ class _LeadStatusReportState extends State<LeadStatusReport> {
     );
   }
 
-  void showEditLeadStatusDialog(int id, String old_status_name, String category,String color) {
+  void showEditLeadStatusDialog(int id, String old_status_name, String category) {
     final _formKey = GlobalKey<FormState>();
-
 
     TextEditingController leadStatusController = TextEditingController();
 
@@ -408,7 +407,7 @@ class _LeadStatusReportState extends State<LeadStatusReport> {
                             setState(() {
                               selectedCategory = newValue;
                               Navigator.of(context).pop();
-                              showEditLeadStatusDialog(id, old_status_name, category, color);
+                              showEditLeadStatusDialog(id, old_status_name, category);
                             });
                           },
                         ),
@@ -663,7 +662,7 @@ class _LeadStatusReportState extends State<LeadStatusReport> {
                               selectedCategory = lead['category'] ?? 'Normal';
                             });
 
-                                showEditLeadStatusDialog(lead['id'],lead['name'],lead['category'],lead['color']);
+                                showEditLeadStatusDialog(lead['id'],lead['name'],lead['category']);
                               },
                         ),
                         SizedBox(width:5),

@@ -547,7 +547,7 @@ class _SalesInquiryReportState
         _buildInfoRow('Name:', inquiry.customerName),
         _buildInfoRow('Unit Type:', inquiry.unitType),
         _buildInfoRow('Email:', inquiry.email),
-        _buildInfoRow('Area:', '${inquiry.area}, ${inquiry.emirate}'),
+        _buildInfoRow('Area:', _formatAreasWithEmirates(inquiry.preferredAreas)),
         _buildInfoRow('Date:', inquiry.creationDate),
         // _buildInfoRow('Created By (using for testing):', inquiry.created_by.toString()),
         //_buildInfoRow('Assigned To (using for testing):', inquiry.assigned_to.toString()),
@@ -556,6 +556,18 @@ class _SalesInquiryReportState
       ],
     );
   }
+  String _formatAreasWithEmirates(List<Map<String, dynamic>> preferredAreas) {
+    if (preferredAreas.isEmpty) {
+      return 'No areas specified';
+    }
+
+    return preferredAreas.map((area) {
+      final areaName = area['areas']['area_name'] ?? 'Unknown Area';
+      final emirateName = area['areas']['emirates']['state_name'] ?? 'Unknown Emirate';
+      return '$areaName, $emirateName';
+    }).join(' • '); // Using a bullet separator for clarity
+  }
+
 
   Widget _buildInfoRow(String label, String value) {
     return Padding(

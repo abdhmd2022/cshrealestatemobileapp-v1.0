@@ -8,10 +8,9 @@ const MaterialAccentColor appbar_color = Colors.blueAccent;
 
 const String company_name = 'Company';
 
-
 const String authTokenBase = r'!1--3*%*%*%*9$api$8*%*%*%*5--0!X19fIUBBUyQlYXMxOTI4MzdfX18=KSgqL2FzZGFzZGlvQ0VEQUZf';
 
-const String BASE_URL_config = "http://192.168.2.126:4000/api";
+const String BASE_URL_config = "http://192.168.2.185:4500/api";
 
 // Serial & Company Tokens (Loaded Dynamically)
 late String Serial_Token;

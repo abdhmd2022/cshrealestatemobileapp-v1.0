@@ -1778,7 +1778,6 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                     },
                     child: Row(
                       children: [
-
                         if(nextFollowUpDate != null)
                         Row(children:[
                           Text(
@@ -1791,8 +1790,6 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
 
                         ]),
                         Icon(FontAwesomeIcons.calendarPlus, color: Colors.black87, size: 28),
-
-
                       ],
                     ),
                   ),
@@ -1800,9 +1797,8 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
               ),
             ),
 
-
               // follow up status
-                                Container(
+            Container(
                                     child: Column(
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
@@ -2121,7 +2117,9 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                       )
 
 
-                                      *//*Padding(
+                                      */
+
+                                /*Padding(
                                         padding: EdgeInsets.only(top:0,left:20,right:20,bottom :0),
 
                                         child: DropdownButtonFormField<dynamic>(

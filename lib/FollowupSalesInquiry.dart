@@ -298,7 +298,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
 
     final String phoneNumber = '${customercontactnocontroller.text}';
 
-    final Uri phoneUri = Uri.parse("tel: $phoneNumber"); // Replace with a valid number
+    final Uri phoneUri = Uri.parse("tel:$phoneNumber"); // Replace with a valid number
     if (await canLaunchUrl(phoneUri)) {
       await launchUrl(phoneUri);
     } else {

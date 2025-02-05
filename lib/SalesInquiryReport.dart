@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:cshrealestatemobile/CreateSalesInquiry.dart';
 import 'package:cshrealestatemobile/FollowupSalesInquiry.dart';
@@ -524,10 +525,10 @@ class _SalesInquiryReportState
       children: [
         Row(
           children: [
-            Icon(Icons.label_important, color: Colors.teal, size: 24.0),
+            Icon(FontAwesomeIcons.userCircle, color: Colors.teal, size: 22.0),
             SizedBox(width: 8.0),
             Text(
-              inquiry.inquiryNo.toString(),
+              inquiry.customerName.toString(),
               style: TextStyle(
                 fontSize: 18.0,
                 fontWeight: FontWeight.bold,
@@ -544,11 +545,11 @@ class _SalesInquiryReportState
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildInfoRow('Name:', inquiry.customerName),
-        _buildInfoRow('Unit Type:', inquiry.unitType),
+        _buildInfoRow(Icons.numbers, inquiry.inquiryNo),
+        _buildInfoRow(FontAwesomeIcons.building, inquiry.unitType),
         // _buildInfoRow('Email:', inquiry.email),
         // _buildInfoRow('Area:', _formatAreasWithEmirates(inquiry.preferredAreas)),
-        _buildInfoRow('Date:', inquiry.creationDate),
+        _buildInfoRow(FontAwesomeIcons.clock, inquiry.creationDate),
         // _buildInfoRow('Created By (using for testing):', inquiry.created_by.toString()),
         //_buildInfoRow('Assigned To (using for testing):', inquiry.assigned_to.toString()),
 
@@ -570,18 +571,13 @@ class _SalesInquiryReportState
   }
 
 
-  Widget _buildInfoRow(String label, String value) {
+  Widget _buildInfoRow(IconData label, String value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0),
       child: Row(
         children: [
-          Text(
-            label,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: Colors.grey[700],
-            ),
-          ),
+          FaIcon(label, color: appbar_color, size: 20.0),
+
           SizedBox(width: 8.0),
           Expanded(
               child: SingleChildScrollView(
@@ -649,7 +645,7 @@ class _SalesInquiryReportState
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildInfoRow('Description:', inquiry.description),
+          _buildInfoRow(FontAwesomeIcons.commentDots, inquiry.description),
 
         ],
       ),

@@ -1198,7 +1198,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
               Icons.arrow_back,
               color: Colors.white,
             ),),
-          title: Text('Inquiry',
+          title: Text('Create Inquiry',
             style: TextStyle(
                 color: Colors.white
             )),
@@ -1218,7 +1218,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                   ),
                 child: Column(
                   children: [
-                    Container(
+                    /*Container(
                         width: double.infinity,
                         margin: EdgeInsets.only(
                           left: 20,
@@ -1252,7 +1252,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                             ),
                           ],
                         )
-                    ),
+                    ),*/
 
                     Container(
                         child:  Form(

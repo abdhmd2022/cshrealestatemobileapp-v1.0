@@ -1355,7 +1355,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                         left: 20,
                         top: 20,
                         right: 30,
-                        bottom: 20,
+                        bottom: 10,
                       ),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.start,
@@ -1371,7 +1371,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                             ),
                           ),
 
-                          SizedBox(height: 5,),
+                          /*SizedBox(height: 5,),
                           Text(
                             'Follow up your sales inquiry',
                             textAlign: TextAlign.start,
@@ -1380,7 +1380,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                               fontSize: 15,
                               fontWeight: FontWeight.normal,
                             ),
-                          ),
+                          ),*/
                         ],
                       )
                   ),
@@ -1392,196 +1392,188 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                           child: Column(
                             /*physics: NeverScrollableScrollPhysics(),*/
                             mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-
+                            crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
 
-
                                 Container(
                                   padding: EdgeInsets.only(top: 10, left: 20, right: 20, bottom: 0),
-                                  child: Row(
-                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                  child: Column(
                                     children: [
-                                      // Phone Number Input Field
-                                      Expanded(
-                                        child: Container(
-                                          padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                                          decoration: BoxDecoration(
-                                            color: Colors.grey.shade100, // Subtle background
-                                            borderRadius: BorderRadius.circular(12),
-                                            border: Border.all(color: Colors.grey.shade300),
-                                          ),
-                                          child: Text(
-                                            customernamecontroller.text.isNotEmpty
-                                                ? customernamecontroller.text: '', // Show dynamic hint if empty
-                                            style: TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w200,
-                                              color: Colors.black87,
+                                      Row(
+                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        children: [
+                                          Expanded(
+                                            child: Container(
+                                              padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                                              decoration: BoxDecoration(
+                                                color: Colors.grey.shade100,
+                                                borderRadius: BorderRadius.circular(12),
+                                                border: Border.all(color: Colors.grey.shade300),
+                                              ),
+                                              child: Text(
+                                                customernamecontroller.text.isNotEmpty ? customernamecontroller.text : '',
+                                                style: TextStyle(
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.w200,
+                                                  color: Colors.black87,
+                                                ),
+                                              ),
                                             ),
                                           ),
-                                        ),
+                                        ],
                                       ),
-
+                                      SizedBox(height: 10),
+                                      Row(
+                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        children: [
+                                          Expanded(
+                                            child: Container(
+                                              padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                                              decoration: BoxDecoration(
+                                                color: Colors.grey.shade100,
+                                                borderRadius: BorderRadius.circular(12),
+                                                border: Border.all(color: Colors.grey.shade300),
+                                              ),
+                                              child: Text(
+                                                customercontactnocontroller.text.isNotEmpty ? customercontactnocontroller.text : _hintText,
+                                                style: TextStyle(
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.w200,
+                                                  color: Colors.black87,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          SizedBox(width: 10),
+                                          _buildDecentButton(
+                                            'Whatsapp',
+                                            FontAwesomeIcons.whatsapp,
+                                            Colors.green,
+                                            openWhatsApp,
+                                          ),
+                                          SizedBox(width: 10),
+                                          _buildDecentButton(
+                                            'Call',
+                                            FontAwesomeIcons.phone,
+                                            appbar_color,
+                                            openCaller,
+                                          ),
+                                        ],
+                                      ),
+                                      SizedBox(height: 10),
+                                      Row(
+                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        children: [
+                                          Expanded(
+                                            child: Container(
+                                              padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                                              decoration: BoxDecoration(
+                                                color: Colors.grey.shade100,
+                                                borderRadius: BorderRadius.circular(12),
+                                                border: Border.all(color: Colors.grey.shade300),
+                                              ),
+                                              child: Text(
+                                                emailcontroller.text.isNotEmpty ? emailcontroller.text : '',
+                                                style: TextStyle(
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.w200,
+                                                  color: Colors.black87,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          SizedBox(width: 10),
+                                          _buildDecentButtonwithLabel(
+                                            'Send',
+                                            FontAwesomeIcons.envelope,
+                                            appbar_color,
+                                                () {
+                                              openEmail(widget.id.toString());
+                                            },
+                                          ),
+                                        ],
+                                      ),
                                     ],
                                   ),
                                 ),
 
-                                Container(
-                                  padding: EdgeInsets.only(top: 10, left: 20, right: 20, bottom: 0),
-                                  child: Row(
-                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                // second option for headers
+                                /*Container(
+                                  padding: EdgeInsets.all(20),
+                                  margin: EdgeInsets.all(20),
+
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey.shade100,
+                                    borderRadius: BorderRadius.circular(12),
+                                    border: Border.all(color: Colors.grey.shade300),
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      // Phone Number Input Field
-                                      Expanded(
-                                        child: Container(
-                                          padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                                          decoration: BoxDecoration(
-                                            color: Colors.grey.shade100, // Subtle background
-                                            borderRadius: BorderRadius.circular(12),
-                                            border: Border.all(color: Colors.grey.shade300),
-                                          ),
-                                          child: Text(
-                                            customercontactnocontroller.text.isNotEmpty
-                                                ? customercontactnocontroller.text
-                                                : _hintText, // Show dynamic hint if empty
-                                            style: TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w200,
-                                              color: Colors.black87,
-                                            ),
-                                          ),
+                                      Text(
+                                        customernamecontroller.text.isNotEmpty ? customernamecontroller.text : '',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w200,
+                                          color: Colors.black87,
                                         ),
                                       ),
-
-                                      SizedBox(width: 10),
-
-                                      _buildDecentButton(
-                                        'Whatsapp',
-                                        FontAwesomeIcons.whatsapp,
-                                        Colors.green,
-                                        openWhatsApp,
+                                      SizedBox(height: 10),
+                                      Row(
+                                        children: [
+                                          Expanded(
+                                            child: Text(
+                                              customercontactnocontroller.text.isNotEmpty ? customercontactnocontroller.text : _hintText,
+                                              style: TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w200,
+                                                color: Colors.black87,
+                                              ),
+                                            ),
+                                          ),
+                                          SizedBox(width: 10),
+                                          _buildDecentButton(
+                                            'Whatsapp',
+                                            FontAwesomeIcons.whatsapp,
+                                            Colors.green,
+                                            openWhatsApp,
+                                          ),
+                                          SizedBox(width: 10),
+                                          _buildDecentButton(
+                                            'Call',
+                                            FontAwesomeIcons.phone,
+                                            appbar_color,
+                                            openCaller,
+                                          ),
+                                        ],
                                       ),
-                                      SizedBox(width: 10),
-                                      _buildDecentButton(
-                                        'Call',
-                                        FontAwesomeIcons.phone,
-                                        appbar_color,
-                                        openCaller, // Replace with the call function if needed
+                                      SizedBox(height: 10),
+                                      Row(
+                                        children: [
+                                          Expanded(
+                                            child: Text(
+                                              emailcontroller.text.isNotEmpty ? emailcontroller.text : '',
+                                              style: TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w200,
+                                                color: Colors.black87,
+                                              ),
+                                            ),
+                                          ),
+                                          SizedBox(width: 10),
+                                          _buildDecentButtonwithLabel(
+                                            'Send',
+                                            FontAwesomeIcons.envelope,
+                                            appbar_color,
+                                                () {
+                                              openEmail(widget.id.toString());
+                                            },
+                                          ),
+                                        ],
                                       ),
                                     ],
                                   ),
-                                ),
-
-
-
-
-                                /* Padding(
-                                    padding: EdgeInsets.only(top:10,left: 20,right: 20,bottom: 0),
-                                    child: TextFormField(
-                                      controller: customercontactnocontroller,
-                                      enabled: false,
-                                      keyboardType: TextInputType.number,
-                                      validator: (value) {
-                                        if (value!.isEmpty) {
-                                          return 'Contact No. is required';
-                                        }
-                                        return null;
-                                      },
-                                      decoration: InputDecoration(
-                                        hintText: 'Enter Contact No',
-                                        label: Text('Contact No.',
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.normal,
-                                              color: Colors.black
-                                          ),),
-                                        contentPadding: EdgeInsets.all(15),
-                                        border: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(10), // Set the border radius
-                                          borderSide: BorderSide(
-                                            color: Colors.black, // Set the border color
-                                          ),
-                                        ),
-                                        focusedBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(10),
-                                          borderSide: BorderSide(
-                                            color:  Colors.black, // Set the focused border color
-                                          ),
-                                        ),
-                                      ),
-                                      onChanged: (value) {
-                                        setState(() {
-                                          _isFocused_email = true;
-                                          _isFocus_name = false;
-                                        });
-                                      },
-                                      onFieldSubmitted: (value) {
-                                        setState(() {
-                                          _isFocused_email = false;
-                                          _isFocus_name = false;
-                                        });
-                                      },
-                                      onTap: () {
-                                        setState(() {
-                                          _isFocused_email = true;
-                                          _isFocus_name = false;
-                                        });
-                                      },
-                                      onEditingComplete: () {
-                                        setState(() {
-                                          _isFocused_email = false;
-                                          _isFocus_name = false;
-                                        });
-                                      },
-                                    )),
-                                    */
-
-
-                                Container(
-                                  padding: EdgeInsets.only(top: 10, left: 20, right: 20, bottom: 0),
-                                  child: Row(
-                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                    children: [
-                                      // Phone Number Input Field
-                                      Expanded(
-                                        child: Container(
-                                          padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                                          decoration: BoxDecoration(
-                                            color: Colors.grey.shade100, // Subtle background
-                                            borderRadius: BorderRadius.circular(12),
-                                            border: Border.all(color: Colors.grey.shade300),
-                                          ),
-                                          child: Text(
-                                            emailcontroller.text.isNotEmpty
-                                                ? emailcontroller.text: '', // Show dynamic hint if empty
-                                            style: TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w200,
-                                              color: Colors.black87,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-
-                                      SizedBox(width: 10),
-
-                                      _buildDecentButtonwithLabel(
-                                        'Send',
-                                        FontAwesomeIcons.envelope,
-                                        appbar_color,
-                                            ()
-                                        {
-                                          openEmail(widget.id.toString());
-                                        },
-                                      ),
-
-                                    ],
-                                  ),
-                                ),
-
-
-
-
+                                ),*/
 
                                 // follow up type
                                 Container(
@@ -1640,8 +1632,6 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                                           setState(() {
                                                             selectedfollowup_type = value;
                                                           });})]))])),
-
-
 
               // follow up status
             Container(

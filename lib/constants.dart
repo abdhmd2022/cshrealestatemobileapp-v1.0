@@ -6,6 +6,7 @@ const String app_name = "Real Estate";
 
 const MaterialAccentColor appbar_color = Colors.blueAccent;
 
+
 const String company_name = 'Company';
 
 const String authTokenBase = r'!1--3*%*%*%*9$api$8*%*%*%*5--0!X19fIUBBUyQlYXMxOTI4MzdfX18=KSgqL2FzZGFzZGlvQ0VEQUZf';

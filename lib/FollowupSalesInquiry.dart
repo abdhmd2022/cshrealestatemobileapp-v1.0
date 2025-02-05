@@ -361,14 +361,16 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
         // Request was successful
         print("Response Data: ${response.body}");
         setState(() {
-          _formKey.currentState?.reset();
-
-          /*print(_selectedrole['role_name']);*/
-
+          /*_formKey.currentState?.reset();
           nextFollowUpDate = null;
           selectedfollowup_status = null;
           selectedfollowup_type = null;
-          remarksController.clear();
+          remarksController.clear();*/
+
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => SalesInquiryReport()),
+          );
         });
 
       } else {
@@ -1328,7 +1330,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
             Icons.arrow_back,
             color: Colors.white,
           ),),
-        title: Text('Follow Up',
+        title: Text('Follow-Up Inquiry',
             style: TextStyle(
                 color: Colors.white
             )),
@@ -1349,7 +1351,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                 ),
               child: Column(
                 children: [
-                  Container(
+                  /*Container(
                       width: double.infinity,
                       margin: EdgeInsets.only(
                         left: 20,
@@ -1366,12 +1368,12 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                             textAlign: TextAlign.start,
                             style: TextStyle(
                               color: Colors.black,
-                              fontSize: 30,
+                              fontSize: 25,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
 
-                          /*SizedBox(height: 5,),
+                          *//*SizedBox(height: 5,),
                           Text(
                             'Follow up your sales inquiry',
                             textAlign: TextAlign.start,
@@ -1380,10 +1382,10 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                               fontSize: 15,
                               fontWeight: FontWeight.normal,
                             ),
-                          ),*/
+                          ),*//*
                         ],
                       )
-                  ),
+                  ),*/
 
                   Container(
                       child:  Form(
@@ -1396,52 +1398,92 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                               children: [
 
                                 Container(
-                                  padding: EdgeInsets.only(top: 10, left: 20, right: 20, bottom: 0),
+                                  padding: EdgeInsets.only(top: 20, left: 20, right: 20, bottom: 0),
                                   child: Column(
                                     children: [
                                       Row(
                                         crossAxisAlignment: CrossAxisAlignment.center,
                                         children: [
+
                                           Expanded(
                                             child: Container(
-                                              padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                                              padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
                                               decoration: BoxDecoration(
-                                                color: Colors.grey.shade100,
-                                                borderRadius: BorderRadius.circular(12),
-                                                border: Border.all(color: Colors.grey.shade300),
+                                                color: appbar_color.withOpacity(0.1),
+                                                boxShadow: [
+                                                  BoxShadow(
+                                                    color: appbar_color.withOpacity(0), // Shadow color
+                                                    spreadRadius: 2, // How much the shadow spreads
+                                                    blurRadius: 5, // Softness of the shadow
+                                                    offset: Offset(2, 2), // Changes the shadow position (X, Y)
+                                                  ),
+                                                ],
+                                                borderRadius: BorderRadius.circular(12.0),
                                               ),
-                                              child: Text(
-                                                customernamecontroller.text.isNotEmpty ? customernamecontroller.text : '',
-                                                style: TextStyle(
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.w200,
-                                                  color: Colors.black87,
-                                                ),
-                                              ),
+                                              child: Row(
+                                                  children: [
+
+                                                    Icon(
+                                                        FontAwesomeIcons.userCircle,
+                                                        color: appbar_color.withOpacity(1),
+                                                      size: 20,
+                                                    ),
+                                                    SizedBox(width: 8,),
+
+                                                    Text(
+                                                      customernamecontroller.text.isNotEmpty ? customernamecontroller.text : '',
+                                                      style: TextStyle(
+                                                          fontSize: 16,
+                                                          color: appbar_color.withOpacity(1),
+                                                          fontWeight: FontWeight.normal
+                                                      ),
+
+                                                    ),
+                                                  ],
+                                              )
                                             ),
                                           ),
                                         ],
                                       ),
-                                      SizedBox(height: 10),
+                                      SizedBox(height: 8),
                                       Row(
                                         crossAxisAlignment: CrossAxisAlignment.center,
                                         children: [
                                           Expanded(
                                             child: Container(
-                                              padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                                              padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
                                               decoration: BoxDecoration(
-                                                color: Colors.grey.shade100,
-                                                borderRadius: BorderRadius.circular(12),
-                                                border: Border.all(color: Colors.grey.shade300),
+                                                color: appbar_color.withOpacity(0.1),
+
+                                                borderRadius: BorderRadius.circular(12.0),
+                                                boxShadow: [
+                                                  BoxShadow(
+                                                    color: appbar_color.withOpacity(0), // Shadow color
+                                                    spreadRadius: 2, // How much the shadow spreads
+                                                    blurRadius: 5, // Softness of the shadow
+                                                    offset: Offset(2, 2), // Changes the shadow position (X, Y)
+                                                  ),
+                                                ],
                                               ),
-                                              child: Text(
-                                                customercontactnocontroller.text.isNotEmpty ? customercontactnocontroller.text : _hintText,
-                                                style: TextStyle(
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.w200,
-                                                  color: Colors.black87,
-                                                ),
-                                              ),
+                                              child: Row(
+                                                  children: [
+
+                                                    Icon(
+                                                      FontAwesomeIcons.phone,
+                                                      color: appbar_color.withOpacity(1),
+                                                      size: 20,
+                                                    ),
+                                                    SizedBox(width: 8,),
+                                                    Text(
+                                                        customercontactnocontroller.text.isNotEmpty ? customercontactnocontroller.text : _hintText,
+                                                        style: TextStyle(
+                                                            fontSize: 16,
+                                                            color: appbar_color.withOpacity(1),
+                                                            fontWeight: FontWeight.normal
+                                                        )
+                                                    ),
+                                                  ],
+                                              )
                                             ),
                                           ),
                                           SizedBox(width: 10),
@@ -1455,38 +1497,56 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                           _buildDecentButton(
                                             'Call',
                                             FontAwesomeIcons.phone,
-                                            appbar_color,
+                                            Colors.blueAccent,
                                             openCaller,
                                           ),
                                         ],
                                       ),
-                                      SizedBox(height: 10),
+                                      SizedBox(height: 8),
                                       Row(
                                         crossAxisAlignment: CrossAxisAlignment.center,
                                         children: [
                                           Expanded(
                                             child: Container(
-                                              padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                                              padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
                                               decoration: BoxDecoration(
-                                                color: Colors.grey.shade100,
-                                                borderRadius: BorderRadius.circular(12),
-                                                border: Border.all(color: Colors.grey.shade300),
+                                                color: appbar_color.withOpacity(0.1),
+                                                boxShadow: [
+                                                  BoxShadow(
+                                                    color: appbar_color.withOpacity(0), // Shadow color
+                                                    spreadRadius: 2, // How much the shadow spreads
+                                                    blurRadius: 5, // Softness of the shadow
+                                                    offset: Offset(2, 2), // Changes the shadow position (X, Y)
+                                                  ),
+                                                ],
+                                                borderRadius: BorderRadius.circular(12.0),
                                               ),
-                                              child: Text(
-                                                emailcontroller.text.isNotEmpty ? emailcontroller.text : '',
-                                                style: TextStyle(
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.w200,
-                                                  color: Colors.black87,
-                                                ),
-                                              ),
+                                              child: Row(
+                                                  children:[
+
+                                                    Icon(
+                                                      FontAwesomeIcons.envelope ,
+                                                      color: appbar_color.withOpacity(1),
+                                                      size: 20,
+                                                    ),
+                                                    SizedBox(width: 8,),
+                                                    Text(
+                                                        emailcontroller.text.isNotEmpty ? emailcontroller.text : '',
+                                                        style: TextStyle(
+                                                            fontSize: 16,
+                                                            color: appbar_color.withOpacity(1),
+                                                            fontWeight: FontWeight.normal
+                                                        )
+                                                    ),
+                                                  ]
+                                              )
                                             ),
                                           ),
                                           SizedBox(width: 10),
                                           _buildDecentButtonwithLabel(
                                             'Send',
                                             FontAwesomeIcons.envelope,
-                                            appbar_color,
+                                              Colors.blueAccent,
                                                 () {
                                               openEmail(widget.id.toString());
                                             },
@@ -2491,7 +2551,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                 ),
                               ),*/
 
-                                Container(
+                                /*Container(
                                   margin: EdgeInsets.only( top:15,
                                       bottom: 0,
                                       left: 20,
@@ -2515,9 +2575,9 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                       ),
                                     ],
                                   ),
-                                ),
+                                ),*/
 
-                                Padding(padding: EdgeInsets.only(top:0,left: 20,right: 20,bottom: 0),
+                                Padding(padding: EdgeInsets.only(top:20,left: 20,right: 20,bottom: 0),
 
                                     child: TextFormField(
                                       controller: remarksController,
@@ -2531,7 +2591,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                         return null;
                                       },
                                       decoration: InputDecoration(
-                                        hintText: 'Enter Remarks',
+                                        hintText: 'Enter Remarks*',
                                         contentPadding: EdgeInsets.all(15),
                                         border: OutlineInputBorder(
                                           borderRadius: BorderRadius.circular(10), // Set the border radius
@@ -2661,7 +2721,7 @@ Widget _buildDecentButton(
     highlightColor: color.withOpacity(0.1),
     child: Container(
       margin: EdgeInsets.only(top: 0.0),
-      padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
+      padding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 5.0),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(30.0),
         color: Colors.white,
@@ -2708,7 +2768,7 @@ Widget _buildDecentButtonwithLabel(
     highlightColor: color.withOpacity(0.1),
     child: Container(
       margin: EdgeInsets.only(top: 0.0),
-      padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
+      padding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 5.0),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(30.0),
         color: Colors.white,

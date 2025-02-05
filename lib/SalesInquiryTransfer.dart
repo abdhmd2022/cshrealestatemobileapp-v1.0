@@ -4,6 +4,7 @@ import 'package:cshrealestatemobile/constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:flutter/rendering.dart';
@@ -253,7 +254,7 @@ class _SalesInquiryTransferPageState extends State<SalesInquiryTransfer> with Ti
                             SingleChildScrollView(
                               scrollDirection: Axis.horizontal,
                               child:  Container(
-                                padding: EdgeInsets.only(top:20),
+                                padding: EdgeInsets.only(top:0),
                                 child:Row(
                                   children: [
 
@@ -274,14 +275,17 @@ class _SalesInquiryTransferPageState extends State<SalesInquiryTransfer> with Ti
                                             child:Row(
                                               children: [
                                                 Icon(
-                                                    Icons.person_outlined,
-                                                    color: appbar_color.withOpacity(1)
+                                                FontAwesomeIcons.userCircle,
+                                                    color: appbar_color.withOpacity(1),
+                                                  size: 20,
+
                                                 ),
-                                                SizedBox(width: 5,),
+                                                SizedBox(width: 8,),
                                                 Text(widget.name,
                                                     style: TextStyle(
                                                         color: appbar_color.withOpacity(1),
-                                                        fontWeight: FontWeight.bold
+                                                        fontWeight: FontWeight.bold,
+
                                                     ))
 
                                               ],
@@ -299,10 +303,11 @@ class _SalesInquiryTransferPageState extends State<SalesInquiryTransfer> with Ti
                                             child:Row(
                                               children: [
                                                 Icon(
-                                                    Icons.email_outlined,
-                                                    color: appbar_color.withOpacity(1)
+                                                    FontAwesomeIcons.envelope ,
+                                                    color: appbar_color.withOpacity(1),
+                                                  size: 20,
                                                 ),
-                                                SizedBox(width: 5,),
+                                                SizedBox(width: 8,),
                                                 Text(widget.email,
                                                     style: TextStyle(
                                                         color: appbar_color.withOpacity(1),
@@ -322,7 +327,7 @@ class _SalesInquiryTransferPageState extends State<SalesInquiryTransfer> with Ti
 
 
                             Container(
-                              margin: EdgeInsets.only(left: 20,right: 20,top: 30),
+                              margin: EdgeInsets.only(left: 20,right: 20,top: 20),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [

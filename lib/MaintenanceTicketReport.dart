@@ -1,9 +1,11 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:cshrealestatemobile/MaintenanceTicketCreation.dart';
 import 'package:cshrealestatemobile/SalesDashboard.dart';
 import 'package:cshrealestatemobile/TenantDashboard.dart';
 import 'package:cshrealestatemobile/constants.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'Sidebar.dart';
@@ -24,6 +26,7 @@ class _MaintenanceTicketReportState
   List<Map<String, dynamic>> filteredTickets = [];
   List<bool> _expandedTickets = [];
   String searchQuery = "";
+  bool isLoading = false;
 
   @override
   void initState() {
@@ -33,6 +36,9 @@ class _MaintenanceTicketReportState
   }
 
   Future<void> fetchTickets() async {
+    setState(() {
+      isLoading = true;
+    });
     final String url = "$BASE_URL_config/v1/maintenance";
     try {
       final Map<String, String> headers = {
@@ -75,6 +81,9 @@ class _MaintenanceTicketReportState
     } catch (e) {
       print("Error fetching data: $e");
     }
+    setState(() {
+      isLoading = false;
+    });
   }
   void _updateSearchQuery(String query) {
     setState(() {
@@ -145,26 +154,37 @@ class _MaintenanceTicketReportState
           isUserVisible: true,
           ),
       body: Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-    child: filteredTickets.isEmpty
-    ? Center(
-    child: Text(
-    "No data available",
-    style: TextStyle(
-    fontSize: 18,
-    color: Colors.grey,
-    fontWeight: FontWeight.bold,
-    ),
-    ),
-    )
-        : ListView.builder(
-    itemCount: filteredTickets.length,
-    itemBuilder: (context, index) {
-    final ticket = filteredTickets[index];
-    return _buildTicketCard(ticket, index);
-    },
-    ),
-    ),
+        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        child: isLoading
+            ? Center(
+          child: Platform.isIOS
+              ? CupertinoActivityIndicator(
+            radius: 15.0, // Adjust size if needed
+          )
+              : CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(Colors.blue), // Change color here
+            strokeWidth: 4.0, // Adjust thickness if needed
+          ),
+        )
+            : filteredTickets.isEmpty
+            ? Center(
+          child: Text(
+            "No data available",
+            style: TextStyle(
+              fontSize: 18,
+              color: Colors.grey,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        )
+            : ListView.builder(
+          itemCount: filteredTickets.length,
+          itemBuilder: (context, index) {
+            final ticket = filteredTickets[index];
+            return _buildTicketCard(ticket, index);
+          },
+        ),
+      ),
     floatingActionButton: Container(
         decoration: BoxDecoration(
           color: appbar_color.withOpacity(0.9),

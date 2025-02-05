@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:cshrealestatemobile/CreateSalesInquiry.dart';
@@ -34,7 +35,9 @@ class InquiryModel {
   final double maxPrice;
   final String status;
   final String leadStatusCategory;
-  final String color;
+  final String lastFollowupRemarks;
+  final String lastFollowupDate;
+  // final String color;
   final List<Map<String, dynamic>> preferredAreas;
   final List<Map<String, dynamic>> preferredFlatTypes;
   final List<Map<String, dynamic>> preferredAmenities;
@@ -47,7 +50,9 @@ class InquiryModel {
     required this.created_by,
     required this.assigned_to,
     required this.description,
-    required this.color,
+    //required this.color,
+    required this.lastFollowupRemarks,
+    required this.lastFollowupDate,
     required this.contactNo,
     required this.email,
     required this.inquiryNo,
@@ -85,8 +90,9 @@ class InquiryModel {
 
     String leadStatusName= '';// Extract the last follow-up and its lead status name
     String leadStatusCategory= '';
-    String leadStatusColor= '';
-
+    // String leadStatusColor= '';
+    String lastFollowupRemarks = 'No remarks available';
+    String lastFollowupDate = 'No follow-up date';
 
     final created_by = (json['created_user'] as Map<String, dynamic>?)?['name'] ?? 'N/A';
 
@@ -95,10 +101,14 @@ class InquiryModel {
 
     if (leadsFollowup != null && leadsFollowup.isNotEmpty) {
 
+      leadsFollowup.sort((a, b) => DateTime.parse(b['date']).compareTo(DateTime.parse(a['date'])));
+
       final lastFollowup = leadsFollowup.first;
       leadStatusName = lastFollowup['lead_status']?['name'] ?? 'Unknown';
       leadStatusCategory = lastFollowup['lead_status']?['category'] ?? 'Unknown';
-      leadStatusColor = lastFollowup['lead_status']?['color'] ?? 'Unknown';
+      //leadStatusColor = lastFollowup['lead_status']?['color'] ?? 'Unknown';
+      lastFollowupRemarks = lastFollowup['remarks'] ?? 'null';
+      lastFollowupDate = _formatDate(lastFollowup['date'] ?? '');
 
       print('Last Lead Status Name: $leadStatusName');
     } else {
@@ -117,7 +127,9 @@ class InquiryModel {
       email: json['email'] ?? 'N/A',
       created_by: created_by ?? 'N/A',
       assigned_to: assigned_to ?? 'N/A',
-      color: leadStatusColor,
+      lastFollowupRemarks: lastFollowupRemarks,
+      lastFollowupDate: lastFollowupDate,
+      // color: leadStatusColor,
 
       inquiryNo: json['id'].toString() ?? '',
       creationDate: formattedDate,
@@ -179,11 +191,77 @@ class _SalesInquiryReportState
 
   List<bool> _expandedinquirys = [];
 
+  List<InquiryStatus> inquirystatus_list = [];
+  String? selectedStatus;
+  bool isStatusLoading = true; // Track lead status loading
+
+
+
+  bool isLoading = false;
+
   @override
   void initState() {
     super.initState();
-    fetchInquiries();
+    fetchLeadStatus();
   }
+
+
+  Future<void> fetchLeadStatus() async {
+    setState(() {
+      isStatusLoading = true; // Start loading
+    });
+
+    inquirystatus_list.clear();
+
+    final url = '$BASE_URL_config/v1/leadStatus';
+    String token = 'Bearer $Serial_Token'; // Auth token
+
+    Map<String, String> headers = {
+      'Authorization': token,
+      "Content-Type": "application/json"
+    };
+
+    try {
+      final response = await http.get(Uri.parse(url), headers: headers);
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        setState(() {
+          List<dynamic> leadStatusList = data['data']['leadStatus'];
+
+          for (var status in leadStatusList) {
+            InquiryStatus followUpStatus = InquiryStatus.fromJson(status);
+            inquirystatus_list.add(followUpStatus);
+          }
+
+          // ✅ Add hardcoded "All" option at the beginning
+          inquirystatus_list.insert(0, InquiryStatus(id: 0, name: "All", category: "All"));
+
+          // ✅ Automatically select first "Normal" category status, fallback to "All"
+          InquiryStatus? firstNormalStatus = inquirystatus_list.firstWhere(
+                (status) => status.category == "Normal",
+            orElse: () => inquirystatus_list.first, // Defaults to "All" if none found
+          );
+
+          selectedStatus = firstNormalStatus.name; // ✅ Set first "Normal" category status
+
+
+          isStatusLoading = false; // Stop loading
+        });
+
+        // ✅ Fetch inquiries after lead statuses are loaded
+        fetchInquiries();
+      } else {
+        throw Exception('Failed to load lead statuses');
+      }
+    } catch (e) {
+      print('Error fetching lead status: $e');
+      setState(() {
+        isStatusLoading = false;
+      });
+    }
+  }
+
 
   List<InquiryModel> parseInquiries(Map<String, dynamic> jsonResponse) {
     final leads = jsonResponse['data']?['leads'] as List<dynamic>? ?? [];
@@ -191,31 +269,33 @@ class _SalesInquiryReportState
   }
 
   Future<void> fetchInquiries() async {
-    print('fetching inquiries');
+    setState(() {
+      isLoading = true;
+    });
+
+    print('Fetching inquiries...');
 
     filteredInquiries.clear();
     salesinquiry.clear();
     _expandedinquirys.clear();
 
-    final url = '$BASE_URL_config/v1/leads'; // Replace with your API endpoint
-    String token = 'Bearer $Company_Token'; // auth token for request
+    final url = '$BASE_URL_config/v1/leads';
+    String token = 'Bearer $Company_Token'; // Auth token
 
     Map<String, String> headers = {
       'Authorization': token,
       "Content-Type": "application/json"
     };
     try {
-      final response = await http.get(Uri.parse(url),
-        headers: headers,);
+      final response = await http.get(Uri.parse(url), headers: headers);
       if (response.statusCode == 200) {
         setState(() {
           print(response.body);
           final jsonResponse = json.decode(response.body);
           salesinquiry = parseInquiries(jsonResponse);
-          _expandedinquirys =
-              List.generate(salesinquiry.length, (index) => false);
+          _expandedinquirys = List.generate(salesinquiry.length, (index) => false);
 
-          filteredInquiries = salesinquiry;
+          filterInquiries(); // ✅ Apply default filtering after fetching
         });
       } else {
         print("Error: ${response.statusCode}");
@@ -225,6 +305,10 @@ class _SalesInquiryReportState
     } catch (e) {
       print('Error fetching data: $e');
     }
+
+    setState(() {
+      isLoading = false;
+    });
   }
 
   void _updateSearchQuery(String query) {
@@ -240,6 +324,18 @@ class _SalesInquiryReportState
           inquiry.inquiryNo.toString().toLowerCase().contains(
               query.toLowerCase()))
           .toList();
+    });
+  }
+
+  void filterInquiries() {
+    setState(() {
+      if (selectedStatus == null || selectedStatus == "All") {
+        filteredInquiries = salesinquiry; // ✅ Show all inquiries
+      } else {
+        filteredInquiries = salesinquiry
+            .where((inquiry) => inquiry.status == selectedStatus)
+            .toList();
+      }
     });
   }
 
@@ -300,29 +396,97 @@ class _SalesInquiryReportState
         isUserEnable: true,
         isUserVisible: true,
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-        child: filteredInquiries.isEmpty
-            ? Center(
-          child: Text(
-            "No data available",
-            style: TextStyle(
-              fontSize: 18,
-              color: Colors.grey,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        )
-            : ListView.builder(
-          itemCount: filteredInquiries.length,
-          itemBuilder: (context, index) {
-            final inquiry = filteredInquiries[index];
-            return _buildinquiryCard(inquiry, index);
-          },
-        ),
-      ),
+        body: Column(
+          children: [
+            // Status Filters (Loading Indicator)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+              child: isStatusLoading
+                  ? Center(
+                child: Platform.isIOS
+                    ? CupertinoActivityIndicator(radius: 15.0)
+                    : CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(appbar_color),
+                  strokeWidth: 4.0,
+                ),
+              )
+                  : SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: inquirystatus_list.map((InquiryStatus status) {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                      child: ChoiceChip(
+                        label: Text(
+                          status.name,
+                          style: TextStyle(
+                            color: selectedStatus == status.name ? Colors.white : Colors.black,
+                          ),
+                        ),
+                        selected: selectedStatus == status.name,
+                        onSelected: (bool selected) {
+                          setState(() {
+                            selectedStatus = selected ? status.name : null;
+                          });
+                          filterInquiries();
+                        },
+                        selectedColor: appbar_color.withOpacity(0.9), // Background when selected
+                        backgroundColor: Colors.grey[100], // Default background
+                        showCheckmark: false, // Removes checkmark
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20.0),
+                          side: BorderSide(
+                            color: selectedStatus == status.name ? Colors.blue : Colors.grey,
+                            width: 1.0,
+                          ),
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
 
-      floatingActionButton: Container(
+            ),
+
+            // Inquiry List
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: isLoading
+                    ? Center(
+                  child: Platform.isIOS
+                      ? CupertinoActivityIndicator(radius: 15.0)
+                      : CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(appbar_color),
+                    strokeWidth: 4.0,
+                  ),
+                )
+                    : filteredInquiries.isEmpty
+                    ? Center(
+                  child: Text(
+                    "No data available",
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.grey,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                )
+                    : ListView.builder(
+                  itemCount: filteredInquiries.length,
+                  itemBuilder: (context, index) {
+                    final inquiry = filteredInquiries[index];
+                    return _buildinquiryCard(inquiry, index);
+                  },
+                ),
+              ),
+            ),
+          ],
+        ),
+
+
+
+        floatingActionButton: Container(
         decoration: BoxDecoration(
           color: appbar_color.withOpacity(0.9),
 
@@ -548,8 +712,8 @@ class _SalesInquiryReportState
         _buildInfoRow(Icons.numbers, inquiry.inquiryNo),
         _buildInfoRow(FontAwesomeIcons.building, inquiry.unitType),
         // _buildInfoRow('Email:', inquiry.email),
-        // _buildInfoRow('Area:', _formatAreasWithEmirates(inquiry.preferredAreas)),
-        _buildInfoRow(FontAwesomeIcons.clock, inquiry.creationDate),
+         _buildInfoRow(FontAwesomeIcons.map, _formatAreasWithEmirates(inquiry.preferredAreas)),
+        _buildInfoRow(FontAwesomeIcons.clock, inquiry.lastFollowupDate),
         // _buildInfoRow('Created By (using for testing):', inquiry.created_by.toString()),
         //_buildInfoRow('Assigned To (using for testing):', inquiry.assigned_to.toString()),
 
@@ -578,6 +742,36 @@ class _SalesInquiryReportState
         children: [
           FaIcon(label, color: appbar_color, size: 20.0),
 
+          SizedBox(width: 8.0),
+          Expanded(
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Text(
+                  value,
+                  style: TextStyle(
+                    color: Colors.black87,
+                  ),
+
+                ),
+              )
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInfoRowExpandedView(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      child: Row(
+        children: [
+          Text(
+            label,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.grey[700],
+            ),
+          ),
           SizedBox(width: 8.0),
           Expanded(
               child: SingleChildScrollView(
@@ -645,7 +839,10 @@ class _SalesInquiryReportState
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildInfoRow(FontAwesomeIcons.commentDots, inquiry.description),
+          _buildInfoRowExpandedView('Description:', inquiry.description),
+          if(inquiry.lastFollowupRemarks != 'null')
+            _buildInfoRowExpandedView('Follow-Up Remarks:', inquiry.lastFollowupRemarks),
+
 
         ],
       ),

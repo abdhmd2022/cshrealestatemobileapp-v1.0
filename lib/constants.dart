@@ -6,8 +6,6 @@ const String app_name = "Real Estate";
 
 const MaterialAccentColor appbar_color = Colors.blueAccent;
 
-
-
 const String company_name = 'Company';
 
 const String authTokenBase = r'!1--3*%*%*%*9$api$8*%*%*%*5--0!X19fIUBBUyQlYXMxOTI4MzdfX18=KSgqL2FzZGFzZGlvQ0VEQUZf';
@@ -27,7 +25,7 @@ late int user_id;
 Future<void> loadTokens() async {
 
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  Serial_Token = prefs.   getString("serial_token") ?? "";
+  Serial_Token = prefs.getString("serial_token") ?? "";
   Company_Token = prefs.getString("company_token") ?? "";
   user_email = prefs.getString("user_email") ?? "";
   user_name = prefs.getString("user_name") ?? "";

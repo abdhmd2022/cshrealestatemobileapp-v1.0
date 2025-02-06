@@ -530,9 +530,18 @@ class _SalesInquiryReportState
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(
-                                  "${DateFormat('dd-MMM-yyyy').format(startDate)} - ${DateFormat('dd-MMM-yyyy').format(endDate)}",
-                                  style: TextStyle(fontSize: 14, color: Colors.black87),
+                                Icon(Icons.calendar_today, color: appbar_color, size: 18),
+                                Expanded(
+                                  child:Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+
+                                    children: [
+                                      Text(
+                                        "${DateFormat('dd-MMM-yyyy').format(startDate)} - ${DateFormat('dd-MMM-yyyy').format(endDate)}",
+                                        style: TextStyle(fontSize: 14, color: Colors.black87),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                                 Icon(Icons.calendar_today, color: appbar_color, size: 18),
                               ],

@@ -488,14 +488,15 @@ class _SalesInquiryReportState
                               builder: (context, child) {
                                 return Theme(
                                   data: ThemeData.light().copyWith(
-
-                                    primaryColor: appbar_color, // ✅ Header & selected text color
+                                    primaryColor: appbar_color, // ✅ Header & buttons color
                                     scaffoldBackgroundColor: Colors.white,
+
                                     colorScheme: ColorScheme.light(
-                                      primary: appbar_color, // ✅ Selected date circle color
-                                      onPrimary: Colors.white, // ✅ Selected date text color
-                                      secondary: appbar_color,
-                                      onSecondary: Colors.white,
+                                      primary: appbar_color, // ✅ Start & End date circle color
+                                      onPrimary: Colors.white, // ✅ Text inside Start & End date
+                                      secondary: appbar_color.withOpacity(0.6), // ✅ In-Between date highlight color
+                                      onSecondary: Colors.white, // ✅ Text color inside In-Between dates
+                                      surface: Colors.white, // ✅ Background color
                                       onSurface: Colors.black, // ✅ Default text color
                                     ),
                                     dialogBackgroundColor: Colors.white,
@@ -532,9 +533,8 @@ class _SalesInquiryReportState
                               children: [
                                 Icon(Icons.calendar_today, color: appbar_color, size: 18),
                                 Expanded(
-                                  child:Row(
+                                  child: Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
-
                                     children: [
                                       Text(
                                         "${DateFormat('dd-MMM-yyyy').format(startDate)} - ${DateFormat('dd-MMM-yyyy').format(endDate)}",
@@ -549,6 +549,7 @@ class _SalesInquiryReportState
                           ),
                         ),
                       ),
+
 
                       /*SizedBox(width: 10),
 
@@ -605,7 +606,7 @@ class _SalesInquiryReportState
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(20.0),
                                   side: BorderSide(
-                                    color: selectedStatus == status.name ? Colors.blue : Colors.grey,
+                                    color: selectedStatus == status.name ? appbar_color : Colors.grey,
                                     width: 1.0,
                                   ),
                                 ),

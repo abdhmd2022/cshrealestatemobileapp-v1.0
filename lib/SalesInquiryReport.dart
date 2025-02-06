@@ -314,21 +314,39 @@ class _SalesInquiryReportState
     });
   }
 
+  String validationMessage = ""; // ✅ Holds the "No results found" message
+
   void _updateSearchQuery(String query) {
     setState(() {
       searchQuery = query;
-      filteredInquiries = salesinquiry
-          .where((inquiry) =>
-      inquiry.customerName.toLowerCase().contains(query.toLowerCase()) ||
-          inquiry.unitType.toLowerCase().contains(query.toLowerCase()) ||
-          inquiry.area.toLowerCase().contains(query.toLowerCase()) ||
-          inquiry.emirate.toLowerCase().contains(query.toLowerCase()) ||
-          inquiry.status.toLowerCase().contains(query.toLowerCase()) ||
-          inquiry.inquiryNo.toString().toLowerCase().contains(
-              query.toLowerCase()))
-          .toList();
+      validationMessage = ""; // ✅ Reset validation message
+
+      if (query.isEmpty) {
+        // ✅ If search is cleared, restore the last valid filtered inquiries
+        filterInquiries();
+      } else {
+        // ✅ Keep a temporary list for search results
+        List<InquiryModel> tempSearchResults = filteredInquiries
+            .where((inquiry) =>
+        inquiry.customerName.toLowerCase().contains(query.toLowerCase()) ||
+            inquiry.unitType.toLowerCase().contains(query.toLowerCase()) ||
+            inquiry.area.toLowerCase().contains(query.toLowerCase()) ||
+            inquiry.emirate.toLowerCase().contains(query.toLowerCase()) ||
+            inquiry.status.toLowerCase().contains(query.toLowerCase()) ||
+            inquiry.inquiryNo.toString().toLowerCase().contains(query.toLowerCase()))
+            .toList();
+
+        if (tempSearchResults.isNotEmpty) {
+          // ✅ Only update `filteredInquiries` if search returns results
+          filteredInquiries = tempSearchResults;
+        } else {
+          // ✅ If no results, show validation message but do not erase filtered list
+          validationMessage = "No results found for \"$query\"";
+        }
+      }
     });
   }
+
 
   void filterInquiries() {
     print("Filtering inquiries...");
@@ -375,22 +393,43 @@ class _SalesInquiryReportState
       appBar: AppBar(
         elevation: 0,
         bottom: PreferredSize(
-          preferredSize: Size.fromHeight(60.0),
+          preferredSize: Size.fromHeight(70.0),
           child: Padding(
             padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              onChanged: _updateSearchQuery,
-              decoration: InputDecoration(
-                hintText: 'Search Inquiries',
-                prefixIcon: Icon(Icons.search),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12.0),
-                  borderSide: BorderSide.none,
+            child:
+
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                TextField(
+                  onChanged: _updateSearchQuery,
+                  decoration: InputDecoration(
+                    hintText: 'Search Inquiries',
+                    prefixIcon: Icon(Icons.search),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12.0),
+                      borderSide: BorderSide.none,
+                    ),
+                    filled: true,
+                    fillColor: Colors.white,
+                  ),
                 ),
-                filled: true,
-                fillColor: Colors.white,
-              ),
+
+                // ✅ Show Validation Message if No Results Found
+                if (validationMessage.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8.0, left: 12.0),
+                    child: Text(
+                      validationMessage,
+                      style: TextStyle(color: Colors.white, fontSize: 14),
+                    ),
+                  ),
+              ],
             ),
+
+
+
+
           ),
         ),
         leading: GestureDetector(

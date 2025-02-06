@@ -167,13 +167,7 @@ class _DecentTenantKYCFormState extends State<DecentTenantKYCForm> {
                               'saadan@ca-eim.com',
                               style: TextStyle(fontSize: 16,
                                   color: appbar_color),
-                            ),
-                          ],
-                        ),
-                      ],
-                    )
-                )
-            ),
+                            )])]))),
 
             const SizedBox(height: 30),
             Form(

@@ -945,6 +945,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                             updateAreasDisplay();
                           });
                         },
+                        contentPadding: EdgeInsets.symmetric(vertical: 0.0,horizontal: 20.0), // Adjust padding as needed
                       );
                     }).toList(),
                   ),
@@ -1097,6 +1098,8 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                             updateSelectedAreasString(filteredAreas!);
                           });
                         },
+                        contentPadding: EdgeInsets.symmetric(vertical: 0.0,horizontal: 20.0), // Adjust padding as needed
+
                       );
                     }).toList(),
                   ),

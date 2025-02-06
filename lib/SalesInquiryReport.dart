@@ -877,8 +877,9 @@ class _SalesInquiryReportState
         _buildInfoRow(FontAwesomeIcons.building, inquiry.unitType),
         // _buildInfoRow('Email:', inquiry.email),
          _buildInfoRow(FontAwesomeIcons.map, _formatAreasWithEmirates(inquiry.preferredAreas)),
-        _buildInfoRow(FontAwesomeIcons.clock, inquiry.lastFollowupDate),
+        _buildInfoRow(FontAwesomeIcons.clock, DateFormat('dd-MMM-yyyy').format(DateTime.parse(inquiry.lastFollowupDate))),
         // _buildInfoRow('Created By (using for testing):', inquiry.created_by.toString()),
+
         //_buildInfoRow('Assigned To (using for testing):', inquiry.assigned_to.toString()),
 
 

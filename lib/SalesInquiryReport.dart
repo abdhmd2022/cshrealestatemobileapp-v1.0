@@ -128,7 +128,7 @@ class InquiryModel {
       created_by: created_by ?? 'N/A',
       assigned_to: assigned_to ?? 'N/A',
       lastFollowupRemarks: lastFollowupRemarks,
-      lastFollowupDate: lastFollowupDate,
+      lastFollowupDate: lastFollowupDate ,
       // color: leadStatusColor,
 
       inquiryNo: json['id'].toString() ?? '',
@@ -171,7 +171,7 @@ class InquiryModel {
   static String _formatDate(String rawDate) {
     try {
       final parsedDate = DateTime.parse(rawDate);
-      return DateFormat('dd-MMM-yyyy').format(parsedDate);
+      return DateFormat('yyyy-MM-dd').format(parsedDate);
     } catch (e) {
       return rawDate; // Return the raw date if parsing fails
     }
@@ -267,6 +267,9 @@ class _SalesInquiryReportState
     final leads = jsonResponse['data']?['leads'] as List<dynamic>? ?? [];
     return leads.map((lead) => InquiryModel.fromJson(lead)).toList();
   }
+  DateTime startDate = DateTime(DateTime.now().year, DateTime.now().month, 1); // ✅ First day of current month
+  DateTime endDate = DateTime(DateTime.now().year, DateTime.now().month + 1, 0); // ✅ Last day of current month
+  bool showFilters = false; // ✅ Toggle filter visibility
 
   Future<void> fetchInquiries() async {
     setState(() {
@@ -328,16 +331,41 @@ class _SalesInquiryReportState
   }
 
   void filterInquiries() {
+    print("Filtering inquiries...");
+    print("Selected Date Range: ${DateFormat('dd MMM, yyyy').format(startDate)} - ${DateFormat('dd MMM, yyyy').format(endDate)}");
+
     setState(() {
-      if (selectedStatus == null || selectedStatus == "All") {
-        filteredInquiries = salesinquiry; // ✅ Show all inquiries
-      } else {
-        filteredInquiries = salesinquiry
-            .where((inquiry) => inquiry.status == selectedStatus)
-            .toList();
-      }
+      filteredInquiries = salesinquiry.where((inquiry) {
+        // ✅ Convert `lastFollowupDate` to DateTime
+        DateTime? followupDate;
+        try {
+          followupDate = DateTime.parse(inquiry.lastFollowupDate);
+        } catch (e) {
+          print("Invalid Date: ${inquiry.lastFollowupDate}"); // ✅ Debugging
+          followupDate = null;
+        }
+
+        // ✅ Debug: Print Each Inquiry's Date
+        print("Inquiry ID: ${inquiry.inquiryNo}, Last Follow-up Date: ${inquiry.lastFollowupDate}");
+
+        // ✅ Apply date range filter
+        bool withinDateRange = followupDate != null &&
+            followupDate.isAtSameMomentAs(startDate) || followupDate!.isAfter(startDate.subtract(Duration(days: 1))) &&
+            followupDate.isBefore(endDate.add(Duration(days: 1))) || followupDate.isAtSameMomentAs(endDate);
+
+
+        // ✅ Apply status filter
+        bool statusMatches = selectedStatus == null || selectedStatus == "All" || inquiry.status == selectedStatus;
+
+        return withinDateRange && statusMatches;
+      }).toList();
     });
+
+    print("Total Filtered Inquiries: ${filteredInquiries.length}"); // ✅ Debugging
   }
+
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -399,54 +427,151 @@ class _SalesInquiryReportState
         body: Column(
           children: [
             // Status Filters (Loading Indicator)
+
+
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-              child: isStatusLoading
-                  ? Center(
-                child: Platform.isIOS
-                    ? CupertinoActivityIndicator(radius: 15.0)
-                    : CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(appbar_color),
-                  strokeWidth: 4.0,
-                ),
-              )
-                  : SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: inquirystatus_list.map((InquiryStatus status) {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                      child: ChoiceChip(
-                        label: Text(
-                          status.name,
-                          style: TextStyle(
-                            color: selectedStatus == status.name ? Colors.white : Colors.black,
-                          ),
-                        ),
-                        selected: selectedStatus == status.name,
-                        onSelected: (bool selected) {
-                          setState(() {
-                            selectedStatus = selected ? status.name : null;
-                          });
-                          filterInquiries();
-                        },
-                        selectedColor: appbar_color.withOpacity(0.9), // Background when selected
-                        backgroundColor: Colors.grey[100], // Default background
-                        showCheckmark: false, // Removes checkmark
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20.0),
-                          side: BorderSide(
-                            color: selectedStatus == status.name ? Colors.blue : Colors.grey,
-                            width: 1.0,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // 🔹 Date Range Picker Row
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () async {
+                            final DateTimeRange? picked = await showDateRangePicker(
+                              context: context,
+                              firstDate: DateTime(2020),
+                              lastDate: DateTime(2100),
+                              initialDateRange: DateTimeRange(start: startDate, end: endDate),
+                              builder: (context, child) {
+                                return Theme(
+                                  data: ThemeData.light().copyWith(
+
+                                    primaryColor: appbar_color, // ✅ Header & selected text color
+                                    scaffoldBackgroundColor: Colors.white,
+                                    colorScheme: ColorScheme.light(
+                                      primary: appbar_color, // ✅ Selected date circle color
+                                      onPrimary: Colors.white, // ✅ Selected date text color
+                                      secondary: appbar_color,
+                                      onSecondary: Colors.white,
+                                      onSurface: Colors.black, // ✅ Default text color
+                                    ),
+                                    dialogBackgroundColor: Colors.white,
+                                  ),
+                                  child: child!,
+                                );
+                              },
+                            );
+
+                            if (picked != null) {
+                              setState(() {
+                                startDate = picked.start;
+                                endDate = picked.end;
+                              });
+                              filterInquiries(); // ✅ Apply date filter
+                            }
+                          },
+                          child: Container(
+                            padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(20),
+                              border: Border.all(color: appbar_color, width: 1.5),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black12,
+                                  blurRadius: 4,
+                                  offset: Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  "${DateFormat('dd-MMM-yyyy').format(startDate)} - ${DateFormat('dd-MMM-yyyy').format(endDate)}",
+                                  style: TextStyle(fontSize: 14, color: Colors.black87),
+                                ),
+                                Icon(Icons.calendar_today, color: appbar_color, size: 18),
+                              ],
+                            ),
                           ),
                         ),
                       ),
-                    );
-                  }).toList(),
-                ),
-              ),
 
+                      /*SizedBox(width: 10),
+
+                      // 🔹 Filter Toggle Button
+                      IconButton(
+                        icon: Icon(Icons.filter_list, color: Colors.blue, size: 28),
+                        onPressed: () {
+                          setState(() {
+                            showFilters = !showFilters; // ✅ Toggle filter visibility
+                          });
+                        },
+                      ),*/
+                    ],
+                  ),
+
+                  SizedBox(height: 5), // Space before filters
+
+                  // 🔹 Show/Hide Filters
+                  /*if (showFilters)*/
+                    Padding(
+                      padding: const EdgeInsets.only(top: 5.0),
+                      child: isStatusLoading
+                          ? Center(
+                        child: Platform.isIOS
+                            ? CupertinoActivityIndicator(radius: 15.0)
+                            : CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation<Color>(appbar_color),
+                          strokeWidth: 4.0,
+                        ),
+                      )
+                          : SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: inquirystatus_list.map((InquiryStatus status) {
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                              child: ChoiceChip(
+                                label: Text(
+                                  status.name,
+                                  style: TextStyle(
+                                    color: selectedStatus == status.name ? Colors.white : Colors.black,
+                                  ),
+                                ),
+                                selected: selectedStatus == status.name,
+                                onSelected: (bool selected) {
+                                  setState(() {
+                                    selectedStatus = selected ? status.name : null;
+                                  });
+                                  filterInquiries();
+                                },
+                                selectedColor: appbar_color.withOpacity(0.9),
+                                backgroundColor: Colors.grey[100],
+                                showCheckmark: false,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20.0),
+                                  side: BorderSide(
+                                    color: selectedStatus == status.name ? Colors.blue : Colors.grey,
+                                    width: 1.0,
+                                  ),
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
             ),
+
+
 
             // Inquiry List
             Expanded(

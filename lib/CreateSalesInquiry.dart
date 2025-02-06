@@ -100,7 +100,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
   bool isAreasSelected = false;
 
-  RangeValues? _currentRangeValues;
+  RangeValues _currentRangeValues = RangeValues(0, 100); // Default values
 
   SharedPreferences? prefs;
 

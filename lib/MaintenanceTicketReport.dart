@@ -191,7 +191,7 @@ class _MaintenanceTicketReportState
       ),
     floatingActionButton: Container(
         decoration: BoxDecoration(
-          color: appbar_color.withOpacity(0.9),
+          color: appbar_color.withOpacity(0.8),
 
           borderRadius: BorderRadius.circular(30.0),
         ),

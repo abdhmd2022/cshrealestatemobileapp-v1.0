@@ -463,95 +463,101 @@ class _SalesInquiryReportState
         isUserEnable: true,
         isUserVisible: true,
       ),
-        body: Column(
-          children: [
-            // Status Filters (Loading Indicator)
+        body:
+
+        Container(
+            color: Colors.white,
+
+            child:
+            Column(
+              children: [
+                // Status Filters (Loading Indicator)
 
 
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // 🔹 Date Range Picker Row
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Expanded(
-                        child: GestureDetector(
-                          onTap: () async {
-                            final DateTimeRange? picked = await showDateRangePicker(
-                              context: context,
-                              firstDate: DateTime(2020),
-                              lastDate: DateTime(2100),
-                              initialDateRange: DateTimeRange(start: startDate, end: endDate),
-                              builder: (context, child) {
-                                return Theme(
-                                  data: ThemeData.light().copyWith(
-                                    primaryColor: appbar_color, // ✅ Header & buttons color
-                                    scaffoldBackgroundColor: Colors.white,
+                      // 🔹 Date Range Picker Row
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: GestureDetector(
+                              onTap: () async {
+                                final DateTimeRange? picked = await showDateRangePicker(
+                                  context: context,
+                                  firstDate: DateTime(2020),
+                                  lastDate: DateTime(2100),
+                                  initialDateRange: DateTimeRange(start: startDate, end: endDate),
+                                  builder: (context, child) {
+                                    return Theme(
+                                      data: ThemeData.light().copyWith(
+                                        primaryColor: appbar_color, // ✅ Header & buttons color
+                                        scaffoldBackgroundColor: Colors.white,
 
-                                    colorScheme: ColorScheme.light(
-                                      primary: appbar_color, // ✅ Start & End date circle color
-                                      onPrimary: Colors.white, // ✅ Text inside Start & End date
-                                      secondary: appbar_color.withOpacity(0.6), // ✅ In-Between date highlight color
-                                      onSecondary: Colors.white, // ✅ Text color inside In-Between dates
-                                      surface: Colors.white, // ✅ Background color
-                                      onSurface: Colors.black, // ✅ Default text color
-                                    ),
-                                    dialogBackgroundColor: Colors.white,
-                                  ),
-                                  child: child!,
-                                );
-                              },
-                            );
-
-                            if (picked != null) {
-                              setState(() {
-                                startDate = picked.start;
-                                endDate = picked.end;
-                              });
-                              filterInquiries(); // ✅ Apply date filter
-                            }
-                          },
-                          child: Container(
-                            padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(20),
-                              border: Border.all(color: appbar_color, width: 1.5),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black12,
-                                  blurRadius: 4,
-                                  offset: Offset(0, 2),
-                                ),
-                              ],
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Icon(Icons.calendar_today, color: appbar_color, size: 18),
-                                Expanded(
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                        "${DateFormat('dd-MMM-yyyy').format(startDate)} - ${DateFormat('dd-MMM-yyyy').format(endDate)}",
-                                        style: TextStyle(fontSize: 14, color: Colors.black87),
+                                        colorScheme: ColorScheme.light(
+                                          primary: appbar_color, // ✅ Start & End date circle color
+                                          onPrimary: Colors.white, // ✅ Text inside Start & End date
+                                          secondary: appbar_color.withOpacity(0.6), // ✅ In-Between date highlight color
+                                          onSecondary: Colors.white, // ✅ Text color inside In-Between dates
+                                          surface: Colors.white, // ✅ Background color
+                                          onSurface: Colors.black, // ✅ Default text color
+                                        ),
+                                        dialogBackgroundColor: Colors.white,
                                       ),
-                                    ],
-                                  ),
+                                      child: child!,
+                                    );
+                                  },
+                                );
+
+                                if (picked != null) {
+                                  setState(() {
+                                    startDate = picked.start;
+                                    endDate = picked.end;
+                                  });
+                                  filterInquiries(); // ✅ Apply date filter
+                                }
+                              },
+                              child: Container(
+                                padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(20),
+                                  border: Border.all(color: appbar_color, width: 1.5),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black12,
+                                      blurRadius: 4,
+                                      offset: Offset(0, 2),
+                                    ),
+                                  ],
                                 ),
-                                Icon(Icons.calendar_today, color: appbar_color, size: 18),
-                              ],
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Icon(Icons.calendar_today, color: appbar_color, size: 18),
+                                    Expanded(
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            "${DateFormat('dd-MMM-yyyy').format(startDate)} - ${DateFormat('dd-MMM-yyyy').format(endDate)}",
+                                            style: TextStyle(fontSize: 14, color: Colors.black87),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Icon(Icons.calendar_today, color: appbar_color, size: 18),
+                                  ],
+                                ),
+                              ),
                             ),
                           ),
-                        ),
-                      ),
 
 
-                      /*SizedBox(width: 10),
+                          /*SizedBox(width: 10),
 
                       // 🔹 Filter Toggle Button
                       IconButton(
@@ -562,108 +568,106 @@ class _SalesInquiryReportState
                           });
                         },
                       ),*/
-                    ],
-                  ),
+                        ],
+                      ),
 
-                  SizedBox(height: 5), // Space before filters
+                      SizedBox(height: 5), // Space before filters
 
-                  // 🔹 Show/Hide Filters
-                  /*if (showFilters)*/
-                    Padding(
-                      padding: const EdgeInsets.only(top: 5.0),
-                      child: isStatusLoading
-                          ? Center(
-                        child: Platform.isIOS
-                            ? CupertinoActivityIndicator(radius: 15.0)
-                            : CircularProgressIndicator(
-                          valueColor: AlwaysStoppedAnimation<Color>(appbar_color),
-                          strokeWidth: 4.0,
-                        ),
-                      )
-                          : SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Row(
-                          children: inquirystatus_list.map((InquiryStatus status) {
-                            return Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                              child: ChoiceChip(
-                                label: Text(
-                                  status.name,
-                                  style: TextStyle(
-                                    color: selectedStatus == status.name ? Colors.white : Colors.black,
+                      // 🔹 Show/Hide Filters
+                      /*if (showFilters)*/
+                      Padding(
+                        padding: const EdgeInsets.only(top: 5.0),
+                        child: isStatusLoading
+                            ? Center(
+                          child: Platform.isIOS
+                              ? CupertinoActivityIndicator(radius: 15.0)
+                              : CircularProgressIndicator(
+                            valueColor: AlwaysStoppedAnimation<Color>(appbar_color),
+                            strokeWidth: 4.0,
+                          ),
+                        )
+                            : SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            children: inquirystatus_list.map((InquiryStatus status) {
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                                child: ChoiceChip(
+                                  label: Text(
+                                    status.name,
+                                    style: TextStyle(
+                                      color: selectedStatus == status.name ? Colors.white : Colors.black,
+                                    ),
+                                  ),
+                                  selected: selectedStatus == status.name,
+                                  onSelected: (bool selected) {
+                                    setState(() {
+                                      selectedStatus = selected ? status.name : null;
+                                    });
+                                    filterInquiries();
+                                  },
+                                  selectedColor: appbar_color.withOpacity(0.9),
+                                  backgroundColor: Colors.grey[100],
+                                  showCheckmark: false,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20.0),
+                                    side: BorderSide(
+                                      color: selectedStatus == status.name ? appbar_color : Colors.grey,
+                                      width: 1.0,
+                                    ),
                                   ),
                                 ),
-                                selected: selectedStatus == status.name,
-                                onSelected: (bool selected) {
-                                  setState(() {
-                                    selectedStatus = selected ? status.name : null;
-                                  });
-                                  filterInquiries();
-                                },
-                                selectedColor: appbar_color.withOpacity(0.9),
-                                backgroundColor: Colors.grey[100],
-                                showCheckmark: false,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20.0),
-                                  side: BorderSide(
-                                    color: selectedStatus == status.name ? appbar_color : Colors.grey,
-                                    width: 1.0,
-                                  ),
-                                ),
-                              ),
-                            );
-                          }).toList(),
+                              );
+                            }).toList(),
+                          ),
                         ),
                       ),
-                    ),
-                ],
-              ),
-            ),
-
-
-
-            // Inquiry List
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: isLoading
-                    ? Center(
-                  child: Platform.isIOS
-                      ? CupertinoActivityIndicator(radius: 15.0)
-                      : CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(appbar_color),
-                    strokeWidth: 4.0,
+                    ],
                   ),
-                )
-                    : filteredInquiries.isEmpty
-                    ? Center(
-                  child: Text(
-                    "No data available",
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.grey,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                )
-                    : ListView.builder(
-                  itemCount: filteredInquiries.length,
-                  itemBuilder: (context, index) {
-                    final inquiry = filteredInquiries[index];
-                    return _buildinquiryCard(inquiry, index);
-                  },
                 ),
-              ),
+
+
+
+                // Inquiry List
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: isLoading
+                        ? Center(
+                      child: Platform.isIOS
+                          ? CupertinoActivityIndicator(radius: 15.0)
+                          : CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(appbar_color),
+                        strokeWidth: 4.0,
+                      ),
+                    )
+                        : filteredInquiries.isEmpty
+                        ? Center(
+                      child: Text(
+                        "No data available",
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.grey,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    )
+                        : ListView.builder(
+                      itemCount: filteredInquiries.length,
+                      itemBuilder: (context, index) {
+                        final inquiry = filteredInquiries[index];
+                        return _buildinquiryCard(inquiry, index);
+                      },
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ],
         ),
-
-
 
         floatingActionButton: Container(
         decoration: BoxDecoration(
-          color: appbar_color.withOpacity(0.9),
-
+          color: appbar_color.withOpacity(0.8),
           borderRadius: BorderRadius.circular(30.0),
         ),
         child: FloatingActionButton.extended(

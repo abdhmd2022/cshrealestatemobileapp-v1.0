@@ -176,8 +176,9 @@ class _SalesDashboardScreenState extends State<SalesDashboardScreen> with Ticker
 
       ),
       body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
+        child: Container(
+            color: Colors.white,
+            padding: const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [

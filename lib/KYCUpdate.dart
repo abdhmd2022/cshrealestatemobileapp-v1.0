@@ -84,149 +84,153 @@ class _DecentTenantKYCFormState extends State<DecentTenantKYCForm> {
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.only(left:10.0,right: 10,bottom: 16),
-        child: Column(
-          children: [
-            Card
-              (
-                color: Colors.white,
-                surfaceTintColor: appbar_color,
-                elevation: 10,
-                margin: EdgeInsets.only(left: 20,right: 20, top: 20),
-                child:  Container(
-                    padding: EdgeInsets.all(20),
-                    child:Column(
+        child: Container(
+          color:Colors.white,
+          child: Column(
+            children: [
+              Card
+                (
+                  color: Colors.white,
+                  surfaceTintColor: appbar_color,
+                  elevation: 10,
+                  margin: EdgeInsets.only(left: 20,right: 20, top: 20),
+                  child:  Container(
+                      padding: EdgeInsets.all(20),
+                      child:Column(
 
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            Container(
-                              margin: EdgeInsets.only(bottom: 5,),
-                              child:Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Column(
-                                    mainAxisSize: MainAxisSize.min,
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Container(
+                                  margin: EdgeInsets.only(bottom: 5,),
+                                  child:Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.center,
                                     children: [
-                                      Icon(
-                                        Icons.person,
-                                        color: appbar_color,
+                                      Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Icon(
+                                            Icons.person,
+                                            color: appbar_color,
+                                          ),
+                                          SizedBox(height: 2), // Add space between icon and text
+                                          Text(
+                                            'Saadan',
+                                            style: TextStyle(fontSize: 16,
+                                                color: appbar_color),
+                                          ),
+                                        ],
                                       ),
-                                      SizedBox(height: 2), // Add space between icon and text
-                                      Text(
-                                        'Saadan',
-                                        style: TextStyle(fontSize: 16,
-                                            color: appbar_color),
-                                      ),
-                                    ],
-                                  ),
-                                ],)
-                              ,),
+                                    ],)
+                                  ,),
 
-                            SizedBox(width: MediaQuery.of(context).size.width/5,),
-                            Container(
-                              margin: EdgeInsets.only(bottom: 5,),
-                              child:Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Column(
-                                    mainAxisSize: MainAxisSize.min,
+                                SizedBox(width: MediaQuery.of(context).size.width/5,),
+                                Container(
+                                  margin: EdgeInsets.only(bottom: 5,),
+                                  child:Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.center,
                                     children: [
-                                      Icon(
-                                        Icons.phone,
-                                        color: appbar_color,
+                                      Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Icon(
+                                            Icons.phone,
+                                            color: appbar_color,
+                                          ),
+                                          SizedBox(height: 2), // Add space between icon and text
+                                          Text(
+                                            '+971 500000000',
+                                            style: TextStyle(fontSize: 16,
+                                                color: appbar_color),
+                                          ),
+                                        ],
                                       ),
-                                      SizedBox(height: 2), // Add space between icon and text
-                                      Text(
-                                        '+971 500000000',
-                                        style: TextStyle(fontSize: 16,
-                                            color: appbar_color),
-                                      ),
-                                    ],
+
+
+                                    ],)
+                                  ,),
+                              ],),
+
+                            SizedBox(height: 30,),
+
+                            Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    Icons.email_outlined,
+                                    color: appbar_color,
                                   ),
+                                  SizedBox(height: 2), // Add space between icon and text
+                                  Text(
+                                    'saadan@ca-eim.com',
+                                    style: TextStyle(fontSize: 16,
+                                        color: appbar_color),
+                                  )])]))),
 
+              const SizedBox(height: 30),
+              Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    buildDocumentCard(
+                      title: 'Emirates ID',
+                      filePath: emiratesIdFile,
+                      onPickFile: () => pickFile('Emirates ID'),
+                      onCaptureFile: () => captureFile('Emirates ID'),
+                    ),
+                    buildDocumentCard(
+                      title: 'Passport',
+                      filePath: passportFile,
+                      onPickFile: () => pickFile('Passport'),
+                      onCaptureFile: () => captureFile('Passport'),
+                    ),
+                    buildDocumentCard(
+                      title: 'Visa Copy',
+                      filePath: visaCopyFile,
+                      onPickFile: () => pickFile('Visa Copy'),
+                      onCaptureFile: () => captureFile('Visa Copy'),
+                    ),
+                    const SizedBox(height: 30),
 
-                                ],)
-                              ,),
-                          ],),
+                    Container(
+                      width: MediaQuery.of(context).size.width,
+                      margin: EdgeInsets.only(left: 20,right: 20,top: 20,bottom: 80),
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: appbar_color,
+                          elevation: 5, // Adjust the elevation to make it look elevated
+                          shadowColor: Colors.black.withOpacity(0.5), // Optional: adjust the shadow color
+                        ),
+                        onPressed: () {
+                          {
+                            if (emiratesIdFile!.isEmpty) {
+                              _showSnackBar("Please upload Emirates ID.");
+                            } else if (passportFile!.isEmpty) {
+                              _showSnackBar("Please upload Passport.");
+                            } else if (visaCopyFile!.isEmpty) {
+                              _showSnackBar("Please upload Visa Copy.");
+                            } else {
+                              // Proceed with form submission
 
-                        SizedBox(height: 30,),
-
-                        Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              Icons.email_outlined,
-                              color: appbar_color,
-                            ),
-                            SizedBox(height: 2), // Add space between icon and text
-                            Text(
-                              'saadan@ca-eim.com',
-                              style: TextStyle(fontSize: 16,
-                                  color: appbar_color),
-                            )])]))),
-
-            const SizedBox(height: 30),
-            Form(
-              key: _formKey,
-              child: Column(
-                children: [
-                  buildDocumentCard(
-                    title: 'Emirates ID',
-                    filePath: emiratesIdFile,
-                    onPickFile: () => pickFile('Emirates ID'),
-                    onCaptureFile: () => captureFile('Emirates ID'),
-                  ),
-                  buildDocumentCard(
-                    title: 'Passport',
-                    filePath: passportFile,
-                    onPickFile: () => pickFile('Passport'),
-                    onCaptureFile: () => captureFile('Passport'),
-                  ),
-                  buildDocumentCard(
-                    title: 'Visa Copy',
-                    filePath: visaCopyFile,
-                    onPickFile: () => pickFile('Visa Copy'),
-                    onCaptureFile: () => captureFile('Visa Copy'),
-                  ),
-                  const SizedBox(height: 30),
-
-                  Container(
-                    width: MediaQuery.of(context).size.width,
-                    margin: EdgeInsets.only(left: 20,right: 20,top: 20,bottom: 80),
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: appbar_color,
-                        elevation: 5, // Adjust the elevation to make it look elevated
-                        shadowColor: Colors.black.withOpacity(0.5), // Optional: adjust the shadow color
-                      ),
-                      onPressed: () {
-                        {
-                          if (emiratesIdFile!.isEmpty) {
-                            _showSnackBar("Please upload Emirates ID.");
-                          } else if (passportFile!.isEmpty) {
-                            _showSnackBar("Please upload Passport.");
-                          } else if (visaCopyFile!.isEmpty) {
-                            _showSnackBar("Please upload Visa Copy.");
-                          } else {
-                            // Proceed with form submission
-
+                            }
                           }
-                        }
-                      },
-                      child: Text('Submit',
-                          style: TextStyle(
-                              color: Colors.white
-                          )),
-                    ),),
-                ],
+                        },
+                        child: Text('Submit',
+                            style: TextStyle(
+                                color: Colors.white
+                            )),
+                      ),),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
+
       ),
     );
   }

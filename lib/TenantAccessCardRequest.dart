@@ -257,6 +257,7 @@ class _TenantAccessCardRequestPageState extends State<TenantAccessCardRequest> w
         body: Container(
             height: MediaQuery.of(context).size.height,
             width: MediaQuery.of(context).size.width,
+            color:Colors.white,
             decoration:BoxDecoration(
               gradient: LinearGradient(
                   colors: [

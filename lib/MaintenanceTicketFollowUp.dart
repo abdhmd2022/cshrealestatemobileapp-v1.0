@@ -25,6 +25,11 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen> {
     {"role": "Created", "description": "Ticket created"},
     {"role": "Supervisor", "description": "Checked and approved"},
     {"role": "Technician", "description": "Work in progress"},
+    //{"role": "Technician", "description": "Work Completed"},
+    //{"role": "Closed", "description": "Ticket closed"},
+
+
+
   ];
 
   List<dynamic> _attachment = [];
@@ -146,7 +151,8 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen> {
           ),),
       ),
       body: SingleChildScrollView(
-        child:Padding(
+        child:Container(
+          color: Colors.white,
           padding: const EdgeInsets.only(left: 20.0,right:20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -301,7 +307,7 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen> {
                                     child: Icon(
                                       Icons.add,
                                       size: 30,
-                                      color: Colors.blueAccent,
+                                      color: appbar_color,
                                     ),
                                   ),
                                 ],
@@ -316,7 +322,7 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen> {
                                     shape: CircleBorder(),
                                     padding: EdgeInsets.all(16),
                                     elevation: 8,
-                                    backgroundColor: Colors.white,
+                                    backgroundColor: appbar_color,
                                   ),
                                   onPressed: () {
                                     _showAttachmentOptions(context);
@@ -324,7 +330,7 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen> {
                                   child: Icon(
                                     Icons.attach_file,
                                     size: 30,
-                                    color: Colors.blueAccent,
+                                    color: Colors.white,
                                   ),
                                 ),
                                 SizedBox(height: 20),

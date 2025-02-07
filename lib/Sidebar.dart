@@ -62,164 +62,169 @@ class _SidebarState extends State<Sidebar> {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      child: Column(
-        children: [
+      child: Container(
+        color: Colors.white,
 
-          Card(
-            color: appbar_color,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            elevation: 4,
-            margin: EdgeInsets.only(top:70,left: 16,right: 16),
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Container(
-                    width: 50,
-                    height: 50,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      gradient: LinearGradient(
-                        colors: [Colors.white.withOpacity(0.8), Colors.white.withOpacity(0.9)],
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.2),
-                          blurRadius: 5,
-                          offset: Offset(0, 2),
+        child: Column(
+          children: [
+
+            Card(
+              color: appbar_color,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              elevation: 4,
+              margin: EdgeInsets.only(top:70,left: 16,right: 16),
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Container(
+                      width: 50,
+                      height: 50,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        gradient: LinearGradient(
+                          colors: [Colors.white.withOpacity(0.8), Colors.white.withOpacity(0.9)],
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
                         ),
-                      ],
-                    ),
-                    child: Icon(
-                      Icons.person,
-                      color: appbar_color,
-                    ),
-                  ),
-                  SizedBox(width: 15),
-                  Expanded(  // Ensures the Column takes available space and wraps text properly
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          userName,
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.2),
+                            blurRadius: 5,
+                            offset: Offset(0, 2),
                           ),
-                          overflow: TextOverflow.ellipsis, // Optional: Adds '...' if text is too long
-                          maxLines: 1,
-                        ),
-                        SizedBox(height: 2),
-                        Text(
-                          userEmail,
-                          style: TextStyle(fontSize: 14, color: Colors.white),
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 1,
-                        ),
-                        SizedBox(height: 2),
-                        Text(
-                          'ID: $userID (for testing purpose)',
-                          style: TextStyle(fontSize: 14, color: Colors.white),
-                          softWrap: true, // Allows text to wrap instead of overflowing
-                        ),
-                      ],
+                        ],
+                      ),
+                      child: Icon(
+                        Icons.person,
+                        color: appbar_color,
+                      ),
                     ),
-                  ),
-                ],
+                    SizedBox(width: 15),
+                    Expanded(  // Ensures the Column takes available space and wraps text properly
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            userName,
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                            overflow: TextOverflow.ellipsis, // Optional: Adds '...' if text is too long
+                            maxLines: 1,
+                          ),
+                          SizedBox(height: 2),
+                          Text(
+                            userEmail,
+                            style: TextStyle(fontSize: 14, color: Colors.white),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                          ),
+                          SizedBox(height: 2),
+                          Text(
+                            'ID: $userID (for testing purpose)',
+                            style: TextStyle(fontSize: 14, color: Colors.white),
+                            softWrap: true, // Allows text to wrap instead of overflowing
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
 
-          SizedBox(height: 10),
+            SizedBox(height: 10),
 
-          Card(
-            color: appbar_color,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
+            Card(
+              color: appbar_color,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
 
+              ),
+              elevation: 4,
+              margin: EdgeInsets.symmetric(vertical: 0, horizontal: 16),
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '$serialNo (ID: $serialID (for testing purpose only)',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                    Divider(),
+
+                    Text(
+                      '$companyName (ID: $companyID (for testing purpose only)',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
-            elevation: 4,
-            margin: EdgeInsets.symmetric(vertical: 0, horizontal: 16),
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+
+            SizedBox(height: 10),
+
+            // ✅ Sidebar Menu Items
+            Expanded(
+              child: ListView(
+                padding: EdgeInsets.zero,
                 children: [
-                  Text(
-                    '$serialNo (ID: $serialID (for testing purpose only)',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
+                  _buildDrawerItem(Icons.dashboard, "Sales", widget.isDashEnable, () {
+                    _navigateTo(context, SalesDashboard());
+                  }),
+                  _buildDrawerItem(Icons.dashboard, "Tenant", true, () {
+                    _navigateTo(context, TenantDashboardScreen());
+                  }),
+                  _buildDrawerItem(Icons.dashboard, "Landlord", true, () {
+                    _navigateTo(context, LandlordDashboardScreen());
+                  }),
+                  _buildDrawerItem(Icons.business, "Companies", true, () {
+                    _navigateTo(context, SerialNoSelection());
+                  }),
+                  _buildDrawerItem(Icons.settings, "Settings", true, () {
+                    _navigateTo(context, SettingsScreen());
+                  }),
                   Divider(),
-
-                  Text(
-                    '$companyName (ID: $companyID (for testing purpose only)',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
+                  _buildDrawerItem(Icons.contact_support, "Help", true, () {
+                    _showHelpDialog(context);
+                  }),
+                  _buildDrawerItem(Icons.logout, "Logout", true, () {
+                    _showLogoutDialog(context);
+                  }),
                 ],
               ),
             ),
-          ),
 
-          SizedBox(height: 10),
-
-          // ✅ Sidebar Menu Items
-          Expanded(
-            child: ListView(
-              padding: EdgeInsets.zero,
-              children: [
-                _buildDrawerItem(Icons.dashboard, "Sales", widget.isDashEnable, () {
-                  _navigateTo(context, SalesDashboard());
-                }),
-                _buildDrawerItem(Icons.dashboard, "Tenant", true, () {
-                  _navigateTo(context, TenantDashboardScreen());
-                }),
-                _buildDrawerItem(Icons.dashboard, "Landlord", true, () {
-                  _navigateTo(context, LandlordDashboardScreen());
-                }),
-                _buildDrawerItem(Icons.business, "Companies", true, () {
-                  _navigateTo(context, SerialNoSelection());
-                }),
-                _buildDrawerItem(Icons.settings, "Settings", true, () {
-                  _navigateTo(context, SettingsScreen());
-                }),
-                Divider(),
-                _buildDrawerItem(Icons.contact_support, "Help", true, () {
-                  _showHelpDialog(context);
-                }),
-                _buildDrawerItem(Icons.logout, "Logout", true, () {
-                  _showLogoutDialog(context);
-                }),
-              ],
-            ),
-          ),
-
-          // ✅ Sidebar Footer - Version Number
-          Padding(
-            padding: const EdgeInsets.all(15.0),
-            child: Align(
-              alignment: Alignment.bottomCenter,
-              child: Text(
-                "v1.0",
-                style: TextStyle(fontSize: 14, color: Colors.grey, fontWeight: FontWeight.bold),
+            // ✅ Sidebar Footer - Version Number
+            Padding(
+              padding: const EdgeInsets.all(15.0),
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: Text(
+                  "v1.0",
+                  style: TextStyle(fontSize: 14, color: Colors.grey, fontWeight: FontWeight.bold),
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
+
     );
   }
 

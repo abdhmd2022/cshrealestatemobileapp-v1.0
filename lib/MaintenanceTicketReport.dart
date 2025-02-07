@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:cshrealestatemobile/MaintenanceTicketCreation.dart';
 import 'package:cshrealestatemobile/MaintenanceTicketFollowUp.dart';
+import 'package:cshrealestatemobile/MaintenanceTicketTransfer.dart';
 import 'package:cshrealestatemobile/SalesDashboard.dart';
 import 'package:cshrealestatemobile/TenantDashboard.dart';
 import 'package:cshrealestatemobile/constants.dart';
@@ -154,8 +155,10 @@ class _MaintenanceTicketReportState
           isUserEnable: true,
           isUserVisible: true,
           ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      body: Container(
+          color: Colors.white,
+
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
         child: isLoading
             ? Center(
           child: Platform.isIOS
@@ -276,7 +279,11 @@ class _MaintenanceTicketReportState
                                 Icons.swap_horiz,
                                 Colors.orange,
                                     () {
+                                      Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(builder: (context) => MaintenanceTicketTransfer(/*name: ticket., id: id, email: email*/)),
 
+                                      );
                                 },
                               ),
                               SizedBox(width: 5)

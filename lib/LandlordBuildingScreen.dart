@@ -79,6 +79,7 @@ class BuildingReportScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(16.0),
               height: MediaQuery.of(context).size.height,
+              color: Colors.white,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

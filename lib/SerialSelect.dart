@@ -116,17 +116,17 @@ class _SerialNoSelectionState extends State<SerialNoSelection> {
         centerTitle: true,
       ),
       body: Center(
-        child: Container(
-          margin: EdgeInsets.only(left:20,right: 20),
+        child: Padding(
+          padding: EdgeInsets.only(left: 20,right: 20),
           child: Card(
-            elevation: 8,
+            elevation: 20,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
             ),
             child: Container(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [Colors.white70, Colors.white70],
+                  colors: [Colors.white, Colors.white],
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                 ),
@@ -134,83 +134,84 @@ class _SerialNoSelectionState extends State<SerialNoSelection> {
               ),
               padding: EdgeInsets.all(24),
               child: Column(
-                mainAxisSize: MainAxisSize.min, // To avoid unnecessary expansion
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Choose Serial Number",
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.black,
-                    ),
-                  ),
-                  SizedBox(height: 10),
-                  _buildDropdown<Serial>(
-                    selectedSerial,
-                    "Select Serial No.",
-                    serials.map((serial) => DropdownMenuItem(value: serial, child: Text(serial.serialNo))).toList(),
-                        (Serial? newSerial) {
-                      if (newSerial != null) {
-                        setState(() {
-                          selectedSerial = newSerial;
-                          filteredCompanies = newSerial.registeredCompanies;
-                          selectedCompany = null;
-                        });
-
-                        print("✅ Selected Serial No: ${newSerial.serialNo}");
-                        print("🔑 User Token: ${newSerial.userToken}");
-                        print("🔑 User ID: ${newSerial.userId}");
-                      }
-                    },
-                  ),
-                  SizedBox(height: 20),
-                  Text(
-                    "Choose Company",
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.black,
-                    ),
-                  ),
-                  SizedBox(height: 10),
-                  _buildDropdown<RegisteredCompany>(
-                    selectedCompany,
-                    "Select Company",
-                    filteredCompanies
-                        .map((company) => DropdownMenuItem(value: company, child: Text(company.name)))
-                        .toList(),
-                        (RegisteredCompany? newCompany) {
-                      if (newCompany != null) {
-                        setState(() {
-                          selectedCompany = newCompany;
-                        });
-
-                        print("✅ Selected Company: ${newCompany.name}");
-                        print("🔑 Company Token: ${newCompany.token}");
-                        print("🔑 Company ID: ${newCompany.id}");
-                      }}),
-                  SizedBox(height: 30),
-                  Center(
-                    child: ElevatedButton(
-                      onPressed: saveSelection,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: appbar_color.withOpacity(1.0),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        padding: EdgeInsets.symmetric(horizontal: 40, vertical: 14),
+                  mainAxisSize: MainAxisSize.min, // To avoid unnecessary expansion
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Choose Serial Number",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.black,
                       ),
-                      child: Text(
-                        "Proceed",
-                        style: GoogleFonts.poppins(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white,
-                        ))))]),
+                    ),
+                    SizedBox(height: 10),
+                    _buildDropdown<Serial>(
+                      selectedSerial,
+                      "Select Serial No.",
+                      serials.map((serial) => DropdownMenuItem(value: serial, child: Text(serial.serialNo))).toList(),
+                          (Serial? newSerial) {
+                        if (newSerial != null) {
+                          setState(() {
+                            selectedSerial = newSerial;
+                            filteredCompanies = newSerial.registeredCompanies;
+                            selectedCompany = null;
+                          });
+
+                          print("✅ Selected Serial No: ${newSerial.serialNo}");
+                          print("🔑 User Token: ${newSerial.userToken}");
+                          print("🔑 User ID: ${newSerial.userId}");
+                        }
+                      },
+                    ),
+                    SizedBox(height: 20),
+                    Text(
+                      "Choose Company",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.black,
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    _buildDropdown<RegisteredCompany>(
+                        selectedCompany,
+                        "Select Company",
+                        filteredCompanies
+                            .map((company) => DropdownMenuItem(value: company, child: Text(company.name)))
+                            .toList(),
+                            (RegisteredCompany? newCompany) {
+                          if (newCompany != null) {
+                            setState(() {
+                              selectedCompany = newCompany;
+                            });
+
+                            print("✅ Selected Company: ${newCompany.name}");
+                            print("🔑 Company Token: ${newCompany.token}");
+                            print("🔑 Company ID: ${newCompany.id}");
+                          }}),
+                    SizedBox(height: 30),
+                    Center(
+                        child: ElevatedButton(
+                            onPressed: saveSelection,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: appbar_color.withOpacity(1.0),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              padding: EdgeInsets.symmetric(horizontal: 40, vertical: 14),
+                            ),
+                            child: Text(
+                                "Proceed",
+                                style: GoogleFonts.poppins(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.white,
+                                ))))]),
             ),
           ),
         ),
+        
       ),
     );
   }

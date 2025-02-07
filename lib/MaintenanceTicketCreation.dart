@@ -441,6 +441,8 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
         body: Container(
             height: MediaQuery.of(context).size.height,
             width: MediaQuery.of(context).size.width,
+            color: Colors.white,
+
             /*decoration:BoxDecoration(
               gradient: LinearGradient(
                   colors: [
@@ -774,7 +776,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                                             child: Icon(
                                               Icons.add,
                                               size: 30,
-                                              color: Colors.blueAccent,
+                                              color: appbar_color,
                                             ),
                                           ),
                                         ],
@@ -789,15 +791,16 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                                           shape: CircleBorder(),
                                           padding: EdgeInsets.all(16),
                                           elevation: 8,
-                                          backgroundColor: Colors.white,
+                                          backgroundColor: appbar_color,
                                         ),
                                         onPressed: () {
                                           _showAttachmentOptions(context);
                                         },
+
                                         child: Icon(
                                           Icons.attach_file,
                                           size: 30,
-                                          color: Colors.blueAccent,
+                                          color: Colors.white,
                                         ),
                                       ),
                                       SizedBox(height: 20),

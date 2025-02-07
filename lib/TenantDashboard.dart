@@ -281,7 +281,8 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
 
       ),
       body: SingleChildScrollView(
-        child: Padding(
+        child: Container(
+          color: Colors.white,
           padding: const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

@@ -92,6 +92,7 @@ class _LandlordDashboardScreenState extends State<LandlordDashboardScreen> with 
       body: SingleChildScrollView(
         child: Container(
           padding: const EdgeInsets.all(16.0),
+          color: Colors.white,
           height: MediaQuery.of(context).size.height,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -101,6 +102,7 @@ class _LandlordDashboardScreenState extends State<LandlordDashboardScreen> with 
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 16),
+
               Expanded(
                 flex: 1,
                 child: BarGraph(occupiedUnits: occupiedUnits, buildingNames: buildingNames,availableUnits: availableUnits,),

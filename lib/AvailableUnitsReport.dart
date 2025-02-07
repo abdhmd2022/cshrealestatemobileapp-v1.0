@@ -223,6 +223,7 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
                                       ))))),
 
                       Container(
+                        color:Colors.white,
                           child: ListView.builder(
                             itemCount: filteredUnits.length,
                             itemBuilder: (context, index) {

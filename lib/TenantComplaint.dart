@@ -92,6 +92,7 @@ class _TenantComplaintPageState extends State<TenantComplaint> with TickerProvid
         body: Container(
             height: MediaQuery.of(context).size.height,
             width: MediaQuery.of(context).size.width,
+            color: Colors.white,
             decoration:BoxDecoration(
               gradient: LinearGradient(
                   colors: [

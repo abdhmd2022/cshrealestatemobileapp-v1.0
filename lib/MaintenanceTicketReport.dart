@@ -200,7 +200,6 @@ class _MaintenanceTicketReportState
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(builder: (context) => MaintenanceTicketCreation()),
-
               );
           },
           label: Text(

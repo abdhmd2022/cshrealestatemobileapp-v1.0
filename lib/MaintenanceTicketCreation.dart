@@ -214,7 +214,6 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
           // Select first flat
            selectedFlat = flats.isNotEmpty ? flats[0] : {};
 
-
         });
       } else {
         throw Exception('Failed to load data');
@@ -756,13 +755,8 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                                                         Icons.close,
                                                         size: 15,
                                                         color: Colors.white70, // Soft white color for the icon
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            );
-                                          }).toList(),
+                                                      ))))]);}).toList(),
+
                                           ElevatedButton(
                                             style: ElevatedButton.styleFrom(
                                               shape: CircleBorder(),
@@ -777,12 +771,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                                               Icons.add,
                                               size: 30,
                                               color: appbar_color,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  )
+                                            ))])])
                                 else
                                   Column(
                                     children: [

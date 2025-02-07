@@ -441,7 +441,6 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
             height: MediaQuery.of(context).size.height,
             width: MediaQuery.of(context).size.width,
             color: Colors.white,
-
             /*decoration:BoxDecoration(
               gradient: LinearGradient(
                   colors: [
@@ -507,11 +506,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                                 ),
                               ),
                               Icon(Icons.arrow_drop_down, color: appbar_color),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
+                            ])))),
 
                     Container(
                       margin: EdgeInsets.only(left: 20,right: 20,top: 0),

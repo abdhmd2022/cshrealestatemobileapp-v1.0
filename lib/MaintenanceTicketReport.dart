@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:cshrealestatemobile/MaintenanceTicketCreation.dart';
+import 'package:cshrealestatemobile/MaintenanceTicketFollowUp.dart';
 import 'package:cshrealestatemobile/SalesDashboard.dart';
 import 'package:cshrealestatemobile/TenantDashboard.dart';
 import 'package:cshrealestatemobile/constants.dart';
@@ -242,6 +243,60 @@ class _MaintenanceTicketReportState
             _buildTicketHeader(ticket),
             Divider(color: Colors.grey[300]),
             _buildTicketDetails(ticket),
+
+            Container(
+                width: MediaQuery
+                    .of(context)
+                    .size
+                    .width,
+                child: Center(
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+
+                            Row(children: [
+                              _buildDecentButton(
+                                'Follow Up',
+                                Icons.schedule,
+                                Colors.blue,
+                                    () {
+                                      Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(builder: (context) => MaintenanceFollowUpScreen()),
+
+                                      );
+                                    }
+                              ),
+                              SizedBox(width: 5),
+                              _buildDecentButton(
+                                'Transfer',
+                                Icons.swap_horiz,
+                                Colors.orange,
+                                    () {
+
+                                },
+                              ),
+                              SizedBox(width: 5)
+                            ],),
+
+                          /*_buildDecentButton(
+                          'Delete',
+                          Icons.delete,
+                          Colors.red,
+                              () {
+                            // Delete action
+                            // Add your delete functionality here
+                          },
+                        ),*/
+                        ],
+                      ),
+                    )
+                )
+            ),
+
             if (_expandedTickets[index]) _buildExpandedTicketView(ticket),
             SizedBox(height: 10), // Top space before the toggle
             Align(
@@ -388,5 +443,48 @@ class _MaintenanceTicketReportState
     );
   }
 }
+
+Widget _buildDecentButton(String label, IconData icon, Color color,
+    VoidCallback onPressed) {
+  return InkWell(
+    onTap: onPressed,
+    borderRadius: BorderRadius.circular(30.0),
+    splashColor: color.withOpacity(0.2),
+    highlightColor: color.withOpacity(0.1),
+    child: Container(
+      margin: EdgeInsets.only(top: 10.0),
+      padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(30.0),
+        color: Colors.white,
+        border: Border.all(
+          color: color.withOpacity(0.3),
+          width: 1.5,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: color.withOpacity(0.1),
+            blurRadius: 8.0,
+            offset: Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Icon(icon, color: color),
+          /*SizedBox(width: 8.0),
+            Text(
+              label,
+              style: TextStyle(
+                color: color,
+                fontWeight: FontWeight.w600,
+              ),
+            ),*/
+        ],
+      ),
+    ),
+  );
+}
+
 
 

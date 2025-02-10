@@ -578,7 +578,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
     }
   }
 
-  void openWhatsApp() async {
+/*  void openWhatsApp() async {
     String phone = customercontactnocontroller.text.trim(); // Get number from TextField
     String message = Uri.encodeComponent("Hello"); // Encode message
     String url = "https://wa.me/$phone?text=$message"; // Construct WhatsApp URL
@@ -588,7 +588,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
     } else {
       print("Could not open WhatsApp");
     }
-  }
+  }*/
 
   Future<void> openCaller() async {
 

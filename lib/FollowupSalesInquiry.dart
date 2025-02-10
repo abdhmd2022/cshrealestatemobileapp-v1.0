@@ -263,6 +263,302 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
 
   List<Map<String, dynamic>> areasToDisplay = []; // Global variable
 
+  void _showEmailPopup(BuildContext context) {
+    TextEditingController subjectController = TextEditingController();
+    TextEditingController bodyController = TextEditingController();
+    DateTime? selectedDate;
+    String buttonText = "Select Next Follow-up Date";
+
+    if (nextFollowUpDate != null) {
+      setState(() {
+        buttonText ='Next Follow-up: ${DateFormat("dd-MMM-yyyy").format(nextFollowUpDate!)}';
+      });
+    }
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              backgroundColor: Colors.white,
+              title: Text(
+                "Send Email",
+                style: TextStyle(color: Colors.black),
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                 /* // Display the recipient email (disabled)
+                  TextField(
+                    controller: emailcontroller,
+                    style: TextStyle(color: Colors.white),
+                    decoration: InputDecoration(
+                      labelText: "Recipient Email",
+                      labelStyle: TextStyle(color: Colors.white70),
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.white),
+                      ),
+                    ),
+                    enabled: false, // User can't modify this
+                  ),
+                  SizedBox(height: 10),*/
+
+                  // Input for subject
+                  TextField(
+                    controller: subjectController,
+                    style: TextStyle(color: Colors.black),
+                    decoration: InputDecoration(
+                      labelText: "Subject",
+                      labelStyle: TextStyle(color: Colors.black54),
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.black),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: appbar_color),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 10),
+
+                  // Input for body
+                  TextField(
+                    controller: bodyController,
+                    maxLines: 3,
+                    style: TextStyle(color: Colors.black),
+                    decoration: InputDecoration(
+                      labelText: "Message Body",
+                      labelStyle: TextStyle(color: Colors.black54),
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.black),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: appbar_color),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 10),
+
+                  // Button to pick a follow-up date
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: appbar_color,
+                      foregroundColor: Colors.white,
+                    ),
+                    onPressed: () async {
+
+                      DateTime? pickedDate = await showDatePicker(
+                        context: context,
+                        initialDate: nextFollowUpDate ?? DateTime.now().add(Duration(days: 1)),
+                        firstDate: DateTime.now().add(Duration(days: 1)), // Restrict past dates
+                        lastDate: DateTime(2100),
+                        builder: (BuildContext context, Widget? child) {
+                          return Theme(
+                            data: ThemeData.light().copyWith(
+                              colorScheme: ColorScheme.light(
+                                primary: appbar_color, // Header background and selected date color
+                                onPrimary: Colors.white, // Header text color
+                                onSurface: Colors.black, // Calendar text color
+                              ),
+                              textButtonTheme: TextButtonThemeData(
+                                style: TextButton.styleFrom(
+                                  foregroundColor: appbar_color, // Button text color
+                                ),
+                              ),
+                            ),
+                            child: child!,
+                          );
+                        },
+                      );
+
+                      if (pickedDate != null) {
+                        setState(() {
+                          buttonText ='Next Follow-up: ${DateFormat("dd-MMM-yyyy").format(pickedDate!)}';
+                          selectedDate = pickedDate;
+                          nextFollowUpDate = pickedDate; // Save selected date
+                        });
+                      }
+
+                    },
+                    child: Text(buttonText),
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(); // Close the dialog
+                  },
+                  child: Text("Cancel", style: TextStyle(color: appbar_color)),
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: appbar_color,
+                    foregroundColor: Colors.white,
+                  ),
+                  onPressed: () async {
+                    String recipientEmail = emailcontroller.text.trim();
+                    String subject = subjectController.text.trim();
+                    String body = bodyController.text.trim();
+
+                    if (recipientEmail.isNotEmpty && subject.isNotEmpty && body.isNotEmpty) {
+                      final Uri emailUri = Uri(
+                        scheme: 'mailto',
+                        path: recipientEmail,
+                        queryParameters: {
+                          'subject': subject,
+                          'body': body,
+                        },
+                      );
+
+                      if (await canLaunchUrl(emailUri)) {
+                    await launchUrl(emailUri);
+                    } else {
+                    throw 'Could not open email client';
+                    }
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text("Enter subject & message!")),
+                      );
+                    }
+                  },
+                  child: Text("Send"),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+
+  void _showWhatsAppPopup(BuildContext context) {
+    TextEditingController messageController = TextEditingController();
+    DateTime? selectedDate;
+    String buttonText = "Select Next Follow-up Date";
+    String phoneNumber = customercontactnocontroller.text.trim(); // Get number from TextField
+
+
+    if (nextFollowUpDate != null) {
+      setState(() {
+        buttonText ='Next Follow-up: ${DateFormat("dd-MMM-yyyy").format(nextFollowUpDate!)}';
+      });
+    }
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              backgroundColor: Colors.white, // Apply appbar_color to full UI
+              title: Text(
+                "WhatsApp",
+                style: TextStyle(color: Colors.black),
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Input field for the message
+                  TextField(
+                    controller: messageController,
+                    maxLines: 3,
+                    style: TextStyle(color: Colors.black),
+                    decoration: InputDecoration(
+                      hintText: "Enter your message",
+                      hintStyle: TextStyle(color: Colors.black54),
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.black),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: appbar_color),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 10),
+
+                  // Button to pick a follow-up date
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: appbar_color,
+                      foregroundColor: Colors.white,
+                    ),
+                    onPressed: () async {
+
+                      DateTime? pickedDate = await showDatePicker(
+                        context: context,
+                        initialDate: nextFollowUpDate ?? DateTime.now().add(Duration(days: 1)),
+                        firstDate: DateTime.now().add(Duration(days: 1)), // Restrict past dates
+                        lastDate: DateTime(2100),
+                        builder: (BuildContext context, Widget? child) {
+                          return Theme(
+                            data: ThemeData.light().copyWith(
+                              colorScheme: ColorScheme.light(
+                                primary: appbar_color, // Header background and selected date color
+                                onPrimary: Colors.white, // Header text color
+                                onSurface: Colors.black, // Calendar text color
+                              ),
+                              textButtonTheme: TextButtonThemeData(
+                                style: TextButton.styleFrom(
+                                  foregroundColor: appbar_color, // Button text color
+                                ),
+                              ),
+                            ),
+                            child: child!,
+                          );
+                        },
+                      );
+
+                      if (pickedDate != null) {
+                        setState(() {
+                          buttonText ='Next Follow-up: ${DateFormat("dd-MMM-yyyy").format(pickedDate!)}';
+                          selectedDate = pickedDate;
+                          nextFollowUpDate = pickedDate; // Save selected date
+                        });
+                      }
+
+                    },
+                    child: Text(buttonText),
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(); // Close the dialog
+                  },
+                  child: Text("Cancel", style: TextStyle(color: appbar_color)),
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: appbar_color,
+                    foregroundColor: Colors.white,
+                  ),
+                  onPressed: () {
+                    String message = messageController.text;
+                    if (message.isNotEmpty && nextFollowUpDate != null) {
+                      // Open WhatsApp
+                      String whatsappUrl = "https://wa.me/$phoneNumber?text=${Uri.encodeComponent(message)}";
+
+                      launch(whatsappUrl);
+
+                      Navigator.of(context).pop(); // Close the dialog
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text("Enter message & select a date!")),
+                      );
+                    }
+                  },
+                  child: Text("Send"),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+
   void openEmail(String no) async {
 
     final String email = emailcontroller.text.trim();
@@ -1491,7 +1787,11 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                             'Whatsapp',
                                             FontAwesomeIcons.whatsapp,
                                             Colors.green,
-                                            openWhatsApp,
+                                            ()
+                                            {
+                                              _showWhatsAppPopup(context);
+
+                                            },
                                           ),
                                           SizedBox(width: 10),
                                           _buildDecentButton(
@@ -1548,7 +1848,10 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                             FontAwesomeIcons.envelope,
                                               Colors.blueAccent,
                                                 () {
-                                              openEmail(widget.id.toString());
+
+                                                  _showEmailPopup(context);
+
+
                                             },
                                           ),
                                         ],

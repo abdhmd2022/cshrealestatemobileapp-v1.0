@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 const String app_name = "Real Estate";
@@ -56,3 +57,8 @@ final TextTheme globalTextTheme = TextTheme(
   caption: GoogleFonts.poppins(),
   overline: GoogleFonts.poppins(),
 );
+
+String formatDate(String dateString) {
+  DateTime date = DateTime.parse(dateString);
+  return DateFormat('dd-MMM-yyyy').format(date);
+}

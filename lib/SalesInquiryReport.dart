@@ -195,6 +195,7 @@ class _SalesInquiryReportState
   String? selectedStatus;
   bool isStatusLoading = true; // Track lead status loading
 
+  List<dynamic> leadFollowupHistoryList = [];
 
 
   bool isLoading = false;
@@ -261,6 +262,204 @@ class _SalesInquiryReportState
       });
     }
   }
+
+
+
+
+  Color getCategoryColor(String category) {
+    switch (category) {
+      case "Normal":
+        return Colors.green;
+      case "Drop":
+      case "Close":
+        return Colors.red;
+      default:
+        return Colors.grey;
+    }
+  }
+
+  Icon getCategoryIcon(String category) {
+    switch (category) {
+      case "Drop":
+      case "Close":
+        return Icon(Icons.cancel, size: 16, color: Colors.red);
+      case "Normal":
+        return Icon(Icons.check_circle, size: 16, color: Colors.green);
+      default:
+        return Icon(Icons.help_outline, size: 16, color: Colors.grey);
+    }
+  }
+
+  Color getFollowUpDateColor(String? followUpDate) {
+    if (followUpDate == null) return Colors.grey;
+
+    DateTime followUp = DateTime.parse(followUpDate);
+    DateTime today = DateTime.now();
+
+    if (followUp.isBefore(today.subtract(Duration(days: 1)))) {
+      return Colors.red; // Show red if next follow-up date is before today
+    } else {
+      return Colors.grey.shade600; // Show blue for today and future dates
+    }  }
+
+  void _showPopup(BuildContext context,String id) async {
+    List<dynamic> filteredData = [];
+
+    try {
+      filteredData = await fetchLeadHistory(id);
+    } catch (e) {
+      print('Error fetching data: $e');
+    }
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return Container(
+          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          height: MediaQuery.of(context).size.height * 0.6,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Header
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "Lead Follow-Ups",
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.close, color: Colors.grey),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                ],
+              ),
+              Divider(),
+              // Content
+              Expanded(
+                child: filteredData.isEmpty
+                    ? Center(child: Text("No Follow-ups Found"))
+                    : ListView.builder(
+                  itemCount: filteredData.length,
+                  itemBuilder: (context, index) {
+                    var item = filteredData.reversed.toList()[index];
+                    String category = item["lead_status"]["category"];
+                    Color statusColor = getCategoryColor(category);
+                    String? nextFollowUpDate = item["next_followup_date"];
+                    Color followUpDateColor = getFollowUpDateColor(nextFollowUpDate);
+
+                    return Card(
+                      margin: EdgeInsets.symmetric(vertical: 8),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      elevation: 2,
+                      child: Padding(
+                        padding: EdgeInsets.all(16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              item["leads"]["name"],
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.w600),
+                            ),
+                            SizedBox(height: 6),
+                            Row(
+                              children: [
+                                getCategoryIcon(item["lead_status"]["category"]),
+                                SizedBox(width: 6),
+                                Text(
+                                  item["lead_status"]["name"],
+                                  style: TextStyle(
+                                    color: statusColor,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 8),
+                            Text(
+                              "Date: ${formatDate(item["date"])}",
+                              style: TextStyle(color: Colors.grey.shade700),
+                            ),
+                            if (item["remarks"] != null) ...[
+                              SizedBox(height: 6),
+                              Text(
+                                "Remarks: ${item["remarks"]}",
+                                style: TextStyle(color: Colors.grey.shade600),
+                              ),
+                            ],
+                            if (nextFollowUpDate != null) ...[
+                              SizedBox(height: 6),
+                              Row(
+                                children: [
+
+                                  Text(
+                                    "Next Follow-up: ",
+                                    style: TextStyle(
+                                      color: Colors.grey.shade600,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+
+                                  Text(
+                                    "${formatDate(nextFollowUpDate)}",
+                                    style: TextStyle(
+                                      color: followUpDateColor,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ],
+                              )
+                            ],
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Future<List<dynamic>> fetchLeadHistory(String id) async {
+
+    leadFollowupHistoryList.clear();
+
+
+
+    final url = '$BASE_URL_config/v1/leadFollowUp/?lead_id=$id';
+
+    String token = 'Bearer $Company_Token'; // Auth token
+
+    Map<String, String> headers = {
+      'Authorization': token,
+      "Content-Type": "application/json"
+    };
+
+    final response = await http.get(Uri.parse(url), headers: headers);
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> jsonData = jsonDecode(response.body);
+
+      leadFollowupHistoryList = jsonData["data"]["leadFollowUps"];
+      // Filter only where lead_id == 6
+
+      return leadFollowupHistoryList;
+    } else {
+      throw Exception('Failed to load lead statuses');
+    }
+  }
+
 
 
   List<InquiryModel> parseInquiries(Map<String, dynamic> jsonResponse) {
@@ -467,7 +666,6 @@ class _SalesInquiryReportState
 
         Container(
             color: Colors.white,
-
             child:
             Column(
               children: [
@@ -796,6 +994,15 @@ class _SalesInquiryReportState
                               ),
                               SizedBox(width: 5)
                             ],),
+
+                          _buildDecentButton(
+                            'View',
+                            Icons.remove_red_eye_rounded,
+                            Colors.red,
+                                () {
+                                  _showPopup(context,inquiry.inquiryNo);
+                            },
+                          ),
 
                           /*_buildDecentButton(
                           'Delete',

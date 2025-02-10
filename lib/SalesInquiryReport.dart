@@ -271,8 +271,10 @@ class _SalesInquiryReportState
       case "Normal":
         return Colors.green;
       case "Drop":
-      case "Close":
         return Colors.red;
+
+      case "Close":
+        return Colors.green;
       default:
         return Colors.grey;
     }
@@ -281,8 +283,9 @@ class _SalesInquiryReportState
   Icon getCategoryIcon(String category) {
     switch (category) {
       case "Drop":
-      case "Close":
         return Icon(Icons.cancel, size: 16, color: Colors.red);
+      case "Close":
+        return Icon(Icons.check_circle, size: 16, color: Colors.green);
       case "Normal":
         return Icon(Icons.check_circle, size: 16, color: Colors.green);
       default:
@@ -329,7 +332,7 @@ class _SalesInquiryReportState
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    "Lead Follow-Ups",
+                    "Lead Follow-ups",
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
                   ),
                   IconButton(
@@ -391,7 +394,7 @@ class _SalesInquiryReportState
                               SizedBox(height: 6),
                               Text(
                                 "Remarks: ${item["remarks"]}",
-                                style: TextStyle(color: Colors.grey.shade600),
+                                style: TextStyle(color: Colors.grey.shade700),
                               ),
                             ],
                             if (nextFollowUpDate != null) ...[

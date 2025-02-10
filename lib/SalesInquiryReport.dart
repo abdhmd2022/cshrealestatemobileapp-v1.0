@@ -206,7 +206,6 @@ class _SalesInquiryReportState
     fetchLeadStatus();
   }
 
-
   Future<void> fetchLeadStatus() async {
     setState(() {
       isStatusLoading = true; // Start loading
@@ -262,9 +261,6 @@ class _SalesInquiryReportState
       });
     }
   }
-
-
-
 
   Color getCategoryColor(String category) {
     switch (category) {
@@ -462,8 +458,6 @@ class _SalesInquiryReportState
     }
   }
 
-
-
   List<InquiryModel> parseInquiries(Map<String, dynamic> jsonResponse) {
     final leads = jsonResponse['data']?['leads'] as List<dynamic>? ?? [];
     return leads.map((lead) => InquiryModel.fromJson(lead)).toList();
@@ -548,7 +542,6 @@ class _SalesInquiryReportState
     });
   }
 
-
   void filterInquiries() {
     print("Filtering inquiries...");
     print("Selected Date Range: ${DateFormat('dd MMM, yyyy').format(startDate)} - ${DateFormat('dd MMM, yyyy').format(endDate)}");
@@ -593,9 +586,7 @@ class _SalesInquiryReportState
           preferredSize: Size.fromHeight(70.0),
           child: Padding(
             padding: const EdgeInsets.all(8.0),
-            child:
-
-            Column(
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 TextField(
@@ -623,10 +614,6 @@ class _SalesInquiryReportState
                   ),
               ],
             ),
-
-
-
-
           ),
         ),
         leading: GestureDetector(
@@ -643,7 +630,6 @@ class _SalesInquiryReportState
 
         backgroundColor: appbar_color.withOpacity(0.9),
         centerTitle: true,
-
         title: Text(
           'Inquiries',
           style: TextStyle(
@@ -995,8 +981,8 @@ class _SalesInquiryReportState
 
                           _buildDecentButton(
                             'View',
-                            Icons.remove_red_eye_rounded,
-                            Colors.red,
+                            Icons.visibility,
+                            Colors.black87,
                                 () {
                                   _showPopup(context,inquiry.inquiryNo);
                             },
@@ -1117,7 +1103,6 @@ class _SalesInquiryReportState
       return '$areaName, $emirateName';
     }).join(' • '); // Using a bullet separator for clarity
   }
-
 
   Widget _buildInfoRow(IconData label, String value) {
     return Padding(

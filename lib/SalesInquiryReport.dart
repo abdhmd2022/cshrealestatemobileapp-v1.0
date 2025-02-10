@@ -303,7 +303,8 @@ class _SalesInquiryReportState
       return Colors.red; // Show red if next follow-up date is before today
     } else {
       return Colors.grey.shade600; // Show blue for today and future dates
-    }  }
+    }
+  }
 
   void _showPopup(BuildContext context,String id) async {
     List<dynamic> filteredData = [];
@@ -438,8 +439,6 @@ class _SalesInquiryReportState
 
     leadFollowupHistoryList.clear();
 
-
-
     final url = '$BASE_URL_config/v1/leadFollowUp/?lead_id=$id';
 
     String token = 'Bearer $Company_Token'; // Auth token
@@ -573,7 +572,6 @@ class _SalesInquiryReportState
             followupDate.isAtSameMomentAs(startDate) || followupDate!.isAfter(startDate.subtract(Duration(days: 1))) &&
             followupDate.isBefore(endDate.add(Duration(days: 1))) || followupDate.isAtSameMomentAs(endDate);
 
-
         // ✅ Apply status filter
         bool statusMatches = selectedStatus == null || selectedStatus == "All" || inquiry.status == selectedStatus;
 
@@ -583,9 +581,6 @@ class _SalesInquiryReportState
 
     print("Total Filtered Inquiries: ${filteredInquiries.length}"); // ✅ Debugging
   }
-
-
-
 
   @override
   Widget build(BuildContext context) {

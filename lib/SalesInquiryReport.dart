@@ -116,7 +116,6 @@ class InquiryModel {
     }
 
     return InquiryModel(
-
       customerName: json['name'] ?? 'Unknown',
       unitType: flatTypes,
       area: areas,
@@ -168,8 +167,7 @@ class _SalesInquiryReportState
     extends State<SalesInquiryReport> with TickerProviderStateMixin {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  List<InquiryModel> salesinquiry = [
-  ];
+  List<InquiryModel> salesinquiry = [];
 
   List<InquiryModel> filteredInquiries = [];
   String searchQuery = "";
@@ -181,7 +179,6 @@ class _SalesInquiryReportState
   bool isStatusLoading = true; // Track lead status loading
 
   List<dynamic> leadFollowupHistoryList = [];
-
 
   bool isLoading = false;
 
@@ -306,6 +303,7 @@ class _SalesInquiryReportState
         return Container(
           padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
           height: MediaQuery.of(context).size.height * 0.6,
+          color: Colors.white,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -320,11 +318,9 @@ class _SalesInquiryReportState
                   IconButton(
                     icon: Icon(Icons.close, color: Colors.grey),
                     onPressed: () => Navigator.pop(context),
-                  ),
-                ],
-              ),
+                  )]),
               Divider(),
-              // Content
+
               Expanded(
                 child: filteredData.isEmpty
                     ? Center(child: Text("No Follow-ups Found"))
@@ -337,83 +333,63 @@ class _SalesInquiryReportState
                     String? nextFollowUpDate = item["next_followup_date"];
                     Color followUpDateColor = getFollowUpDateColor(nextFollowUpDate);
 
-                    return Card(
-                      margin: EdgeInsets.symmetric(vertical: 8),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      elevation: 2,
-                      child: Padding(
-                        padding: EdgeInsets.all(16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              item["leads"]["name"],
-                              style: TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.w600),
-                            ),
-                            SizedBox(height: 6),
-                            Row(
-                              children: [
-                                getCategoryIcon(item["lead_status"]["category"]),
-                                SizedBox(width: 6),
-                                Text(
-                                  item["lead_status"]["name"],
-                                  style: TextStyle(
-                                    color: statusColor,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            SizedBox(height: 8),
-                            Text(
-                              "Date: ${formatDate(item["date"])}",
-                              style: TextStyle(color: Colors.grey.shade700),
-                            ),
-                            if (item["remarks"] != null) ...[
-                              SizedBox(height: 6),
+                    return Container(
+                        color: Colors.white,
+                        child: Card(
+                        margin: EdgeInsets.symmetric(vertical: 8),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(0),
+                        ),
+                        elevation: 5,
+                        child: Container(
+                          color: Colors.white,
+                          padding: EdgeInsets.all(16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
                               Text(
-                                "Remarks: ${item["remarks"]}",
-                                style: TextStyle(color: Colors.grey.shade700),
+                                item["leads"]["name"],
+                                style: TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.w600),
                               ),
-                            ],
-                            if (nextFollowUpDate != null) ...[
                               SizedBox(height: 6),
                               Row(
                                 children: [
-
+                                  getCategoryIcon(item["lead_status"]["category"]),
+                                  SizedBox(width: 6),
                                   Text(
-                                    "Next Follow-up: ",
+                                    item["lead_status"]["name"],
                                     style: TextStyle(
-                                      color: Colors.grey.shade600,
+                                      color: statusColor,
                                       fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-
-                                  Text(
-                                    "${formatDate(nextFollowUpDate)}",
-                                    style: TextStyle(
-                                      color: followUpDateColor,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ],
-                              )
-                            ],
-                          ],
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
+                                    ))]),
+                              SizedBox(height: 8),
+                              Text(
+                                "Date: ${formatDate(item["date"])}",
+                                style: TextStyle(color: Colors.grey.shade700),
+                              ),
+                              if (item["remarks"] != null) ...[
+                                SizedBox(height: 6),
+                                Text(
+                                  "Remarks: ${item["remarks"]}",
+                                  style: TextStyle(color: Colors.grey.shade700),
+                                )],
+                              if (nextFollowUpDate != null) ...[
+                                SizedBox(height: 6),
+                                Row(
+                                  children: [
+                                    Text(
+                                      "Next Follow-up: ",
+                                      style: TextStyle(
+                                        color: Colors.grey.shade600,
+                                        fontWeight: FontWeight.w500,
+                                      )),
+                                    Text(
+                                      "${formatDate(nextFollowUpDate)}",
+                                      style: TextStyle(
+                                        color: followUpDateColor,
+                                        fontWeight: FontWeight.w500,
+                                      ))])]]))));}))]));});
   }
 
   Future<List<dynamic>> fetchLeadHistory(String id) async {

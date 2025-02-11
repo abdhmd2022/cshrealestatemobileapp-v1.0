@@ -450,7 +450,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
         return StatefulBuilder(
           builder: (context, setState) {
             return AlertDialog(
-              backgroundColor: Colors.white, // Apply appbar_color to full UI
+              backgroundColor: Colors.white, // Apply appbar_color to full
               title: Text(
                 "WhatsApp",
                 style: TextStyle(color: Colors.black),

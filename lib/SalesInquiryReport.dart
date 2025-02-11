@@ -167,7 +167,8 @@ class _SalesInquiryReportState
     extends State<SalesInquiryReport> with TickerProviderStateMixin {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  List<InquiryModel> salesinquiry = [];
+  List<InquiryModel> salesinquiry = [
+  ];
 
   List<InquiryModel> filteredInquiries = [];
   String searchQuery = "";
@@ -318,9 +319,11 @@ class _SalesInquiryReportState
                   IconButton(
                     icon: Icon(Icons.close, color: Colors.grey),
                     onPressed: () => Navigator.pop(context),
-                  )]),
+                  ),
+                ],
+              ),
               Divider(),
-
+              // Content
               Expanded(
                 child: filteredData.isEmpty
                     ? Center(child: Text("No Follow-ups Found"))
@@ -334,15 +337,23 @@ class _SalesInquiryReportState
                     Color followUpDateColor = getFollowUpDateColor(nextFollowUpDate);
 
                     return Container(
+                      decoration: BoxDecoration(
                         color: Colors.white,
+                        borderRadius: BorderRadius.circular(12), // Rounded corners
+
+                      ),
+
                         child: Card(
                         margin: EdgeInsets.symmetric(vertical: 8),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(0),
+                          borderRadius: BorderRadius.circular(12),
                         ),
                         elevation: 5,
                         child: Container(
-                          color: Colors.white,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12), // Rounded corners
+                          ),
                           padding: EdgeInsets.all(16),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -362,7 +373,10 @@ class _SalesInquiryReportState
                                     style: TextStyle(
                                       color: statusColor,
                                       fontWeight: FontWeight.w500,
-                                    ))]),
+                                    ),
+                                  ),
+                                ],
+                              ),
                               SizedBox(height: 8),
                               Text(
                                 "Date: ${formatDate(item["date"])}",
@@ -373,23 +387,45 @@ class _SalesInquiryReportState
                                 Text(
                                   "Remarks: ${item["remarks"]}",
                                   style: TextStyle(color: Colors.grey.shade700),
-                                )],
+                                ),
+                              ],
                               if (nextFollowUpDate != null) ...[
                                 SizedBox(height: 6),
                                 Row(
                                   children: [
+
                                     Text(
                                       "Next Follow-up: ",
                                       style: TextStyle(
                                         color: Colors.grey.shade600,
                                         fontWeight: FontWeight.w500,
-                                      )),
+                                      ),
+                                    ),
+
                                     Text(
                                       "${formatDate(nextFollowUpDate)}",
                                       style: TextStyle(
                                         color: followUpDateColor,
                                         fontWeight: FontWeight.w500,
-                                      ))])]]))));}))]));});
+                                      ),
+                                    ),
+                                  ],
+                                )
+                              ],
+                            ],
+                          ),
+                        ),
+                      )
+                    );
+
+                  },
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   Future<List<dynamic>> fetchLeadHistory(String id) async {

@@ -193,7 +193,7 @@ class _LeadFollowupTypeReportState extends State<LeadFollowupTypeReport> {
                     labelText: "Lead Follow-up Name",
                     labelStyle: TextStyle(color: Colors.black54),
                     focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: appbar_color.withOpacity(0.5)),
+                      borderSide: BorderSide(color: appbar_color),
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderSide: BorderSide(color: Colors.black54!),
@@ -223,7 +223,7 @@ class _LeadFollowupTypeReportState extends State<LeadFollowupTypeReport> {
                 }
 
               },
-              style: ElevatedButton.styleFrom(backgroundColor: appbar_color.withOpacity(0.5)),
+              style: ElevatedButton.styleFrom(backgroundColor: appbar_color),
               child: Text("Submit",style: TextStyle(color: Colors.white)),
             ),
           ],
@@ -302,7 +302,7 @@ class _LeadFollowupTypeReportState extends State<LeadFollowupTypeReport> {
                 }
 
               },
-              style: ElevatedButton.styleFrom(backgroundColor: appbar_color.withOpacity(0.5)),
+              style: ElevatedButton.styleFrom(backgroundColor: appbar_color),
               child: Text("Submit",style: TextStyle(color: Colors.white)),
             ),
           ],

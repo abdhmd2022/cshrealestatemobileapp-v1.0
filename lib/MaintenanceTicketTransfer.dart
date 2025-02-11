@@ -422,7 +422,6 @@ class _MaintenanceTicketTransferPageState extends State<MaintenanceTicketTransfe
                                             maxLines: 3, // A
                                             decoration: InputDecoration(
                                               labelText: "Remarks",
-
                                               hintText: 'Enter Remarks*',
                                               contentPadding: EdgeInsets.all(15),
                                               border: OutlineInputBorder(
@@ -445,18 +444,13 @@ class _MaintenanceTicketTransferPageState extends State<MaintenanceTicketTransfe
                                               color: Colors.black,
                                               fontSize: 15,
                                             ))),
-
-
-
                                   ]),
 
-                              /*  SizedBox(height: 10),
-
+                    /*  SizedBox(height: 10),
                     Column(
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children:[
-
                           Container(
                             margin: EdgeInsets.only(
                                 top:0,
@@ -468,7 +462,6 @@ class _MaintenanceTicketTransferPageState extends State<MaintenanceTicketTransfe
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 16
-
                                 )
                             ),),
 

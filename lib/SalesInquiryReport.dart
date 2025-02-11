@@ -115,7 +115,6 @@ class InquiryModel {
       print('No follow-up records found.');
     }
 
-
     return InquiryModel(
 
       customerName: json['name'] ?? 'Unknown',
@@ -154,20 +153,7 @@ class InquiryModel {
   }
 
   /// Helper method to safely extract nested values
-  static T _getNestedValue<T>(
-      Map<String, dynamic> json, List<dynamic> keys, T defaultValue) {
-    dynamic value = json;
-    for (var key in keys) {
-      if (value is Map<String, dynamic> && value.containsKey(key)) {
-        value = value[key];
-      } else if (value is List && key is int && key < value.length) {
-        value = value[key];
-      } else {
-        return defaultValue;
-      }
-    }
-    return value as T? ?? defaultValue;
-  }
+
   static String _formatDate(String rawDate) {
     try {
       final parsedDate = DateTime.parse(rawDate);
@@ -187,7 +173,6 @@ class _SalesInquiryReportState
 
   List<InquiryModel> filteredInquiries = [];
   String searchQuery = "";
-
 
   List<bool> _expandedinquirys = [];
 
@@ -893,9 +878,7 @@ class _SalesInquiryReportState
               color: Colors.grey.withOpacity(0.2),
               blurRadius: 10.0,
               offset: Offset(0, 5),
-            ),
-          ],
-        ),
+            )]),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -1002,8 +985,7 @@ class _SalesInquiryReportState
                     )
                 )
             ),
-
-
+            
             if (_expandedinquirys[index])
               _buildExpandedinquiryView(inquiry),
 

@@ -81,11 +81,8 @@ class _ActivitySourceReportState extends State<ActivitySourceReport> {
     }
     catch (e)
     {
-
+      print('Exception occurs:  $e');
     }
-
-
-
   }
 
   Future<void> editActivitySource(int id, String activitysource_name ) async {
@@ -98,12 +95,11 @@ class _ActivitySourceReportState extends State<ActivitySourceReport> {
       "name": activitysource_name,
     };
 
-    print('jsonbody $jsonBody ');
+   /* print('jsonbody $jsonBody ');
 
-    print('id $id ');
+    print('id $id ');*/
 
     String token = 'Bearer $Serial_Token'; // auth token for request
-
 
     Map<String, String> headers = {
       'Authorization': token,
@@ -154,7 +150,6 @@ class _ActivitySourceReportState extends State<ActivitySourceReport> {
 
     }
   }
-
 
   void showActivitySourceDialog() {
     final _formKey = GlobalKey<FormState>();
@@ -222,11 +217,7 @@ class _ActivitySourceReportState extends State<ActivitySourceReport> {
               },
               style: ElevatedButton.styleFrom(backgroundColor: appbar_color),
               child: Text("Submit",style: TextStyle(color: Colors.white)),
-            ),
-          ],
-        );
-      },
-    );
+            )]);});
   }
 
   void showEditActivitySourceDialog(int id, String old_activitysource_name) {
@@ -252,7 +243,6 @@ class _ActivitySourceReportState extends State<ActivitySourceReport> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-
                 TextFormField(
                   controller: activitySourceController,
                   validator: (value) {
@@ -260,7 +250,6 @@ class _ActivitySourceReportState extends State<ActivitySourceReport> {
                     {
                       return 'Please enter activity source name';
                     }
-
                     return null;
                   },
                   decoration: InputDecoration(
@@ -271,11 +260,7 @@ class _ActivitySourceReportState extends State<ActivitySourceReport> {
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderSide: BorderSide(color: Colors.black54!),
-                    ),
-                  ),
-                ),
-              ],
-            ),
+                    )))])
           ),
 
           actions: [
@@ -297,14 +282,7 @@ class _ActivitySourceReportState extends State<ActivitySourceReport> {
               },
               style: ElevatedButton.styleFrom(backgroundColor: appbar_color),
               child: Text("Submit",style: TextStyle(color: Colors.white)),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-
+            )]);});}
 
   Future<void> fetchActivitySources() async {
 

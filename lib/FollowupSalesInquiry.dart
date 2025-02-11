@@ -1731,7 +1731,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                                       style: TextStyle(
                                                           fontSize: 16,
                                                           color: appbar_color.withOpacity(1),
-                                                          fontWeight: FontWeight.normal
+                                                          fontWeight: FontWeight.w500
                                                       ),
 
                                                     ),
@@ -1762,44 +1762,52 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                                 ],
                                               ),
                                               child: Row(
+                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                   children: [
 
-                                                    Icon(
+                                                    /*Icon(
                                                       FontAwesomeIcons.phone,
                                                       color: appbar_color.withOpacity(1),
                                                       size: 20,
                                                     ),
-                                                    SizedBox(width: 8,),
+                                                    SizedBox(width: 8,),*/
                                                     Text(
                                                         customercontactnocontroller.text.isNotEmpty ? customercontactnocontroller.text : _hintText,
                                                         style: TextStyle(
                                                             fontSize: 16,
                                                             color: appbar_color.withOpacity(1),
-                                                            fontWeight: FontWeight.normal
+                                                            fontWeight: FontWeight.w500
                                                         )
                                                     ),
+
+
+                                                    Row(children:[
+                                                      SizedBox(width: 10),
+
+                                                      _buildDecentButton(
+                                                        'Whatsapp',
+                                                        FontAwesomeIcons.whatsapp,
+                                                        Colors.green,
+                                                            ()
+                                                        {
+                                                          _showWhatsAppPopup(context);
+
+                                                        },
+                                                      ),
+                                                      SizedBox(width: 10),
+                                                      _buildDecentButton(
+                                                        'Call',
+                                                        FontAwesomeIcons.phone,
+                                                        Colors.blueAccent,
+                                                        openCaller,
+                                                      ),
+                                                    ])
+
                                                   ],
                                               )
                                             ),
                                           ),
-                                          SizedBox(width: 10),
-                                          _buildDecentButton(
-                                            'Whatsapp',
-                                            FontAwesomeIcons.whatsapp,
-                                            Colors.green,
-                                            ()
-                                            {
-                                              _showWhatsAppPopup(context);
 
-                                            },
-                                          ),
-                                          SizedBox(width: 10),
-                                          _buildDecentButton(
-                                            'Call',
-                                            FontAwesomeIcons.phone,
-                                            Colors.blueAccent,
-                                            openCaller,
-                                          ),
                                         ],
                                       ),
                                       SizedBox(height: 8),
@@ -1822,38 +1830,42 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                                 borderRadius: BorderRadius.circular(12.0),
                                               ),
                                               child: Row(
+                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                   children:[
 
-                                                    Icon(
+                                                    /*Icon(
                                                       FontAwesomeIcons.envelope ,
                                                       color: appbar_color.withOpacity(1),
                                                       size: 20,
                                                     ),
-                                                    SizedBox(width: 8,),
+                                                    SizedBox(width: 8,),*/
                                                     Text(
                                                         emailcontroller.text.isNotEmpty ? emailcontroller.text : '',
                                                         style: TextStyle(
                                                             fontSize: 16,
                                                             color: appbar_color.withOpacity(1),
-                                                            fontWeight: FontWeight.normal
+                                                            fontWeight: FontWeight.w500
                                                         )
                                                     ),
+
+                                                    Row(children:[
+                                                      SizedBox(width: 10),
+                                                      _buildDecentButtonwithLabel(
+                                                        'Send',
+                                                        FontAwesomeIcons.envelope,
+                                                        Colors.blueAccent,
+                                                            () {
+
+                                                          _showEmailPopup(context);
+
+                                                        },
+                                                      ),
+                                                    ])
                                                   ]
                                               )
                                             ),
                                           ),
-                                          SizedBox(width: 10),
-                                          _buildDecentButtonwithLabel(
-                                            'Send',
-                                            FontAwesomeIcons.envelope,
-                                              Colors.blueAccent,
-                                                () {
 
-                                                  _showEmailPopup(context);
-
-
-                                            },
-                                          ),
                                         ],
                                       ),
                                     ],

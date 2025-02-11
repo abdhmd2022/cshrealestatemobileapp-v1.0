@@ -380,7 +380,7 @@ class _MaintenanceTicketTransferPageState extends State<MaintenanceTicketTransfe
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children:[
 
-                                    Container(
+                                    /*Container(
                                       margin: EdgeInsets.only( top:0,
                                           bottom: 5,
                                           left: 20,
@@ -404,13 +404,14 @@ class _MaintenanceTicketTransferPageState extends State<MaintenanceTicketTransfe
                                           ),
                                         ],
                                       ),
-                                    ),
+                                    ),*/
 
                                     Padding(
                                         padding: EdgeInsets.only(top:0,left: 20,right: 20,bottom: 0),
                                         child: TextFormField(
                                             controller: _remarksController,
                                             keyboardType: TextInputType.multiline,
+
                                             validator: (value) {
                                               if (value!.isEmpty) {
                                                 return 'Remarks are required';
@@ -420,7 +421,9 @@ class _MaintenanceTicketTransferPageState extends State<MaintenanceTicketTransfe
                                             maxLength: 500, // Limit input to 500 characters
                                             maxLines: 3, // A
                                             decoration: InputDecoration(
-                                              hintText: 'Enter Remarks',
+                                              labelText: "Remarks",
+
+                                              hintText: 'Enter Remarks*',
                                               contentPadding: EdgeInsets.all(15),
                                               border: OutlineInputBorder(
                                                 borderRadius: BorderRadius.circular(10), // Set the border radius
@@ -431,7 +434,7 @@ class _MaintenanceTicketTransferPageState extends State<MaintenanceTicketTransfe
                                               focusedBorder: OutlineInputBorder(
                                                 borderRadius: BorderRadius.circular(10),
                                                 borderSide: BorderSide(
-                                                  color:  Colors.black, // Set the focused border color
+                                                  color:  appbar_color, // Set the focused border color
                                                 ),
                                               ),
                                               labelStyle: TextStyle(

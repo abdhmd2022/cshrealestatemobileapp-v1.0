@@ -386,6 +386,8 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen> {
                 },
                 decoration: InputDecoration(
                   hintText: 'Enter Remarks*',
+                  labelText: "Remarks",
+
                   contentPadding: EdgeInsets.all(15),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10), // Set the border radius
@@ -404,7 +406,6 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen> {
                     color: Colors.black,
                   ),
                 ),
-
               ),
 
 

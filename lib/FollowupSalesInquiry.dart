@@ -1,12 +1,7 @@
 import 'dart:convert';
-
-import 'package:country_picker/country_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:multi_select_flutter/chip_display/multi_select_chip_display.dart';
-import 'package:multi_select_flutter/dialog/multi_select_dialog_field.dart';
-import 'package:multi_select_flutter/util/multi_select_item.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:uuid/uuid.dart';
@@ -14,7 +9,6 @@ import 'SalesInquiryReport.dart';
 import 'constants.dart';
 import 'package:http/http.dart' as http;
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-
 
 class FollowUpStatus {
   final int id;
@@ -123,7 +117,6 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
   final areaFocusNode = FocusNode();
   final descriptionFocusNode = FocusNode();
 
-
   DateTime? nextFollowUpDate;
 
   bool isUnitSelected = false;
@@ -141,7 +134,6 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
 
   bool isAllEmiratesSelected = false;
 
-
   bool isAllAreasSelected = false;
 
   String? selectedEmirate;
@@ -156,7 +148,6 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
 
   FollowUpType? selectedfollowup_type;
 
-
   ActivitySource? selectedactivity_source;
 
   final TextEditingController startController = TextEditingController();
@@ -170,8 +161,6 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
 
   int? selectedInterestType;
 
-
-
   final List<String> propertyType = [
     'Residential',
     'Commercial',
@@ -181,22 +170,17 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
 
   RangeValues? _currentRangeValues;
 
-  List<ActivitySource> activitysource_list = [
-
-  ];
-
+  List<ActivitySource> activitysource_list = [];
 
   final List<Map<String, dynamic>> specialfeatures = [];
+
   final List<Map<String, dynamic>> amenities = [];
 
    Set<int> selectedSpecialFeatures = {};
 
    Set<int> selectedAmenities = {};
 
-
-
   String _hintText = 'Enter Contact No'; // Default hint text
-
 
   /*void _preSelectEmiratesAndAreas() {
     // Assume that selectedEmiratesList contains a list of selected emirates
@@ -428,7 +412,6 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
     );
   }
 
-
   void _showWhatsAppPopup(BuildContext context) {
     TextEditingController messageController = TextEditingController();
     String buttonText = "Select Next Follow-up Date";
@@ -552,7 +535,6 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
       },
     );
   }
-
 
   void openEmail(String no) async {
 
@@ -839,7 +821,6 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
     }
   }
 
-
   void _updateRangeFromTextFields() {
     // Parse start and end values, defaulting to range_min and range_max if invalid
     double start = double.tryParse(startController.text) ?? range_min!;
@@ -858,7 +839,6 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
       _currentRangeValues = RangeValues(start, end);
     });
   }
-
 
   Future<void> fetchUnitTypes() async {
 
@@ -893,7 +873,6 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
 
 
   }
-
 
   Future<void> fetchActivitySources() async {
 
@@ -936,7 +915,6 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
 
 
   }
-
 
   Future<void> fetchAmenities() async {
 
@@ -1065,7 +1043,6 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
 
 
   }
-
 
   void updateEmiratesSelection() {
     setState(() {

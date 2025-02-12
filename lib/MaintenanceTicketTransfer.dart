@@ -213,6 +213,7 @@ class _MaintenanceTicketTransferPageState extends State<MaintenanceTicketTransfe
         appBar: AppBar(
           backgroundColor: appbar_color.withOpacity(0.9),
           automaticallyImplyLeading: false,
+          centerTitle: true,
 
           leading: GestureDetector(
             onTap: ()

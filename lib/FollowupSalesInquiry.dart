@@ -1608,6 +1608,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: appbar_color.withOpacity(0.9),
+        centerTitle: true,
 
         leading: GestureDetector(
           onTap: ()
@@ -2901,6 +2902,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                       },
                                       decoration: InputDecoration(
                                         hintText: 'Enter Remarks*',
+                                        labelText: 'Remarks',
                                         contentPadding: EdgeInsets.all(15),
                                         border: OutlineInputBorder(
                                           borderRadius: BorderRadius.circular(10), // Set the border radius
@@ -2911,7 +2913,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                         focusedBorder: OutlineInputBorder(
                                           borderRadius: BorderRadius.circular(10),
                                           borderSide: BorderSide(
-                                            color:  Colors.black, // Set the focused border color
+                                            color:  appbar_color, // Set the focused border color
                                           ),
                                         ),
                                         labelStyle: TextStyle(

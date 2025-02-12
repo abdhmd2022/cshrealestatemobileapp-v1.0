@@ -578,6 +578,7 @@ class _SalesInquiryReportState
       key: _scaffoldKey,
       backgroundColor: const Color(0xFFF2F4F8),
       appBar: AppBar(
+
         elevation: 0,
         bottom: PreferredSize(
           preferredSize: Size.fromHeight(70.0),

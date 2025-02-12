@@ -222,22 +222,15 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
     {"label": "Fujairah", "isSelected": false},
   ];
 
-  List<FollowUpStatus> followupstatus_list = [
+  List<FollowUpStatus> followupstatus_list = [];
 
-  ];
+  List<FollowUpType> followuptype_list = [];
 
-  List<FollowUpType> followuptype_list = [
-
-  ];
   String? selectedPropertyType;
 
-  List<Map<String, dynamic>> unitTypes = [
+  List<Map<String, dynamic>> unitTypes = [];
 
-  ];
-
-  Map<String, List<Map<String, dynamic>>> areas = {
-
-  };
+  Map<String, List<Map<String, dynamic>>> areas = {};
 
   String selectedUnitType = "Select Unit Types";
   String selectedEmirates = "Select Emirate";
@@ -416,7 +409,6 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
     TextEditingController messageController = TextEditingController();
     String buttonText = "Select Next Follow-up Date";
     String phoneNumber = customercontactnocontroller.text.trim(); // Get number from TextField
-
 
     if (nextFollowUpDate != null) {
       setState(() {

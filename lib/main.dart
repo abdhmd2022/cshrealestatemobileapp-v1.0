@@ -7,12 +7,18 @@ import 'constants.dart';
 void main() {
   runApp(const MyApp());
 }
+final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
+
 class MyApp extends StatelessWidget {
+
   const MyApp({super.key});
+
 
   @override
   Widget build(BuildContext context) {
+
     return MaterialApp(
+      scaffoldMessengerKey: scaffoldMessengerKey,
       title: app_name,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.black),

@@ -846,7 +846,7 @@ class _SalesInquiryReportState
 
         floatingActionButton: Container(
         decoration: BoxDecoration(
-          color: appbar_color.withOpacity(0.8),
+          color: appbar_color.withOpacity(1.0),
           borderRadius: BorderRadius.circular(30.0),
         ),
         child: FloatingActionButton.extended(

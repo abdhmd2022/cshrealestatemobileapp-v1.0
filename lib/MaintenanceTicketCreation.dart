@@ -603,7 +603,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children:[
-                          Container(
+                          /*Container(
                             margin: EdgeInsets.only( top:0,
                                 bottom: 5,
                                 left: 20,
@@ -621,7 +621,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                                   style: TextStyle(
                                     fontSize: 20,
                                     color: Colors.red, // Red color for the asterisk
-                                  ))])),
+                                  ))])),*/
 
                           Container(
                               margin: EdgeInsets.only(
@@ -637,9 +637,10 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                                   maxLines: 3, // A
                                   decoration: InputDecoration(
                                     hintText: 'Enter Description',
+                                    labelText: 'Description',
                                     contentPadding: EdgeInsets.all(15),
                                     border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10), // Set the border radius
+                                      borderRadius: BorderRadius.circular(11), // Set the border radius
                                       borderSide: BorderSide(
                                         color: Colors.black, // Set the border color
                                       ),
@@ -647,8 +648,9 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                                     filled: true,
                                     fillColor: Colors.white,
                                     focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(11), // Set the border radius
                                       borderSide: BorderSide(
-                                        color:  Colors.black, // Set the focused border color
+                                        color:  appbar_color, // Set the focused border color
                                       ),
                                     ),
                                   ),

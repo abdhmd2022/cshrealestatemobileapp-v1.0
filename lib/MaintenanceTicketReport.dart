@@ -4,11 +4,13 @@ import 'dart:io';
 import 'package:cshrealestatemobile/MaintenanceTicketCreation.dart';
 import 'package:cshrealestatemobile/MaintenanceTicketFollowUp.dart';
 import 'package:cshrealestatemobile/MaintenanceTicketTransfer.dart';
+import 'package:cshrealestatemobile/main.dart'; // Replace with actual import
 import 'package:cshrealestatemobile/SalesDashboard.dart';
 import 'package:cshrealestatemobile/TenantDashboard.dart';
 import 'package:cshrealestatemobile/constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'Sidebar.dart';
 import 'package:http/http.dart' as http;
@@ -29,6 +31,9 @@ class _MaintenanceTicketReportState
   List<bool> _expandedTickets = [];
   String searchQuery = "";
   bool isLoading = false;
+
+
+  TextEditingController commentController = TextEditingController();
 
   @override
   void initState() {
@@ -191,7 +196,7 @@ class _MaintenanceTicketReportState
       ),
     floatingActionButton: Container(
         decoration: BoxDecoration(
-          color: appbar_color.withOpacity(0.8),
+          color: appbar_color.withOpacity(1.0),
 
           borderRadius: BorderRadius.circular(30.0),
         ),
@@ -285,7 +290,88 @@ class _MaintenanceTicketReportState
                                       );
                                 },
                               ),
-                              SizedBox(width: 5)
+                              SizedBox(width: 5),
+
+                              _buildDecentButton(
+                                'Comment',
+                                Icons.add,
+                                Colors.redAccent,
+                                    () {
+                                      showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return StatefulBuilder(
+                                            builder: (context, setState) {
+                                              return AlertDialog(
+                                                backgroundColor: Colors.white, // Apply appbar_color to full
+                                                title: Text(
+                                                  "Comment",
+                                                  style: TextStyle(color: Colors.black),
+                                                ),
+                                                content: Column(
+                                                  mainAxisSize: MainAxisSize.min,
+                                                  children: [
+                                                    // Input field for the message
+                                                    TextField(
+                                                      controller: commentController,
+                                                      maxLines: 3,
+                                                      style: TextStyle(color: Colors.black),
+                                                      decoration: InputDecoration(
+                                                        hintText: "Enter your comment",
+                                                        hintStyle: TextStyle(color: Colors.black54),
+                                                        border: OutlineInputBorder(
+                                                          borderSide: BorderSide(color: Colors.black),
+                                                        ),
+                                                        focusedBorder: OutlineInputBorder(
+                                                          borderSide: BorderSide(color: appbar_color),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                actions: [
+                                                  TextButton(
+                                                    onPressed: () {
+
+                                                      commentController.clear();
+                                                      Navigator.of(context).pop(); // Close the dialog
+                                                    },
+                                                    child: Text("Cancel", style: TextStyle(color: appbar_color)),
+                                                  ),
+                                                  ElevatedButton(
+                                                    style: ElevatedButton.styleFrom(
+                                                      backgroundColor: appbar_color,
+                                                      foregroundColor: Colors.white,
+                                                    ),
+                                                    onPressed: () {
+                                                      String comment = commentController.text;
+                                                      if (comment.isNotEmpty) {
+
+
+                                                        Navigator.of(context).pop(); // Close the dialog
+                                                      } else {
+                                                        Fluttertoast.showToast(
+                                                          msg: 'Enter Comment',
+                                                          toastLength: Toast.LENGTH_SHORT, // or Toast.LENGTH_LONG
+                                                          gravity: ToastGravity.BOTTOM, // Can be TOP, CENTER, or BOTTOM
+                                                          backgroundColor: Colors.black,
+                                                          textColor: Colors.white,
+                                                          fontSize: 16.0,
+                                                        );
+
+
+                                                      }
+                                                    },
+                                                    child: Text("Submit"),
+                                                  ),
+                                                ],
+                                              );
+                                            },
+                                          );
+                                        },
+                                      );
+                                },
+                              ),
                             ],),
 
                           /*_buildDecentButton(

@@ -266,7 +266,6 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
   void _showEmailPopup(BuildContext context) {
     TextEditingController subjectController = TextEditingController();
     TextEditingController bodyController = TextEditingController();
-    DateTime? selectedDate;
     String buttonText = "Select Next Follow-up Date";
 
     if (nextFollowUpDate != null) {
@@ -373,11 +372,9 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                       if (pickedDate != null) {
                         setState(() {
                           buttonText ='Next Follow-up: ${DateFormat("dd-MMM-yyyy").format(pickedDate!)}';
-                          selectedDate = pickedDate;
                           nextFollowUpDate = pickedDate; // Save selected date
                         });
                       }
-
                     },
                     child: Text(buttonText),
                   ),
@@ -434,7 +431,6 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
 
   void _showWhatsAppPopup(BuildContext context) {
     TextEditingController messageController = TextEditingController();
-    DateTime? selectedDate;
     String buttonText = "Select Next Follow-up Date";
     String phoneNumber = customercontactnocontroller.text.trim(); // Get number from TextField
 
@@ -511,7 +507,6 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                       if (pickedDate != null) {
                         setState(() {
                           buttonText ='Next Follow-up: ${DateFormat("dd-MMM-yyyy").format(pickedDate!)}';
-                          selectedDate = pickedDate;
                           nextFollowUpDate = pickedDate; // Save selected date
                         });
                       }
@@ -1733,7 +1728,6 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                                           color: appbar_color.withOpacity(1),
                                                           fontWeight: FontWeight.w500
                                                       ),
-
                                                     ),
                                                   ],
                                               )

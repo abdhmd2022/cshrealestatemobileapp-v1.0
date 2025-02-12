@@ -1504,7 +1504,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                 focusedBorder: OutlineInputBorder(
                                                   borderRadius: BorderRadius.circular(10),
                                                   borderSide: BorderSide(
-                                                    color:  Colors.black, // Set the focused border color
+                                                    color:  appbar_color, // Set the focused border color
                                                   ),
                                                 ),
                                               ),
@@ -1610,7 +1610,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                       focusedBorder: OutlineInputBorder(
                                                         borderRadius: BorderRadius.circular(10),
                                                         borderSide: const BorderSide(
-                                                          color: Colors.black,
+                                                          color: appbar_color,
                                                         ),
                                                       ),
                                                     ),
@@ -1721,7 +1721,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                 focusedBorder: OutlineInputBorder(
                                                   borderRadius: BorderRadius.circular(10),
                                                   borderSide: BorderSide(
-                                                    color:  Colors.black, // Set the focused border color
+                                                    color:  appbar_color, // Set the focused border color
 
                                                   ),
                                                 ),
@@ -2050,7 +2050,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                           ),
                                           focusedBorder: OutlineInputBorder(
                                             borderRadius: BorderRadius.circular(10),
-                                            borderSide: BorderSide(color: Colors.black54), // Black focused border
+                                            borderSide: BorderSide(color:appbar_color), // Black focused border
                                           ),
                                           labelStyle: TextStyle(color: Colors.black),
                                           hintStyle: TextStyle(color: Colors.black), // Hint text color (white for better contrast)
@@ -2528,7 +2528,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                   ),
                                                   focusedBorder: OutlineInputBorder(
                                                     borderRadius: BorderRadius.circular(8),
-                                                    borderSide: BorderSide(color: appbar_color.withOpacity(0.5), width: 2.0),
+                                                    borderSide: BorderSide(color: appbar_color),
                                                   ),
                                                 ),
                                                 onChanged: (value) => _updateRangeFromTextFields(),
@@ -2561,7 +2561,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                   ),
                                                   focusedBorder: OutlineInputBorder(
                                                     borderRadius: BorderRadius.circular(8),
-                                                    borderSide: BorderSide(color: appbar_color.withOpacity(0.5), width: 2.0),
+                                                    borderSide: BorderSide(color: appbar_color),
                                                   ),
                                                 ),
                                                 onChanged: (value) => _updateRangeFromTextFields(),
@@ -2730,7 +2730,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                     ),
                                   ),*/
 
-                                  Container(
+                                 /* Container(
                                     margin: EdgeInsets.only( top:10,
                                         bottom: 0,
                                         left: 20,
@@ -2753,9 +2753,9 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                         ),
                                       ],
                                     ),
-                                  ),
+                                  ),*/
 
-                                  Padding(padding: EdgeInsets.only(top:0,left: 20,right: 20,bottom: 0),
+                                  Padding(padding: EdgeInsets.only(top:10,left: 20,right: 20,bottom: 0),
 
                                       child: TextFormField(
                                         controller: descriptioncontroller,
@@ -2769,6 +2769,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                         },
                                         decoration: InputDecoration(
                                           hintText: 'Enter Description',
+                                          labelText: 'Description',
                                           contentPadding: EdgeInsets.all(15),
                                           border: OutlineInputBorder(
                                             borderRadius: BorderRadius.circular(10), // Set the border radius
@@ -2779,7 +2780,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                           focusedBorder: OutlineInputBorder(
                                             borderRadius: BorderRadius.circular(10),
                                             borderSide: BorderSide(
-                                              color:  Colors.black, // Set the focused border color
+                                              color:  appbar_color, // Set the focused border color
                                             ),
                                           ),
                                           labelStyle: TextStyle(

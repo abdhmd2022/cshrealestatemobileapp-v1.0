@@ -43,6 +43,7 @@ dependencies:
   http:
   url_launcher:
   country_picker:
+  fluttertoast:
   uuid:
   flutter_colorpicker:
   path:

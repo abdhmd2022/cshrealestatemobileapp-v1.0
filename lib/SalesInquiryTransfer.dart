@@ -86,8 +86,6 @@ class _SalesInquiryTransferPageState extends State<SalesInquiryTransfer> with Ti
 
   String name = "",email = "";
 
-
-
   Future<void> fetchUsers() async {
 
     transfer_to_list.clear();
@@ -122,13 +120,9 @@ class _SalesInquiryTransferPageState extends State<SalesInquiryTransfer> with Ti
 
       print('Error fetching data: $e');
     }
-
-
   }
 
   Future<void> sendTransferInquiryRequest() async {
-
-
 
     // Replace with your API endpoint
     final String url = "$BASE_URL_config/v1/leads/${widget.id}";
@@ -313,18 +307,14 @@ class _SalesInquiryTransferPageState extends State<SalesInquiryTransfer> with Ti
                                                         color: appbar_color.withOpacity(1),
                                                         fontWeight: FontWeight.bold
                                                     ))
-
                                               ],
                                             )
                                         ),
                                       ],),
-
                                   ],
                                 ),
                               ),
                             ),
-
-
 
                             Container(
                               margin: EdgeInsets.only(left: 20,right: 20,top: 20),
@@ -395,7 +385,8 @@ class _SalesInquiryTransferPageState extends State<SalesInquiryTransfer> with Ti
                                     ),
                                   ),
                                 ],
-                              ),),
+                              ),
+                            ),
 
                             Column(
                                 mainAxisAlignment: MainAxisAlignment.start,
@@ -465,9 +456,6 @@ class _SalesInquiryTransferPageState extends State<SalesInquiryTransfer> with Ti
                                             color: Colors.black,
                                             fontSize: 15,
                                           ))),
-
-
-
                                 ]),
 
                             /*  SizedBox(height: 10),

@@ -37,6 +37,9 @@ class MaintenanceStatus {
 }
 
 class MaintenanceFollowUpScreen extends StatefulWidget {
+  final String ticketid; // Accept ID
+
+  MaintenanceFollowUpScreen({required this.ticketid});
   @override
   _MaintenanceFollowUpScreenState createState() => _MaintenanceFollowUpScreenState();
 }
@@ -110,8 +113,7 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
     fetchMaintenanceStatus();
   }
 
-  Future<void> _saveSignature() async {
-
+  Future<void> _saveSignature(String id) async {
     try {
       if (_signatureController.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -120,7 +122,10 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
         return;
       }
 
-      // Convert signature to image
+      // Ensure UI updates before capturing signature
+      await Future.delayed(Duration(milliseconds: 100));
+
+      // Convert signature to an image
       final ui.Image? signatureImage = await _signatureController.toImage();
       final ByteData? byteData = await signatureImage?.toByteData(format: ui.ImageByteFormat.png);
 
@@ -133,38 +138,50 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
 
       Uint8List pngBytes = byteData.buffer.asUint8List();
 
-      /*// Save image to local storage
-      final directory = await getApplicationDocumentsDirectory();
-      final signatureFile = File('${directory.path}/signature.png');
-      await signatureFile.writeAsBytes(pngBytes);
-
-      // Add the signature image to attachments
-      setState(() {
-        _attachment.add(signatureFile);
-        _signatureController.clear();
-
-      });*/
-
       // Get internal storage directory
       final directory = await getApplicationSupportDirectory(); // Internal memory location
-      final String filePath = '${directory.path}/signature.png';
+      final String folderPath = '${directory.path}/$id';
+      final Directory userDirectory = Directory(folderPath);
+
+      // Ensure the directory exists
+      if (!await userDirectory.exists()) {
+        await userDirectory.create(recursive: true);
+      }
+
+      final String filePath = '$folderPath/signature_${DateTime.now().millisecondsSinceEpoch}.png';
       final signatureFile = File(filePath);
 
-      // Save image to internal memory
+      // **Remove old signature before saving new one**
+      final List<FileSystemEntity> existingFiles = userDirectory.listSync();
+      for (var file in existingFiles) {
+        if (file is File) {
+          await file.delete();
+        }
+      }
+
+      // Save new signature to internal memory
       await signatureFile.writeAsBytes(pngBytes);
 
-      // Update the state with the saved file path
+      // **Force UI to recognize the new image**
       setState(() {
-        _attachment.add(signatureFile);
-        _signatureController.clear();
-
-
+        _attachment.clear(); // Ensure no previous images exist
+        _attachment.add(signatureFile); // Add only the new signature
       });
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Signature saved and added to attachments')),
-
+      // **Fully reset SignatureController**
+      _signatureController.clear();
+      _signatureController.dispose();
+      _signatureController = SignatureController(
+        penStrokeWidth: 2,
+        penColor: Colors.black,
+        exportBackgroundColor: Colors.white,
       );
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('New signature saved successfully!')),
+      );
+
+      print("New signature saved at: $filePath");
 
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -506,8 +523,16 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
                         color: Colors.grey[200],
                         border: Border.all(
                           color: Colors.black, // Border color
-                          width: 0.5, // Border width
+                          width: 1, // Border width
                         ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.2), // Shadow color
+                            spreadRadius: 6, // How much the shadow expands
+                            blurRadius: 6, // Softness of the shadow
+                            offset: Offset(2, 4), // Position: (X: right, Y: down)
+                          ),
+                        ],
                         borderRadius: BorderRadius.circular(8), // Optional: Rounded corners
                       ),
                       child: ClipRRect(
@@ -770,7 +795,7 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
                           {
                             if(selectedStatus!.category == "Close")
                               {
-                                _saveSignature();
+                                _saveSignature(widget.ticketid);
                               }
                             else
                               {

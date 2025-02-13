@@ -270,9 +270,11 @@ class _MaintenanceTicketReportState
                                 Icons.schedule,
                                 Colors.blue,
                                     () {
+
+                                  print('ticket : $ticket');
                                       Navigator.pushReplacement(
                                         context,
-                                        MaterialPageRoute(builder: (context) => MaintenanceFollowUpScreen()),
+                                        MaterialPageRoute(builder: (context) => MaintenanceFollowUpScreen(ticketid: ticket['ticketNumber'],)),
 
                                       );
                                     }
@@ -332,7 +334,6 @@ class _MaintenanceTicketReportState
                                                 actions: [
                                                   TextButton(
                                                     onPressed: () {
-
                                                       commentController.clear();
                                                       Navigator.of(context).pop(); // Close the dialog
                                                     },

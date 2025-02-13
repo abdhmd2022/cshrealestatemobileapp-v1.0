@@ -204,12 +204,12 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
       areas.clear(); // Clear existing areas
 
       for (var area in areasFromResponse) {
-        final emirateName = area['emirates']?['state_name'] ?? '';
+        final emirateName = area['state']?['name'] ?? '';
         if (emirateName.isNotEmpty) {
           areas.putIfAbsent(emirateName, () => []); // Add emirate key if not already present
           areas[emirateName]!.add({
-            "label": area['area_name'] ?? '',
-            "id": area['cost_centre_masterid'] ?? '',
+            "label": area['name'] ?? '',
+            "id": area['id'] ?? '',
             "isSelected": false,
           });
         }
@@ -224,7 +224,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
   void populateEmiratesList(dynamic jsonResponse) {
     try {
       // Safely extract the "emirates" list
-      final emiratesFromResponse = jsonResponse['data']?['emirates'] as List<dynamic>?;
+      final emiratesFromResponse = jsonResponse['data']?['states'] as List<dynamic>?;
 
       if (emiratesFromResponse == null || emiratesFromResponse.isEmpty) {
         print("No emirates data found in the response.");
@@ -234,8 +234,9 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
       // Map the "state_name" into the "emirates" list format
       emirates = emiratesFromResponse.map((emirate) {
         return {
-          "label": emirate['state_name'] ?? '', // Fallback to empty string if state_name is null
-          "id": emirate['cost_centre_masterid'] ?? '',
+
+          "label": emirate['name'] ?? '', // Fallback to empty string if state_name is null
+          "id": emirate['id'] ?? '',
           "isSelected": false, // Default to not selected
         };
       }).toList();
@@ -257,8 +258,8 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
       unitTypes = flatTypes
           .map((flat) => {
-        'label': flat['flat_type'], // Flat type name
-        'id': flat['cost_centre_masterid'], // ID value
+        'label': flat['name'], // Flat type name
+        'id': flat['id'], // ID value
         'isSelected': false, // Default selection state
       })
           .toList();
@@ -267,13 +268,14 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
     }
   }
 
+
   Future<void> fetchEmirates() async {
 
     print('fetching emirates');
 
     emirates.clear();
 
-    final url = '$BASE_URL_config/v1/masters/emirates'; // Replace with your API endpoint
+    final url = '$BASE_URL_config/v1/masters/states'; // Replace with your API endpoint
     String token = 'Bearer $Company_Token'; // auth token for request
 
     Map<String, String> headers = {
@@ -528,7 +530,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
     activitysource_list.clear();
 
     final url = '$BASE_URL_config/v1/activitySources'; // Replace with your API endpoint
-    String token = 'Bearer $Serial_Token'; // auth token for request
+    String token = 'Bearer $Company_Token'; // auth token for request
 
     Map<String, String> headers = {
       'Authorization': token,
@@ -567,7 +569,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
     amenities.clear();
 
     final url = '$BASE_URL_config/v1/amenities'; // Replace with your API endpoint
-    String token = 'Bearer $Serial_Token'; // auth token for request
+    String token = 'Bearer $Company_Token'; // auth token for request
 
     print('fetch url $url');
     Map<String, String> headers = {
@@ -609,7 +611,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
     inquirystatus_list.clear();
 
     final url = '$BASE_URL_config/v1/leadStatus'; // Replace with your API endpoint
-    String token = 'Bearer $Serial_Token'; // auth token for request
+    String token = 'Bearer $Company_Token'; // auth token for request
 
     Map<String, String> headers = {
       'Authorization': token,
@@ -2754,6 +2756,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                       ],
                                     ),
                                   ),*/
+
 
                                   Padding(padding: EdgeInsets.only(top:10,left: 20,right: 20,bottom: 0),
 

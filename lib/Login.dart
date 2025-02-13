@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:cshrealestatemobile/TenantDashboard.dart';
 import 'package:http/http.dart' as http;
 import 'package:cshrealestatemobile/SalesDashboard.dart';
 import 'package:flutter/cupertino.dart';
@@ -19,57 +20,78 @@ class Login extends StatefulWidget {
 
 class ApiResponse {
   final bool success;
-  final List<Serial> serials;
+  final List<User> users;
   final List<RegisteredCompany> companies;
 
-  ApiResponse({required this.success, required this.serials, required this.companies});
+  ApiResponse({required this.success, required this.users, required this.companies});
 
   factory ApiResponse.fromJson(Map<String, dynamic> json) {
-    List<Serial> allSerials = [];
+    List<User> allUsers = [];
     List<RegisteredCompany> allCompanies = [];
 
     if (json['data'] != null && json['data']['users'] != null) {
-      for (var user in json['data']['users']) {
-        if (user['serials'] != null && user['serials'] is Map<String, dynamic>) {
-          try {
-            // ✅ Extract correct `userToken`
-            String userToken = user['token'] ?? '';
-            int userId = user['id'] ?? '';
+      for (var userJson in json['data']['users']) {
+        try {
+          // ✅ Extract user details
+          User user = User.fromJson(userJson);
+          allUsers.add(user);
 
-
-            // ✅ Pass `userToken` while creating the `Serial` object
-            Serial serial = Serial.fromJson(user['serials'], userToken: userToken,userId: userId);
-            allSerials.add(serial);
-
-            // ✅ Extract registered companies
-            allCompanies.addAll(serial.registeredCompanies);
-
-            // ✅ Debugging: Print the correct serial and token
-            print("✅ Extracted Serial: ${serial.serialNo}, Token: ${serial.userToken}");
-
-          } catch (e) {
-            print("❌ Error parsing serial data: $e");
+          // ✅ Extract company info
+          if (user.companyId != null) {
+            allCompanies.add(RegisteredCompany(
+              id: user.companyId!,
+              name: "Company ${user.companyId}", // You may need to fetch actual names
+              token: user.token,
+            ));
           }
+
+          // ✅ Debugging output
+          print("✅ Extracted User: ${user.name}, Token: ${user.token}");
+        } catch (e) {
+          print("❌ Error parsing user data: $e");
         }
       }
     }
 
-    print("✅ Total Serials Parsed: ${allSerials.length}");
+    print("✅ Total Users Parsed: ${allUsers.length}");
     print("✅ Total Companies Parsed: ${allCompanies.length}");
 
     return ApiResponse(
       success: json['success'] ?? false,
-      serials: allSerials,
+      users: allUsers,
       companies: allCompanies,
+    );
+  }
+}
+
+// User Model
+class User {
+  final int id;
+  final String name;
+  final String email;
+  final String token;
+  final int? companyId;
+
+  User({required this.id, required this.name, required this.email, required this.token, this.companyId});
+
+  factory User.fromJson(Map<String, dynamic> json) {
+    return User(
+      id: json['id'] ?? 0,
+      name: json['name'] ?? "Unknown",
+      email: json['email'] ?? "Unknown",
+      token: json['token'] ?? "",
+      companyId: json['company_id'],
     );
   }
 }
 
 class _LoginPageState extends State<Login> {
 
-  bool isVisibleLoginForm= true,_isLoading = false,isButtonDisabled = false;
+  bool isVisibleAdminLoginForm= true,_isLoading = false,isButtonDisabled = false;
 
   Color _buttonColor = appbar_color;
+
+  bool isAdmin = false; // Toggle state
 
 
   final _formKey = GlobalKey<FormState>();
@@ -123,13 +145,124 @@ class _LoginPageState extends State<Login> {
 
   }
 
-  Future<void> _directlogin(String email, String password) async {
-    String url = "$BASE_URL_config/v1/auth/login";
+  Future<void> _adminlogin(String email, String password, bool isAdmin) async {
+    String url = isAdmin ? "$BASE_URL_config/v1/auth/login" : "$BASE_URL_config/v1/auth/tenet/login";
+    String token = 'Bearer $authTokenBase';
+
+    setState(() => _isLoading = true);
+    dynamic responseData;
+
+    try {
+      Map<String, String> headers = {
+        'Authorization': token,
+        "Content-Type": "application/json"
+      };
+
+      var body = jsonEncode({
+        'email': email,
+        'password': password
+      });
+
+      var response = await http.post(
+        Uri.parse(url),
+        body: body,
+        headers: headers,
+      );
+       responseData = json.decode(response.body);
+
+      if (response.statusCode == 200) {
+        if (responseData['success']) {
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+
+          if (isAdmin) {
+            List users = responseData['data']['users'];
+            if (users.isNotEmpty) {
+
+              await prefs.setInt("user_id", users[0]['id']);
+              await prefs.setString("user_name", users[0]['name']);
+              await prefs.setString("user_email", users[0]['email']);
+              await prefs.setString("company_token", users[0]['token']);
+              await prefs.setInt("company_id", users[0]['company_id']);
+              List<Map<String, dynamic>> companiesJson =
+              users.map((user) => {
+                'id': user['company_id'],
+                'name': "Company ${user['company_id']}",
+                'token': user['token'],
+              }).toList();
+
+              await prefs.setString("companies_list", jsonEncode(companiesJson));
+
+              loadTokens();
+              if (users.length > 1) {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => CompanySelection()),
+                );
+              } else {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => SalesDashboard()),
+                );              }
+            }
+          } else {
+            List tenants = responseData['data']['tenets'];
+            if (tenants.isNotEmpty) {
+              await prefs.setInt("user_id", tenants[0]['id']);
+              await prefs.setString("user_name", tenants[0]['name']);
+              await prefs.setString("user_email", tenants[0]['email']);
+              await prefs.setString("company_token", tenants[0]['token']);
+              await prefs.setString("company_name", tenants[0]['company']['name']);
+              await prefs.setInt("user_id", tenants[0]['id']);
+              await prefs.setInt("company_id", tenants[0]['company_id']);
+
+              List<Map<String, dynamic>> companiesJson =
+              tenants.map((tenant) => {
+                'id': tenant['company']['id'],
+                'name': tenant['company']['name'],
+                'token': tenant['token'],
+              }).toList();
+
+              await prefs.setString("companies_list", jsonEncode(companiesJson));
+
+
+              loadTokens();
+              if (tenants.length > 1) {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => CompanySelection()),
+                );
+              } else {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => TenantDashboard()),
+                );                  }
+            }
+          }
+        } else {
+          throw Exception("Invalid credentials");
+        }
+      } else {
+        throw Exception("Failed to login");
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error: ${responseData['message'] ?? 'Login failed'}")),
+      );
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
+
+  /*Future<void> _adminlogin(String email, String password) async {
+
+    String url = isAdmin ? "$BASE_URL_config/v1/auth/login" : "$BASE_URL_config/v1/auth/tenet/login";
+
     String token = 'Bearer $authTokenBase';
 
     setState(() {
       _isLoading = true;
     });
+
 
     try {
       Map<String, String> headers = {
@@ -151,58 +284,52 @@ class _LoginPageState extends State<Login> {
       if (response_login.statusCode == 200) {
         final Map<String, dynamic> responseData = json.decode(response_login.body);
 
-
-
         if (responseData['success']) {
           ApiResponse apiResponse = ApiResponse.fromJson(responseData);
 
-          if (responseData['data']['users'] != null && responseData['data']['users'].isNotEmpty) {
-            String name = responseData['data']['users'][0]['name'] ?? "Unknown";
-            String email = responseData['data']['users'][0]['email'] ?? "Unknown";
-
+          if (apiResponse.users.isNotEmpty) {
+            // ✅ Save user details
             SharedPreferences prefs = await SharedPreferences.getInstance();
-            await prefs.setString("user_name", name);
-            await prefs.setString("user_email", email);
+            await prefs.setString("user_name", apiResponse.users[0].name);
+            await prefs.setString("user_email", apiResponse.users[0].email);
 
-            List<Map<String, dynamic>> serialsJson =
-            apiResponse.serials.map((serial) => serial.toJson()).toList();
+            List<Map<String, dynamic>> usersJson =
+            apiResponse.users.map((user) => {
+              'id': user.id,
+              'name': user.name,
+              'email': user.email,
+              'token': user.token,
+              'company_id': user.companyId
+            }).toList();
+
             List<Map<String, dynamic>> companiesJson =
             apiResponse.companies.map((company) => company.toJson()).toList();
 
-             print("✅ Extracted Serials Before Saving:");
-            for (var serial in apiResponse.serials) {
-               print("📌 Serial: ${serial.serialNo}, Token: ${serial.userToken}");
+            *//*print("✅ Extracted Users Before Saving:");
+            for (var user in apiResponse.users) {
+              print("📌 User: ${user.name}, Token: ${user.token}");
             }
 
             print("✅ Extracted Companies Before Saving:");
             for (var company in apiResponse.companies) {
-              print("📌 Company: ${company.name}, Token: ${company.token}");
-            }
+              print("📌 Company ID: ${company.id}, Token: ${company.token}");
+            }*//*
 
-
-            await prefs.setString("serials_list", jsonEncode(serialsJson));
+            await prefs.setString("users_list", jsonEncode(usersJson));
             await prefs.setString("companies_list", jsonEncode(companiesJson));
 
-            // print("✅ Saved Serials JSON: ${jsonEncode(serialsJson)}");
-            // print("✅ Saved Companies JSON: ${jsonEncode(companiesJson)}");
+            // ✅ Navigate based on available users/companies
+            if (apiResponse.companies.isNotEmpty) {
+              if (!mounted) return;
 
-            // Debugging serials and companies count
-            // print("✅ Serials Count: ${apiResponse.serials.length}");
-           //  print("✅ Companies Count: ${apiResponse.companies.length}");
-
-            // Check if we should navigate
-            if (apiResponse.serials.isNotEmpty && apiResponse.companies.isNotEmpty) {
-              if (!mounted) return; // Prevent calling pushReplacement if widget is unmounted
-
-              // print("🚀 Navigating to SerialNoSelection...");
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (context) => SerialNoSelection()),
+                MaterialPageRoute(builder: (context) => CompanySelection()), // Update screen if needed
               );
             } else {
-              print("❌ No serials or companies found, showing Snackbar...");
+              print("❌ No companies found, showing Snackbar...");
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text("No serials or companies found.")),
+                SnackBar(content: Text("No companies found.")),
               );
             }
           }
@@ -213,7 +340,7 @@ class _LoginPageState extends State<Login> {
         throw Exception("Failed to login");
       }
     } catch (e) {
-      print("❌ Exception: $e"); // Debugging exception
+      print("❌ Exception: $e");
       _scaffoldMessengerKey.currentState?.showSnackBar(
         SnackBar(content: Text("Error: ${e.toString()}")),
       );
@@ -222,7 +349,7 @@ class _LoginPageState extends State<Login> {
         _isLoading = false;
       });
     }
-  }
+  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -263,10 +390,12 @@ class _LoginPageState extends State<Login> {
                         )
                     ),
 
+
+
                     Visibility(
-                        visible: isVisibleLoginForm,
+                        visible: isVisibleAdminLoginForm,
                         child:Container(
-                            padding: EdgeInsets.only(left: 32,right: 32,top : 70),
+                            padding: EdgeInsets.only(left: 32,right: 32,top : 20),
                             decoration: BoxDecoration(
                                 color: Colors.white,
                                 boxShadow: [
@@ -284,10 +413,40 @@ class _LoginPageState extends State<Login> {
                             ),
                             child:Form(
                                 key: _formKey,
-                                child: ListView(
-                                    shrinkWrap: true,
-                                    physics: NeverScrollableScrollPhysics(),
+                                child: Column(
+
                                     children: [
+
+
+                                      Container(
+                                        margin: EdgeInsets.symmetric(vertical: 20, horizontal: 50),
+                                        padding: EdgeInsets.all(8),
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius: BorderRadius.circular(30),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: Colors.black26,
+                                              blurRadius: 8,
+                                              offset: Offset(0, 4),
+                                            )
+                                          ],
+                                        ),
+                                        child: ToggleButtons(
+
+                                          isSelected: [!isAdmin, isAdmin],
+                                          onPressed: (index) => setState(() => isAdmin = index == 1),
+                                          borderRadius: BorderRadius.circular(30),
+                                          selectedColor: Colors.white,
+                                          color: Colors.black54,
+                                          fillColor: appbar_color,
+                                          children: [
+                                            Padding(padding: EdgeInsets.symmetric(horizontal: 20), child: Text("Tenant")),
+                                            Padding(padding: EdgeInsets.symmetric(horizontal: 20), child: Text("Admin")),
+
+                                          ],
+                                        ),
+                                      ),
                                       Container(padding: EdgeInsets.only(top: 5),
                                         child: TextFormField(
                                           controller: emailController,
@@ -449,7 +608,7 @@ class _LoginPageState extends State<Login> {
 
                                             String email = emailController.text;
                                             String pass = passwordController.text;
-                                            _directlogin(email,pass);
+                                            _adminlogin(email,pass,isAdmin);
                                           }
 
 

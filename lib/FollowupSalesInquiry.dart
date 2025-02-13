@@ -871,7 +871,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
     activitysource_list.clear();
 
     final url = '$BASE_URL_config/v1/activitySources'; // Replace with your API endpoint
-    String token = 'Bearer $Serial_Token'; // auth token for request
+    String token = 'Bearer $Company_Token'; // auth token for request
 
     Map<String, String> headers = {
       'Authorization': token,
@@ -913,7 +913,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
     amenities.clear();
 
     final url = '$BASE_URL_config/v1/amenities'; // Replace with your API endpoint
-    String token = 'Bearer $Serial_Token'; // auth token for request
+    String token = 'Bearer $Company_Token'; // auth token for request
 
     print('fetch url $url');
     Map<String, String> headers = {
@@ -955,7 +955,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
     followupstatus_list.clear();
 
     final url = '$BASE_URL_config/v1/leadStatus'; // Replace with your API endpoint
-    String token = 'Bearer $Serial_Token'; // auth token for request
+    String token = 'Bearer $Company_Token'; // auth token for request
 
     Map<String, String> headers = {
       'Authorization': token,
@@ -998,7 +998,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
     followuptype_list.clear();
 
     final url = '$BASE_URL_config/v1/leadFollowUpTypes'; // Replace with your API endpoint
-    String token = 'Bearer $Serial_Token'; // auth token for request
+    String token = 'Bearer $Company_Token'; // auth token for request
 
     Map<String, String> headers = {
       'Authorization': token,

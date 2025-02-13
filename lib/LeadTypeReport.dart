@@ -32,7 +32,7 @@ class _LeadFollowupTypeReportState extends State<LeadFollowupTypeReport> {
       "name": leadFollowupTypeController.text,
     };
 
-    String token = 'Bearer $Serial_Token'; // auth token for request
+    String token = 'Bearer $Company_Token'; // auth token for request
 
 
     Map<String, String> headers = {
@@ -103,7 +103,7 @@ class _LeadFollowupTypeReportState extends State<LeadFollowupTypeReport> {
 
     print('id $id ');
 
-    String token = 'Bearer $Serial_Token'; // auth token for request
+    String token = 'Bearer $Company_Token'; // auth token for request
 
 
     Map<String, String> headers = {
@@ -318,7 +318,7 @@ class _LeadFollowupTypeReportState extends State<LeadFollowupTypeReport> {
     leadFollowupTypes.clear();
 
     final url = '$BASE_URL_config/v1/leadFollowUpTypes'; // Replace with your API endpoint
-    String token = 'Bearer $Serial_Token'; // auth token for request
+    String token = 'Bearer $Company_Token'; // auth token for request
 
     print('fetch url $url');
     Map<String, String> headers = {
@@ -351,7 +351,7 @@ class _LeadFollowupTypeReportState extends State<LeadFollowupTypeReport> {
 
   Future<void> deleteLeadFollowup(int id) async {
     final url = '$BASE_URL_config/v1/leadFollowUpTypes/$id'; // Replace with your API endpoint
-    String token = 'Bearer $Serial_Token'; // auth token for request
+    String token = 'Bearer $Company_Token'; // auth token for request
 
     Map<String, String> headers = {
       'Authorization': token,

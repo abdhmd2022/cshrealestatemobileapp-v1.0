@@ -35,7 +35,7 @@ class _AmentiesReportState extends State<AmentiesReport> {
       "is_special": isSpecial ? 1 : 0,
     };
 
-    String token = 'Bearer $Serial_Token'; // auth token for request
+    String token = 'Bearer $Company_Token'; // auth token for request
 
     Map<String, String> headers = {
       'Authorization': token,
@@ -106,7 +106,7 @@ class _AmentiesReportState extends State<AmentiesReport> {
 
     print('id $id ');
 
-    String token = 'Bearer $Serial_Token'; // auth token for request
+    String token = 'Bearer $Company_Token'; // auth token for request
 
 
     Map<String, String> headers = {
@@ -369,7 +369,7 @@ class _AmentiesReportState extends State<AmentiesReport> {
     amenities.clear();
 
     final url = '$BASE_URL_config/v1/amenities'; // Replace with your API endpoint
-    String token = 'Bearer $Serial_Token'; // auth token for request
+    String token = 'Bearer $Company_Token'; // auth token for request
 
     print('fetch url $url');
     Map<String, String> headers = {
@@ -402,7 +402,7 @@ class _AmentiesReportState extends State<AmentiesReport> {
 
   Future<void> deleteAmenities(int id) async {
     final url = '$BASE_URL_config/v1/amenities/$id'; // Replace with your API endpoint
-    String token = 'Bearer $Serial_Token'; // auth token for request
+    String token = 'Bearer $Company_Token'; // auth token for request
 
     Map<String, String> headers = {
       'Authorization': token,

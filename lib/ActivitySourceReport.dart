@@ -33,7 +33,7 @@ class _ActivitySourceReportState extends State<ActivitySourceReport> {
       "name": activitySourceController.text,
     };
 
-    String token = 'Bearer $Serial_Token'; // auth token for request
+    String token = 'Bearer $Company_Token'; // auth token for request
 
     Map<String, String> headers = {
       'Authorization': token,
@@ -99,7 +99,7 @@ class _ActivitySourceReportState extends State<ActivitySourceReport> {
 
     print('id $id ');*/
 
-    String token = 'Bearer $Serial_Token'; // auth token for request
+    String token = 'Bearer $Company_Token'; // auth token for request
 
     Map<String, String> headers = {
       'Authorization': token,
@@ -290,7 +290,7 @@ class _ActivitySourceReportState extends State<ActivitySourceReport> {
     activitySource_list.clear();
 
     final url = '$BASE_URL_config/v1/activitySources'; // Replace with your API endpoint
-    String token = 'Bearer $Serial_Token'; // auth token for request
+    String token = 'Bearer $Company_Token'; // auth token for request
 
     print('fetch url $url');
     Map<String, String> headers = {
@@ -323,7 +323,7 @@ class _ActivitySourceReportState extends State<ActivitySourceReport> {
 
   Future<void> deleteActivitySource(int id) async {
     final url = '$BASE_URL_config/v1/activitySources/$id'; // Replace with your API endpoint
-    String token = 'Bearer $Serial_Token'; // auth token for request
+    String token = 'Bearer $Company_Token'; // auth token for request
 
     Map<String, String> headers = {
       'Authorization': token,

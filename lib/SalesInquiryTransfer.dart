@@ -99,7 +99,7 @@ class _SalesInquiryTransferPageState extends State<SalesInquiryTransfer> with Ti
     transfer_to_list.clear();
 
     final url = '$BASE_URL_config/v1/users'; // Replace with your API endpoint
-    String token = 'Bearer $Serial_Token'; // auth token for request
+    String token = 'Bearer $Company_Token'; // auth token for request
 
     Map<String, String> headers = {
       'Authorization': token,

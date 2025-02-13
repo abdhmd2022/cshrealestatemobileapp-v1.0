@@ -70,23 +70,25 @@ class InquiryModel {
     final rawDate = json['created_at'] ?? '';
     final formattedDate = _formatDate(rawDate);
     final areas = (json['preferred_areas'] as List<dynamic>?)
-        ?.map((area) => area['areas']['area_name'])
+        ?.map((area) => area['area']['name'])
         .join(', ') ??
         'No areas specified';
 
     // Fetch and concatenate emirates
     final emirates = (json['preferred_areas'] as List<dynamic>?)
-        ?.map((area) => area['areas']['emirates']['state_name'].toString())
+        ?.map((area) => area['area']['state']['name'].toString())
         .toSet() // Use a Set to ensure uniqueness
         .join(', ') ??
         'No emirates specified';
 
+
     final flatTypes = (json['preferred_flat_types'] as List<dynamic>?)
-        ?.map((flatType) => flatType['flat_types']['flat_type'])
+        ?.map((flatType) => flatType['type']['name'])
+
         .join(', ') ??
         'No unit type specified';
 
-    final List<dynamic>? leadsFollowup = json['leads_followup'];
+    final List<dynamic>? leadsFollowup = json['followups'];
 
     String leadStatusName= '';// Extract the last follow-up and its lead status name
     String leadStatusCategory= '';
@@ -104,11 +106,12 @@ class InquiryModel {
       leadsFollowup.sort((a, b) => DateTime.parse(b['date']).compareTo(DateTime.parse(a['date'])));
 
       final lastFollowup = leadsFollowup.first;
-      leadStatusName = lastFollowup['lead_status']?['name'] ?? 'Unknown';
-      leadStatusCategory = lastFollowup['lead_status']?['category'] ?? 'Unknown';
+      leadStatusName = lastFollowup['status']?['name'] ?? 'Unknown';
+      leadStatusCategory = lastFollowup['status']?['category'] ?? 'Unknown';
       //leadStatusColor = lastFollowup['lead_status']?['color'] ?? 'Unknown';
       lastFollowupRemarks = lastFollowup['remarks'] ?? 'null';
       lastFollowupDate = _formatDate(lastFollowup['date'] ?? '');
+
 
       print('Last Lead Status Name: $leadStatusName');
     } else {
@@ -197,7 +200,7 @@ class _SalesInquiryReportState
     inquirystatus_list.clear();
 
     final url = '$BASE_URL_config/v1/leadStatus';
-    String token = 'Bearer $Serial_Token'; // Auth token
+    String token = 'Bearer $Company_Token'; // Auth token
 
     Map<String, String> headers = {
       'Authorization': token,
@@ -331,7 +334,7 @@ class _SalesInquiryReportState
                   itemCount: filteredData.length,
                   itemBuilder: (context, index) {
                     var item = filteredData.reversed.toList()[index];
-                    String category = item["lead_status"]["category"];
+                    String category = item["status"]["category"];
                     Color statusColor = getCategoryColor(category);
                     String? nextFollowUpDate = item["next_followup_date"];
                     Color followUpDateColor = getFollowUpDateColor(nextFollowUpDate);
@@ -359,17 +362,17 @@ class _SalesInquiryReportState
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                item["leads"]["name"],
+                                item["lead"]["name"],
                                 style: TextStyle(
                                     fontSize: 16, fontWeight: FontWeight.w600),
                               ),
                               SizedBox(height: 6),
                               Row(
                                 children: [
-                                  getCategoryIcon(item["lead_status"]["category"]),
+                                  getCategoryIcon(item["status"]["category"]),
                                   SizedBox(width: 6),
                                   Text(
-                                    item["lead_status"]["name"],
+                                    item["status"]["name"],
                                     style: TextStyle(
                                       color: statusColor,
                                       fontWeight: FontWeight.w500,
@@ -388,6 +391,7 @@ class _SalesInquiryReportState
                                   "Remarks: ${item["remarks"]}",
                                   style: TextStyle(color: Colors.grey.shade700),
                                 ),
+
                               ],
                               if (nextFollowUpDate != null) ...[
                                 SizedBox(height: 6),
@@ -476,6 +480,7 @@ class _SalesInquiryReportState
 
     final url = '$BASE_URL_config/v1/leads';
     String token = 'Bearer $Company_Token'; // Auth token
+
 
     Map<String, String> headers = {
       'Authorization': token,
@@ -1093,8 +1098,8 @@ class _SalesInquiryReportState
     }
 
     return preferredAreas.map((area) {
-      final areaName = area['areas']['area_name'] ?? 'Unknown Area';
-      final emirateName = area['areas']['emirates']['state_name'] ?? 'Unknown Emirate';
+      final areaName = area['area']['name'] ?? 'Unknown Area';
+      final emirateName = area['area']['state']['name'] ?? 'Unknown Emirate';
       return '$areaName, $emirateName';
     }).join(' • '); // Using a bullet separator for clarity
   }

@@ -44,7 +44,7 @@ class _LeadStatusReportState extends State<LeadStatusReport> {
       'category': selectedCategory,
     };
 
-    String token = 'Bearer $Serial_Token'; // auth token for request
+    String token = 'Bearer $Company_Token'; // auth token for request
 
     Map<String, String> headers = {
       'Authorization': token,
@@ -115,7 +115,7 @@ class _LeadStatusReportState extends State<LeadStatusReport> {
 
     print('id $id ');
 
-    String token = 'Bearer $Serial_Token'; // auth token for request
+    String token = 'Bearer $Company_Token'; // auth token for request
 
 
     Map<String, String> headers = {
@@ -478,7 +478,7 @@ class _LeadStatusReportState extends State<LeadStatusReport> {
     leadStatuses.clear();
 
     final url = '$BASE_URL_config/v1/leadStatus'; // Replace with your API endpoint
-    String token = 'Bearer $Serial_Token'; // auth token for request
+    String token = 'Bearer $Company_Token'; // auth token for request
 
     print('fetch url $url');
     Map<String, String> headers = {
@@ -511,7 +511,7 @@ class _LeadStatusReportState extends State<LeadStatusReport> {
 
   Future<void> deleteLeadStatus(int id) async {
     final url = '$BASE_URL_config/v1/leadstatus/$id'; // Replace with your API endpoint
-    String token = 'Bearer $Serial_Token'; // auth token for request
+    String token = 'Bearer $Company_Token'; // auth token for request
 
     Map<String, String> headers = {
       'Authorization': token,

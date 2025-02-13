@@ -151,7 +151,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
     maintenance_types_list.clear();
 
     final url = '$BASE_URL_config/v1/maintenanceTypes'; // Replace with your API endpoint
-    String token = 'Bearer $Serial_Token'; // auth token for request
+    String token = 'Bearer $Company_Token'; // auth token for request
 
     Map<String, String> headers = {
       'Authorization': token,
@@ -192,7 +192,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
     print('user id $user_id');
 
     final url = '$BASE_URL_config/v1/users/$user_id?company_id=$company_id'; // Replace with your API endpoint
-    String token = 'Bearer $Serial_Token'; // auth token for request
+    String token = 'Bearer $Company_Token'; // auth token for request
 
     print('url $url');
 

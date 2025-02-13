@@ -11,10 +11,10 @@ const String company_name = 'Company';
 
 const String authTokenBase = r'!1--3*%*%*%*9$api$8*%*%*%*5--0!X19fIUBBUyQlYXMxOTI4MzdfX18=KSgqL2FzZGFzZGlvQ0VEQUZf';
 
-const String BASE_URL_config = "http://192.168.2.185:4500/api";
+const String BASE_URL_config = "http://192.168.2.185:7750/api";
 
 // Serial & Company Tokens (Loaded Dynamically)
-late String Serial_Token;
+/*late String Company_Token;*/
 late String Company_Token;
 late String user_email;
 late String user_name;
@@ -26,7 +26,7 @@ late int user_id;
 Future<void> loadTokens() async {
 
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  Serial_Token = prefs.getString("serial_token") ?? "";
+  /*Company_Token = prefs.getString("Company_Token") ?? "";*/
   Company_Token = prefs.getString("company_token") ?? "";
   user_email = prefs.getString("user_email") ?? "";
   user_name = prefs.getString("user_name") ?? "";
@@ -34,9 +34,7 @@ Future<void> loadTokens() async {
   serial_id = prefs.getInt("serial_id") ?? 0;
   user_id = prefs.getInt("user_id") ?? 0;
 
-  print("Loaded Serial Token: $Serial_Token");
   print("Loaded Company Token: $Company_Token");
-  print("Loaded Serial ID: $serial_id");
   print("Loaded Company ID: $company_id");
   print("Loaded User ID: $user_id");
 }

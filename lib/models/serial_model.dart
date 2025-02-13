@@ -1,4 +1,4 @@
-class Serial {
+/*class Serial {
   final int id;
   final String serialNo;
   final String userToken;  // ✅ Store the user token
@@ -34,7 +34,7 @@ class Serial {
       'user_id': userId,  // ✅ Ensure id is saved
       'registered_companies': registeredCompanies.map((e) => e.toJson()).toList(),
     };
-  }}
+  }}*/
 
 class RegisteredCompany {
   final int id;

@@ -28,9 +28,9 @@ class _SidebarState extends State<Sidebar> {
   String userEmail = "Loading...";
 
   String companyName = "Loading...";
-  String serialNo = "Loading...";
+ /* String serialNo = "Loading...";*/
 
-  int serialID = 0;
+  /*int serialID = 0;*/
 
   int companyID = 0;
 
@@ -50,8 +50,8 @@ class _SidebarState extends State<Sidebar> {
       userEmail = prefs.getString("user_email") ?? "guest@example.com";
       companyName = prefs.getString("company_name") ?? "Unknown";
 
-      serialNo = prefs.getString("serial_no") ?? "Unknown";
-      serialID = prefs.getInt("serial_id") ?? 0;
+      /*serialNo = prefs.getString("serial_no") ?? "Unknown";*/
+      /*serialID = prefs.getInt("serial_id") ?? 0;*/
       companyID = prefs.getInt("company_id") ?? 0;
       userID = prefs.getInt("user_id") ?? 0;
 
@@ -154,7 +154,7 @@ class _SidebarState extends State<Sidebar> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    /*Text(
                       '$serialNo (ID: $serialID (for testing purpose only)',
                       style: TextStyle(
                         fontSize: 14,
@@ -162,7 +162,7 @@ class _SidebarState extends State<Sidebar> {
                         color: Colors.white,
                       ),
                     ),
-                    Divider(),
+                    Divider(),*/
 
                     Text(
                       '$companyName (ID: $companyID (for testing purpose only)',
@@ -194,7 +194,7 @@ class _SidebarState extends State<Sidebar> {
                     _navigateTo(context, LandlordDashboardScreen());
                   }),
                   _buildDrawerItem(Icons.business, "Companies", true, () {
-                    _navigateTo(context, SerialNoSelection());
+                    _navigateTo(context, CompanySelection());
                   }),
                   _buildDrawerItem(Icons.settings, "Settings", true, () {
                     _navigateTo(context, SettingsScreen());

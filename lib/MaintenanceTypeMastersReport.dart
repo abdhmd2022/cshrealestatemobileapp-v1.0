@@ -32,7 +32,7 @@ class _MaintenanceTypeMastersReportState extends State<MaintenanceTypeMastersRep
       "name": maintenanceTypeController.text,
     };
 
-    String token = 'Bearer $Serial_Token'; // auth token for request
+    String token = 'Bearer $Company_Token'; // auth token for request
 
 
     Map<String, String> headers = {
@@ -103,7 +103,7 @@ class _MaintenanceTypeMastersReportState extends State<MaintenanceTypeMastersRep
 
     print('id $id ');
 
-    String token = 'Bearer $Serial_Token'; // auth token for request
+    String token = 'Bearer $Company_Token'; // auth token for request
 
 
     Map<String, String> headers = {
@@ -320,7 +320,7 @@ class _MaintenanceTypeMastersReportState extends State<MaintenanceTypeMastersRep
     maintenance_types_list.clear();
 
     final url = '$BASE_URL_config/v1/maintenanceTypes'; // Replace with your API endpoint
-    String token = 'Bearer $Serial_Token'; // auth token for request
+    String token = 'Bearer $Company_Token'; // auth token for request
 
     print('fetch url $url');
     Map<String, String> headers = {
@@ -353,7 +353,7 @@ class _MaintenanceTypeMastersReportState extends State<MaintenanceTypeMastersRep
 
   Future<void> deleteMaintenanceType(int id) async {
     final url = '$BASE_URL_config/v1/maintenanceTypes/$id'; // Replace with your API endpoint
-    String token = 'Bearer $Serial_Token'; // auth token for request
+    String token = 'Bearer $Company_Token'; // auth token for request
 
     Map<String, String> headers = {
       'Authorization': token,

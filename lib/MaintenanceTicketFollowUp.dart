@@ -256,7 +256,7 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
     maintenanceStatusList.clear();
 
     final url = '$BASE_URL_config/v1/maintenanceStatus'; // Replace with your API endpoint
-    String token = 'Bearer $Serial_Token'; // auth token for request
+    String token = 'Bearer $Company_Token'; // auth token for request
 
     Map<String, String> headers = {
       'Authorization': token,

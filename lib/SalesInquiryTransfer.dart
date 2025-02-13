@@ -22,7 +22,6 @@ class User {
   final String createdAt;
   final String alteredAt;
   final String isActive;
-  final int serialId;
   final int? externalRoleId;
 
   User({
@@ -33,7 +32,6 @@ class User {
     required this.createdAt,
     required this.alteredAt,
     required this.isActive,
-    required this.serialId,
     this.externalRoleId,
   });
 
@@ -44,10 +42,9 @@ class User {
       name: json['name'],
       isAdmin: json['is_admin'],
       createdAt: json['created_at'],
-      alteredAt: json['altered_at'],
+      alteredAt: json['altered_at'] ??  '',
       isActive: json['is_active'],
-      serialId: json['serial_id'],
-      externalRoleId: json['external_role_id'],
+      externalRoleId: json['role_id'] ?? 0,
     );
   }
 }
@@ -71,7 +68,7 @@ class SalesInquiryTransfer extends StatefulWidget
 
 class _SalesInquiryTransferPageState extends State<SalesInquiryTransfer> with TickerProviderStateMixin {
 
-  int? selectedTransferToId; // To store the selec// ted dropdown value
+  int? selectedTransferToId; // To store the selected dropdown value
    List<User> transfer_to_list = [
 
   ];
@@ -111,6 +108,8 @@ class _SalesInquiryTransferPageState extends State<SalesInquiryTransfer> with Ti
       if (response.statusCode == 200) {
 
         final data = json.decode(response.body);
+
+        print('data : $data');
 
         setState(() {
 

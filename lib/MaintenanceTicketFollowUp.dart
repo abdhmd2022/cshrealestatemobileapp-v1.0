@@ -1,18 +1,39 @@
+import 'dart:convert';
 import 'dart:typed_data';
-
-import 'package:flutter/foundation.dart';
+import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
+import 'package:signature/signature.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 import 'dart:io';
+
+import 'package:flutter/foundation.dart'; // For kIsWeb check
+import 'package:http/http.dart' as http;
 
 import 'MaintenanceTicketReport.dart';
 import 'constants.dart';
 
-void main() {
-  runApp(MaterialApp(
-    debugShowCheckedModeBanner: false,
-    home: MaintenanceFollowUpScreen(),
-  ));
+class MaintenanceStatus {
+  final int id;
+  final String name;
+  final String category;
+  final int serialId;
+
+  MaintenanceStatus({
+    required this.id,
+    required this.name,
+    required this.category,
+    required this.serialId,
+  });
+
+  factory MaintenanceStatus.fromJson(Map<String, dynamic> json) {
+    return MaintenanceStatus(
+      id: json['id'],
+      name: json['name'],
+      category: json['category'],
+      serialId: json['serial_id'],
+    );
+  }
 }
 
 class MaintenanceFollowUpScreen extends StatefulWidget {
@@ -20,7 +41,7 @@ class MaintenanceFollowUpScreen extends StatefulWidget {
   _MaintenanceFollowUpScreenState createState() => _MaintenanceFollowUpScreenState();
 }
 
-class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen> {
+class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  {
   List<Map<String, String>> followUps = [
     {"role": "Created", "description": "Ticket created"},
     {"role": "Supervisor", "description": "Checked and approved"},
@@ -31,6 +52,19 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen> {
 
 
   ];
+
+
+
+  MaintenanceStatus? selectedStatus;
+
+  final SignatureController _signatureController = SignatureController(
+    penStrokeWidth: 2,
+    penColor: Colors.black,
+    exportBackgroundColor: Colors.white,
+  );
+
+
+   List<MaintenanceStatus> maintenanceStatusList = [];
 
   List<dynamic> _attachment = [];
   final ImagePicker _picker = ImagePicker();
@@ -62,6 +96,83 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen> {
           }
         });
       }
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _initSharedPreferences();
+  }
+
+  Future<void> _initSharedPreferences() async {
+
+    fetchMaintenanceStatus();
+  }
+
+  Future<void> _saveSignature() async {
+
+
+
+
+    try {
+      if (_signatureController.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Please sign before saving.')),
+        );
+        return;
+      }
+
+      // Convert signature to image
+      final ui.Image? signatureImage = await _signatureController.toImage();
+      final ByteData? byteData = await signatureImage?.toByteData(format: ui.ImageByteFormat.png);
+
+      if (byteData == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: Could not convert signature to image')),
+        );
+        return;
+      }
+
+      Uint8List pngBytes = byteData.buffer.asUint8List();
+
+      // Save image to local storage
+      final directory = await getApplicationDocumentsDirectory();
+      final signatureFile = File('${directory.path}/signature.png');
+      await signatureFile.writeAsBytes(pngBytes);
+
+
+
+      // Add the signature image to attachments
+      setState(() {
+        _attachment.add(signatureFile);
+      });
+
+      /*// Get internal storage directory
+      final directory = await getApplicationSupportDirectory(); // Internal memory location
+      final String filePath = '${directory.path}/signature.png';
+      final signatureFile = File(filePath);
+
+      // Save image to internal memory
+      await signatureFile.writeAsBytes(pngBytes);
+
+      // Update the state with the saved file path
+      setState(() {
+        _attachment.add(signatureFile);
+        _signatureController.clear();
+      });*/
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Signature saved and added to attachments')),
+
+      );
+      setState(() {
+        _signatureController.clear();
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error saving signature: $e')),
+      );
     }
   }
 
@@ -125,6 +236,39 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen> {
       },
     );
   }
+
+  Future<void> fetchMaintenanceStatus() async {
+
+    maintenanceStatusList.clear();
+
+    final url = '$BASE_URL_config/v1/maintenanceStatus'; // Replace with your API endpoint
+    String token = 'Bearer $Serial_Token'; // auth token for request
+
+    Map<String, String> headers = {
+      'Authorization': token,
+      "Content-Type": "application/json"
+    };
+    try {
+      final response = await http.get(Uri.parse(url),
+        headers: headers,);
+      if (response.statusCode == 200) {
+
+        final jsonData = json.decode(response.body);
+        final List<dynamic> statuses = jsonData['data']['maintenanceStatus'];
+
+        setState(() {
+          maintenanceStatusList =
+              statuses.map((status) => MaintenanceStatus.fromJson(status)).toList();
+        });
+      } else {
+        throw Exception('Failed to load data');
+      }
+    } catch (e) {
+
+      print('Error fetching data: $e');
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -195,13 +339,16 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen> {
                   }).toList(),
                 ),),
 
-              SizedBox(height: 16),
+
+
+              SizedBox(height: 10,),
+
               Container(
-                margin: EdgeInsets.only(left: 0, right: 20),
+                margin: EdgeInsets.only(left: 0, right: 20,bottom:6),
                 child: Row(
                   children: [
                     Text(
-                      'Attachments',
+                      'Maintenance Status',
                       style: TextStyle(fontSize: 16,
                         fontWeight: FontWeight.bold,),
                     ),
@@ -217,7 +364,248 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen> {
                 ),
               ),
 
-              SizedBox(height: 20),
+
+              Container(
+    padding: EdgeInsets.symmetric(horizontal: 12),
+    margin: EdgeInsets.only(left: 0, right: 0, bottom: 10),
+    decoration: BoxDecoration(
+    color: Colors.white,
+    borderRadius: BorderRadius.circular(8),
+    border: Border.all(color: Colors.black, width: 0.75),
+    ),
+    child: DropdownButtonFormField<MaintenanceStatus>(
+    value: selectedStatus,
+    items: maintenanceStatusList.map((status) {
+    return DropdownMenuItem<MaintenanceStatus>(
+    value: status,
+    child: Text(status.name),
+    );
+    }).toList(),
+    decoration: InputDecoration(
+    border: InputBorder.none,
+    contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 14),
+    ),
+    icon: Icon(Icons.arrow_drop_down, color: Colors.black54),
+    hint: Text(
+    "Select Maintenance Status",
+    style: TextStyle(color: Colors.black54, fontSize: 16),
+    ),
+    onChanged: (value) {
+    setState(() {
+    selectedStatus = value;
+
+    if(selectedStatus!.category != 'Close')
+      {
+        _signatureController.clear();
+      }
+    });
+    },
+    ),
+    ),
+
+
+              SizedBox(height: 6),
+
+
+              Padding(
+                padding: EdgeInsets.only(top: 0),
+                child: TextFormField(
+
+                  controller: _amountController,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    labelText: "Amount",
+                    prefixText: "AED ",
+                    contentPadding: EdgeInsets.all(15),
+
+                    floatingLabelStyle: TextStyle(
+                      color: appbar_color, // Change label color when focused
+                      fontWeight: FontWeight.normal,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(
+                        color: appbar_color, // Change this color as needed
+                        width: 1,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+
+
+
+              SizedBox(height: 16),
+
+
+              TextFormField(
+                controller: _remarksController,
+                keyboardType: TextInputType.multiline,
+                maxLength: 500, // Limit input to 500 characters
+                maxLines: 3,
+                validator: (value) {
+                  if (value!.isEmpty) {
+                    return 'Remarks are required';
+                  }
+                  return null;
+                },
+                decoration: InputDecoration(
+                  hintText: 'Enter Remarks*',
+                  labelText: "Remarks",
+
+                  contentPadding: EdgeInsets.all(15),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10), // Set the border radius
+                    borderSide: BorderSide(
+                      color: Colors.black, // Set the border color
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(
+                      color: appbar_color, // Change this color as needed
+                      width: 1,
+                    ),
+                  ),
+                  labelStyle: TextStyle(
+                    color: Colors.black,
+                  ),
+                ),
+              ),
+
+
+
+              if(selectedStatus !=null && selectedStatus!.category == "Close")
+
+                Column(
+                  children: [
+                    Container(
+                      margin: EdgeInsets.only(left: 0, right: 20,bottom:6),
+                      child: Row(
+                        children: [
+                          Text(
+                            'Signature',
+                            style: TextStyle(fontSize: 16,
+                              fontWeight: FontWeight.bold,),
+                          ),
+                          SizedBox(width: 2),
+                          Text(
+                            '*', // Red asterisk for required field
+                            style: TextStyle(
+                              fontSize: 20,
+                              color: Colors.red, // Red color for the asterisk
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    Container(
+                      height: 200,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[200],
+                        border: Border.all(
+                          color: Colors.black, // Border color
+                          width: 0.5, // Border width
+                        ),
+                        borderRadius: BorderRadius.circular(8), // Optional: Rounded corners
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(8), // Match the border radius
+                        child: Signature(
+                          controller: _signatureController,
+                          backgroundColor: Colors.white,
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 10),
+
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white, // Button background color
+                            foregroundColor: Colors.black,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8), // Rounded corners
+                              side: BorderSide(
+                                color: Colors.grey, // Border color
+                                width: 0.5, // Border width
+                              ),
+                            ),
+                          ),
+                          onPressed: () {
+                            setState(() {
+
+                              _signatureController.clear();
+
+                            });
+                          },
+                          child: Text('Clear'),
+                        ),
+
+
+
+                        /* ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: appbar_color, // Button background color
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(5), // Rounded corners
+                        side: BorderSide(
+                          color: Colors.grey, // Border color
+                          width: 0.5, // Border width
+                        ),
+                      ),
+                    ),
+                    onPressed:_saveSignature,
+                    child: Text('Save Signature'),
+                  ),*/
+
+                      ],
+                    ),
+                  ],
+                ),
+
+
+
+
+
+
+
+
+
+              SizedBox(height: 10),
+
+              Container(
+                margin: EdgeInsets.only(left: 0, right: 20),
+                child: Row(
+                  children: [
+                    Text(
+                      'Attachments',
+                      style: TextStyle(fontSize: 16,
+                        fontWeight: FontWeight.bold,),
+                    ),
+                    /*SizedBox(width: 2),
+                    Text(
+                      '*', // Red asterisk for required field
+                      style: TextStyle(
+                        fontSize: 20,
+                        color: Colors.red, // Red color for the asterisk
+                      ),
+                    ),*/
+
+                  ],
+                ),
+              ),
+
+              SizedBox(height: 16),
+
+
 
               Container(
                   margin: EdgeInsets.symmetric(horizontal: 0),
@@ -338,80 +726,7 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen> {
                                 SizedBox(height: 20),
                                 Text('No attachment selected'),
                               ])])),
-              SizedBox(height: 16),
-
-
-              Padding(
-                padding: EdgeInsets.only(top: 10),
-                child: TextFormField(
-
-                  controller: _amountController,
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
-                    labelText: "Amount",
-                    prefixText: "AED ",
-                    contentPadding: EdgeInsets.all(15),
-
-                    floatingLabelStyle: TextStyle(
-                      color: appbar_color, // Change label color when focused
-                      fontWeight: FontWeight.normal,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(
-                        color: appbar_color, // Change this color as needed
-                        width: 1,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-
-
-
-              SizedBox(height: 16),
-
-
-              TextFormField(
-                controller: _remarksController,
-                keyboardType: TextInputType.multiline,
-                maxLength: 500, // Limit input to 500 characters
-                maxLines: 3,
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return 'Remarks are required';
-                  }
-                  return null;
-                },
-                decoration: InputDecoration(
-                  hintText: 'Enter Remarks*',
-                  labelText: "Remarks",
-
-                  contentPadding: EdgeInsets.all(15),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10), // Set the border radius
-                    borderSide: BorderSide(
-                      color: Colors.black, // Set the border color
-                    ),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: appbar_color, // Change this color as needed
-                      width: 1,
-                    ),
-                  ),
-                  labelStyle: TextStyle(
-                    color: Colors.black,
-                  ),
-                ),
-              ),
-
-
-              SizedBox(height: 20),
+              SizedBox(height: 40),
               Padding(padding: EdgeInsets.only(left: 20,right: 20,top: 0,bottom: 50),
                 child: Container(
                     child: Row(
@@ -435,6 +750,7 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen> {
 
 
 
+
                             });
                           },
                           child: Text('Clear'),
@@ -453,14 +769,28 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen> {
                               ),
                             ),
                           ),
-                          onPressed: () {
+                          onPressed: ()
+                          {
+                            if(selectedStatus!.category == "Close")
+                              {
+                                _saveSignature();
+                              }
+                            else
+                              {
+                                // for no close category
 
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text('Submit.')),
+                                );
 
+                              }
                           },
                           child: Text('Submit'),
                         ),
                       ],)
-                ),)
+                ),),
+
+
             ],
           ),
         ),

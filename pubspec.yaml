@@ -50,6 +50,8 @@ dependencies:
   mime:
   google_fonts:
   font_awesome_flutter:
+  flutter_signature_pad:
+  signature:
   flutter_switch:
 dev_dependencies:
 

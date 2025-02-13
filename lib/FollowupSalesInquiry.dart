@@ -1388,8 +1388,8 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
       });
     }
   }
-  // Area Dropdown based on selected emirates
 
+  // Area Dropdown based on selected emirates
   void _openAreaDropdown(BuildContext context) async {
     updateAreasDisplay(); // Ensure areasToDisplay is updated before opening
 
@@ -1531,7 +1531,6 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
       });
     }
   }
-
 
   @override
   void initState() {

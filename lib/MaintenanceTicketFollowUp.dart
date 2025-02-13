@@ -57,7 +57,7 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
 
   MaintenanceStatus? selectedStatus;
 
-  final SignatureController _signatureController = SignatureController(
+   SignatureController _signatureController = SignatureController(
     penStrokeWidth: 2,
     penColor: Colors.black,
     exportBackgroundColor: Colors.white,
@@ -112,9 +112,6 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
 
   Future<void> _saveSignature() async {
 
-
-
-
     try {
       if (_signatureController.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -136,19 +133,19 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
 
       Uint8List pngBytes = byteData.buffer.asUint8List();
 
-      // Save image to local storage
+      /*// Save image to local storage
       final directory = await getApplicationDocumentsDirectory();
       final signatureFile = File('${directory.path}/signature.png');
       await signatureFile.writeAsBytes(pngBytes);
 
-
-
       // Add the signature image to attachments
       setState(() {
         _attachment.add(signatureFile);
-      });
+        _signatureController.clear();
 
-      /*// Get internal storage directory
+      });*/
+
+      // Get internal storage directory
       final directory = await getApplicationSupportDirectory(); // Internal memory location
       final String filePath = '${directory.path}/signature.png';
       final signatureFile = File(filePath);
@@ -160,15 +157,15 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
       setState(() {
         _attachment.add(signatureFile);
         _signatureController.clear();
-      });*/
+
+
+      });
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Signature saved and added to attachments')),
 
       );
-      setState(() {
-        _signatureController.clear();
-      });
+
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error saving signature: $e')),
@@ -487,7 +484,7 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
                       child: Row(
                         children: [
                           Text(
-                            'Signature',
+                            'Tenant Signature',
                             style: TextStyle(fontSize: 16,
                               fontWeight: FontWeight.bold,),
                           ),
@@ -778,11 +775,9 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
                             else
                               {
                                 // for no close category
-
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(content: Text('Submit.')),
                                 );
-
                               }
                           },
                           child: Text('Submit'),

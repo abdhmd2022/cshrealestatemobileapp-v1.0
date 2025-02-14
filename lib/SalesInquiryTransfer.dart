@@ -161,6 +161,11 @@ class _SalesInquiryTransferPageState extends State<SalesInquiryTransfer> with Ti
 
         });
 
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => SalesInquiryReport()),
+        );
+
       } else {
         // Error occurred
         print("Error: ${response.statusCode}");

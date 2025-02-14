@@ -4,35 +4,43 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:uuid/uuid.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 
-class AmentiesReport extends StatefulWidget {
+
+class MaintenanceStatusReport extends StatefulWidget {
   @override
-  _AmentiesReportState createState() => _AmentiesReportState();
+  _MaintenanceStatusReportState createState() => _MaintenanceStatusReportState();
 }
 
-class _AmentiesReportState extends State<AmentiesReport> {
-  List<dynamic> amenities = [];
+class _MaintenanceStatusReportState extends State<MaintenanceStatusReport> {
+  List<dynamic> maintenanceStatuses = [];
+  List<String> categories_list= [
+    'Normal',
+    'Drop',
+    'Close'
+  ];
+
+  String? selectedCategory;
   bool isLoading = true;
 
-  bool isSpecial = false;
-  TextEditingController amenitiesController = TextEditingController();
+  TextEditingController maintenanceStatusController = TextEditingController();
+
 
   @override
   void initState() {
     super.initState();
-    fetchAmenities();
+    fetchMaintenanceStatus();
   }
 
-  Future<void> sendAmenities() async {
-
+  Future<void> sendMaintenanceStatus() async {
     var uuid = Uuid();
 
     // Generate a v4 (random) UUID
     String uuidValue = uuid.v4();
     final Map<String, dynamic> jsonBody = {
       "uuid": uuidValue,
-      "name": amenitiesController.text,
-      "is_special": isSpecial ? 'true' : 'false',
+      "name": maintenanceStatusController.text,
+      'category': selectedCategory,
     };
 
     String token = 'Bearer $Company_Token'; // auth token for request
@@ -42,7 +50,7 @@ class _AmentiesReportState extends State<AmentiesReport> {
       "Content-Type": "application/json"
     };
 
-    const String url = "$BASE_URL_config/v1/amenities";
+    const String url = "$BASE_URL_config/v1/maintenanceStatus";
 
     try{
       final response = await http.post(
@@ -63,7 +71,7 @@ class _AmentiesReportState extends State<AmentiesReport> {
             content: Text('$message'),
           ),);
         // Handle success
-        fetchAmenities();
+        fetchMaintenanceStatus();
 
       } else {
         final Map<String, dynamic> data = json.decode(response.body);
@@ -85,12 +93,9 @@ class _AmentiesReportState extends State<AmentiesReport> {
     {
 
     }
-
-
-
   }
 
-  Future<void> editAmenities(int id, String amenity_name, bool is_special ) async {
+  Future<void> editMaintenanceStatus(int id, String status_name, String category) async {
 
     var uuid = Uuid();
 
@@ -98,8 +103,10 @@ class _AmentiesReportState extends State<AmentiesReport> {
     String uuidValue = uuid.v4();
     final Map<String, dynamic> jsonBody = {
       "uuid": uuidValue,
-      "name": amenity_name,
-      "is_special": is_special ? 'true' : 'false',
+      "name": status_name,
+      "category": selectedCategory,
+
+
     };
 
     print('jsonbody $jsonBody ');
@@ -114,7 +121,7 @@ class _AmentiesReportState extends State<AmentiesReport> {
       "Content-Type": "application/json"
     };
 
-    String url = "$BASE_URL_config/v1/amenities/$id";
+    String url = "$BASE_URL_config/v1/maintenanceStatus/$id";
 
     try{
       final response = await http.put(
@@ -135,7 +142,7 @@ class _AmentiesReportState extends State<AmentiesReport> {
             content: Text('$message'),
           ),);
         // Handle success
-        fetchAmenities();
+        fetchMaintenanceStatus();
 
       } else {
         final Map<String, dynamic> data = json.decode(response.body);
@@ -157,10 +164,13 @@ class _AmentiesReportState extends State<AmentiesReport> {
     {
 
     }
+
+
+
   }
 
 
-  void showAmenitiesDialog() {
+  void showMaintenanceStatusDialog() {
     final _formKey = GlobalKey<FormState>();
 
     showDialog(
@@ -170,57 +180,113 @@ class _AmentiesReportState extends State<AmentiesReport> {
           backgroundColor: appbar_color[50],
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           title: Text(
-            "Amenities",
+            "Maintenance Status",
             style: TextStyle(color: appbar_color[900]),
           ),
           content: Form(
             key: _formKey,
             child: Column(
               mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+
+
+                // Dropdown for Categories
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text("Special Feature", style: TextStyle(color: appbar_color[900])),
-                    Switch(
-                      value: isSpecial,
-                      onChanged: (value) {
-                        setState(() {
-                          isSpecial = value;
-                          Navigator.of(context).pop();
-                          showAmenitiesDialog();
-                        });
-                      },
-                      activeColor: appbar_color.withOpacity(0.9),
+                    Text(
+                      "Category:",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black.withOpacity(0.8),
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: Colors.white70,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: Colors.black54,
+                          width: 1,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 6,
+                            offset: Offset(2, 4),
+                          ),
+                        ],
+                      ),
+                      child: DropdownButtonHideUnderline(
+                        child: DropdownButton<String>(
+                          value: selectedCategory,
+                          hint: Text(
+                            "Select a category",
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.black54,
+                            ),
+                          ),
+                          icon: Icon(
+                            Icons.arrow_drop_down,
+                            color: Colors.black54,
+                          ),
+                          isExpanded: true,
+                          items: categories_list.map((String category) {
+                            return DropdownMenuItem<String>(
+                              value: category,
+                              child: Text(
+                                category,
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                          onChanged: (String? newValue) {
+                            setState(() {
+                              selectedCategory = newValue;
+                              Navigator.of(context).pop();
+                              showMaintenanceStatusDialog();
+
+                            });
+                          },
+                        ),
+                      ),
                     ),
                   ],
                 ),
 
-                SizedBox(height: 10,),
-                TextFormField(
-                  controller: amenitiesController,
-                  validator: (value) {
-                    if (value == null || value.isEmpty)
-                    {
-                      return 'Please enter amenity name';
-                    }
+                SizedBox(height: 20),
 
+                // Maintenance Status Name Input Field
+                TextFormField(
+                  controller: maintenanceStatusController,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter maintenance status name';
+                    }
                     return null;
                   },
                   decoration: InputDecoration(
-                    labelText: "Amenity Name",
-
+                    labelText: "Maintenance Status Name",
+                    fillColor: Colors.white70, // Background color set to white
+                    filled: true, // Ensures the fill color is applied
                     labelStyle: TextStyle(color: Colors.black54),
                     focusedBorder: OutlineInputBorder(
                       borderSide: BorderSide(color: appbar_color),
                     ),
                     enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.black54!),
+                      borderSide: BorderSide(color: Colors.black54),
                     ),
                   ),
                 ),
-
-
               ],
             ),
           ),
@@ -236,14 +302,13 @@ class _AmentiesReportState extends State<AmentiesReport> {
                     _formKey.currentState!.validate()) {
                   _formKey.currentState!.save();
 
-                  sendAmenities();
+                  sendMaintenanceStatus();
                   Navigator.pop(context);
 
                 }
 
               },
               style: ElevatedButton.styleFrom(backgroundColor: appbar_color),
-
               child: Text("Submit",style: TextStyle(color: Colors.white)),
             ),
           ],
@@ -252,19 +317,12 @@ class _AmentiesReportState extends State<AmentiesReport> {
     );
   }
 
-  void showEditAmenitiesDialog(int id, String old_amenity_name, String is_special) {
+  void showEditMaintenanceStatusDialog(int id, String old_status_name, String category) {
     final _formKey = GlobalKey<FormState>();
 
-    bool isSpecial = false;
+    TextEditingController MaintenanceStatusController = TextEditingController();
 
-    if(is_special.toLowerCase() == "true")
-    {
-      isSpecial = true;
-
-    }
-    TextEditingController amenityController = TextEditingController();
-
-    amenityController.text = old_amenity_name;
+    MaintenanceStatusController.text = old_status_name;
 
     showDialog(
       context: context,
@@ -273,7 +331,7 @@ class _AmentiesReportState extends State<AmentiesReport> {
           backgroundColor: appbar_color[50],
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           title: Text(
-            "Edit Amenity",
+            "Edit Maintenance Status",
             style: TextStyle(color: appbar_color[900],
             ),
           ),
@@ -281,52 +339,102 @@ class _AmentiesReportState extends State<AmentiesReport> {
             key: _formKey,
             child: Column(
               mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+
+
+                // Dropdown for Categories
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text("Special Feature", style: TextStyle(color: appbar_color[900])),
-                    Switch(
-                      value: isSpecial,
-                      onChanged: (value) {
-                        setState(() {
-                          isSpecial = value;
-                          Navigator.of(context).pop();
-                          if(isSpecial == true)
-                          {
-                            is_special = "true";
-                          }
-                          else
-                          {
-                            is_special = "false";
-                          }
-                          showEditAmenitiesDialog(id, amenityController.text,is_special);
-                        });
-                      },
-                      activeColor: appbar_color.withOpacity(0.9),
+                    Text(
+                      "Category:",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black.withOpacity(0.8),
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: Colors.white70,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: Colors.black54,
+                          width: 1,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 6,
+                            offset: Offset(2, 4),
+                          ),
+                        ],
+                      ),
+                      child: DropdownButtonHideUnderline(
+                        child: DropdownButton<String>(
+                          value: selectedCategory,
+                          hint: Text(
+                            "Select a category",
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.black54,
+                            ),
+                          ),
+                          icon: Icon(
+                            Icons.arrow_drop_down,
+                            color: Colors.black54,
+                          ),
+                          isExpanded: true,
+                          items: categories_list.map((String category) {
+                            return DropdownMenuItem<String>(
+                              value: category,
+                              child: Text(
+                                category,
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                          onChanged: (String? newValue) {
+                            setState(() {
+                              selectedCategory = newValue;
+                              Navigator.of(context).pop();
+                              showEditMaintenanceStatusDialog(id, old_status_name, category);
+                            });
+                          },
+                        ),
+                      ),
                     ),
                   ],
                 ),
 
-                SizedBox(height: 10,),
-                TextFormField(
-                  controller: amenityController,
-                  validator: (value) {
-                    if (value == null || value.isEmpty)
-                    {
-                      return 'Please enter amenity name';
-                    }
+                SizedBox(height: 20),
 
+                // Maintenance Status Name Input Field
+                TextFormField(
+                  controller: MaintenanceStatusController,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter maintenance status name';
+                    }
                     return null;
                   },
                   decoration: InputDecoration(
-                    labelText: "Amenity Name",
+                    labelText: "Maintenance Status Name",
+                    fillColor: Colors.white70, // Background color set to white
+                    filled: true, // Ensures the fill color is applied
                     labelStyle: TextStyle(color: Colors.black54),
                     focusedBorder: OutlineInputBorder(
                       borderSide: BorderSide(color: appbar_color),
                     ),
                     enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.black54!),
+                      borderSide: BorderSide(color: Colors.black54),
                     ),
                   ),
                 ),
@@ -337,7 +445,6 @@ class _AmentiesReportState extends State<AmentiesReport> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-
               child: Text("Cancel", style: TextStyle(color: appbar_color)),
             ),
             ElevatedButton(
@@ -346,7 +453,7 @@ class _AmentiesReportState extends State<AmentiesReport> {
                     _formKey.currentState!.validate()) {
                   _formKey.currentState!.save();
 
-                  editAmenities(id, amenityController.text, isSpecial) ;
+                  editMaintenanceStatus(id, MaintenanceStatusController.text, category) ;
                   Navigator.pop(context);
 
                 }
@@ -354,21 +461,21 @@ class _AmentiesReportState extends State<AmentiesReport> {
               },
               style: ElevatedButton.styleFrom(backgroundColor: appbar_color),
               child: Text("Submit",style: TextStyle(color: Colors.white)),
-
             ),
           ],
+
         );
       },
     );
   }
 
 
-  Future<void> fetchAmenities() async {
+  Future<void> fetchMaintenanceStatus() async {
 
-    print('fetching amenities');
-    amenities.clear();
+    print('fetching Maintenance status');
+    maintenanceStatuses.clear();
 
-    final url = '$BASE_URL_config/v1/amenities'; // Replace with your API endpoint
+    final url = '$BASE_URL_config/v1/maintenanceStatus'; // Replace with your API endpoint
     String token = 'Bearer $Company_Token'; // auth token for request
 
     print('fetch url $url');
@@ -385,7 +492,7 @@ class _AmentiesReportState extends State<AmentiesReport> {
 
         setState(() {
           print('response ${response.body}');
-          amenities = data['data']['amenities'];
+          maintenanceStatuses = data['data']['maintenanceStatus'];
         });
       } else {
         throw Exception('Failed to load data');
@@ -400,8 +507,8 @@ class _AmentiesReportState extends State<AmentiesReport> {
     });
   }
 
-  Future<void> deleteAmenities(int id) async {
-    final url = '$BASE_URL_config/v1/amenities/$id'; // Replace with your API endpoint
+  Future<void> deleteMaintenanceStatus(int id) async {
+    final url = '$BASE_URL_config/v1/maintenancestatus/$id'; // Replace with your API endpoint
     String token = 'Bearer $Company_Token'; // auth token for request
 
     Map<String, String> headers = {
@@ -414,7 +521,7 @@ class _AmentiesReportState extends State<AmentiesReport> {
         final data = json.decode(response.body);
         if (data['success']) {
           setState(() {
-            amenities.removeWhere((amenity) => amenity['id'] == id);
+            maintenanceStatuses.removeWhere((maintenance) => maintenance['id'] == id);
           });
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(data['message'])),
@@ -452,7 +559,7 @@ class _AmentiesReportState extends State<AmentiesReport> {
             Icons.arrow_back,
             color: Colors.white,
           ),),
-        title: Text('Amenities',
+        title: Text('Maintenance Status',
           style: TextStyle(
               color: Colors.white
           ),),
@@ -465,7 +572,7 @@ class _AmentiesReportState extends State<AmentiesReport> {
           color: appbar_color.withOpacity(0.9),
         ),
       )
-          : amenities.isEmpty
+          : maintenanceStatuses.isEmpty
           ? Center(
         child: Text(
           'No data available',
@@ -473,10 +580,9 @@ class _AmentiesReportState extends State<AmentiesReport> {
         ),
       )
           : ListView.builder(
-        itemCount: amenities.length,
+        itemCount: maintenanceStatuses.length,
         itemBuilder: (context, index) {
-          final amenity = amenities[index];
-          final isQualified = amenity['is_special'] == 'true';
+          final maintenance = maintenanceStatuses[index];
           return Card(
             color: Colors.white,
             margin: const EdgeInsets.symmetric(
@@ -502,7 +608,7 @@ class _AmentiesReportState extends State<AmentiesReport> {
 
                         SizedBox(width: 5,),
                         Text(
-                          amenity['name'] ?? 'Unnamed',
+                          maintenance['name'] ?? 'Unnamed',
                           style: TextStyle(
                             fontWeight: FontWeight.normal,
                             color: appbar_color[800],
@@ -511,38 +617,31 @@ class _AmentiesReportState extends State<AmentiesReport> {
                       ],
                     ),
 
-                    SizedBox(height: 8),
+                    SizedBox(height: 10),
 
                     Row(
                       children: [
-                        Text('Special Feature: ',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold
-                        ),),
-
-                        if(amenity['is_special'] == 'true')
-                          Text(
-                            'Yes' ?? 'Unnamed',
-                            style: TextStyle(
-                              fontWeight: FontWeight.normal,
-                              color: appbar_color[800],
-                            ),
+                        Text(
+                          'Category:',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: appbar_color[800],
                           ),
+                        ),
 
-                        if(amenity['is_special'] == 'false')
-                          Text(
-                            'No' ?? 'Unnamed',
-                            style: TextStyle(
-                              fontWeight: FontWeight.normal,
-                              color: appbar_color[800],
-                            ),
+                        SizedBox(width: 5,),
+                        Text(
+                          maintenance['category'] ?? 'Unnamed',
+                          style: TextStyle(
+                            fontWeight: FontWeight.normal,
+                            color: appbar_color[800],
                           ),
-
-
+                        ),
                       ],
                     ),
 
                     SizedBox(height: 10),
+
 
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -554,8 +653,11 @@ class _AmentiesReportState extends State<AmentiesReport> {
                           Icons.edit,
                           Colors.blue,
                               () {
+                            setState(() {
+                              selectedCategory = maintenance['category'] ?? 'Normal';
+                            });
 
-                            showEditAmenitiesDialog(amenity['id'],amenity['name'],amenity['is_special']);
+                            showEditMaintenanceStatusDialog(maintenance['id'],maintenance['name'],maintenance['category']);
                           },
                         ),
                         SizedBox(width:5),
@@ -565,7 +667,7 @@ class _AmentiesReportState extends State<AmentiesReport> {
                           Colors.redAccent,
                               () {
 
-                            deleteAmenities(amenity['id']); },
+                            deleteMaintenanceStatus(maintenance['id']); },
                         ),
                         SizedBox(width:5)
                       ],),
@@ -581,11 +683,13 @@ class _AmentiesReportState extends State<AmentiesReport> {
       floatingActionButton: FloatingActionButton(
         onPressed:()
         {
-          amenitiesController.clear();
-          isSpecial = false;
-          showAmenitiesDialog();
+          maintenanceStatusController.clear();
+          selectedCategory = categories_list.first;
+
+          showMaintenanceStatusDialog();
         },
         backgroundColor: appbar_color.withOpacity(0.9),
+
         child: Icon(Icons.add,
             color: Colors.white),
       ),

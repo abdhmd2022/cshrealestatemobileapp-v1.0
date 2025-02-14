@@ -15,8 +15,7 @@ import 'Sidebar.dart';
 
 class SalesInquiryReport extends StatefulWidget {
   @override
-  _SalesInquiryReportState createState() =>
-      _SalesInquiryReportState();
+  _SalesInquiryReportState createState() => _SalesInquiryReportState();
 }
 
 class InquiryModel {

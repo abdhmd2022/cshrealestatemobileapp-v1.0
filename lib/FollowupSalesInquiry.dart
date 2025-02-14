@@ -34,12 +34,12 @@ class FollowUpStatus {
 class FollowUpType {
   final int id;
   final String name;
-  final int serial_id;
+  final int company_id;
 
   FollowUpType({
     required this.id,
     required this.name,
-    required this.serial_id
+    required this.company_id
   });
 
   // Factory method to create a FollowUpStatus object from JSON
@@ -47,7 +47,7 @@ class FollowUpType {
     return FollowUpType(
       id: json['id'],
       name: json['name'],
-      serial_id:json['serial_id']
+        company_id:json['company_id']
     );
   }
 }
@@ -977,7 +977,6 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
 
             // Add the object to the list
             followupstatus_list.add(followUpStatus);
-
 
             // Optionally, you can print the object for verification
           }

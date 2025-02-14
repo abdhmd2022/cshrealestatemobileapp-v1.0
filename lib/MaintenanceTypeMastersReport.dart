@@ -16,6 +16,16 @@ class _MaintenanceTypeMastersReportState extends State<MaintenanceTypeMastersRep
 
   TextEditingController maintenanceTypeController = TextEditingController();
 
+  String? selectedCategory;
+
+  List<String> categories_list= [
+    'MEP',
+    'Pest Control',
+
+    'Cleaning'
+  ];
+
+
   @override
   void initState() {
     super.initState();
@@ -30,6 +40,8 @@ class _MaintenanceTypeMastersReportState extends State<MaintenanceTypeMastersRep
     final Map<String, dynamic> jsonBody = {
       "uuid": uuidValue,
       "name": maintenanceTypeController.text,
+      "category": selectedCategory
+
     };
 
     String token = 'Bearer $Company_Token'; // auth token for request
@@ -97,7 +109,9 @@ class _MaintenanceTypeMastersReportState extends State<MaintenanceTypeMastersRep
     final Map<String, dynamic> jsonBody = {
       "uuid": uuidValue,
       "name": maintenanceType_name,
+      "category" : selectedCategory
     };
+
 
     print('jsonbody $jsonBody ');
 
@@ -180,7 +194,78 @@ class _MaintenanceTypeMastersReportState extends State<MaintenanceTypeMastersRep
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Category:",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black.withOpacity(0.8),
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: Colors.white70,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: Colors.black54,
+                          width: 1,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 6,
+                            offset: Offset(2, 4),
+                          ),
+                        ],
+                      ),
+                      child: DropdownButtonHideUnderline(
+                        child: DropdownButton<String>(
+                          value: selectedCategory,
+                          hint: Text(
+                            "Select a category",
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.black54,
+                            ),
+                          ),
+                          icon: Icon(
+                            Icons.arrow_drop_down,
+                            color: Colors.black54,
+                          ),
+                          isExpanded: true,
+                          items: categories_list.map((String category) {
+                            return DropdownMenuItem<String>(
+                              value: category,
+                              child: Text(
+                                category,
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                          onChanged: (String? newValue) {
+                            setState(() {
+                              selectedCategory = newValue;
+                              Navigator.of(context).pop();
+                              showMaintenaceTypeDialog();
 
+                            });
+                          },
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+
+                SizedBox(height: 20),
                 TextFormField(
                   controller: maintenanceTypeController,
                   validator: (value) {
@@ -238,7 +323,6 @@ class _MaintenanceTypeMastersReportState extends State<MaintenanceTypeMastersRep
     final _formKey = GlobalKey<FormState>();
 
 
-
     TextEditingController maintenaceTypeController = TextEditingController();
 
     maintenaceTypeController.text = old_followup_name;
@@ -250,7 +334,7 @@ class _MaintenanceTypeMastersReportState extends State<MaintenanceTypeMastersRep
           backgroundColor: appbar_color[50],
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           title: Text(
-            "Edit Lead Follow-up",
+            "Edit Maintenance Type",
             style: TextStyle(color: appbar_color[900],
             ),
           ),
@@ -259,6 +343,78 @@ class _MaintenanceTypeMastersReportState extends State<MaintenanceTypeMastersRep
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
+
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Category:",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black.withOpacity(0.8),
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: Colors.white70,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: Colors.black54,
+                          width: 1,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 6,
+                            offset: Offset(2, 4),
+                          ),
+                        ],
+                      ),
+                      child: DropdownButtonHideUnderline(
+                        child: DropdownButton<String>(
+                          value: selectedCategory,
+                          hint: Text(
+                            "Select a category",
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.black54,
+                            ),
+                          ),
+                          icon: Icon(
+                            Icons.arrow_drop_down,
+                            color: Colors.black54,
+                          ),
+                          isExpanded: true,
+                          items: categories_list.map((String category) {
+                            return DropdownMenuItem<String>(
+                              value: category,
+                              child: Text(
+                                category,
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                          onChanged: (String? newValue) {
+                            setState(() {
+                              selectedCategory = newValue;
+                              Navigator.of(context).pop();
+                              showEditMaintenanceTypeDialog(id, old_followup_name);
+                            });
+                          },
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+
+                SizedBox(height: 20),
 
                 TextFormField(
                   controller: maintenaceTypeController,
@@ -272,6 +428,9 @@ class _MaintenanceTypeMastersReportState extends State<MaintenanceTypeMastersRep
                   },
                   decoration: InputDecoration(
                     labelText: "Maintenance Type Name",
+                    fillColor: Colors.white70, // Background color set to white
+                    filled: true, // Ensures the fill color is applied
+
                     labelStyle: TextStyle(color: Colors.black54),
                     focusedBorder: OutlineInputBorder(
                       borderSide: BorderSide(color: appbar_color),
@@ -316,7 +475,7 @@ class _MaintenanceTypeMastersReportState extends State<MaintenanceTypeMastersRep
 
   Future<void> fetchMaintenanceType() async {
 
-    print('fetching lead type');
+    print('fetching maintenance type');
     maintenance_types_list.clear();
 
     final url = '$BASE_URL_config/v1/maintenanceTypes'; // Replace with your API endpoint
@@ -426,7 +585,7 @@ class _MaintenanceTypeMastersReportState extends State<MaintenanceTypeMastersRep
           : ListView.builder(
         itemCount: maintenance_types_list.length,
         itemBuilder: (context, index) {
-          final lead = maintenance_types_list[index];
+          final type = maintenance_types_list[index];
           return Card(
             color: Colors.white,
             margin: const EdgeInsets.symmetric(
@@ -452,7 +611,30 @@ class _MaintenanceTypeMastersReportState extends State<MaintenanceTypeMastersRep
 
                         SizedBox(width: 5,),
                         Text(
-                          lead['name'] ?? 'Unnamed',
+                          type['name'] ?? 'Unnamed',
+                          style: TextStyle(
+                            fontWeight: FontWeight.normal,
+                            color: appbar_color[800],
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    SizedBox(height: 10),
+
+                    Row(
+                      children: [
+                        Text(
+                          'Category:',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: appbar_color[800],
+                          ),
+                        ),
+
+                        SizedBox(width: 5,),
+                        Text(
+                          type['category'] ?? 'Unnamed',
                           style: TextStyle(
                             fontWeight: FontWeight.normal,
                             color: appbar_color[800],
@@ -473,8 +655,8 @@ class _MaintenanceTypeMastersReportState extends State<MaintenanceTypeMastersRep
                           Icons.edit,
                           Colors.blue,
                               () {
-
-                            showEditMaintenanceTypeDialog(lead['id'],lead['name']);
+                            selectedCategory = type['category'] ?? categories_list.first;
+                            showEditMaintenanceTypeDialog(type['id'],type['name']);
                           },
                         ),
                         SizedBox(width:5),
@@ -484,7 +666,7 @@ class _MaintenanceTypeMastersReportState extends State<MaintenanceTypeMastersRep
                           Colors.redAccent,
                               () {
 
-                            deleteMaintenanceType(lead['id']); },
+                            deleteMaintenanceType(type['id']); },
                         ),
                         SizedBox(width:5)
                       ],),
@@ -501,6 +683,7 @@ class _MaintenanceTypeMastersReportState extends State<MaintenanceTypeMastersRep
         onPressed:()
         {
           maintenanceTypeController.clear();
+          selectedCategory = categories_list.first;
           showMaintenaceTypeDialog();
         },
         backgroundColor: appbar_color.withOpacity(0.9),

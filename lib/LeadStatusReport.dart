@@ -106,8 +106,6 @@ class _LeadStatusReportState extends State<LeadStatusReport> {
       "uuid": uuidValue,
       "name": status_name,
       "category": selectedCategory,
-      'color': '#f00'
-
 
     };
 

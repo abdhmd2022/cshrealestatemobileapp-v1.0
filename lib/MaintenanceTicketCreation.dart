@@ -19,12 +19,12 @@ import 'package:http_parser/http_parser.dart';
 class MaintanceType {
   final int id;
   final String name;
-  final int serial_id;
+  final String category;
 
   MaintanceType({
     required this.id,
     required this.name,
-    required this.serial_id
+    required this.category
   });
 
   // Factory method to create a FollowUpStatus object from JSON
@@ -32,7 +32,7 @@ class MaintanceType {
     return MaintanceType(
         id: json['id'],
         name: json['name'],
-        serial_id:json['serial_id']
+        category:json['category']
     );
   }
 }
@@ -165,11 +165,11 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
         final data = json.decode(response.body);
 
         setState(() {
-          List<dynamic> followuplist = data['data']['maintenanceTypes'];
+          List<dynamic> maintenanceTypes = data['data']['maintenanceTypes'];
 
-          for (var followup in followuplist) {
+          for (var type in maintenanceTypes) {
 
-            MaintanceType maintenanceType = MaintanceType.fromJson(followup);
+            MaintanceType maintenanceType = MaintanceType.fromJson(type);
 
             // Add the object to the list
             maintenance_types_list.add(maintenanceType);

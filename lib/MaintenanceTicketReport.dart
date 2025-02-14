@@ -114,6 +114,7 @@ class _MaintenanceTicketReportState
           .toList();
     });
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -229,7 +230,6 @@ class _MaintenanceTicketReportState
       ),
     );
   }
-
 
   Widget _buildTicketCard(Map<String, dynamic> ticket, int index) {
     return GestureDetector(

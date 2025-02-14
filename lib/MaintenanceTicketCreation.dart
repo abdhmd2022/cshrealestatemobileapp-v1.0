@@ -37,7 +37,6 @@ class MaintanceType {
   }
 }
 
-
 class MaintenanceTicketCreation extends StatefulWidget
 {
   const MaintenanceTicketCreation({Key? key}) : super(key: key);
@@ -191,7 +190,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
 
     print('user id $user_id');
 
-    final url = '$BASE_URL_config/v1/users/$user_id?company_id=$company_id'; // Replace with your API endpoint
+    final url = '$BASE_URL_config/v1/tenents'; // Replace with your API endpoint
     String token = 'Bearer $Company_Token'; // auth token for request
 
     print('url $url');

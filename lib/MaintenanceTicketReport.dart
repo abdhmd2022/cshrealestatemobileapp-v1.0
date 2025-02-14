@@ -62,15 +62,23 @@ class _MaintenanceTicketReportState
           final List<Map<String, dynamic>> formattedTickets = apiTickets.map((apiTicket) {
             return {
               'ticketNumber': apiTicket['id'].toString() ?? '',
-              'unitNumber': apiTicket['flat_masterid'].toString(),
-              'buildingName': "N/A", // Update this based on the actual data
-              'emirate': "N/A",      // Update this based on the actual data
-              'status': "N/A",       // Update this based on the actual data
+              'unitNumber': apiTicket['tenent_flat']['flat']['name'].toString(),
+              'buildingName': 'N/A', // Update this based on actual data if available
+              'emirate': apiTicket['tenent_flat']['flat']['building']['area']['state']['name'] ?? 'N/A',
+              'status': 'N/A', // Update this based on actual data if available
               'date': apiTicket['created_at']?.split('T')[0] ?? '',
-              'maintenanceType': apiTicket['maintenance_types']['name'] ?? '',
+              'maintenanceTypes': apiTicket['sub_tickets'].map((subTicket) {
+                return {
+                  'subTicketId': subTicket['id'].toString(),
+                  'type': subTicket['type']['name'],
+                  'category': subTicket['type']['category']
+                };
+              }).toList(), // Stores sub-ticket ID, type, and category as a list of maps
               'description': apiTicket['description'] ?? '',
             };
           }).toList();
+
+
 
           setState(() {
             tickets = formattedTickets;
@@ -460,7 +468,12 @@ class _MaintenanceTicketReportState
         _buildInfoRow('Unit:', ticket['unitNumber']),
         _buildInfoRow('Building:', ticket['buildingName']),
         _buildInfoRow('Emirate:', ticket['emirate']),
-        _buildInfoRow('Type:', ticket['maintenanceType']),
+        _buildInfoRow_subtype(
+          'Type:',
+          (ticket['maintenanceTypes'] != null && ticket['maintenanceTypes'].isNotEmpty)
+              ? ticket['maintenanceTypes'].map((type) => type['type'] ?? 'Unknown').join(', ')
+              : 'N/A',
+        ),
         _buildInfoRow('Date:', DateFormat('dd-MMM-yyyy').format(DateTime.parse(ticket['date']))),
       ],
     );
@@ -494,6 +507,36 @@ class _MaintenanceTicketReportState
       ),
     );
   }
+
+  Widget _buildInfoRow_subtype(String label, String? value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      child: Row(
+        children: [
+          Text(
+            label,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.grey[700],
+            ),
+          ),
+          SizedBox(width: 8.0),
+          Expanded(
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Text(
+                value ?? 'N/A', // Ensure a fallback for null values
+                style: TextStyle(
+                  color: Colors.black87,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
 
   Widget _getStatusBadge(String status) {
     Color color;

@@ -166,8 +166,7 @@ class InquiryModel {
   }
 }
 
-class _SalesInquiryReportState
-    extends State<SalesInquiryReport> with TickerProviderStateMixin {
+class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProviderStateMixin {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   List<InquiryModel> salesinquiry = [

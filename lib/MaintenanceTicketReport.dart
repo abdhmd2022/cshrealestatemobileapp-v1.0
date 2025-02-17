@@ -48,7 +48,6 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
       builder: (context) {
         return AlertDialog(
           backgroundColor: Colors.white, // Apply appbar_color to full
-
           title: Text("Feedback"),
           content: Column(
             mainAxisSize: MainAxisSize.min,

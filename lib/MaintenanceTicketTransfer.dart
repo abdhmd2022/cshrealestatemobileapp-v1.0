@@ -419,11 +419,16 @@ class _MaintenanceTicketTransferPageState extends State<MaintenanceTicketTransfe
                                               }
                                               return null;
                                             },
+
                                             maxLength: 500, // Limit input to 500 characters
                                             maxLines: 3, // A
                                             decoration: InputDecoration(
                                               labelText: "Remarks",
                                               hintText: 'Enter Remarks*',
+                                              floatingLabelStyle: TextStyle(
+                                                color: appbar_color, // Change label color when focused
+                                                fontWeight: FontWeight.normal,
+                                              ),
                                               contentPadding: EdgeInsets.all(15),
                                               border: OutlineInputBorder(
                                                 borderRadius: BorderRadius.circular(10), // Set the border radius

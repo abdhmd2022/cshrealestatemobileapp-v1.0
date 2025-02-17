@@ -2868,6 +2868,10 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                         return null;
                                       },
                                       decoration: InputDecoration(
+                                        floatingLabelStyle: TextStyle(
+                                          color: appbar_color, // Change label color when focused
+                                          fontWeight: FontWeight.normal,
+                                        ),
                                         hintText: 'Enter Remarks*',
                                         labelText: 'Remarks',
                                         contentPadding: EdgeInsets.all(15),

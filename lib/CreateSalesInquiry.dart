@@ -1501,12 +1501,13 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                 return null;
                                               },
                                               decoration: InputDecoration(
+                                                floatingLabelStyle: TextStyle(
+                                                  color: appbar_color, // Change label color when focused
+                                                  fontWeight: FontWeight.normal,
+                                                ),
                                                 hintText: 'Enter Name',
                                                 label: Text('Name',
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.normal,
-                                                    color: Colors.black
-                                                ),),
+                                                ),
                                                 contentPadding: EdgeInsets.all(15),
                                                 border: OutlineInputBorder(
                                                   borderRadius: BorderRadius.circular(10), // Set the border radius
@@ -1557,18 +1558,24 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                 children: [
                   TextFormField(
                     controller: customercontactnocontroller,
+
                     keyboardType: TextInputType.phone,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
+                        
                         return 'Contact No. is required';
                       }
                       return null;
                     },
                     decoration: InputDecoration(
+                      floatingLabelStyle: TextStyle(
+                        color: appbar_color, // Change label color when focused
+                        fontWeight: FontWeight.normal,
+                      ),
                       hintText: _hintText,
                       contentPadding: EdgeInsets.all(15),
                       label: Text('Contact No',
-                          style: TextStyle(fontWeight: FontWeight.normal, color: Colors.black)),
+                          style: TextStyle(fontWeight: FontWeight.normal)),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                         borderSide: const BorderSide(color: Colors.black),
@@ -1668,10 +1675,14 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                   controller: whatsappnocontroller,
                   keyboardType: TextInputType.phone,
                   decoration: InputDecoration(
+                    floatingLabelStyle: TextStyle(
+                      color: appbar_color, // Change label color when focused
+                      fontWeight: FontWeight.normal,
+                    ),
                     hintText: _hintTextWhatsapp,
                     contentPadding: EdgeInsets.all(15),
                     label: Text('WhatsApp No',
-                        style: TextStyle(fontWeight: FontWeight.normal, color: Colors.black)),
+                        style: TextStyle(fontWeight: FontWeight.normal)),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                       borderSide: const BorderSide(color: Colors.black),
@@ -1815,10 +1826,14 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                               },
                                               decoration: InputDecoration(
                                                 hintText: 'Enter Email Address',
+                                                floatingLabelStyle: TextStyle(
+                                                  color: appbar_color, // Change label color when focused
+                                                  fontWeight: FontWeight.normal,
+                                                ),
                                                 label: Text('Email Address',
                                                   style: TextStyle(
                                                       fontWeight: FontWeight.normal,
-                                                      color: Colors.black
+
                                                   ),),
                                                 contentPadding: EdgeInsets.all(15),
                                                 border: OutlineInputBorder(
@@ -2141,6 +2156,10 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                       child: TextFormField(
                                         controller: TextEditingController(text: selectedUnitType),
                                         decoration: InputDecoration(
+                                          floatingLabelStyle: TextStyle(
+                                            color: appbar_color, // Change label color when focused
+                                            fontWeight: FontWeight.normal,
+                                          ),
                                           hintText: 'Select Unit Type(s)',
                                           contentPadding: EdgeInsets.all(15),
                                           fillColor: isUnitSelected ? Colors.transparent : Colors.transparent, // Set to black if selected
@@ -2613,6 +2632,8 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                             ),
                                           ],
                                         ),
+                                        
+                                        SizedBox(height:5),
                                         Row(
                                           children: [
                                             Expanded(
@@ -2627,6 +2648,11 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                 controller: startController,
                                                 keyboardType: TextInputType.number,
                                                 decoration: InputDecoration(
+                                                  label: Text('From'),
+                                                  floatingLabelStyle: TextStyle(
+                                                    color: Colors.black, // Change label color when focused
+                                                    fontWeight: FontWeight.normal,
+                                                  ),
                                                   border: OutlineInputBorder(
                                                     borderRadius: BorderRadius.circular(8),
                                                     borderSide: BorderSide(color: Colors.black54),
@@ -2660,6 +2686,11 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                 controller: endController,
                                                 keyboardType: TextInputType.number,
                                                 decoration: InputDecoration(
+                                                  label: Text('To'),
+                                                  floatingLabelStyle: TextStyle(
+                                                    color: Colors.black, // Change label color when focused
+                                                    fontWeight: FontWeight.normal,
+                                                  ),
                                                   border: OutlineInputBorder(
                                                     borderRadius: BorderRadius.circular(8),
                                                     borderSide: BorderSide(color: Colors.black54),
@@ -2880,6 +2911,10 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                         decoration: InputDecoration(
                                           hintText: 'Enter Description',
                                           labelText: 'Description',
+                                          floatingLabelStyle: TextStyle(
+                                            color: appbar_color, // Change label color when focused
+                                            fontWeight: FontWeight.normal,
+                                          ),
                                           contentPadding: EdgeInsets.all(15),
                                           border: OutlineInputBorder(
                                             borderRadius: BorderRadius.circular(10), // Set the border radius

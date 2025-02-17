@@ -460,7 +460,10 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
                 decoration: InputDecoration(
                   hintText: 'Enter Remarks*',
                   labelText: "Remarks",
-
+                  floatingLabelStyle: TextStyle(
+                    color: appbar_color, // Change label color when focused
+                    fontWeight: FontWeight.normal,
+                  ),
                   contentPadding: EdgeInsets.all(15),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10), // Set the border radius

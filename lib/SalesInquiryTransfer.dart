@@ -438,6 +438,10 @@ class _SalesInquiryTransferPageState extends State<SalesInquiryTransfer> with Ti
                                           maxLength: 500, // Limit input to 500 characters
                                           maxLines: 3, // A
                                           decoration: InputDecoration(
+                                            floatingLabelStyle: TextStyle(
+                                              color: appbar_color, // Change label color when focused
+                                              fontWeight: FontWeight.normal,
+                                            ),
                                             hintText: 'Enter Remarks',
                                             labelText: 'Remarks',
                                             contentPadding: EdgeInsets.all(15),

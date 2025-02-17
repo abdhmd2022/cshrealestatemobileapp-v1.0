@@ -8,6 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:multi_select_flutter/dialog/multi_select_dialog_field.dart';
+import 'package:multi_select_flutter/util/multi_select_item.dart';
 import 'package:uuid/uuid.dart';
 import 'Sidebar.dart';
 import 'package:flutter/foundation.dart'; // For kIsWeb
@@ -49,6 +51,8 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
   MaintanceType? selectedMaintenanceType;
 
   List<MaintanceType> maintenance_types_list = [];
+  List<int> selectedMaintenanceTypeIds = []; // Store selected maintenance type IDs
+
 
   TextEditingController _descriptionController = TextEditingController();
   // TextEditingController _totalamountController = TextEditingController();
@@ -73,6 +77,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
   List<dynamic> _attachment = []; // List to store selected images
 
   final ImagePicker _picker = ImagePicker();
+
 
   void _showFlatPicker(BuildContext context) {
     if (flats == null || flats.isEmpty) {
@@ -119,20 +124,23 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
               child: CupertinoPicker(
                 scrollController: FixedExtentScrollController(
                   initialItem: flats.indexWhere((flat) =>
-                  flat['flat_masterid'] == (selectedFlat?['flat_masterid'] ?? 0)),
+                  flat['flat']['id'] == (selectedFlat?['flat']['id'] ?? 0)),
                 ),
                 itemExtent: 40,
                 onSelectedItemChanged: (index) {
                   setState(() {
                     selectedFlat = flats[index];
-                    print('Selected flat ID: ${flats[index]['flat_masterid']}');
+                    print('Selected flat ID: ${flats[index]['flat']['id']}');
                   });
                 },
                 children: flats.map((flat) {
+                  // Extract building and state names
+                  String buildingName = flat['flat']['building']['area']['name'] ?? "Unknown";
+                  String stateName = flat['flat']['building']['area']['state']['name'] ?? "N/A";
+
                   return Center(
                     child: Text(
-                      '${flat['flats']['flat_name'] ?? "Unknown"} | '
-                          '${flat['flats']['building_masterid']?.toString() ?? "N/A"}',
+                      '${flat['flat']['name'] ?? "Unknown"} | $buildingName, $stateName',
                       style: TextStyle(fontSize: 16),
                     ),
                   );
@@ -190,7 +198,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
 
     print('user id $user_id');
 
-    final url = '$BASE_URL_config/v1/tenents'; // Replace with your API endpoint
+    final url = '$BASE_URL_config/v1/tenents/$user_id'; // Replace with your API endpoint
     String token = 'Bearer $Company_Token'; // auth token for request
 
     print('url $url');
@@ -207,7 +215,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
         final Map<String, dynamic> data = json.decode(response.body);
         print('data: $data');
         setState(() {
-          Map<String, dynamic> user = data['data']['user'];
+          Map<String, dynamic> user = data['data']['tenent'];
 
            flats = user['flats'];
 
@@ -496,9 +504,11 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                '${selectedFlat != null && selectedFlat!['flats'] != null ? selectedFlat!['flats']['flat_name'] ?? "Select Flat" : "Select Flat"}'
-                                    ' | '
-                                    '${selectedFlat != null && selectedFlat!['flats'] != null ? selectedFlat!['flats']['building_masterid']?.toString() ?? "N/A" : "N/A"}',
+                                selectedFlat != null
+                                    ? '${selectedFlat!['flat']['name'] ?? "Select Flat"} | '
+                                    '${selectedFlat!['flat']['building']['area']['name'] ?? "Unknown"}, '
+                                    '${selectedFlat!['flat']['building']['area']['state']['name'] ?? "N/A"}'
+                                    : "Select Flat",
                                 style: TextStyle(
                                   color: appbar_color.shade700,
                                   fontSize: 16,
@@ -506,7 +516,12 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                                 ),
                               ),
                               Icon(Icons.arrow_drop_down, color: appbar_color),
-                            ])))),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+
 
                     Container(
                       margin: EdgeInsets.only(left: 20,right: 20,top: 0),
@@ -540,34 +555,50 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                         ),
 
                         Container(
-                          padding: EdgeInsets.symmetric(horizontal: 12),
-                          margin: EdgeInsets.only(left: 0, right: 0, bottom: 20),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: Colors.black, width: 0.75),
-                          ),
-                          child: DropdownButtonFormField<MaintanceType>(
-                            value: selectedMaintenanceType, // Single selected value
-                            items: maintenance_types_list.map((type) {
-                              return DropdownMenuItem<MaintanceType>(
-                                value: type,
-                                child: Text(type.name),
-                              );
-                            }).toList(),
-                            decoration: InputDecoration(
-                              border: InputBorder.none, // Remove the default border
-                              contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 14),
+                            margin: EdgeInsets.only(left: 0, right: 0, bottom: 10),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(color: Colors.black54, width: 0.75),
                             ),
-                            icon: Icon(Icons.arrow_drop_down, color: Colors.black54),
-                            hint: Text(
-                              "Select Maintenance Type",
-                              style: TextStyle(color: Colors.black54, fontSize: 16),
-                            ),
-                            onChanged: (value) {
-                              setState(() {
-                                selectedMaintenanceType = value; // Store a single value
-                              });}))
+                            child: MultiSelectDialogField<MaintanceType>(
+                              items: maintenance_types_list
+                                  .map((type) => MultiSelectItem<MaintanceType>(type, type.name))
+                                  .toList(),
+                              title: Text("Maintenance Types"),
+                              selectedColor: appbar_color,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.all(Radius.circular(8)),
+
+                              ),
+                              buttonIcon: Icon(
+                                Icons.arrow_drop_down,
+                                color: Colors.black54,
+                              ),
+                              buttonText: Text(
+                                selectedMaintenanceTypeIds.isEmpty
+                                    ? "Select Maintenance Type"
+                                    : maintenance_types_list
+                                    .where((type) => selectedMaintenanceTypeIds.contains(type.id))
+                                    .map((type) => type.name)
+                                    .join(", "), // Show selected items as comma-separated values
+                                style: TextStyle(
+                                  color: Colors.black54,
+                                  fontSize: 16,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              onConfirm: (List<MaintanceType> values) {
+                                setState(() {
+                                  selectedMaintenanceTypeIds = values.map((type) => type.id).toList();
+                                });
+                              },
+
+                            ))
+
+
 
                         /* Container(
                           padding: EdgeInsets.symmetric(horizontal: 12),
@@ -638,6 +669,10 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                                   decoration: InputDecoration(
                                     hintText: 'Enter Description',
                                     labelText: 'Description',
+                                    floatingLabelStyle: TextStyle(
+                                      color: appbar_color, // Change label color when focused
+                                      fontWeight: FontWeight.normal,
+                                    ),
                                     contentPadding: EdgeInsets.all(15),
                                     border: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(11), // Set the border radius
@@ -890,16 +925,16 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
           Future<void> sendFormData() async {
 
           try {
-            final String url = "$BASE_URL_config/v1/maintenance";
+            final String url = "$BASE_URL_config/v1/tenent/maintenance";
 
             var uuid = Uuid();
             String uuidValue = uuid.v4();
 
             final Map<String, dynamic> requestBody = {
               "uuid": uuidValue,
-              "maintenance_type_id": selectedMaintenanceType!.id,
-              "flat_masterid": selectedFlat?['flat_masterid'],
+              "flat_id": selectedFlat?['flat']['id'], // Updated key from flat_masterid to flat_id
               "description": _descriptionController.text,
+              "types": maintenance_types_list.map((type) => type.id).toList(), // Converts the list of objects to a list of IDs
             };
 
             final response = await http.post(

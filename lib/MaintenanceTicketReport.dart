@@ -10,6 +10,7 @@ import 'package:cshrealestatemobile/TenantDashboard.dart';
 import 'package:cshrealestatemobile/constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'Sidebar.dart';
@@ -29,6 +30,8 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
   List<bool> _expandedTickets = [];
   String searchQuery = "";
   bool isLoading = false;
+  Map<int, double> ratings = {};
+  Map<int, String> feedbacks = {};
 
   TextEditingController commentController = TextEditingController();
 
@@ -37,6 +40,78 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
     super.initState();
     // Initialize all tickets to be collapsed by default
    fetchTickets();
+  }
+
+  void _showFeedbackDialog(int ticketId) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: Colors.white, // Apply appbar_color to full
+
+          title: Text("Feedback"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              RatingBar.builder(
+                initialRating: ratings[ticketId] ?? 3,
+                minRating: 1,
+                maxRating: 5,
+                direction: Axis.horizontal,
+                allowHalfRating: false,
+                itemCount: 5,
+                itemPadding: const EdgeInsets.symmetric(horizontal: 2.0),
+                itemBuilder: (context, _) => const Icon(Icons.star, color: Colors.amber),
+                onRatingUpdate: (rating) {
+                  setState(() {
+                    ratings[ticketId] = rating;
+                  });
+                },
+              ),
+              const SizedBox(height: 10),
+              TextField(
+                decoration: InputDecoration(
+                  hintText: "Write your feedback...",
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: appbar_color),
+                      borderRadius: BorderRadius.circular(8)
+
+                  ),
+                ),
+
+                onChanged: (text) {
+                  setState(() {
+                    feedbacks[ticketId] = text;
+                  });
+                },
+                maxLines: 2,
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text("Cancel",
+              style: TextStyle(
+                color: Colors.black
+              ),),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: appbar_color,
+                foregroundColor: Colors.white,
+              ),
+              onPressed: () {
+                print("Submitted Feedback for $ticketId: Rating=${ratings[ticketId]}, Feedback=${feedbacks[ticketId]}");
+                Navigator.pop(context);
+              },
+              child: Text("Submit"),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Future<void> fetchTickets() async {
@@ -274,7 +349,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                               _buildDecentButton(
                                 'Follow Up',
                                 Icons.schedule,
-                                Colors.blue,
+                                Colors.orange,
                                     () {
 
                                   print('ticket : $ticket');
@@ -289,7 +364,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                               _buildDecentButton(
                                 'Transfer',
                                 Icons.swap_horiz,
-                                Colors.orange,
+                                Colors.purple,
                                     () {
                                       Navigator.pushReplacement(
                                         context,
@@ -302,8 +377,8 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
 
                               _buildDecentButton(
                                 'Comment',
-                                Icons.add,
-                                Colors.redAccent,
+                                Icons.comment,
+                                Colors.green,
                                     () {
                                       showDialog(
                                         context: context,
@@ -379,6 +454,18 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                                       );
                                 },
                               ),
+                              SizedBox(width: 5),
+
+                              _buildDecentButton(
+                                'Feedback',
+                                Icons.feedback,
+                                Colors.blue,
+                                    () {
+                                      _showFeedbackDialog(int.parse(ticket['ticketNumber']));
+                                    }
+                              ),
+
+
                             ],),
 
                           /*_buildDecentButton(
@@ -548,6 +635,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
       default:
         color = Colors.grey;
     }
+
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),

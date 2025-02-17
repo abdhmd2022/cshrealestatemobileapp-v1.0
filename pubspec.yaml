@@ -55,6 +55,7 @@ dependencies:
   flutter_rating_bar:
   provider:
   flutter_switch:
+  printing:
 dev_dependencies:
 
   flutter_test:

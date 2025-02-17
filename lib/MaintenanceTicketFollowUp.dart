@@ -7,9 +7,15 @@ import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 import 'package:flutter/foundation.dart'; // For kIsWeb check
+import 'package:pdf/pdf.dart'; // For kIsWeb check
+
 import 'package:http/http.dart' as http;
 import 'MaintenanceTicketReport.dart';
 import 'constants.dart';
+import 'package:printing/printing.dart'; // For PDF preview
+import 'package:pdf/widgets.dart' as pw;
+
+
 
 class MaintenanceStatus {
   final int id;
@@ -104,6 +110,8 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
     fetchMaintenanceStatus();
   }
 
+  File? _signatureFile; // Store the signature separately
+
   Future<void> _saveSignature(String id) async {
     try {
       if (_signatureController.isEmpty) {
@@ -139,27 +147,23 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
         await userDirectory.create(recursive: true);
       }
 
-      final String filePath = '$folderPath/signature_${DateTime.now().millisecondsSinceEpoch}.png';
+      final String filePath = '$folderPath/signature.png';
       final signatureFile = File(filePath);
 
       // **Remove old signature before saving new one**
-      final List<FileSystemEntity> existingFiles = userDirectory.listSync();
-      for (var file in existingFiles) {
-        if (file is File) {
-          await file.delete();
-        }
+      if (await signatureFile.exists()) {
+        await signatureFile.delete();
       }
 
       // Save new signature to internal memory
       await signatureFile.writeAsBytes(pngBytes);
 
-      // **Force UI to recognize the new image**
+      // **Update UI with new signature**
       setState(() {
-        _attachment.clear(); // Ensure no previous images exist
-        _attachment.add(signatureFile); // Add only the new signature
+        _signatureFile = signatureFile; // Store separately
       });
 
-      // **Fully reset SignatureController**
+      // **Reset SignatureController**
       _signatureController.clear();
       _signatureController.dispose();
       _signatureController = SignatureController(
@@ -169,14 +173,75 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
       );
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('New signature saved successfully!')),
+        SnackBar(content: Text('Signature saved successfully!')),
       );
 
-      print("New signature saved at: $filePath");
+      print("Signature saved at: $filePath");
+
+      generatePdf(context);
 
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error saving signature: $e')),
+      );
+    }
+  }
+
+  Future<void> generatePdf(BuildContext context) async {
+    try {
+      final pdf = pw.Document();
+
+      // Load saved signature image
+      Uint8List? signatureBytes;
+      if (_signatureFile != null && await _signatureFile!.exists()) {
+        signatureBytes = await _signatureFile!.readAsBytes();
+      }
+
+      pdf.addPage(
+        pw.Page(
+          build: (pw.Context context) {
+            return pw.Column(
+              crossAxisAlignment: pw.CrossAxisAlignment.start,
+              children: [
+                pw.Text("Maintenance Report",
+                    style: pw.TextStyle(fontSize: 22, fontWeight: pw.FontWeight.bold)),
+
+                pw.SizedBox(height: 20),
+
+                pw.Text("This document contains the details of the maintenance request.",
+                    style: pw.TextStyle(fontSize: 14)),
+
+                pw.SizedBox(height: 40),
+
+                // Display the signature if available
+                if (signatureBytes != null)
+                  pw.Column(
+                    crossAxisAlignment: pw.CrossAxisAlignment.start,
+                    children: [
+                      pw.Text("Authorized Signature:", style: pw.TextStyle(fontSize: 16)),
+                      pw.SizedBox(height: 10),
+                      pw.Image(pw.MemoryImage(signatureBytes), width: 200, height: 100),
+                    ],
+                  )
+                else
+                  pw.Text("Signature not available", style: pw.TextStyle(fontSize: 14, color: PdfColors.red)),
+              ],
+            );
+          },
+        ),
+      );
+
+      // Save PDF file
+      final output = await getApplicationDocumentsDirectory();
+      final pdfFile = File("${output.path}/maintenance_report.pdf");
+      await pdfFile.writeAsBytes(await pdf.save());
+
+      // Open PDF Preview
+      Printing.layoutPdf(onLayout: (format) async => pdf.save());
+
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error generating PDF: $e')),
       );
     }
   }

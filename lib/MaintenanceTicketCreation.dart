@@ -578,17 +578,13 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                                 color: Colors.black54,
                               ),
                               buttonText: Text(
-                                selectedMaintenanceTypeIds.isEmpty
-                                    ? "Select Maintenance Type"
-                                    : maintenance_types_list
-                                    .where((type) => selectedMaintenanceTypeIds.contains(type.id))
-                                    .map((type) => type.name)
-                                    .join(", "), // Show selected items as comma-separated values
+                                "Select Maintenance Type",
                                 style: TextStyle(
                                   color: Colors.black54,
                                   fontSize: 16,
                                 ),
                                 overflow: TextOverflow.ellipsis,
+
                               ),
                               onConfirm: (List<MaintanceType> values) {
                                 setState(() {

@@ -15,15 +15,13 @@ import 'package:intl/intl.dart';
 import 'Sidebar.dart';
 import 'package:http/http.dart' as http;
 
-
 class MaintenanceTicketReport extends StatefulWidget {
   @override
   _MaintenanceTicketReportState createState() =>
       _MaintenanceTicketReportState();
 }
 
-class _MaintenanceTicketReportState
-    extends State<MaintenanceTicketReport> with TickerProviderStateMixin {
+class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with TickerProviderStateMixin {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   List<Map<String, dynamic>> tickets = [];
@@ -31,7 +29,6 @@ class _MaintenanceTicketReportState
   List<bool> _expandedTickets = [];
   String searchQuery = "";
   bool isLoading = false;
-
 
   TextEditingController commentController = TextEditingController();
 
@@ -100,6 +97,7 @@ class _MaintenanceTicketReportState
       isLoading = false;
     });
   }
+
   void _updateSearchQuery(String query) {
     setState(() {
       searchQuery = query;

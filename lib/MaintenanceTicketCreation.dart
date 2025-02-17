@@ -209,7 +209,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
         setState(() {
           Map<String, dynamic> user = data['data']['user'];
 
-           flats = user['allowed_flats'];
+           flats = user['flats'];
 
           // Select first flat
            selectedFlat = flats.isNotEmpty ? flats[0] : {};

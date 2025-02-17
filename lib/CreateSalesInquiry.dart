@@ -66,6 +66,8 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
   // text editing controllers intialization
   final customernamecontroller = TextEditingController();
   final customercontactnocontroller = TextEditingController();
+  final whatsappnocontroller = TextEditingController();
+
   final unittypecontroller = TextEditingController();
   final emiratescontroller = TextEditingController();
   final areacontroller = TextEditingController();
@@ -87,6 +89,9 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
   bool isUnitSelected = false;
 
   bool isAllUnitsSelected = false;
+
+  bool _useContactAsWhatsapp = true;
+
 
   double? range_min, range_max;
 
@@ -167,10 +172,14 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
   List<Map<String, dynamic>> areasToDisplay = []; // Global variable
 
   String _selectedCountryCode = '+971'; // Default to UAE country code
-  String _selectedCountryISO = 'AE'; // Default to UAE ISO code
+  String _selectedCountryCodeWhatsapp = '+971'; // Default to UAE country code
+
   String _selectedCountryFlag = '🇦🇪'; // Default UAE flag emoji
+  String _selectedCountryFlagWhatsapp = '🇦🇪'; // Default UAE flag emoji
 
   String _hintText = 'Enter Contact No'; // Default hint text
+
+  String _hintTextWhatsapp = 'Enter Whatsapp No'; // Default hint text
 
   void updateAreasDisplay() {
     areasToDisplay.clear();
@@ -466,8 +475,10 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
           isAllEmiratesSelected = false;
 
           _selectedCountryCode = '+971'; // Default to UAE country code
-          _selectedCountryISO = 'AE'; // Default to UAE ISO code
           _selectedCountryFlag = '🇦🇪'; // Default UAE flag emoji
+
+          _selectedCountryCodeWhatsapp = '+971'; // Default to UAE country code
+          _selectedCountryFlagWhatsapp = '🇦🇪'; // Default UAE flag emoji
 
 
           customernamecontroller.clear();
@@ -1539,91 +1550,187 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                             )),
 
 
-                                        Padding(
-                                          padding: EdgeInsets.only(top:20,left: 20,right: 20,bottom: 0),
-                                          child: Row(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              // Country Picker
-                                              GestureDetector(
-                                                onTap: () {
-                                                  showCountryPicker(
-                                                    context: context,
-                                                    showPhoneCode: true,
-                                                    onSelect: (Country country) {
-                                                      setState(() {
-                                                        _selectedCountryCode = '+${country.phoneCode}';
-                                                        _selectedCountryISO = country.countryCode;
-                                                        _selectedCountryFlag = country.flagEmoji; // Store the flag emoji
-                                                      });
-                                                    },
-                                                  );
-                                                },
-                                                child: Container(
-                                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
-                                                  decoration: BoxDecoration(
-                                                    border: Border.all(color: Colors.black, width: 1),
-                                                    borderRadius: BorderRadius.circular(10),
-                                                  ),
-                                                  child: Row(
-                                                    children: [
-                                                      Text(
-                                                        _selectedCountryFlag, // Display the flag emoji
-                                                        style: const TextStyle(fontSize: 18), // Adjust font size for the flag
-                                                      ),
-                                                      const SizedBox(width: 8), // Add spacing between flag and text
-                                                      Text(
-                                                        '$_selectedCountryCode', // Display the country code
-                                                        style: const TextStyle(fontSize: 16),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ),
+              Padding(
+              padding: EdgeInsets.only(top: 20, left: 20, right: 20, bottom: 0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  TextFormField(
+                    controller: customercontactnocontroller,
+                    keyboardType: TextInputType.phone,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Contact No. is required';
+                      }
+                      return null;
+                    },
+                    decoration: InputDecoration(
+                      hintText: _hintText,
+                      contentPadding: EdgeInsets.all(15),
+                      label: Text('Contact No',
+                          style: TextStyle(fontWeight: FontWeight.normal, color: Colors.black)),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: const BorderSide(color: Colors.black),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: const BorderSide(color: appbar_color),
+                      ),
+                      prefixIcon: GestureDetector(
+                        onTap: () {
+                          showCountryPicker(
+                            context: context,
+                            showPhoneCode: true,
+                            onSelect: (Country country) {
+                              setState(() {
+                                _selectedCountryCode = '+${country.phoneCode}';
+                                _selectedCountryFlag = country.flagEmoji;
+                              });
+                            },
+                          );
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(_selectedCountryFlag, style: const TextStyle(fontSize: 18)),
+                              const SizedBox(width: 5),
+                              Text('$_selectedCountryCode', style: const TextStyle(fontSize: 16)),
+                            ],
+                          ),
+                        ),
+                      ),
+                      suffixIcon: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            _useContactAsWhatsapp = !_useContactAsWhatsapp;
+                            if (_useContactAsWhatsapp) {
+                              whatsappnocontroller.text = customercontactnocontroller.text;
+                              _selectedCountryCodeWhatsapp = _selectedCountryCode;
+                              _selectedCountryFlagWhatsapp = _selectedCountryFlag;
+                            } else {
+                              whatsappnocontroller.clear();
+                            }
+                          });
+                        },
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
 
-                                              const SizedBox(width: 5),
-                                              // Phone Number Input Field
-                                              Expanded(
-                                                  child: TextFormField(
-                                                    controller: customercontactnocontroller,
-                                                    keyboardType: TextInputType.phone,
-                                                    validator: (value) {
-                                                      if (value == null || value.isEmpty) {
-                                                        return 'Contact No. is required';
-                                                      }
-                                                      return null; // Show validation message if any
-                                                    },
-
-                                                    decoration: InputDecoration(
-                                                      hintText: _hintText, // Dynamic hint
-                                                      contentPadding: EdgeInsets.all(15),
-// text
-                                                      label: Text('Contact No',
-                                                        style: TextStyle(
-                                                            fontWeight: FontWeight.normal,
-                                                            color: Colors.black
-                                                        ),),
-                                                      border: OutlineInputBorder(
-                                                        borderRadius: BorderRadius.circular(10),
-                                                        borderSide: const BorderSide(
-                                                          color: Colors.black,
-                                                        ),
-                                                      ),
-                                                      focusedBorder: OutlineInputBorder(
-                                                        borderRadius: BorderRadius.circular(10),
-                                                        borderSide: const BorderSide(
-                                                          color: appbar_color,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ),
+                            const SizedBox(width: 8),
+                            Container(
+                              width: 20,
+                              height: 20,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(5),
+                                border: Border.all(color: _useContactAsWhatsapp ? appbar_color : Colors.black, width: 1),
+                                color: _useContactAsWhatsapp ? appbar_color : Colors.transparent,
+                              ),
+                              child: _useContactAsWhatsapp
+                                  ? Icon(Icons.check, size: 16, color: Colors.white)
+                                  : null,
+                            ),
+                            SizedBox(width: 8),
 
 
-                                              )
-                                            ],
-                                          ),
-                                        ),
-                                        /*Padding(
+                            Icon(FontAwesomeIcons.whatsapp,
+                                color: Colors.green
+                            ),
+
+                            SizedBox(width: 8),
+
+
+
+                          ],
+                        ),
+                      ),
+                    ),
+                    onChanged: (value) {
+                      if (_useContactAsWhatsapp) {
+                        setState(() {
+                          whatsappnocontroller.text = value;
+                          _selectedCountryCodeWhatsapp = _selectedCountryCode;
+                          _selectedCountryFlagWhatsapp = _selectedCountryFlag;
+                        });
+                      }
+                    },
+                  ),
+                ],
+              ),
+            ),
+
+            if (!_useContactAsWhatsapp)
+              Padding(
+                padding: EdgeInsets.only(top: 20, left: 20, right: 20, bottom: 0),
+                child: TextFormField(
+                  controller: whatsappnocontroller,
+                  keyboardType: TextInputType.phone,
+                  decoration: InputDecoration(
+                    hintText: _hintTextWhatsapp,
+                    contentPadding: EdgeInsets.all(15),
+                    label: Text('WhatsApp No',
+                        style: TextStyle(fontWeight: FontWeight.normal, color: Colors.black)),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: const BorderSide(color: Colors.black),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: const BorderSide(color: appbar_color),
+                    ),
+
+                    suffixIcon: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+
+                        const SizedBox(width: 8),
+                        Icon(FontAwesomeIcons.whatsapp,
+                            color: Colors.green
+                        ),
+                        SizedBox(width: 8),
+
+
+
+
+
+                      ],
+                    ),
+
+                    prefixIcon: GestureDetector(
+                      onTap: () {
+                        showCountryPicker(
+                          context: context,
+                          showPhoneCode: true,
+                          onSelect: (Country country) {
+                            setState(() {
+                              _selectedCountryCodeWhatsapp = '+${country.phoneCode}';
+                              _selectedCountryFlagWhatsapp = country.flagEmoji;
+                            });
+                          },
+                        );
+                      },
+
+
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(_selectedCountryFlagWhatsapp, style: const TextStyle(fontSize: 18)),
+                            const SizedBox(width: 5),
+                            Text('$_selectedCountryCodeWhatsapp', style: const TextStyle(fontSize: 16)),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+
+
+            /*Padding(
 
                                             padding: EdgeInsets.only(top:20,left: 20,right: 20,bottom: 0),
 
@@ -2882,7 +2989,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                   isAllEmiratesSelected = false;
 
                                                    _selectedCountryCode = '+971'; // Default to UAE country code
-                                                   _selectedCountryISO = 'AE'; // Default to UAE ISO code
                                                    _selectedCountryFlag = '🇦🇪'; // Default UAE flag emoji
 
 

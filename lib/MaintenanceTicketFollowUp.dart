@@ -6,10 +6,8 @@ import 'package:signature/signature.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
-
 import 'package:flutter/foundation.dart'; // For kIsWeb check
 import 'package:http/http.dart' as http;
-
 import 'MaintenanceTicketReport.dart';
 import 'constants.dart';
 
@@ -17,13 +15,13 @@ class MaintenanceStatus {
   final int id;
   final String name;
   final String category;
-  final int serialId;
+  final int company_id;
 
   MaintenanceStatus({
     required this.id,
     required this.name,
     required this.category,
-    required this.serialId,
+    required this.company_id,
   });
 
   factory MaintenanceStatus.fromJson(Map<String, dynamic> json) {
@@ -31,7 +29,7 @@ class MaintenanceStatus {
       id: json['id'],
       name: json['name'],
       category: json['category'],
-      serialId: json['serial_id'],
+      company_id: json['company_id'],
     );
   }
 }
@@ -51,12 +49,7 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
     {"role": "Technician", "description": "Work in progress"},
     //{"role": "Technician", "description": "Work Completed"},
     //{"role": "Closed", "description": "Ticket closed"},
-
-
-
   ];
-
-
 
   MaintenanceStatus? selectedStatus;
 
@@ -66,14 +59,12 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
     exportBackgroundColor: Colors.white,
   );
 
-
-   List<MaintenanceStatus> maintenanceStatusList = [];
+  List<MaintenanceStatus> maintenanceStatusList = [];
 
   List<dynamic> _attachment = [];
   final ImagePicker _picker = ImagePicker();
   TextEditingController _remarksController = TextEditingController();
   TextEditingController _amountController = TextEditingController();
-
 
   Future<void> _pickImages({bool fromCamera = false}) async {
     List<XFile>? pickedFiles;

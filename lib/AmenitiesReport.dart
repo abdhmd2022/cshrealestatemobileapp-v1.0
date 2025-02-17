@@ -181,7 +181,7 @@ class _AmentiesReportState extends State<AmentiesReport> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text("Special Feature", style: TextStyle(color: appbar_color[900])),
+                    Text("Preference", style: TextStyle(color: appbar_color[900])),
                     Switch(
                       value: isSpecial,
                       onChanged: (value) {
@@ -285,7 +285,7 @@ class _AmentiesReportState extends State<AmentiesReport> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text("Special Feature", style: TextStyle(color: appbar_color[900])),
+                    Text("Preference", style: TextStyle(color: appbar_color[900])),
                     Switch(
                       value: isSpecial,
                       onChanged: (value) {
@@ -515,7 +515,7 @@ class _AmentiesReportState extends State<AmentiesReport> {
 
                     Row(
                       children: [
-                        Text('Special Feature: ',
+                        Text('Preference: ',
                         style: TextStyle(
                           fontWeight: FontWeight.bold
                         ),),

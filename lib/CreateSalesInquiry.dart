@@ -146,10 +146,10 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
   List<Map<String, dynamic>> selectedEmiratesList = []; // Store objects with 'id' and 'label'
   List<Map<String, dynamic>> selectedAreas = []; // Store objects with 'id' and 'label'
 
-  final List<Map<String, dynamic>> specialfeatures = [];
+  final List<Map<String, dynamic>> preferences = [];
   final List<Map<String, dynamic>> amenities = [];
 
-   Set<int> selectedSpecialFeatures = {};
+   Set<int> selectedPreferences = {};
    Set<int> selectedAmenities = {};
 
   final List<String> interestTypes = ["Rent", "Buy"]; // List of options
@@ -372,7 +372,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
 
     // converting amenities set to list
-    final List<int> amenitiesList = selectedSpecialFeatures.union(selectedAmenities).toList();
+    final List<int> amenitiesList = selectedPreferences.union(selectedAmenities).toList();
 
     List<int> emiratesIds = selectedEmiratesList.map((emirate) => emirate['id'] as int).toList();
 
@@ -459,7 +459,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
           updateAreasSelection();
 
           selectedAmenities.clear();
-          selectedSpecialFeatures.clear();
+          selectedPreferences.clear();
 
           range_min = prefs!.getDouble('range_min') ?? 10000;
           range_max = prefs!.getDouble('range_max') ?? 100000;
@@ -600,7 +600,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
           for (var item in amenitiesData) {
             if (item['is_special'] == "true") {
-              specialfeatures.add(item);
+              preferences.add(item);
             } else {
               amenities.add(item);
             }
@@ -2518,7 +2518,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                       children: [
                                         Row(
                                           children: [
-                                            Text("Special Features:",
+                                            Text("Preferences:",
                                                 style: TextStyle(
                                                     fontWeight: FontWeight.bold,
                                                     fontSize: 16
@@ -2545,12 +2545,12 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                         border: Border.all(color: Colors.black54, width: 0.75),
                                       ),
                                       child:  MultiSelectDialogField(
-                                        items: specialfeatures
+                                        items: preferences
                                             .map((amenity) =>
                                             MultiSelectItem<int>(amenity['id'], amenity['name']))
                                             .toList(),
-                                        initialValue: selectedSpecialFeatures.toList(),
-                                        title: Text("Special Features"),
+                                        initialValue: selectedPreferences.toList(),
+                                        title: Text("Preference"),
                                         searchable: true,
                                         selectedColor: appbar_color,
                                         checkColor: Colors.white,
@@ -2564,25 +2564,25 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                         ),
                                         buttonIcon: Icon(Icons.arrow_drop_down, color: Colors.black54),
                                         buttonText: Text(
-                                          "Select Special Features",
+                                          "Select Preferences",
                                           style: TextStyle(color: Colors.black54, fontSize: 16),
                                         ),
                                         onConfirm: (values) {
                                           setState(() {
-                                            selectedSpecialFeatures = Set<int>.from(values);
+                                            selectedPreferences = Set<int>.from(values);
                                           });
                                         },
                                         chipDisplay: MultiSelectChipDisplay(
 
-                                          items: selectedSpecialFeatures
+                                          items: selectedPreferences
                                               .map((id) => MultiSelectItem<int>(
                                               id,
-                                              specialfeatures
+                                              preferences
                                                   .firstWhere((feature) => feature['id'] == id)['name']))
                                               .toList(),
                                           onTap: (value) {
                                             setState(() {
-                                              selectedSpecialFeatures.remove(value);
+                                              selectedPreferences.remove(value);
                                             });
                                           },
                                         ),
@@ -2973,7 +2973,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                   updateAreasSelection();
 
                                                   selectedAmenities.clear();
-                                                  selectedSpecialFeatures.clear();
+                                                  selectedPreferences.clear();
 
                                                   range_min = prefs!.getDouble('range_min') ?? 10000;
                                                   range_max = prefs!.getDouble('range_max') ?? 100000;

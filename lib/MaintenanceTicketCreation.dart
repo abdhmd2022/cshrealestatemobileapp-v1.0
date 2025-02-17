@@ -570,8 +570,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                               selectedColor: appbar_color,
                               decoration: BoxDecoration(
                                 color: Colors.white,
-                                borderRadius: BorderRadius.all(Radius.circular(8)),
-
+                                borderRadius: BorderRadius.all(Radius.circular(8))
                               ),
                               buttonIcon: Icon(
                                 Icons.arrow_drop_down,
@@ -584,18 +583,12 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                                   fontSize: 16,
                                 ),
                                 overflow: TextOverflow.ellipsis,
-
                               ),
                               onConfirm: (List<MaintanceType> values) {
                                 setState(() {
                                   selectedMaintenanceTypeIds = values.map((type) => type.id).toList();
                                 });
-                              },
-
-                            ))
-
-
-
+                              }))
                         /* Container(
                           padding: EdgeInsets.symmetric(horizontal: 12),
                           margin: EdgeInsets.only(left: 00,right: 0,bottom: 20),
@@ -624,7 +617,8 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                             },
                             icon: Icon(Icons.arrow_drop_down, color: Colors.grey),
                           ),
-                        ),*/])),
+                        ),*/
+                      ])),
 
                     Column(
                         mainAxisAlignment: MainAxisAlignment.start,

@@ -2143,11 +2143,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                           style: TextStyle(
                                             fontSize: 20,
                                             color: Colors.red, // Red color for the asterisk
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ), // unit type
+                                          ))])), // unit type
 
                                   Padding(
                                     padding: EdgeInsets.only(top: 0, left: 20, right: 20, bottom: 0),
@@ -2725,13 +2721,9 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                               startController.text = values.start.toStringAsFixed(0);
                                               endController.text = values.end.toStringAsFixed(0);
                                             });
-                                          },
-                                        ),
-                                      ],
-                                    ),
-                                  ),
+                                          })])),
 
-                                  /*Padding(padding: EdgeInsets.only(top:0,left: 20,right: 20,bottom: 0),
+                                 /*Padding(padding: EdgeInsets.only(top:0,left: 20,right: 20,bottom: 0),
 
                                     child: TextFormField(
                                       controller: areacontroller,
@@ -2791,8 +2783,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
 
                                 ),*/
-
-                                  // assigned to field and heading
 
                                  /* Container(
                                     child: Column(
@@ -2894,7 +2884,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                       ],
                                     ),
                                   ),*/
-
 
                                   Padding(padding: EdgeInsets.only(top:10,left: 20,right: 20,bottom: 0),
 
@@ -3001,8 +2990,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                   // Reset areas automatically
                                                   clearAreas();
 
-
-
                                                   updateAreasDisplay();
 
                                                   updateAreasSelection();
@@ -3025,7 +3012,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
                                                    _selectedCountryCode = '+971'; // Default to UAE country code
                                                    _selectedCountryFlag = '🇦🇪'; // Default UAE flag emoji
-
 
                                                   customernamecontroller.clear();
                                                   customercontactnocontroller.clear();

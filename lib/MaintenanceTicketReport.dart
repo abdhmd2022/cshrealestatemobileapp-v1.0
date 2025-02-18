@@ -207,9 +207,9 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
         },
         body: jsonEncode(requestBody),
       );
+      Map<String, dynamic> responseData = jsonDecode(response.body);
 
       if (response.statusCode == 201) {
-        Map<String, dynamic> responseData = jsonDecode(response.body);
         String message = responseData['message'];
         Fluttertoast.showToast(
           msg: message,
@@ -221,6 +221,16 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
         );
 
       } else {
+
+        String message = 'Code: ${response.statusCode}\nMessage: ${responseData['message']}';
+        Fluttertoast.showToast(
+          msg: message,
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM, // Change to CENTER or TOP if needed
+          backgroundColor: Colors.black,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
         print('Upload failed with status code: ${response.statusCode}');
         print('Upload failed with response: ${response.body}');
       }
@@ -254,9 +264,9 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
         },
         body: jsonEncode(requestBody),
       );
+      Map<String, dynamic> responseData = jsonDecode(response.body);
 
       if (response.statusCode == 201) {
-        Map<String, dynamic> responseData = jsonDecode(response.body);
         String message = responseData['message'];
         Fluttertoast.showToast(
           msg: message,
@@ -266,8 +276,17 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
           textColor: Colors.white,
           fontSize: 16.0,
         );
-
-      } else {
+      }
+      else {
+        String message = 'Code: ${response.statusCode}\nMessage: ${responseData['message']}';
+        Fluttertoast.showToast(
+          msg: message,
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM, // Change to CENTER or TOP if needed
+          backgroundColor: Colors.black,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
         print('Upload failed with status code: ${response.statusCode}');
         print('Upload failed with response: ${response.body}');
       }

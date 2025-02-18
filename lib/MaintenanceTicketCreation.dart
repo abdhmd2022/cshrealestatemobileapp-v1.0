@@ -78,7 +78,6 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
 
   final ImagePicker _picker = ImagePicker();
 
-
   void _showFlatPicker(BuildContext context) {
     if (flats == null || flats.isEmpty) {
       print("Flats list is empty or null: $flats"); // Debugging statement

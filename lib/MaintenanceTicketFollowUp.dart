@@ -410,8 +410,6 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
                   }).toList(),
                 ),),
 
-
-
               SizedBox(height: 10,),
 
               Container(
@@ -434,7 +432,6 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
                   ],
                 ),
               ),
-
 
               Container(
     padding: EdgeInsets.symmetric(horizontal: 12),
@@ -474,9 +471,7 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
     ),
     ),
 
-
               SizedBox(height: 6),
-
 
               Padding(
                 padding: EdgeInsets.only(top: 0),
@@ -507,10 +502,7 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
                 ),
               ),
 
-
-
               SizedBox(height: 16),
-
 
               TextFormField(
                 controller: _remarksController,
@@ -549,8 +541,6 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
                   ),
                 ),
               ),
-
-
 
               if(selectedStatus !=null && selectedStatus!.category == "Close")
 
@@ -629,9 +619,6 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
                           },
                           child: Text('Clear'),
                         ),
-
-
-
                         /* ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: appbar_color, // Button background color
@@ -647,19 +634,10 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
                     onPressed:_saveSignature,
                     child: Text('Save Signature'),
                   ),*/
-
                       ],
                     ),
                   ],
                 ),
-
-
-
-
-
-
-
-
 
               SizedBox(height: 10),
 
@@ -686,8 +664,6 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
               ),
 
               SizedBox(height: 16),
-
-
 
               Container(
                   margin: EdgeInsets.symmetric(horizontal: 0),
@@ -808,7 +784,9 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
                                 SizedBox(height: 20),
                                 Text('No attachment selected'),
                               ])])),
+
               SizedBox(height: 40),
+
               Padding(padding: EdgeInsets.only(left: 20,right: 20,top: 0,bottom: 50),
                 child: Container(
                     child: Row(
@@ -829,9 +807,6 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
                           ),
                           onPressed: () {
                             setState(() {
-
-
-
 
                             });
                           },
@@ -869,8 +844,6 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
                         ),
                       ],)
                 ),),
-
-
             ],
           ),
         ),

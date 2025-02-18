@@ -338,11 +338,9 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
       }
     } catch (e) {
 
-
       print('Error fetching data: $e');
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -351,7 +349,6 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
         backgroundColor: appbar_color.withOpacity(0.9),
         automaticallyImplyLeading: false,
         centerTitle: true,
-
         leading: GestureDetector(
           onTap: ()
           {

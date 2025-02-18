@@ -324,16 +324,20 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
       if (response.statusCode == 200) {
 
         final jsonData = json.decode(response.body);
-        final List<dynamic> statuses = jsonData['data']['maintenanceStatus'];
 
+
+        print('data $jsonData');
+        final List<dynamic> statuses = jsonData['data']['maintenanceStatus'];
         setState(() {
           maintenanceStatusList =
               statuses.map((status) => MaintenanceStatus.fromJson(status)).toList();
         });
       } else {
-        throw Exception('Failed to load data');
+        print('Upload failed with status code: ${response.statusCode}');
+        print('Upload failed with response: ${response.body}');
       }
     } catch (e) {
+
 
       print('Error fetching data: $e');
     }

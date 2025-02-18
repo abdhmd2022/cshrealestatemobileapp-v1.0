@@ -210,6 +210,9 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
     try {
       final response = await http.get(Uri.parse(url),
         headers: headers,);
+
+
+      print('code ${response.statusCode}');
       if (response.statusCode == 200) {
 
         final Map<String, dynamic> data = json.decode(response.body);

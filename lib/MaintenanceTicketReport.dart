@@ -13,6 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
+import 'package:uuid/uuid.dart';
 import 'Sidebar.dart';
 import 'package:http/http.dart' as http;
 
@@ -102,7 +103,10 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                 foregroundColor: Colors.white,
               ),
               onPressed: () {
-                print("Submitted Feedback for $ticketId: Rating=${ratings[ticketId]}, Feedback=${feedbacks[ticketId]}");
+                String feedbackText = feedbacks[ticketId] ?? "";
+                num rating = ratings[ticketId] ?? 3;
+                saveFeedback(ticketId,feedbackText,rating);
+                print("Submitted Feedback for $ticketId: Rating=$rating, Feedback=${feedbacks[ticketId]}");
                 Navigator.pop(context);
               },
               child: Text("Submit"),
@@ -117,7 +121,11 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
     setState(() {
       isLoading = true;
     });
-    final String url = "$BASE_URL_config/v1/maintenance";
+    final String url = "$BASE_URL_config/v1/tenent/maintenance";
+
+
+    print('token $Company_Token');
+
     try {
       final Map<String, String> headers = {
         'Authorization': 'Bearer $Company_Token', // Example of an Authorization header
@@ -171,6 +179,104 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
       isLoading = false;
     });
   }
+
+
+  Future<void> saveFeedback(int ticketId, String description, num ratings) async {
+
+    try {
+      final String url = "$BASE_URL_config/v1/tenent/maintenanceFeedback";
+
+      var uuid = Uuid();
+      String uuidValue = uuid.v4();
+
+      final Map<String, dynamic> requestBody = {
+        "uuid": uuidValue,
+        "ticket_id": ticketId, // Updated key from flat_masterid to flat_id
+        "description": description,
+        "ratings": ratings.toInt(), // Converts the list of objects to a list of IDs
+      };
+
+
+      print('feedback body ${requestBody}');
+
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $Company_Token",
+        },
+        body: jsonEncode(requestBody),
+      );
+
+      if (response.statusCode == 201) {
+        Map<String, dynamic> responseData = jsonDecode(response.body);
+        String message = responseData['message'];
+        Fluttertoast.showToast(
+          msg: message,
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM, // Change to CENTER or TOP if needed
+          backgroundColor: Colors.black,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+
+      } else {
+        print('Upload failed with status code: ${response.statusCode}');
+        print('Upload failed with response: ${response.body}');
+      }
+    } catch (e) {
+      print('Error during upload: $e');
+    }
+  }
+
+  Future<void> saveComment(int ticketId, String description) async {
+
+    try {
+      final String url = "$BASE_URL_config/v1/tenent/maintenanceComments";
+
+      var uuid = Uuid();
+      String uuidValue = uuid.v4();
+
+      final Map<String, dynamic> requestBody = {
+        "uuid": uuidValue,
+        "ticket_id": ticketId, // Updated key from flat_masterid to flat_id
+        "description": description,
+      };
+
+
+      print('comments body ${requestBody}');
+
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $Company_Token",
+        },
+        body: jsonEncode(requestBody),
+      );
+
+      if (response.statusCode == 201) {
+        Map<String, dynamic> responseData = jsonDecode(response.body);
+        String message = responseData['message'];
+        Fluttertoast.showToast(
+          msg: message,
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM, // Change to CENTER or TOP if needed
+          backgroundColor: Colors.black,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+
+      } else {
+        print('Upload failed with status code: ${response.statusCode}');
+        print('Upload failed with response: ${response.body}');
+      }
+    } catch (e) {
+      print('Error during upload: $e');
+    }
+  }
+
+
 
   void _updateSearchQuery(String query) {
     setState(() {
@@ -379,6 +485,8 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                                 Icons.comment,
                                 Colors.green,
                                     () {
+
+                                      commentController.clear();
                                       showDialog(
                                         context: context,
                                         builder: (BuildContext context) {
@@ -428,8 +536,10 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                                                       String comment = commentController.text;
                                                       if (comment.isNotEmpty) {
 
-
                                                         Navigator.of(context).pop(); // Close the dialog
+
+                                                        saveComment(int.parse(ticket['ticketNumber']),comment);
+
                                                       } else {
                                                         Fluttertoast.showToast(
                                                           msg: 'Enter Comment',

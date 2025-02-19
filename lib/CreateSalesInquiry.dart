@@ -403,7 +403,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
       "mobile_no": '$_selectedCountryCode${customercontactnocontroller.text}',
       "areas": areasIds,
       "flatTypes": selectedUnitIds,
-      "lead_status_id": selectedinquiry_status!.id,
+      "status_id": selectedinquiry_status!.id,
       "next_followup_date": formattedDate,
       "property_type": selectedPropertyType,
       "interest_type": interestTypes[selectedInterestType ?? 0],
@@ -413,6 +413,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
       "description" : descriptioncontroller.text,
       'activity_source_id' : selectedactivity_source!.id
     };
+
 
     print('create request body $requestBody');
 

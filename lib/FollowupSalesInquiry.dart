@@ -604,9 +604,9 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
       "uuid": uuidValue,
       "lead_id":widget.id,
       "date":formattedDate, // today's date
-      "lead_status_id":selectedfollowup_status!.id,
+      "status_id":selectedfollowup_status!.id,
       "next_followup_date": nextfollowupdate, // next follow up date
-      "followup_type_id":selectedfollowup_type!.id,
+      "type_id":selectedfollowup_type!.id,
       "remarks" : remarksController.text
     };
 

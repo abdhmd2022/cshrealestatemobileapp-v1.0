@@ -650,12 +650,9 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                       sendFollowupInquiryRequest();
 
                     }
-
                     updateMainState();
 
                     Navigator.of(context).pop();
-
-
                   },
                   child: Text("Submit"),
                 ),

@@ -748,12 +748,10 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                             padding: EdgeInsets.only(top: 5),
                             child: Text("Follow-up Date is required", style: TextStyle(color: Colors.red, fontSize: 12)),
                           ),
-
                       ],
                     ),
                   SizedBox(height: 10),
 
-                  // Remarks
                   TextField(
                     controller: remarksController,
                     maxLines: 3,
@@ -764,12 +762,10 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                       border: OutlineInputBorder(
                         borderSide: BorderSide(color: isRemarksEmpty ? Colors.red : Colors.black),
                         borderRadius: BorderRadius.circular(8),
-
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderSide: BorderSide(color: isRemarksEmpty ? Colors.red : appbar_color),
                         borderRadius: BorderRadius.circular(8),
-
                       ),
                       errorText: isRemarksEmpty ? "Remarks are required" : null,
                     ),

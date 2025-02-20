@@ -56,6 +56,7 @@ dependencies:
   provider:
   flutter_switch:
   printing:
+  mailer:
 dev_dependencies:
 
   flutter_test:

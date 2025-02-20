@@ -273,11 +273,19 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
     TextEditingController bodyController = TextEditingController();
     String buttonText = "Select Next Follow-up Date";
 
+    bool isSubjectEmpty = false;
+    bool isBodyEmpty = false;
+    bool isFollowUpTypeEmpty = false;
+    bool isFollowUpStatusEmpty = false;
+    bool isFollowUpDateEmpty = false;
+    bool isRemarksEmpty = false;
+
     if (nextFollowUpDate != null) {
       setState(() {
-        buttonText ='Next Follow-up: ${DateFormat("dd-MMM-yyyy").format(nextFollowUpDate!)}';
+        buttonText = 'Next Follow-up: ${DateFormat("dd-MMM-yyyy").format(nextFollowUpDate!)}';
       });
     }
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -289,312 +297,206 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                 "Send Email",
                 style: TextStyle(color: Colors.black),
               ),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                 /* // Display the recipient email (disabled)
-                  TextField(
-                    controller: emailcontroller,
-                    style: TextStyle(color: Colors.white),
-                    decoration: InputDecoration(
-                      labelText: "Recipient Email",
-                      labelStyle: TextStyle(color: Colors.white70),
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.white),
-                      ),
-                    ),
-                    enabled: false, // User can't modify this
-                  ),
-                  SizedBox(height: 10),*/
-
-                  // Input for subject
-                  TextField(
-                    controller: subjectController,
-                    style: TextStyle(color: Colors.black),
-                    decoration: InputDecoration(
-                      labelText: "Subject",
-                      labelStyle: TextStyle(color: Colors.black54),
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.black),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: appbar_color),
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 10),
-
-                  // Input for body
-                  TextField(
-                    controller: bodyController,
-                    maxLines: 3,
-                    style: TextStyle(color: Colors.black),
-                    decoration: InputDecoration(
-                      labelText: "Message Body",
-                      labelStyle: TextStyle(color: Colors.black54),
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.black),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: appbar_color),
-                      ),
-                    ),
-                  ),
-
-
-
-
-
-                  Container(
-                      child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                                padding: EdgeInsets.only(top:10,left:0,right:0,bottom :0),
-                                child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      DropdownButtonFormField<FollowUpType>(
-                                          value: selectedfollowup_type,  // This should be an object of FollowUpStatus
-                                          decoration: InputDecoration(
-                                            hintText: 'Select Follow-up Type*',
-                                            label: Text(
-                                              'Follow-up Type*',
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.normal,
-                                                color: Colors.black,
-                                              ),
-                                            ),
-                                            border: OutlineInputBorder(
-                                              borderSide: BorderSide(color: Colors.black54),
-                                              borderRadius: BorderRadius.circular(10.0),
-                                            ),
-                                            focusedBorder: OutlineInputBorder(
-                                              borderSide: BorderSide(color: appbar_color),
-                                              borderRadius: BorderRadius.circular(10.0),
-                                            ),
-                                            enabledBorder: OutlineInputBorder(
-                                              borderRadius: BorderRadius.circular(10.0),
-                                              borderSide: BorderSide(color: Colors.black54),
-                                            ),
-                                            contentPadding: EdgeInsets.symmetric(horizontal: 10),
-                                          ),
-                                          validator: (value) {
-                                            if (value == null) {
-                                              return 'Follow-up Type is required'; // Error message
-                                            }
-                                            return null; // No error if a value is selected
-                                          },
-                                          dropdownColor: Colors.white,
-                                          icon: Icon(Icons.arrow_drop_down, color: appbar_color),
-                                          items: followuptype_list.map((FollowUpType status) {
-                                            return DropdownMenuItem<FollowUpType>(
-                                              value: status,
-                                              child: Text(
-                                                status.name,  // Display the 'name'
-                                                style: TextStyle(color: Colors.black87),
-                                              ),
-                                            );
-                                          }).toList(),
-                                          onChanged: (FollowUpType? value) {
-                                            setState(() {
-                                              selectedfollowup_type = value;
-                                            });
-
-                                            updateMainState(); // Update main UI
-
-                                          })]))])),
-
-                  // follow up status
-                  Container(
-                      child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                                padding: EdgeInsets.only(top:10,left:0,right:0,bottom :0),
-                                child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      DropdownButtonFormField<FollowUpStatus>(
-                                          value: selectedfollowup_status,  // This should be an object of FollowUpStatus
-                                          decoration: InputDecoration(
-                                            hintText: 'Select Follow-up Status*',
-                                            label: Text(
-                                              'Follow-up Status*',
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.normal,
-                                                color: Colors.black,
-                                              ),
-                                            ),
-                                            border: OutlineInputBorder(
-                                              borderSide: BorderSide(color: Colors.black54),
-                                              borderRadius: BorderRadius.circular(10.0),
-                                            ),
-                                            focusedBorder: OutlineInputBorder(
-                                              borderSide: BorderSide(color: appbar_color),
-                                              borderRadius: BorderRadius.circular(10.0),
-                                            ),
-                                            enabledBorder: OutlineInputBorder(
-                                              borderRadius: BorderRadius.circular(10.0),
-                                              borderSide: BorderSide(color: Colors.black54),
-                                            ),
-                                            contentPadding: EdgeInsets.symmetric(horizontal: 10),
-                                          ),
-                                          validator: (value) {
-                                            if (value == null) {
-                                              return 'Follow-up Status is required'; // Error message
-                                            }
-                                            return null; // No error if a value is selected
-                                          },
-                                          dropdownColor: Colors.white,
-                                          icon: Icon(Icons.arrow_drop_down, color: appbar_color),
-                                          items: followupstatus_list.map((FollowUpStatus status) {
-                                            return DropdownMenuItem<FollowUpStatus>(
-                                              value: status,
-                                              child: Text(
-                                                status.name,  // Display the 'name'
-                                                style: TextStyle(color: Colors.black87),
-                                              ),
-                                            );
-                                          }).toList(),
-                                          onChanged: (FollowUpStatus? value) {
-                                            setState(() {
-                                              selectedfollowup_status = value;
-                                              if(selectedfollowup_status!.category!='Normal')
-                                              {
-                                                nextFollowUpDate = null;
-                                              }
-                                            });
-
-                                            updateMainState(); // Update main UI
-
-                                          })]))])),
-
-                  if(selectedfollowup_status!=null && selectedfollowup_status!.category == 'Normal') // follow up date
-                    Column(
-                        children:[
-
-                          SizedBox(height:10),
-                          ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: appbar_color,
-                              foregroundColor: Colors.white,
-                            ),
-                            onPressed: () async {
-
-                              DateTime? pickedDate = await showDatePicker(
-                                context: context,
-                                initialDate: nextFollowUpDate ?? DateTime.now().add(Duration(days: 1)),
-                                firstDate: DateTime.now().add(Duration(days: 1)), // Restrict past dates
-                                lastDate: DateTime(2100),
-                                builder: (BuildContext context, Widget? child) {
-                                  return Theme(
-                                    data: ThemeData.light().copyWith(
-                                      colorScheme: ColorScheme.light(
-                                        primary: appbar_color, // Header background and selected date color
-                                        onPrimary: Colors.white, // Header text color
-                                        onSurface: Colors.black, // Calendar text color
-                                      ),
-                                      textButtonTheme: TextButtonThemeData(
-                                        style: TextButton.styleFrom(
-                                          foregroundColor: appbar_color, // Button text color
-                                        ),
-                                      ),
-                                    ),
-                                    child: child!,
-                                  );
-                                },
-                              );
-
-                              if (pickedDate != null) {
-                                setState(() {
-                                  buttonText ='Next Follow-up: ${DateFormat("dd-MMM-yyyy").format(pickedDate!)}';
-                                  nextFollowUpDate = pickedDate; // Save selected date
-                                });
-
-                                updateMainState(); // Update main UI
-
-                              }
-                            },
-                            child: Text(buttonText),
-                          ),
-                        ]
-                    ),
-
-
-                  Padding(padding: EdgeInsets.only(top:10,left: 0,right: 0,bottom: 0),
-
-                      child: TextFormField(
-                        controller: remarksController,
-                        keyboardType: TextInputType.multiline,
-                        maxLength: 500, // Limit input to 500 characters
-                        maxLines: 3,
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return 'Remarks are required';
-                          }
-                          return null;
-                        },
+              content: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Input for Subject
+                      TextField(
+                        controller: subjectController,
+                        style: TextStyle(color: Colors.black),
                         decoration: InputDecoration(
-                          floatingLabelStyle: TextStyle(
-                            color: appbar_color, // Change label color when focused
-                            fontWeight: FontWeight.normal,
-                          ),
-                          hintText: 'Enter Remarks*',
-                          labelText: 'Remarks',
-                          contentPadding: EdgeInsets.all(15),
+                          labelText: "Subject",
+                          labelStyle: TextStyle(color: Colors.black54),
                           border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10), // Set the border radius
-                            borderSide: BorderSide(
-                              color: Colors.black, // Set the border color
-                            ),
+                            borderSide: BorderSide(color: isSubjectEmpty ? Colors.red : Colors.black),
                           ),
                           focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide(
-                              color:  appbar_color, // Set the focused border color
-                            ),
+                            borderSide: BorderSide(color: isSubjectEmpty ? Colors.red : appbar_color),
                           ),
-                          labelStyle: TextStyle(
-                            color: Colors.black,
-                          ),
+                          errorText: isSubjectEmpty ? "Subject is required" : null,
                         ),
                         onChanged: (value) {
                           setState(() {
-                            _isFocus_name = false;
-                            _isFocused_email = false;
+                            isSubjectEmpty = value.trim().isEmpty;
                           });
                         },
-                        onFieldSubmitted: (value) {
-                          setState(() {
-                            _isFocus_name = false;
-                            _isFocused_email = false;
-                          });
-                        },
+                      ),
+                      SizedBox(height: 10),
 
-                        onTap: () {
+                      // Input for Body
+                      TextField(
+                        controller: bodyController,
+                        maxLines: 3,
+                        style: TextStyle(color: Colors.black),
+                        decoration: InputDecoration(
+                          labelText: "Message Body",
+                          labelStyle: TextStyle(color: Colors.black54),
+                          border: OutlineInputBorder(
+                            borderSide: BorderSide(color: isBodyEmpty ? Colors.red : Colors.black),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: isBodyEmpty ? Colors.red : appbar_color),
+                          ),
+                          errorText: isBodyEmpty ? "Message body is required" : null,
+                        ),
+                        onChanged: (value) {
                           setState(() {
-                            _isFocus_name = false;
-                            _isFocused_email = false;
+                            isBodyEmpty = value.trim().isEmpty;
                           });
                         },
-                        onEditingComplete: () {
+                      ),
+                      SizedBox(height: 10),
+
+                      // Follow-up Type Dropdown
+                      DropdownButtonFormField<FollowUpType>(
+                        value: selectedfollowup_type,
+                        decoration: InputDecoration(
+                          labelText: 'Follow-up Type*',
+                          labelStyle: TextStyle(color: Colors.black),
+                          border: OutlineInputBorder(
+                            borderSide: BorderSide(color: isFollowUpTypeEmpty ? Colors.red : Colors.black54),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: isFollowUpTypeEmpty ? Colors.red : appbar_color),
+                          ),
+                          errorText: isFollowUpTypeEmpty ? "Follow-up Type is required" : null,
+                        ),
+                        items: followuptype_list.map((FollowUpType status) {
+                          return DropdownMenuItem<FollowUpType>(
+                            value: status,
+                            child: Text(status.name, style: TextStyle(color: Colors.black87)),
+                          );
+                        }).toList(),
+                        onChanged: (FollowUpType? value) {
                           setState(() {
-                            _isFocus_name = false;
-                            _isFocused_email = false;
+                            selectedfollowup_type = value;
+                            isFollowUpTypeEmpty = value == null;
+                            updateMainState();
+
                           });
                         },
-                      )
+                      ),
+                      SizedBox(height: 10),
+
+                      // Follow-up Status Dropdown
+                      DropdownButtonFormField<FollowUpStatus>(
+                        value: selectedfollowup_status,
+                        decoration: InputDecoration(
+                          labelText: 'Follow-up Status*',
+                          labelStyle: TextStyle(color: Colors.black),
+                          border: OutlineInputBorder(
+                            borderSide: BorderSide(color: isFollowUpStatusEmpty ? Colors.red : Colors.black54),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: isFollowUpStatusEmpty ? Colors.red : appbar_color),
+                          ),
+                          errorText: isFollowUpStatusEmpty ? "Follow-up Status is required" : null,
+                        ),
+                        items: followupstatus_list.map((FollowUpStatus status) {
+                          return DropdownMenuItem<FollowUpStatus>(
+                            value: status,
+                            child: Text(status.name, style: TextStyle(color: Colors.black87)),
+                          );
+                        }).toList(),
+                        onChanged: (FollowUpStatus? value) {
+                          setState(() {
+                            selectedfollowup_status = value;
+                            if (selectedfollowup_status!.category != 'Normal') {
+                              nextFollowUpDate = null;
+                            }
+                            isFollowUpStatusEmpty = value == null;
+                            updateMainState();
+
+                          });
+                        },
+                      ),
+                      SizedBox(height: 10),
+
+                      // Follow-up Date (only if status is "Normal")
+                      if (selectedfollowup_status != null && selectedfollowup_status!.category == 'Normal')
+                        Column(
+                          children: [
+                            ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: appbar_color,
+                                foregroundColor: Colors.white,
+                              ),
+                              onPressed: () async {
+                                DateTime? pickedDate = await showDatePicker(
+                                  context: context,
+                                  initialDate: nextFollowUpDate ?? DateTime.now().add(Duration(days: 1)),
+                                  firstDate: DateTime.now().add(Duration(days: 1)), // Restrict past dates
+                                  lastDate: DateTime(2100),
+                                  builder: (BuildContext context, Widget? child) {
+                                    return Theme(
+                                      data: ThemeData.light().copyWith(
+                                        colorScheme: ColorScheme.light(
+                                          primary: appbar_color, // Header background and selected date color
+                                          onPrimary: Colors.white, // Header text color
+                                          onSurface: Colors.black, // Calendar text color
+                                        ),
+                                        textButtonTheme: TextButtonThemeData(
+                                          style: TextButton.styleFrom(
+                                            foregroundColor: appbar_color, // Button text color
+                                          ),
+                                        ),
+                                      ),
+                                      child: child!,
+                                    );
+                                  },
+                                );
+
+                                if (pickedDate != null) {
+                                  setState(() {
+                                    buttonText ='Next Follow-up: ${DateFormat("dd-MMM-yyyy").format(pickedDate!)}';
+                                    nextFollowUpDate = pickedDate; // Save selected date
+                                  });
+
+                                  updateMainState();
+                                }
+                              },
+                              child: Text(buttonText),
+                            ),
+                            if (isFollowUpDateEmpty)
+                              Padding(
+                                padding: EdgeInsets.only(top: 5),
+                                child: Text("Follow-up Date is required", style: TextStyle(color: Colors.red, fontSize: 12)),
+                              ),
+                          ],
+                        ),
+                      SizedBox(height: 10),
+
+                      // Remarks
+                      TextField(
+                        controller: remarksController,
+                        maxLines: 3,
+                        style: TextStyle(color: Colors.black),
+                        decoration: InputDecoration(
+                          labelText: "Remarks",
+                          labelStyle: TextStyle(color: Colors.black54),
+                          border: OutlineInputBorder(
+                            borderSide: BorderSide(color: isRemarksEmpty ? Colors.red : Colors.black),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: isRemarksEmpty ? Colors.red : appbar_color),
+                          ),
+                          errorText: isRemarksEmpty ? "Remarks are required" : null,
+                        ),
+                        onChanged: (value) {
+                          setState(() {
+                            isRemarksEmpty = value.trim().isEmpty;
+                          });
+                        },
+                      ),
+                    ],
                   ),
-
-                ],
               ),
+
               actions: [
                 TextButton(
                   onPressed: () {
-                    Navigator.of(context).pop(); // Close the dialog
+                    Navigator.of(context).pop();
                   },
                   child: Text("Cancel", style: TextStyle(color: appbar_color)),
                 ),
@@ -603,56 +505,27 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                     backgroundColor: appbar_color,
                     foregroundColor: Colors.white,
                   ),
-                  onPressed: () async {
-
+                  onPressed: () {
                     setState(() {
-
+                      isSubjectEmpty = subjectController.text.trim().isEmpty;
+                      isBodyEmpty = bodyController.text.trim().isEmpty;
+                      isFollowUpTypeEmpty = selectedfollowup_type == null;
+                      isFollowUpStatusEmpty = selectedfollowup_status == null;
+                      isFollowUpDateEmpty = selectedfollowup_status != null &&
+                          selectedfollowup_status!.category == 'Normal' &&
+                          nextFollowUpDate == null;
+                      isRemarksEmpty = remarksController.text.trim().isEmpty;
                     });
-                    String recipientEmail = emailcontroller.text.trim();
-                    String subject = subjectController.text.trim();
-                    String body = bodyController.text.trim();
 
-                    if (recipientEmail.isNotEmpty && subject.isNotEmpty && body.isNotEmpty) {
-
-
-                      _sendEmail(recipientEmail, subject, body);
+                    if (!isSubjectEmpty && !isBodyEmpty && !isFollowUpTypeEmpty &&
+                        !isFollowUpStatusEmpty && !isFollowUpDateEmpty && !isRemarksEmpty) {
+                      updateMainState();
 
 
-
-                      /*final Uri emailUri = Uri(
-                        scheme: 'mailto',
-                        path: recipientEmail,
-                        queryParameters: {
-                          'subject': subject,
-                          'body': body,
-                        },
-                      );*/
-
-                     /* if (await canLaunchUrl(emailUri)) {
-                    await launchUrl(emailUri);
-                    } else {
-                    throw 'Could not open email client';
-                    }*/
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text("Enter subject & message!")),
-                      );
-                    }
-
-                    if (_formKey.currentState != null &&
-                        _formKey.currentState!.validate()) {
-                      _formKey.currentState!.save();
-
-                      setState(() {
-                        _isFocused_email = false;
-                        _isFocus_name = false;
-                      });
+                      Navigator.of(context).pop();
                       sendFollowupInquiryRequest();
 
                     }
-                    updateMainState();
-
-                    Navigator.of(context).pop();
                   },
                   child: Text("Submit"),
                 ),
@@ -663,6 +536,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
       },
     );
   }
+
 
   void _showWhatsAppPopup(BuildContext context) {
     TextEditingController messageController = TextEditingController();

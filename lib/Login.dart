@@ -27,8 +27,11 @@ class User {
   final String email;
   final String token;
   final int? companyId;
+  final String? companyName; // Now added to extract company name
 
-  User({required this.id, required this.name, required this.email, required this.token, this.companyId});
+
+  User({required this.id, required this.name, required this.email, required this.token, this.companyId,    this.companyName,
+  });
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
@@ -37,6 +40,8 @@ class User {
       email: json['email'] ?? "Unknown",
       token: json['token'] ?? "",
       companyId: json['company_id'],
+      companyName: json['company'] != null ? json['company']['name'] : "Unknown Company", // Extracts company name correctly
+
     );
   }
 }
@@ -89,6 +94,9 @@ class _LoginPageState extends State<Login> {
     }
   }
 
+  SharedPreferences? prefs;
+
+
   @override
   void initState() {
     super.initState();
@@ -98,11 +106,12 @@ class _LoginPageState extends State<Login> {
   }
 
   Future<void> _initSharedPreferences() async {
-
+     prefs= await SharedPreferences.getInstance();
   }
 
   Future<void> _adminlogin(String email, String password, bool isAdmin) async {
-    String url = isAdmin
+
+        String url = isAdmin
         ? "$BASE_URL_config/v1/auth/login"
         : "$BASE_URL_config/v1/auth/tenent/login";
     String token = 'Bearer $authTokenBase';
@@ -153,11 +162,14 @@ class _LoginPageState extends State<Login> {
           await prefs.setString("user_email", firstUser.email);
           await prefs.setString("company_token", firstUser.token);
           await prefs.setInt("company_id", firstUser.companyId ?? 0);
+          await prefs.setBool('is_admin', isAdmin==true ? true : false);
+
+
 
           List<Map<String, dynamic>> companiesJson = usersList
               .map((user) => {
             'id': user.companyId ?? 0,
-            'name': "Company ${user.companyId ?? 'Unknown'}",
+            'name': user.companyName ?? 'Unknown Company', // Use company name
             'token': user.token,
           })
               .toList();

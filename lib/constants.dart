@@ -21,6 +21,8 @@ late String user_name;
 late int company_id;
 late int serial_id;
 late int user_id;
+late bool is_admin;
+
 
 /// Load tokens from SharedPreferences
 Future<void> loadTokens() async {
@@ -33,10 +35,13 @@ Future<void> loadTokens() async {
   company_id = prefs.getInt("company_id") ?? 0;
   serial_id = prefs.getInt("serial_id") ?? 0;
   user_id = prefs.getInt("user_id") ?? 0;
+  is_admin = prefs.getBool("is_admin") ?? false;
 
   print("Loaded Company Token: $Company_Token");
   print("Loaded Company ID: $company_id");
   print("Loaded User ID: $user_id");
+  print("Admin: $is_admin");
+
 }
 
 // Global Font Family

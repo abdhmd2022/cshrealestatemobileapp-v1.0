@@ -808,6 +808,14 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
                           onPressed: () {
                             setState(() {
 
+                              selectedStatus = null;
+
+                              _amountController.clear();
+                              _remarksController.clear();
+
+
+                              _signatureController.clear();
+
                             });
                           },
                           child: Text('Clear'),

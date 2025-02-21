@@ -13,6 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 import 'Sidebar.dart';
 import 'package:http/http.dart' as http;
@@ -36,12 +37,15 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
 
   TextEditingController commentController = TextEditingController();
 
+
   @override
   void initState() {
     super.initState();
     // Initialize all tickets to be collapsed by default
-   fetchTickets();
+
+    fetchTickets();
   }
+
 
   void _showFeedbackDialog(int ticketId) {
     showDialog(
@@ -121,10 +125,15 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
     setState(() {
       isLoading = true;
     });
-    final String url = "$BASE_URL_config/v1/tenent/maintenance";
 
 
-    print('token $Company_Token');
+    String url = is_admin
+        ? "$BASE_URL_config/v1/maintenance"
+        : "$BASE_URL_config/v1/tenent/maintenance";
+    /*final String url = "$BASE_URL_config/v1/maintenance"; // will change it for tenant*/
+
+
+    print('url $url');
 
     try {
       final Map<String, String> headers = {

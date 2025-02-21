@@ -1856,7 +1856,6 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
 
   Future<void> _initSharedPreferences() async {
 
-
     customernamecontroller.text = widget.name;
     customercontactnocontroller.text = widget.contactno;
     whatsappnocontroller.text = widget.whatsapp_no;
@@ -2247,11 +2246,9 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                                         FontAwesomeIcons.envelope,
                                                         Colors.blueAccent,
                                                             () {
-
                                                               _showEmailPopup(() {
                                                                 setState(() {}); // Updates the main widget
                                                               }); // Updates the main widget
-
                                                         },
                                                       ),
                                                     ])

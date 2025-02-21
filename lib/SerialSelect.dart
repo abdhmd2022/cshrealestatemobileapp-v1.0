@@ -119,6 +119,7 @@ class _CompanySelectionState extends State<CompanySelection> {
                     companies.map((company) => DropdownMenuItem(
                         value: company,
                         child: Text(company.name))
+
                     ).toList(),
                         (RegisteredCompany? newCompany) async {
                       if (newCompany != null) {

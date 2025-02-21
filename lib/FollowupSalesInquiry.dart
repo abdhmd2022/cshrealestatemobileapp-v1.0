@@ -2150,7 +2150,6 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                                           ),
                                                         ],
                                                       ),
-
                                                     ],
                                                   ),
                                                 ),
@@ -2201,12 +2200,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                                         ),
                                                       ],
                                                     ),
-                                                  ),
-                                              ],
-                                            ),
-                                          ),
-                                        ],
-                                      ),
+                                                  )]))]),
 
                                       SizedBox(height: 8),
                                       Row(

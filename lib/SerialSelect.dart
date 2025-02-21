@@ -4,7 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'SalesDashboard.dart';
 import 'constants.dart';
-import 'models/serial_model.dart'; // Import constants for appbar_color
+import 'models/serial_model.dart';
 
 class CompanySelection extends StatefulWidget {
   @override
@@ -59,7 +59,6 @@ class _CompanySelectionState extends State<CompanySelection> {
     print("🔑 Company Token: ${selectedCompany!.token}");
 
     await loadTokens();
-
 
     Navigator.pushReplacement(
       context,
@@ -118,9 +117,7 @@ class _CompanySelectionState extends State<CompanySelection> {
                     "Select Company",
                     companies.map((company) => DropdownMenuItem(
                         value: company,
-                        child: Text(company.name))
-
-                    ).toList(),
+                        child: Text(company.name))).toList(),
                         (RegisteredCompany? newCompany) async {
                       if (newCompany != null) {
                         setState(() {
@@ -128,7 +125,7 @@ class _CompanySelectionState extends State<CompanySelection> {
                         });
                         SharedPreferences prefs = await SharedPreferences.getInstance();
 
-                         await prefs.setInt("company_id", newCompany!.id);
+                        await prefs.setInt("company_id", newCompany!.id);
                         await prefs.setString("company_token", newCompany!.token);
                         await prefs.setString("company_name", newCompany!.name);
 
@@ -169,7 +166,6 @@ class _CompanySelectionState extends State<CompanySelection> {
   }
 }
 
-/// ✅ Generic Dropdown Builder
 Widget _buildDropdown<T>(
     T? selectedValue,
     String hint,

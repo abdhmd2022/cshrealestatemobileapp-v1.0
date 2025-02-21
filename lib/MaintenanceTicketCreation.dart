@@ -226,8 +226,8 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
 
         });
       } else {
-        throw Exception('Failed to load data');
-      }
+        print("Error: ${response.statusCode}");
+        print("Message: ${response.body}");      }
     } catch (e) {
 
       print('Error fetching data: $e');

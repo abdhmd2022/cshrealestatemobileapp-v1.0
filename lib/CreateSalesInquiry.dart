@@ -395,6 +395,9 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
     // Generate a v4 (random) UUID
     String uuidValue = uuid.v4();
 
+
+    print('entered whatsapp $_selectedCountryCodeWhatsapp${whatsappnocontroller.text}');
+
     // Constructing the JSON body
     final Map<String, dynamic> requestBody = {
       "uuid": uuidValue,
@@ -411,7 +414,8 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
       "min_price": _currentRangeValues!.start.round().toString(),
       "amenities": amenitiesList,
       "description" : descriptioncontroller.text,
-      'activity_source_id' : selectedactivity_source!.id
+      'activity_source_id' : selectedactivity_source!.id,
+      'whatsapp_no' : '$_selectedCountryCodeWhatsapp${whatsappnocontroller.text}'
     };
 
 
@@ -422,6 +426,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
         Uri.parse(url),
         headers: {
           "Content-Type": "application/json",
+
           "Authorization": "Bearer $Company_Token",
         },
         body: jsonEncode(requestBody),
@@ -444,9 +449,15 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
           selectedUnitType = "Select Unit Types";
           selectedEmiratesString = "Select Emirate";
           selectedEmiratesList.clear();
+          _useContactAsWhatsapp = true;
+
 
           for (var emirate in emirates) {
             emirate['isSelected'] = false;
+          }
+
+          for (var unit in unitTypes) {
+            unit['isSelected'] = false;
           }
           isAllEmiratesSelected = false;
 
@@ -483,6 +494,8 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
 
           customernamecontroller.clear();
+          whatsappnocontroller.clear();
+
           customercontactnocontroller.clear();
           emailcontroller.clear();
           unittypecontroller.clear();

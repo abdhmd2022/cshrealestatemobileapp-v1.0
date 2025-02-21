@@ -431,7 +431,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                       if (selectedfollowup_status != null && selectedfollowup_status!.category == 'Normal')
                         Column(
                           children: [
-                            SizedBox(height: 5),
+                            SizedBox(height: 10),
 
                             ElevatedButton(
                               style: ElevatedButton.styleFrom(
@@ -481,10 +481,10 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                 padding: EdgeInsets.only(top: 5),
                                 child: Text("Follow-up Date is required", style: TextStyle(color: Colors.red, fontSize: 12)),
                               ),
-                            SizedBox(height: 5),
 
                           ],
                         ),
+                      SizedBox(height: 10),
 
                       // Remarks
                       TextField(
@@ -808,7 +808,6 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
 
                       sendFollowupInquiryRequest();
 
-// Open WhatsApp
                       String whatsappUrl = "https://wa.me/$phoneNumber?text=${Uri.encodeComponent(message)}";
 
                       launch(whatsappUrl);

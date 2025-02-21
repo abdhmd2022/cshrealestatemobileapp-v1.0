@@ -25,6 +25,8 @@ class InquiryModel {
   final String emirate;
   final String description;
   final String contactNo;
+  final String whatsapp_no;
+
   final String email;
   final String inquiryNo;
   final String creationDate;
@@ -63,6 +65,8 @@ class InquiryModel {
     required this.preferredAreas,
     required this.preferredFlatTypes,
     required this.preferredAmenities,
+    required this.whatsapp_no,
+
   });
 
   factory InquiryModel.fromJson(Map<String, dynamic> json) {
@@ -124,6 +128,7 @@ class InquiryModel {
       emirate: emirates,
       description: json['description'] ?? 'No description',
       contactNo: json['mobile_no'] ?? 'N/A',
+      whatsapp_no : json['whatsapp_no'] ?? 'N/A',
       email: json['email'] ?? 'N/A',
       created_by: created_by ?? 'N/A',
       assigned_to: assigned_to ?? 'N/A',
@@ -932,6 +937,8 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
                                   List<String> unittype = inquiry.unitType
                                       .split(',').map((e) => e.trim()).toList();
                                   String contactno = inquiry.contactNo;
+                                  String whatsapp_no = inquiry.whatsapp_no;
+
                                   String email = inquiry.email;
                                   String id = inquiry.inquiryNo;
 
@@ -954,6 +961,8 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
                                               existingAreaList: areaList,
                                               existingEmirateList: emiratesList,
                                               contactno: contactno,
+                                              whatsapp_no: whatsapp_no,
+
                                               email: email)));
                                 },
                               ),
@@ -1084,8 +1093,6 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
         // _buildInfoRow('Created By (using for testing):', inquiry.created_by.toString()),
 
         //_buildInfoRow('Assigned To (using for testing):', inquiry.assigned_to.toString()),
-
-
       ],
     );
   }

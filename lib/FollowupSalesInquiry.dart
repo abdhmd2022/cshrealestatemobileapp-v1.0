@@ -80,6 +80,8 @@ class FollowupSalesInquiry extends StatefulWidget {
   final List<String> existingAreaList;
   final List<String> existingEmirateList;
   final String contactno;
+  final String whatsapp_no;
+
   final String email;
   final String id;
 
@@ -92,6 +94,7 @@ class FollowupSalesInquiry extends StatefulWidget {
     required this.contactno,
     required this.email,
     required this.id,
+    required this.whatsapp_no,
 
 
   }) : super(key: key);
@@ -106,6 +109,8 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
   // text editing controllers intialization
   final customernamecontroller = TextEditingController();
   final customercontactnocontroller = TextEditingController();
+  final whatsappnocontroller = TextEditingController();
+
   final unittypecontroller = TextEditingController();
   final emiratescontroller = TextEditingController();
   final areacontroller = TextEditingController();
@@ -562,7 +567,11 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
   void _showWhatsAppPopup(BuildContext context,Function updateMainState) {
     TextEditingController messageController = TextEditingController();
     String buttonText = "Select Next Follow-up Date";
-    String phoneNumber = customercontactnocontroller.text.trim(); // Get number from TextField
+    // Determine the phone number to use
+    String contactNumber = customercontactnocontroller.text.trim();
+    String whatsappNumber = whatsappnocontroller.text.trim();
+    String phoneNumber = contactNumber == whatsappNumber ? contactNumber : whatsappNumber;
+    /*String phoneNumber = customercontactnocontroller.text.trim(); // Get number from TextField*/
 
     bool isFollowUpTypeEmpty = false;
     bool isFollowUpStatusEmpty = false;
@@ -1850,6 +1859,8 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
 
     customernamecontroller.text = widget.name;
     customercontactnocontroller.text = widget.contactno;
+    whatsappnocontroller.text = widget.whatsapp_no;
+
     emailcontroller.text = widget.email;
 
 
@@ -2011,7 +2022,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                         ],
                                       ),
                                       SizedBox(height: 8),
-                                      Row(
+                                      /*Row(
                                         crossAxisAlignment: CrossAxisAlignment.center,
                                         children: [
                                           Expanded(
@@ -2034,12 +2045,12 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                   children: [
 
-                                                    /*Icon(
+                                                    *//*Icon(
                                                       FontAwesomeIcons.phone,
                                                       color: appbar_color.withOpacity(1),
                                                       size: 20,
                                                     ),
-                                                    SizedBox(width: 8,),*/
+                                                    SizedBox(width: 8,),*//*
                                                     Text(
                                                         customercontactnocontroller.text.isNotEmpty ? customercontactnocontroller.text : _hintText,
                                                         style: TextStyle(
@@ -2080,7 +2091,123 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                           ),
 
                                         ],
+                                      ),*/
+
+                                      Row(
+                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        children: [
+                                          Expanded(
+                                            child: Column(
+                                              children: [
+                                                // Container for contact number
+                                                Container(
+                                                  padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                                                  decoration: BoxDecoration(
+                                                    color: appbar_color.withOpacity(0.1),
+                                                    borderRadius: BorderRadius.circular(12.0),
+                                                    boxShadow: [
+                                                      BoxShadow(
+                                                        color: appbar_color.withOpacity(0),
+                                                        spreadRadius: 2,
+                                                        blurRadius: 5,
+                                                        offset: Offset(2, 2),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  child: Row(
+                                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                    children: [
+                                                      Text(
+                                                        customercontactnocontroller.text.isNotEmpty
+                                                            ? customercontactnocontroller.text
+                                                            : _hintText,
+                                                        style: TextStyle(
+                                                          fontSize: 16,
+                                                          color: appbar_color.withOpacity(1),
+                                                          fontWeight: FontWeight.w500,
+                                                        ),
+                                                      ),
+                                                      Row(
+                                                        children: [
+                                                          if (customercontactnocontroller.text == whatsappnocontroller.text) ...[
+                                                            _buildDecentButton(
+                                                              'Whatsapp',
+                                                              FontAwesomeIcons.whatsapp,
+                                                              Colors.green,
+                                                                  () {
+                                                                _showWhatsAppPopup(context, () {
+                                                                  setState(() {});
+                                                                });
+                                                              },
+                                                            ),
+                                                            SizedBox(width: 5),
+                                                          ],
+                                                          _buildDecentButton(
+                                                            'Call',
+                                                            FontAwesomeIcons.phone,
+                                                            Colors.blueAccent,
+                                                            openCaller,
+                                                          ),
+                                                        ],
+                                                      ),
+
+                                                    ],
+                                                  ),
+                                                ),
+                                                if (customercontactnocontroller.text != whatsappnocontroller.text &&
+                                                    whatsappnocontroller.text.isNotEmpty)
+                                                  SizedBox(height: 10), // Space between containers
+                                                if (customercontactnocontroller.text != whatsappnocontroller.text &&
+                                                    whatsappnocontroller.text.isNotEmpty)
+                                                // Container for WhatsApp number
+                                                  Container(
+                                                    padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                                                    decoration: BoxDecoration(
+                                                      color: appbar_color.withOpacity(0.1),
+                                                      borderRadius: BorderRadius.circular(12.0),
+                                                      boxShadow: [
+                                                        BoxShadow(
+                                                          color: appbar_color.withOpacity(0),
+                                                          spreadRadius: 2,
+                                                          blurRadius: 5,
+                                                          offset: Offset(2, 2),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    child: Row(
+                                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                      children: [
+                                                        Text(
+                                                          whatsappnocontroller.text,
+                                                          style: TextStyle(
+                                                            fontSize: 16,
+                                                            color: appbar_color.withOpacity(1),
+                                                            fontWeight: FontWeight.w500,
+                                                          ),
+                                                        ),
+                                                        Row(
+                                                          children: [
+                                                            _buildDecentButton(
+                                                              'Whatsapp',
+                                                              FontAwesomeIcons.whatsapp,
+                                                              Colors.green,
+                                                                  () {
+                                                                _showWhatsAppPopup(context, () {
+                                                                  setState(() {});
+                                                                });
+                                                              },
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
                                       ),
+
                                       SizedBox(height: 8),
                                       Row(
                                         crossAxisAlignment: CrossAxisAlignment.center,

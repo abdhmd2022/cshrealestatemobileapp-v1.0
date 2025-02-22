@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:mailer/mailer.dart';
+import 'package:mailer/smtp_server.dart';
 import 'package:mailer/smtp_server/gmail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -166,6 +167,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
 
   final List<String> interestTypes = ["Rent", "Buy"]; // List of options
 
+
   int? selectedInterestType;
 
   final List<String> propertyType = [
@@ -189,31 +191,65 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
 
   String _hintText = 'Enter Contact No'; // Default hint text
 
-  void _sendEmail(String recipientEmail, String subject, String body) async {
-    final String username = "your-email@example.com"; // Your email
-    final String password = "your-email-password"; // Your email password
+  Future<Map<String, dynamic>> fetchSmtpDetails() async {
 
-    final smtpServer = gmail(username, password); // Use Gmail SMTP Server
+    final url = '$BASE_URL_config/v1/company'; // Replace with your API endpoint
+    String token = 'Bearer $Company_Token'; // auth token for request
 
-    final message = Message()
-      ..from = Address(username, "Your Name")
-      ..recipients.add(recipientEmail) // Recipient Email
-      ..subject = subject
-      ..text = body; // Email Body
+    Map<String, String> headers = {
+      'Authorization': token,
+      "Content-Type": "application/json"
+    };
+    final response = await http.get(Uri.parse(url),
+      headers: headers,);
+    if (response.statusCode == 200) {
+      final jsonData = jsonDecode(response.body);
 
-    try {
-      final sendReport = await send(message, smtpServer);
-      print("Email Sent: ${sendReport.toString()}");
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Email sent successfully!")),
-      );
-    } catch (e) {
-      print("Email Sending Failed: $e");
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Failed to send email")),
-      );
+      print('smtp details: $jsonData');
+
+
+      if (jsonData['success'] == true) {
+        return jsonData['data']['company']['smtp_detail'];
+      } else {
+        throw Exception("API returned an error");
+      }
+    } else {
+      throw Exception("Failed to load SMTP config");
     }
   }
+
+  Future<void> sendSmtpEmail({
+    required String subject,
+    required String body,
+    required Map<String, dynamic> smtpConfig,
+    required String recipientEmail,
+  }) async {
+    // Configure your SMTP server using the details from the API.
+    final smtpServer = SmtpServer(
+      smtpConfig['address'],
+      port: smtpConfig['port'],
+      username: smtpConfig['username'],
+      password: smtpConfig['password'],
+    );
+
+    // Create the email message
+    final message = Message()
+      ..from = Address(smtpConfig['username'], 'Your Company Name')
+      ..recipients.add(recipientEmail)
+      ..subject = subject
+      ..text = body;
+
+    try {
+      /*final sendReport = await send(message, smtpServer);
+      print('Message sent: $sendReport');*/
+    } on MailerException catch (e) {
+      print('Message not sent. MailerException: $e');
+      // Optionally, handle e.problems for detailed error information.
+    } catch (e) {
+      print('Unexpected error: $e');
+    }
+  }
+
 
   /*void _preSelectEmiratesAndAreas() {
     // Assume that selectedEmiratesList contains a list of selected emirates
@@ -273,7 +309,38 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
 
   List<Map<String, dynamic>> areasToDisplay = []; // Global variable
 
-  void _showEmailPopup(Function updateMainState) {
+  Future<void> _showEmailPopup(Function updateMainState) async {
+
+    // Optionally, you can show a loading indicator while fetching data
+    /*showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => Center(child: CircularProgressIndicator()),
+    );*/
+
+    Map<String, dynamic> smtpDetails;
+    try {
+      smtpDetails = await fetchSmtpDetails();
+    } catch (error) {
+      // Handle the error by showing an alert or a snackbar
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text("Error"),
+          content: Text("Could not load SMTP configuration: $error"),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text("OK", style: TextStyle(color: appbar_color)),
+            )
+          ],
+        ),
+      );
+      return;
+    }
+
+
+
     TextEditingController subjectController = TextEditingController();
     TextEditingController bodyController = TextEditingController();
     String buttonText = "Select Next Follow-up Date";
@@ -535,24 +602,80 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                   ),
                   onPressed: () {
                     setState(() {
+                      // Check required email fields.
                       isSubjectEmpty = subjectController.text.trim().isEmpty;
                       isBodyEmpty = bodyController.text.trim().isEmpty;
-                      isFollowUpTypeEmpty = selectedfollowup_type == null;
-                      isFollowUpStatusEmpty = selectedfollowup_status == null;
-                      isFollowUpDateEmpty = selectedfollowup_status != null &&
-                          selectedfollowup_status!.category == 'Normal' &&
-                          nextFollowUpDate == null;
-                      isRemarksEmpty = remarksController.text.trim().isEmpty;
+
+                      // Check if any follow-up detail is provided.
+                      bool isAnyFollowUpProvided = selectedfollowup_type != null ||
+                          selectedfollowup_status != null ||
+                          remarksController.text.trim().isNotEmpty;
+
+                      if (isAnyFollowUpProvided) {
+                        // Validate each follow-up field.
+                        isFollowUpTypeEmpty = selectedfollowup_type == null;
+                        isFollowUpStatusEmpty = selectedfollowup_status == null;
+                        // If follow-up status exists and its category is 'Normal', then nextFollowUpDate is required.
+                        isFollowUpDateEmpty = (selectedfollowup_status != null &&
+                            selectedfollowup_status!.category == 'Normal' &&
+                            nextFollowUpDate == null);
+                        isRemarksEmpty = remarksController.text.trim().isEmpty;
+                      } else {
+                        // No follow-up details provided.
+                        isFollowUpTypeEmpty = false;
+                        isFollowUpStatusEmpty = false;
+                        isFollowUpDateEmpty = false;
+                        isRemarksEmpty = false;
+                      }
                     });
 
-                    if (!isSubjectEmpty && !isBodyEmpty && !isFollowUpTypeEmpty &&
-                        !isFollowUpStatusEmpty && !isFollowUpDateEmpty && !isRemarksEmpty) {
-                      updateMainState();
+                    // Proceed only if subject and body are provided.
+                    if (!isSubjectEmpty && !isBodyEmpty) {
+                      // Re-evaluate follow-up fields.
+                      bool isAnyFollowUpProvided = selectedfollowup_type != null ||
+                          selectedfollowup_status != null ||
+                          remarksController.text.trim().isNotEmpty;
+                      bool isAllFollowUpProvided = !isFollowUpTypeEmpty &&
+                          !isFollowUpStatusEmpty &&
+                          !isFollowUpDateEmpty &&
+                          !isRemarksEmpty;
 
-                      Navigator.of(context).pop();
-                      sendFollowupInquiryRequest();
+                      if (!isAnyFollowUpProvided) {
+                        // Case 1: Only subject and body are provided.
+                        print('Sending email only');
+                        sendSmtpEmail(
+                          subject: subjectController.text,
+                          body: bodyController.text,
+                          smtpConfig: smtpDetails,
+                          recipientEmail: "saadan@ca-eim.com",
+                        );
+                        Navigator.of(context).pop(); // Close the dialog
+
+                      } else if (isAllFollowUpProvided) {
+                        // Case 2: Subject, body, and all follow-up details are provided.
+                        print('Sending email and calling follow-up request');
+                        sendSmtpEmail(
+                          subject: subjectController.text,
+                          body: bodyController.text,
+                          smtpConfig: smtpDetails,
+                          recipientEmail: "saadan@ca-eim.com",
+                        );
+
+                        Navigator.of(context).pop(); // Close the dialog
+
+                        sendFollowupInquiryRequest(); // Ensure this function is defined in your code.
+                      } else {
+                        // Some follow-up details are provided, but not all are complete.
+                        print("Incomplete follow-up details. Please complete all follow-up fields.");
+                        // Optionally display a user-friendly message:
+                        // ScaffoldMessenger.of(context).showSnackBar(
+                        //   SnackBar(content: Text("Incomplete follow-up details. Please complete all fields.")),
+                        // );
+                      }
                     }
                   },
+
+
                   child: Text("Submit"),
                 ),
               ],
@@ -798,42 +921,75 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                     backgroundColor: appbar_color,
                     foregroundColor: Colors.white,
                   ),
-                  onPressed: () {
-                    String message = messageController.text;
 
+
+                  onPressed: () {
+                    // Update the state with validation flags.
                     setState(() {
                       isMessageEmpty = messageController.text.trim().isEmpty;
-                      isFollowUpTypeEmpty = selectedfollowup_type == null;
-                      isFollowUpStatusEmpty = selectedfollowup_status == null;
-                      isFollowUpDateEmpty = selectedfollowup_status != null &&
-                          selectedfollowup_status!.category == 'Normal' &&
-                          nextFollowUpDate == null;
-                      isRemarksEmpty = remarksController.text.trim().isEmpty;
+
+                      // Determine if any follow-up detail is provided.
+                      bool isAnyFollowUpProvided = selectedfollowup_type != null ||
+                          selectedfollowup_status != null ||
+                          remarksController.text.trim().isNotEmpty;
+
+                      if (isAnyFollowUpProvided) {
+                        // Validate each follow-up field.
+                        isFollowUpTypeEmpty = selectedfollowup_type == null;
+                        isFollowUpStatusEmpty = selectedfollowup_status == null;
+                        // For statuses with category 'Normal', nextFollowUpDate becomes required.
+                        isFollowUpDateEmpty = (selectedfollowup_status != null &&
+                            selectedfollowup_status!.category == 'Normal' &&
+                            nextFollowUpDate == null);
+                        isRemarksEmpty = remarksController.text.trim().isEmpty;
+                      } else {
+                        // No follow-up details provided.
+                        isFollowUpTypeEmpty = false;
+                        isFollowUpStatusEmpty = false;
+                        isFollowUpDateEmpty = false;
+                        isRemarksEmpty = false;
+                      }
                     });
 
-                    if (!isMessageEmpty && !isFollowUpTypeEmpty &&
-                        !isFollowUpStatusEmpty && !isFollowUpDateEmpty && !isRemarksEmpty) {
-                      updateMainState();
-
-                      sendFollowupInquiryRequest();
-
-                      String whatsappUrl = "https://wa.me/$phoneNumber?text=${Uri.encodeComponent(message)}";
-
-                      launch(whatsappUrl);
-
-                      Navigator.of(context).pop();
+                    // First, check that the message is not empty.
+                    if (isMessageEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text("Enter a message!"))
+                      );
+                      return;
                     }
 
+                    // Re-evaluate follow-up details.
+                    bool isAnyFollowUpProvided = selectedfollowup_type != null ||
+                        selectedfollowup_status != null ||
+                        remarksController.text.trim().isNotEmpty;
+                    bool isAllFollowUpProvided = !isFollowUpTypeEmpty &&
+                        !isFollowUpStatusEmpty &&
+                        !isFollowUpDateEmpty &&
+                        !isRemarksEmpty;
 
-
-                    if (message.isNotEmpty && nextFollowUpDate != null) {
-
-                    } else {
+                    // Case 1: No follow-up details provided; send WhatsApp message only.
+                    if (!isAnyFollowUpProvided) {
+                      String whatsappUrl = "https://wa.me/$phoneNumber?text=${Uri.encodeComponent(messageController.text)}";
+                      launch(whatsappUrl);
+                      Navigator.of(context).pop();
+                    }
+                    // Case 2: Message and complete follow-up details provided.
+                    else if (isAllFollowUpProvided) {
+                      updateMainState();
+                      sendFollowupInquiryRequest();
+                      String whatsappUrl = "https://wa.me/$phoneNumber?text=${Uri.encodeComponent(messageController.text)}";
+                      launch(whatsappUrl);
+                      Navigator.of(context).pop();
+                    }
+                    // Partial follow-up details provided; display error message.
+                    else {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text("Enter message & select a date!")),
+                          SnackBar(content: Text("Incomplete follow-up details. Please complete all follow-up fields."))
                       );
                     }
                   },
+
                   child: Text("Send"),
                 ),
               ],

@@ -921,8 +921,6 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                     backgroundColor: appbar_color,
                     foregroundColor: Colors.white,
                   ),
-
-
                   onPressed: () {
                     // Update the state with validation flags.
                     setState(() {
@@ -953,9 +951,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
 
                     // First, check that the message is not empty.
                     if (isMessageEmpty) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text("Enter a message!"))
-                      );
+
                       return;
                     }
 
@@ -984,9 +980,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                     }
                     // Partial follow-up details provided; display error message.
                     else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text("Incomplete follow-up details. Please complete all follow-up fields."))
-                      );
+
                     }
                   },
 

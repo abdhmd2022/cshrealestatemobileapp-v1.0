@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server.dart';
-import 'package:mailer/smtp_server/gmail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:uuid/uuid.dart';
@@ -55,7 +54,6 @@ class FollowUpType {
   }
 }
 
-
 class ActivitySource {
   final int id;
   final String name;
@@ -96,7 +94,6 @@ class FollowupSalesInquiry extends StatefulWidget {
     required this.email,
     required this.id,
     required this.whatsapp_no,
-
 
   }) : super(key: key);
   @override
@@ -167,7 +164,6 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
 
   final List<String> interestTypes = ["Rent", "Buy"]; // List of options
 
-
   int? selectedInterestType;
 
   final List<String> propertyType = [
@@ -206,7 +202,6 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
       final jsonData = jsonDecode(response.body);
 
       print('smtp details: $jsonData');
-
 
       if (jsonData['success'] == true) {
         return jsonData['data']['company']['smtp_detail'];
@@ -249,7 +244,6 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
       print('Unexpected error: $e');
     }
   }
-
 
   /*void _preSelectEmiratesAndAreas() {
     // Assume that selectedEmiratesList contains a list of selected emirates
@@ -686,7 +680,6 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
     );
   }
 
-
   void _showWhatsAppPopup(BuildContext context,Function updateMainState) {
     TextEditingController messageController = TextEditingController();
     String buttonText = "Select Next Follow-up Date";
@@ -1062,7 +1055,6 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
       {
         nextfollowupdate = null;
       }
-
 
     // Constructing the JSON body
 
@@ -2012,7 +2004,6 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
 
     emailcontroller.text = widget.email;
 
-
     prefs = await SharedPreferences.getInstance();
     setState(() {
 
@@ -2043,7 +2034,6 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
       appBar: AppBar(
         backgroundColor: appbar_color.withOpacity(0.9),
         centerTitle: true,
-
         leading: GestureDetector(
           onTap: ()
           {
@@ -2130,7 +2120,6 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                       Row(
                                         crossAxisAlignment: CrossAxisAlignment.center,
                                         children: [
-
                                           Expanded(
                                             child: Container(
                                               padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
@@ -2148,7 +2137,6 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                               ),
                                               child: Row(
                                                   children: [
-
                                                     Icon(
                                                         FontAwesomeIcons.userCircle,
                                                         color: appbar_color.withOpacity(1),
@@ -2402,16 +2390,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                                         },
                                                       ),
                                                     ])
-                                                  ]
-                                              )
-                                            ),
-                                          ),
-
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
+                                                  ])))])])),
 
                                 // second option for headers
                                 /*Container(
@@ -2549,8 +2528,8 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                                             selectedfollowup_type = value;
                                                           });})]))])),
 
-              // follow up status
-            Container(
+                                    // follow up status
+                                    Container(
                                     child: Column(
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
@@ -2648,9 +2627,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                                     ),
                                                   ),
                                                   child: child!,
-                                                );
-                                              },
-                                            );
+                                                );});
 
                                             if (pickedDate != null) {
                                               setState(() {
@@ -2693,26 +2670,23 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                                   mainAxisAlignment: MainAxisAlignment.center,
                                                   crossAxisAlignment: CrossAxisAlignment.center,
                                                   children: [
-
                                                     FaIcon(FontAwesomeIcons.calendarPlus,color:Colors.black),
                                                     /*SizedBox(width: 8.0),
-          Text(
-            label,
-            style: TextStyle(
-              color: color,
-              fontWeight: FontWeight.w600,
-            ),
-          ),*/
+                                                    Text(
+                                                      label,
+                                                      style: TextStyle(
+                                                        color: color,
+                                                        fontWeight: FontWeight.w600,
+                                                      ),
+                                                    ),*/
                                                   ],
-
                                                 ),
                                               ),
                                             ],
                                           ),
                                         ),
                                       ],
-                                    ),
-                                  ),
+                                    ),),
 
                                 /*Container(
                                   padding: const EdgeInsets.only(left: 20.0, right: 20, top: 15),

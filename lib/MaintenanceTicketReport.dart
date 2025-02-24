@@ -1,19 +1,14 @@
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:cshrealestatemobile/MaintenanceTicketCreation.dart';
 import 'package:cshrealestatemobile/MaintenanceTicketFollowUp.dart';
 import 'package:cshrealestatemobile/MaintenanceTicketTransfer.dart';
-import 'package:cshrealestatemobile/main.dart'; // Replace with actual import
-import 'package:cshrealestatemobile/SalesDashboard.dart';
-import 'package:cshrealestatemobile/TenantDashboard.dart';
 import 'package:cshrealestatemobile/constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 import 'Sidebar.dart';
 import 'package:http/http.dart' as http;
@@ -36,7 +31,6 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
   Map<int, String> feedbacks = {};
 
   TextEditingController commentController = TextEditingController();
-
 
   @override
   void initState() {
@@ -131,7 +125,6 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
         ? "$BASE_URL_config/v1/maintenance"
         : "$BASE_URL_config/v1/tenent/maintenance";
     /*final String url = "$BASE_URL_config/v1/maintenance"; // will change it for tenant*/
-
 
     print('url $url');
 

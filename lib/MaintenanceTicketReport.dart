@@ -166,7 +166,6 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
             };
           }).toList();
 
-
           setState(() {
             tickets = formattedTickets;
             filteredTickets = tickets; // Initially set to show all tickets
@@ -187,7 +186,6 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
       isLoading = false;
     });
   }
-
 
   Future<void> saveFeedback(int ticketId, String description, num ratings) async {
 
@@ -261,7 +259,6 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
         "description": description,
       };
 
-
       print('comments body ${requestBody}');
 
       final response = await http.post(
@@ -302,8 +299,6 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
       print('Error during upload: $e');
     }
   }
-
-
 
   void _updateSearchQuery(String query) {
     setState(() {

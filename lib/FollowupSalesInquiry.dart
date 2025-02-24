@@ -2673,17 +2673,16 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                                   crossAxisAlignment: CrossAxisAlignment.center,
                                                   children: [
 
-                                                    FaIcon(FontAwesomeIcons.calendarPlus,color:Colors.black),
+                                                   FaIcon(FontAwesomeIcons.calendarPlus,color:Colors.black),
                                                     /*SizedBox(width: 8.0),
-          Text(
-            label,
-            style: TextStyle(
-              color: color,
-              fontWeight: FontWeight.w600,
-            ),
-          ),*/
+                                                  Text(
+                                                    label,
+                                                    style: TextStyle(
+                                                      color: color,
+                                                      fontWeight: FontWeight.w600,
+                                                    ),
+                                                  ),*/
                                                   ],
-
                                                 ),
                                               ),
                                             ],

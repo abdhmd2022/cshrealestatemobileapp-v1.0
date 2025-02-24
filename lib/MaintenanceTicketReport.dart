@@ -151,7 +151,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
             return {
               'ticketNumber': apiTicket['id'].toString() ?? '',
               'unitNumber': apiTicket['tenent_flat']['flat']['name'].toString(),
-              'buildingName': 'N/A', // Update this based on actual data if available
+              'buildingName':  apiTicket['tenent_flat']['flat']['building']['name'].toString(),
               'emirate': apiTicket['tenent_flat']['flat']['building']['area']['state']['name'] ?? 'N/A',
               'status': 'N/A', // Update this based on actual data if available
               'date': apiTicket['created_at']?.split('T')[0] ?? '',
@@ -165,7 +165,6 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
               'description': apiTicket['description'] ?? '',
             };
           }).toList();
-
 
 
           setState(() {

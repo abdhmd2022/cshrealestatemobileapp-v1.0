@@ -370,9 +370,9 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
           isUserVisible: true,
           ),
       body: Container(
-          color: Colors.white,
+        color: Colors.white,
 
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        padding: const EdgeInsets.symmetric(horizontal: 16.0),
         child: isLoading
             ? Center(
           child: Platform.isIOS
@@ -406,7 +406,6 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
     floatingActionButton: Container(
         decoration: BoxDecoration(
           color: appbar_color.withOpacity(1.0),
-
           borderRadius: BorderRadius.circular(30.0),
         ),
         child: FloatingActionButton.extended(
@@ -471,7 +470,6 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-
                             Row(children: [
                               _buildDecentButton(
                                 'Follow Up',
@@ -507,7 +505,6 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                                 Icons.comment,
                                 Colors.green,
                                     () {
-
                                       commentController.clear();
                                       showDialog(
                                         context: context,
@@ -571,20 +568,11 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                                                           textColor: Colors.white,
                                                           fontSize: 16.0,
                                                         );
-
-
                                                       }
                                                     },
                                                     child: Text("Submit"),
                                                   ),
-                                                ],
-                                              );
-                                            },
-                                          );
-                                        },
-                                      );
-                                },
-                              ),
+                                                ]);});});}),
                               SizedBox(width: 5),
 
                               _buildDecentButton(
@@ -595,8 +583,6 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                                       _showFeedbackDialog(int.parse(ticket['ticketNumber']));
                                     }
                               ),
-
-
                             ],),
 
                           /*_buildDecentButton(
@@ -644,16 +630,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                         color: Colors.black26,
                         size: 16,
                       ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+                    ]))))])));}
 
   Widget _buildTicketHeader(Map<String, dynamic> ticket) {
     return Row(

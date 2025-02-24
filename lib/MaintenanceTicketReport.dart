@@ -364,7 +364,6 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
           ),
       body: Container(
         color: Colors.white,
-
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
         child: isLoading
             ? Center(
@@ -469,12 +468,10 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                                 Icons.schedule,
                                 Colors.orange,
                                     () {
-
                                   print('ticket : $ticket');
                                       Navigator.pushReplacement(
                                         context,
                                         MaterialPageRoute(builder: (context) => MaintenanceFollowUpScreen(ticketid: ticket['ticketNumber'],)),
-
                                       );
                                     }
                               ),

@@ -244,7 +244,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
       print('Unexpected error: $e');
     }
   }
-
+  
   /*void _preSelectEmiratesAndAreas() {
     // Assume that selectedEmiratesList contains a list of selected emirates
     List<String> preSelectedEmirates = widget.existingEmirateList; // Example selected emirates
@@ -679,7 +679,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
       },
     );
   }
-
+  
   void _showWhatsAppPopup(BuildContext context,Function updateMainState) {
     TextEditingController messageController = TextEditingController();
     String buttonText = "Select Next Follow-up Date";
@@ -2527,9 +2527,9 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                                           setState(() {
                                                             selectedfollowup_type = value;
                                                           });})]))])),
-
-                                    // follow up status
-                                    Container(
+                                
+                                // follow up status
+                                Container(
                                     child: Column(
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
@@ -2540,7 +2540,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                                   crossAxisAlignment: CrossAxisAlignment.start,
                                                   children: [
                                                     DropdownButtonFormField<FollowUpStatus>(
-                                                        value: selectedfollowup_status,  // This should be an object of FollowUpStatus
+                                                        value: selectedfollowup_status,  // This should be an object of FollowUpStatusfg
                                                         decoration: InputDecoration(
                                                           hintText: 'Select Follow-up Status*',
                                                           label: Text(
@@ -2627,7 +2627,9 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                                     ),
                                                   ),
                                                   child: child!,
-                                                );});
+                                                );
+                                              },
+                                            );
 
                                             if (pickedDate != null) {
                                               setState(() {
@@ -2670,23 +2672,26 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                                   mainAxisAlignment: MainAxisAlignment.center,
                                                   crossAxisAlignment: CrossAxisAlignment.center,
                                                   children: [
+
                                                     FaIcon(FontAwesomeIcons.calendarPlus,color:Colors.black),
                                                     /*SizedBox(width: 8.0),
-                                                    Text(
-                                                      label,
-                                                      style: TextStyle(
-                                                        color: color,
-                                                        fontWeight: FontWeight.w600,
-                                                      ),
-                                                    ),*/
+          Text(
+            label,
+            style: TextStyle(
+              color: color,
+              fontWeight: FontWeight.w600,
+            ),
+          ),*/
                                                   ],
+
                                                 ),
                                               ),
                                             ],
                                           ),
                                         ),
                                       ],
-                                    ),),
+                                    ),
+                                  ),
 
                                 /*Container(
                                   padding: const EdgeInsets.only(left: 20.0, right: 20, top: 15),

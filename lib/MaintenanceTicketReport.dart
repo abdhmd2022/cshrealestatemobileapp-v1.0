@@ -468,7 +468,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                                 Icons.schedule,
                                 Colors.orange,
                                     () {
-                                  print('ticket : $ticket');
+                                      print('ticket : $ticket');
                                       Navigator.pushReplacement(
                                         context,
                                         MaterialPageRoute(builder: (context) => MaintenanceFollowUpScreen(ticketid: ticket['ticketNumber'],)),
@@ -562,7 +562,8 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                                                     },
                                                     child: Text("Submit"),
                                                   ),
-                                                ]);});});}),
+                                                ]);});});}
+                              ),
                               SizedBox(width: 5),
 
                               _buildDecentButton(

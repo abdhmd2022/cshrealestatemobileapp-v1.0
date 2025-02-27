@@ -23,7 +23,6 @@ late int serial_id;
 late int user_id;
 late bool is_admin;
 
-
 /// Load tokens from SharedPreferences
 Future<void> loadTokens() async {
 
@@ -40,7 +39,9 @@ Future<void> loadTokens() async {
   print("Loaded Company Token: $Company_Token");
   print("Loaded Company ID: $company_id");
   print("Loaded User ID: $user_id");
-  print("Admin: $is_admin");
+  print("Loading Admin Status: $is_admin");
+  print("Loaded User Email: $user_email");
+  print("Loaded User Name: $user_name");
 
 }
 

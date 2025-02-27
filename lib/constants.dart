@@ -14,7 +14,6 @@ const String authTokenBase = r'!1--3*%*%*%*9$api$8*%*%*%*5--0!X19fIUBBUyQlYXMxOT
 const String BASE_URL_config = "http://192.168.2.185:7750/api";
 
 // Serial & Company Tokens (Loaded Dynamically)
-/*late String Company_Token;*/
 late String Company_Token;
 late String user_email;
 late String user_name;
@@ -25,7 +24,6 @@ late bool is_admin;
 
 /// Load tokens from SharedPreferences
 Future<void> loadTokens() async {
-
   SharedPreferences prefs = await SharedPreferences.getInstance();
   /*Company_Token = prefs.getString("Company_Token") ?? "";*/
   Company_Token = prefs.getString("company_token") ?? "";
@@ -42,7 +40,6 @@ Future<void> loadTokens() async {
   print("Loading Admin Status: $is_admin");
   print("Loaded User Email: $user_email");
   print("Loaded User Name: $user_name");
-
 }
 
 // Global Font Family

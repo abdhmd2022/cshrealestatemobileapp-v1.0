@@ -394,13 +394,11 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
                                   "Remarks: ${item["remarks"]}",
                                   style: TextStyle(color: Colors.grey.shade700),
                                 ),
-
                               ],
                               if (nextFollowUpDate != null) ...[
                                 SizedBox(height: 6),
                                 Row(
                                   children: [
-
                                     Text(
                                       "Next Follow-up: ",
                                       style: TextStyle(
@@ -408,32 +406,13 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
                                         fontWeight: FontWeight.w500,
                                       ),
                                     ),
-
                                     Text(
                                       "${formatDate(nextFollowUpDate)}",
                                       style: TextStyle(
                                         color: followUpDateColor,
                                         fontWeight: FontWeight.w500,
                                       ),
-                                    ),
-                                  ],
-                                )
-                              ],
-                            ],
-                          ),
-                        ),
-                      )
-                    );
-
-                  },
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
+                                    )])]]))));}))]));});}
 
   Future<List<dynamic>> fetchLeadHistory(String id) async {
 

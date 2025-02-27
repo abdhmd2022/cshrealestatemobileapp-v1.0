@@ -69,8 +69,7 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
   TextEditingController _remarksController = TextEditingController();
   TextEditingController _amountController = TextEditingController();
 
-  Future<void> _pickImages({bool fromCamera = false}) async
-  {
+  Future<void> _pickImages({bool fromCamera = false}) async {
     List<XFile>? pickedFiles;
 
     if (fromCamera) {
@@ -322,7 +321,6 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
       if (response.statusCode == 200) {
 
         final jsonData = json.decode(response.body);
-
 
         print('data $jsonData');
         final List<dynamic> statuses = jsonData['data']['maintenanceStatus'];

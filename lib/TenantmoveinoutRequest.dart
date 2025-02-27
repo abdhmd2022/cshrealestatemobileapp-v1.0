@@ -257,7 +257,6 @@ class _TenantmoveinoutRequestPageState extends State<TenantmoveinoutRequest> wit
         body: Container(
             height: MediaQuery.of(context).size.height,
             width: MediaQuery.of(context).size.width,
-            color:Colors.white,
             decoration:BoxDecoration(
               gradient: LinearGradient(
                   colors: [

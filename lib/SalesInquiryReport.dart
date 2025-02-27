@@ -173,8 +173,7 @@ class InquiryModel {
 class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProviderStateMixin {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  List<InquiryModel> salesinquiry = [
-  ];
+  List<InquiryModel> salesinquiry = [];
 
   List<InquiryModel> filteredInquiries = [];
   String searchQuery = "";
@@ -1067,7 +1066,7 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
         _buildInfoRow(Icons.numbers, inquiry.inquiryNo),
         _buildInfoRow(FontAwesomeIcons.building, inquiry.unitType),
         // _buildInfoRow('Email:', inquiry.email),
-         _buildInfoRow(FontAwesomeIcons.map, _formatAreasWithEmirates(inquiry.preferredAreas)),
+        _buildInfoRow(FontAwesomeIcons.map, _formatAreasWithEmirates(inquiry.preferredAreas)),
         _buildInfoRow(FontAwesomeIcons.clock, DateFormat('dd-MMM-yyyy').format(DateTime.parse(inquiry.lastFollowupDate))),
         // _buildInfoRow('Created By (using for testing):', inquiry.created_by.toString()),
 
@@ -1104,13 +1103,7 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
                   style: TextStyle(
                     color: Colors.black87,
                   ),
-
-                ),
-              )
-          ),
-        ],
-      ),
-    );
+                )))]));
   }
 
   Widget _buildInfoRowExpandedView(String label, String value) {
@@ -1162,7 +1155,6 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
       case 'Drop':
         color = Colors.red;
         break;
-
       case 'Close':
         color = Colors.green;
         break;

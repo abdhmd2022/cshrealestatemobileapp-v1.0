@@ -650,8 +650,8 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _buildInfoRow('Unit:', ticket['unitNumber']),
-        _buildInfoRow('Building:', ticket['buildingName']),
-        _buildInfoRow('Emirate:', ticket['emirate']),
+        _buildInfoRow('Building:', '${ticket['buildingName']}, ${ticket['emirate']}'),
+       /* _buildInfoRow('Emirate:', ticket['emirate']),*/
         _buildInfoRow_subtype(
           'Type:',
           (ticket['maintenanceTypes'] != null && ticket['maintenanceTypes'].isNotEmpty)

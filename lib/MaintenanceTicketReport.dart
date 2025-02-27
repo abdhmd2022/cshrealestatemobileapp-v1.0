@@ -40,7 +40,6 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
     fetchTickets();
   }
 
-
   void _showFeedbackDialog(int ticketId) {
     showDialog(
       context: context,
@@ -621,7 +620,8 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                         color: Colors.black26,
                         size: 16,
                       ),
-                    ]))))])));}
+                    ]))))])));
+  }
 
   Widget _buildTicketHeader(Map<String, dynamic> ticket) {
     return Row(

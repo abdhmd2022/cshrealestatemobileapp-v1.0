@@ -365,7 +365,7 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                item["lead"]["name"],
+                                item["created_user"]["name"],
                                 style: TextStyle(
                                     fontSize: 16, fontWeight: FontWeight.w600),
                               ),

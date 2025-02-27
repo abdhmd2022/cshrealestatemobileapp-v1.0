@@ -1060,11 +1060,11 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
 
     final Map<String, dynamic> requestBody = {
       "uuid": uuidValue,
-      "lead_id":widget.id,
-      "date":formattedDate, // today's date
-      "status_id":selectedfollowup_status!.id,
+      "lead_id": widget.id,
+      "date": formattedDate, // today's date
+      "status_id": selectedfollowup_status!.id,
       "next_followup_date": nextfollowupdate, // next follow up date
-      "type_id":selectedfollowup_type!.id,
+      "type_id": selectedfollowup_type!.id,
       "remarks" : remarksController.text
     };
 

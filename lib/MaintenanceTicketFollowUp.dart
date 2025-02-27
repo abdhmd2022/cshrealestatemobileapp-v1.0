@@ -8,14 +8,11 @@ import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 import 'package:flutter/foundation.dart'; // For kIsWeb check
 import 'package:pdf/pdf.dart'; // For kIsWeb check
-
 import 'package:http/http.dart' as http;
 import 'MaintenanceTicketReport.dart';
 import 'constants.dart';
 import 'package:printing/printing.dart'; // For PDF preview
 import 'package:pdf/widgets.dart' as pw;
-
-
 
 class MaintenanceStatus {
   final int id;
@@ -72,7 +69,8 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
   TextEditingController _remarksController = TextEditingController();
   TextEditingController _amountController = TextEditingController();
 
-  Future<void> _pickImages({bool fromCamera = false}) async {
+  Future<void> _pickImages({bool fromCamera = false}) async
+  {
     List<XFile>? pickedFiles;
 
     if (fromCamera) {

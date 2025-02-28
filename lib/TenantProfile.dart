@@ -1,11 +1,69 @@
+import 'dart:convert';
+import 'package:cshrealestatemobile/FlatSelection.dart';
+import 'package:intl/intl.dart';
+
 import 'package:cshrealestatemobile/MaintenanceTicketReport.dart';
 import 'package:cshrealestatemobile/SalesDashboard.dart';
 import 'package:cshrealestatemobile/TenantDashboard.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 import 'constants.dart';
 
-class TenantProfile extends StatelessWidget {
+class TenantProfile extends StatefulWidget {
+  @override
+  _TenantProfileState createState() =>
+      _TenantProfileState();
+}
+class _TenantProfileState extends State<TenantProfile> with TickerProviderStateMixin {
+
+  int ticketCount = 0;
+
+  Future<void> fetchTicketCount() async {
+    String url = "$BASE_URL_config/v1/tenent/maintenance?tenent_id=$user_id&flat_id=$flat_id";
+
+    print('Fetching ticket count from URL: $url');
+
+    try {
+      final Map<String, String> headers = {
+        'Authorization': 'Bearer $Company_Token',
+        'Content-Type': 'application/json',
+      };
+
+      final response = await http.get(Uri.parse(url), headers: headers);
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> responseBody = json.decode(response.body);
+        if (responseBody['success'] == true) {
+          int totalCount = responseBody['meta']['totalCount'] ?? 0;
+
+          setState(() {
+            ticketCount = totalCount;
+          });
+
+          print("Total ticket count: $totalCount");
+        } else {
+          print("API returned success: false");
+        }
+      } else {
+        print("Error fetching data: ${response.statusCode}");
+        print("Error response body: ${response.body}");
+      }
+    } catch (e) {
+      print("Error fetching data: $e");
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize all tickets to be collapsed by default
+
+
+    fetchTicketCount();
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -96,20 +154,60 @@ class TenantProfile extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
 
-                  _buildStatCard('Apartments', '2', Colors.blue),
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: ()
+                      {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => FlatSelection()),
+                        );
+                      },
+                      child: Card(
+                        color: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        elevation: 4,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 15),
+                          child: Column(
+                            children: [
+                              Text(
+                                flatsList.length.toString(),
+                                style: TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                  color: appbar_color,
+                                ),
+                              ),
+                              const SizedBox(height: 5),
+                              Text(
+                                'Apartments',
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.black54,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
 
+                      ),
+                    ),
+                  )
+
+                  /*_buildStatCard('Apartments', flatsList.length.toString(), Colors.blue),
 
                   Expanded(
                     child: GestureDetector(
                       onTap: ()
                       {
-
                         Navigator.push(
                           context,
                           MaterialPageRoute(builder: (context) => MaintenanceTicketReport()),
                         );
-                      }
-                      ,
+                      },
                       child: Card(
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(15),
@@ -120,7 +218,7 @@ class TenantProfile extends StatelessWidget {
                           child: Column(
                             children: [
                               Text(
-                                '2',
+                                ticketCount.toString(),
                                 style: TextStyle(
                                   fontSize: 24,
                                   fontWeight: FontWeight.bold,
@@ -141,7 +239,7 @@ class TenantProfile extends StatelessWidget {
 
                       ),
                     ),
-                  )
+                  )*/
                 ],
               ),
             ),

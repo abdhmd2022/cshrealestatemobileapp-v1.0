@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
@@ -22,6 +24,11 @@ late int company_id;
 late int serial_id;
 late int user_id;
 late bool is_admin;
+late int flat_id;
+late String flat_name;
+late String flatsJson ;
+late List<dynamic> flatsList;
+
 
 /// Load tokens from SharedPreferences
 Future<void> loadTokens() async {
@@ -35,6 +42,16 @@ Future<void> loadTokens() async {
   serial_id = prefs.getInt("serial_id") ?? 0;
   user_id = prefs.getInt("user_id") ?? 0;
   is_admin = prefs.getBool("is_admin") ?? false;
+  flat_id = prefs.getInt("flat_id") ?? 0;
+  flat_name = prefs.getString("flat_name") ?? '';
+  flatsJson = prefs.getString("flats_list") ?? '';
+  if(!is_admin)
+    {
+      flatsList = jsonDecode(flatsJson);
+    }
+
+
+
 
   print("Loaded Company Token: $Company_Token");
   print("Loaded Company ID: $company_id");

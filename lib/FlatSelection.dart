@@ -25,11 +25,23 @@ class _FlatSelectionState extends State<FlatSelection> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     String? flatsJson = prefs.getString("flats_list");
+    int? savedFlatId = prefs.getInt("flat_id"); // Retrieve saved flat_id
+
 
     if (flatsJson != null) {
       List<dynamic> flatsList = jsonDecode(flatsJson);
       setState(() {
         flats = List<Map<String, dynamic>>.from(flatsList);
+        // Find the saved flat in the list
+        selectedFlat = flats.firstWhere(
+              (flat) => flat['id'] == savedFlatId,
+          orElse: () => {}, // Return an empty map instead of null
+        );
+
+        // Ensure selectedFlat is not empty, otherwise set it to first flat
+        if (selectedFlat!.isEmpty && flats.isNotEmpty) {
+          selectedFlat = null;
+        }
       });
     }
 
@@ -49,6 +61,8 @@ class _FlatSelectionState extends State<FlatSelection> {
     }
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    print('save flat id ${selectedFlat!['id']}');
 
     await prefs.setInt("flat_id", selectedFlat!['id']);
     await prefs.setString("flat_name", selectedFlat!['name']);

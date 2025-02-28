@@ -48,6 +48,8 @@ class _SidebarState extends State<Sidebar> {
   /// ✅ Fetch User Data from SharedPreferences
   Future<void> _loadUserData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    print('loaded id ${prefs.getInt("company_id") ?? prefs.getInt("flat_id") ?? 0}');
     setState(() {
       userName = prefs.getString("user_name") ?? "Guest User";
       userEmail = prefs.getString("user_email") ?? "guest@example.com";
@@ -56,7 +58,7 @@ class _SidebarState extends State<Sidebar> {
 
       /*serialNo = prefs.getString("serial_no") ?? "Unknown";*/
       /*serialID = prefs.getInt("serial_id") ?? 0;*/
-      companyID = prefs.getInt("company_id") ?? 0;
+      companyID = prefs.getInt("flat_id") ?? prefs.getInt("company_id") ?? 0;
       userID = prefs.getInt("user_id") ?? 0;
       is_admin = prefs.getBool("is_admin") ?? true;
 

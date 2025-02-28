@@ -119,10 +119,10 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
       isLoading = true;
     });
 
-
     String url = is_admin
         ? "$BASE_URL_config/v1/maintenance"
-        : "$BASE_URL_config/v1/tenent/maintenance";
+        : "$BASE_URL_config/v1/tenent/maintenance?tenent_id=$user_id&flat_id=$flat_id";
+
     /*final String url = "$BASE_URL_config/v1/maintenance"; // will change it for tenant*/
 
     print('url $url');

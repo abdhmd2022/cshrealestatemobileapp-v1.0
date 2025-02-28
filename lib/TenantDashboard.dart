@@ -856,7 +856,6 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
           'Dashboard',
           style: TextStyle(
             color: Colors.white,
-            fontSize: 18,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -1108,6 +1107,7 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
+
                 _buildDashboardButton(Icons.build, 'Maintenance', Colors.blueAccent, () {
                   Navigator.push
                     (
@@ -1152,7 +1152,8 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
                   MaterialPageRoute(builder: (context) => DecentTenantKYCForm()), // navigate to company and serial select screen
                 );
               }),
-              _buildDashboardButton(Icons.home, 'Complaints/Suggestions', Colors.redAccent, () {
+              _buildDashboardButton(Icons.info_outline, 'Complaints/Suggestions', Colors.redAccent, () {
+
                 Navigator.pushReplacement
                   (
                   context,

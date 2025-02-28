@@ -1,4 +1,5 @@
 import 'package:cshrealestatemobile/AvailableUnitsReport.dart';
+import 'package:cshrealestatemobile/MaintenanceTicketReport.dart';
 import 'package:cshrealestatemobile/SalesProfile.dart';
 import 'package:cshrealestatemobile/constants.dart';
 import 'package:flutter/cupertino.dart';
@@ -123,7 +124,6 @@ class _SalesDashboardScreenState extends State<SalesDashboardScreen> with Ticker
           'Dashboard',
           style: TextStyle(
             color: Colors.white,
-            fontSize: 18,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -297,14 +297,18 @@ class _SalesDashboardScreenState extends State<SalesDashboardScreen> with Ticker
               ),
             ),
             SizedBox(height: 20),
+
+
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 _buildDashboardButton(Icons.show_chart, 'In Progress', '12', Colors.blueAccent, () {}),
-                _buildDashboardButton(Icons.check_circle, 'Closed', '8', Colors.green, () {}),
+                _buildDashboardButton(Icons.check_circle_outline, 'Closed', '8', Colors.green, () {}),
               ],
             ),
             SizedBox(height: 10),
+
+
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -321,18 +325,27 @@ class _SalesDashboardScreenState extends State<SalesDashboardScreen> with Ticker
             ),
 
             SizedBox(height: 10),
+
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
+                _buildDashboardButton(Icons.build, 'Maintenance', '', Colors.blueAccent, () {
+
+                  Navigator.push(
+                    context,
+
+                    MaterialPageRoute(builder: (context) => MaintenanceTicketReport()),          // navigate to users screen
+                  );
+                }),
                 _buildDashboardButton(Icons.home, 'Available Units', '', Colors.orangeAccent, () {
                   Navigator.pushReplacement(
                     context,
 
                     MaterialPageRoute(builder: (context) => AvailableUnitsReport()),          // navigate to users screen
                   );
-                }),
-              ],
+                }),              ],
             ),
+
           ],
         ),
       ),

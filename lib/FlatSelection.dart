@@ -27,7 +27,6 @@ class _FlatSelectionState extends State<FlatSelection> {
     String? flatsJson = prefs.getString("flats_list");
     int? savedFlatId = prefs.getInt("flat_id"); // Retrieve saved flat_id
 
-
     if (flatsJson != null) {
       List<dynamic> flatsList = jsonDecode(flatsJson);
       setState(() {

@@ -124,7 +124,7 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
   };
 
   final Map<String, Map<String, double>> pendingInvoicesData = {
-    "1 BHK (Al Khaleej Center)": {"Jan": 12000, "Mar": 12000,"May": 12000,"July":12000},
+    "1 BHK (Al Khaleej Center)": {"Jan": 10000, "Mar": 10000,"May": 10000,"July":10000},
     "2 BHK (Musalla Tower)": {"Mar": 10000, "May": 10000},
   };
 
@@ -293,6 +293,7 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
+
                           Text(
                             'Cheque(s)',
                             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -614,6 +615,7 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
                                       onPressed: () {
                                         Navigator.pushReplacement(
                                           context,
+
                                           MaterialPageRoute(builder: (context) => AvailableUnitsReport()),          // navigate to users screen
                                         );
                                       },
@@ -861,7 +863,7 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
       key: _scaffoldKey,
       backgroundColor: Color(0xFFF8F9FB),
       appBar: AppBar(
-        backgroundColor: appbar_color,
+        backgroundColor: appbar_color.withOpacity(0.9),
         elevation: 1,
         title: Text(
           'Dashboard',
@@ -924,90 +926,202 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Section Title
-            Text(
-              'Cheque(s)',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+
+            Container(
+              height: 80,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 10,
+                    offset: Offset(0, 4),
+                  ),
+                ],
+              ),
+              child:  // Section Title
+              SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child:  Container(
+                      width: MediaQuery.of(context).size.width,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            height: 65,
+                            width: containerWidth,
+                            child: CupertinoPicker(
+                              scrollController: FixedExtentScrollController(initialItem: selectedIndex),
+                              itemExtent: 40,
+                              onSelectedItemChanged: (index) {
+                                setState(() {
+                                  selectedIndex = index;
+                                  final selected = apartments[index];
+                                  selectedApartment =
+                                  "${selected['apartment']} (${selected['building']})";
+                                });
+                              },
+                              children: apartments
+                                  .map((apartment) => Center(
+                                child: Text(
+                                  "${apartment['apartment']} (${apartment['building']})",
+                                  style: TextStyle(fontSize: 18.0,),
+                                ),
+                              ))
+                                  .toList(),
+                            ),
+                          ),
+
+
+                          Tooltip(
+                            message: 'Scroll up/down to change unit',
+                            child: IconButton(
+                              icon: Icon(Icons.info_outline),
+                              onPressed: () {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Row(
+                                      children: [
+                                        Icon(Icons.info, color: Colors.white),
+                                        SizedBox(width: 10),
+                                        Expanded(
+                                          child: Text(
+                                            'Scroll up/down to change unit',
+                                            style: TextStyle(color: Colors.white),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    backgroundColor: Colors.grey,
+                                    behavior: SnackBarBehavior.floating,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    action: SnackBarAction(
+                                      label: 'Got it',
+                                      textColor: Colors.white,
+                                      onPressed: () {
+                                        // Optional: Add action logic
+                                      },
+                                    ),
+                                    duration: Duration(seconds: 2),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        ],
+                      ))),
             ),
+
+
+
+
+
             SizedBox(height: 10),
             // Pie Chart
-            Container(
-              height: 250,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black12,
-                    blurRadius: 10,
-                    offset: Offset(0, 4),
-                  ),
-                ],
-              ),
-              padding: EdgeInsets.all(16),
-              child: PieChart(
-                PieChartData(
-                  sectionsSpace: 0, // Small gap between sections for better visual appeal
-                  centerSpaceRadius: 0, // Space in the middle of the pie chart
-                  sections: [
-                    PieChartSectionData(
-                      gradient: LinearGradient(
-                        colors: [Colors.blueAccent.shade100,Colors.blueAccent.shade200, Colors.blueAccent.shade200], // Gradient background
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                      ),                        value: data["Cleared"]!.toDouble(),
-                      title: 'Cleared\n${data["Cleared"]}',
-                      radius: 110,
-                      titleStyle: TextStyle(fontSize: 15.0, fontWeight: FontWeight.bold,
-                          color: Colors.white),
-                    ),
-                    PieChartSectionData(
-                      gradient: LinearGradient(
-                        colors: [Colors.orangeAccent.shade100,Colors.orangeAccent.shade200, Colors.orangeAccent.shade200], // Gradient background
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                      ),
-                      value: data["Pending"]!.toDouble(),
-                      title: 'Pending\n${data["Pending"]}',
-                      radius: 110,
-                      titleStyle: TextStyle(fontSize: 15.0, fontWeight: FontWeight.bold,
-                          color: Colors.white),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            SizedBox(height: 20),
-            // Pending Invoices Bar Chart
-            Text(
-              'Pending Invoices',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 10),
-            Container(
-              height: 220,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black12,
-                    blurRadius: 10,
-                    offset: Offset(0, 4),
-                  ),
-                ],
-              ),
-              padding: EdgeInsets.all(16),
-              child: Container(
-                child: Center(
-                  child: ApartmentBarChart(
-                    selectedApartment: selectedApartment!,
-                    pendingInvoicesData: pendingInvoicesData,
-                  ),
-                ),
 
-              )
+            Container(
+              height: 275,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 10,
+                    offset: Offset(0, 4),
+                  ),
+                ],
+              ),
+              padding: EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Cheque(s)',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: 10),
+                  Expanded(
+                    child: PieChart(
+                      PieChartData(
+                        sectionsSpace: 0, // Small gap between sections for better visual appeal
+                        centerSpaceRadius: 0, // Space in the middle of the pie chart
+                        sections: [
+                          PieChartSectionData(
+                            gradient: LinearGradient(
+                              colors: [Colors.blueAccent.shade100,Colors.blueAccent.shade200, Colors.blueAccent.shade200], // Gradient background
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                            ),                        value: data["Cleared"]!.toDouble(),
+                            title: 'Cleared\n${data["Cleared"]}',
+                            radius: 110,
+                            titleStyle: TextStyle(fontSize: 15.0, fontWeight: FontWeight.bold,
+                                color: Colors.white),
+                          ),
+                          PieChartSectionData(
+                            gradient: LinearGradient(
+                              colors: [Colors.orangeAccent.shade100,Colors.orangeAccent.shade200, Colors.orangeAccent.shade200], // Gradient background
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                            ),
+                            value: data["Pending"]!.toDouble(),
+                            title: 'Pending\n${data["Pending"]}',
+                            radius: 110,
+                            titleStyle: TextStyle(fontSize: 15.0, fontWeight: FontWeight.bold,
+                                color: Colors.white),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
+
+            SizedBox(height: 15),
+            // Pending Invoices Bar Chart
+
+
+
+            Container(
+              height: 275,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 10,
+                    offset: Offset(0, 4),
+                  ),
+                ],
+              ),
+              padding: EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Pending Invoices',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: 20),
+                  Expanded(
+                    child: Container(
+                      child: Center(
+                        child: ApartmentBarChart(
+                          selectedApartment: selectedApartment!,
+                          pendingInvoicesData: pendingInvoicesData,
+                        ),
+                      ),
+                    )
+                  ),
+                ],
+              ),
+            ),
+
             SizedBox(height: 20),
             // Action Buttons
             Row(
@@ -1020,17 +1134,54 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
                     MaterialPageRoute(builder: (context) => MaintenanceTicketReport()), // navigate to company and serial select screen
                   );
                 }),
-                _buildDashboardButton(Icons.move_to_inbox, 'Move In/Out', Colors.green, () {}),
+                _buildDashboardButton(Icons.move_to_inbox, 'Move In/Out', Colors.green, () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => TenantmoveinoutRequest()),          // navigate to users screen
+                  );
+                }),
               ],
             ),
             SizedBox(height: 10),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _buildDashboardButton(Icons.credit_card, 'Access Card', Colors.purpleAccent, () {}),
-                _buildDashboardButton(Icons.home, 'Available Units', Colors.orangeAccent, () {}),
+                _buildDashboardButton(Icons.credit_card, 'Access Card Replacement', Colors.purpleAccent, () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => TenantAccessCardRequest()),          // navigate to users screen
+                  );
+                }),
+                _buildDashboardButton(Icons.home, 'Available Units', Colors.orangeAccent, () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => AvailableUnitsReport()),          // navigate to users screen
+                  );
+                }),
               ],
             ),
+          SizedBox(height: 10),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              _buildDashboardButton(Icons.upload_file, 'KYC Update', Colors.tealAccent, () {
+                Navigator.pushReplacement
+                  (
+                  context,
+                  MaterialPageRoute(builder: (context) => DecentTenantKYCForm()), // navigate to company and serial select screen
+                );
+              }),
+              _buildDashboardButton(Icons.home, 'Complaints/Suggestions', Colors.redAccent, () {
+                Navigator.pushReplacement
+                  (
+                  context,
+                  MaterialPageRoute(builder: (context) => TenantComplaint()), // navigate to company and serial select screen
+                );
+              }),
+            ],
+          ),
+
+
             SizedBox(height: 20),
           ],
         ),
@@ -1058,17 +1209,21 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
           ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Icon(icon, color: color, size: 32),
               SizedBox(height: 8),
-              Text(label, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+              Text(
+                label,
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+              ),
             ],
           ),
         ),
       ),
     );
   }
-
 
 }
 

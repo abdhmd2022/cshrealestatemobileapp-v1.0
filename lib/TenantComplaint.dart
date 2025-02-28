@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:cshrealestatemobile/MaintenanceTicketReport.dart';
 import 'package:cshrealestatemobile/SalesDashboard.dart';
+import 'package:cshrealestatemobile/TenantDashboard.dart';
 import 'package:cshrealestatemobile/constants.dart';
 import 'package:flutter/animation.dart';
 import 'package:flutter/cupertino.dart';
@@ -67,7 +68,7 @@ class _TenantComplaintPageState extends State<TenantComplaint> with TickerProvid
             {
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (context) => SalesDashboard()),
+                MaterialPageRoute(builder: (context) => TenantDashboard()),
               );
             },
             child: Icon(
@@ -92,7 +93,6 @@ class _TenantComplaintPageState extends State<TenantComplaint> with TickerProvid
         body: Container(
             height: MediaQuery.of(context).size.height,
             width: MediaQuery.of(context).size.width,
-            color: Colors.white,
             decoration:BoxDecoration(
               gradient: LinearGradient(
                   colors: [

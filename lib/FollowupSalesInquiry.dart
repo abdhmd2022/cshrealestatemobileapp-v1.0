@@ -303,7 +303,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
 
   List<Map<String, dynamic>> areasToDisplay = []; // Global variable
 
-  Future<void> _showEmailPopup(Function updateMainState) async {
+  Future<void> _showEmailPopup(Function updateMainState, String no) async {
 
     // Optionally, you can show a loading indicator while fetching data
     /*showDialog(
@@ -337,6 +337,8 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
 
     TextEditingController subjectController = TextEditingController();
     TextEditingController bodyController = TextEditingController();
+
+    subjectController.text = 'Followup for inquiry # $no';
     String buttonText = "Select Next Follow-up Date";
 
     bool isSubjectEmpty = false;
@@ -370,7 +372,8 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                       // Input for Subject
                       TextField(
                         controller: subjectController,
-                        style: TextStyle(color: Colors.black),
+                        enabled: false,
+                        style: TextStyle(color: Colors.black54),
                         decoration: InputDecoration(
                           labelText: "Subject",
                           labelStyle: TextStyle(color: Colors.black54),
@@ -987,7 +990,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
     );
   }
 
-  void openEmail(String no) async {
+  /*void openEmail(String no) async {
 
     final String email = emailcontroller.text.trim();
 
@@ -1004,7 +1007,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
     } else {
       print("Could not open email client");
     }
-  }
+  }*/
 
   /*  void openWhatsApp() async {
     String phone = customercontactnocontroller.text.trim(); // Get number from TextField
@@ -2386,7 +2389,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                                             () {
                                                               _showEmailPopup(() {
                                                                 setState(() {}); // Updates the main widget
-                                                              }); // Updates the main widget
+                                                              }, widget.id.toString()); // Updates the main widget
                                                         },
                                                       ),
                                                     ])

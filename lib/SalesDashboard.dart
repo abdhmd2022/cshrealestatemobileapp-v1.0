@@ -8,8 +8,6 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'dart:ui' as ui;
-
-
 import 'SalesInquiryReport.dart';
 import 'Sidebar.dart';
 
@@ -333,10 +331,8 @@ class _SalesDashboardScreenState extends State<SalesDashboardScreen> with Ticker
                     MaterialPageRoute(builder: (context) => AvailableUnitsReport()),          // navigate to users screen
                   );
                 }),
-
               ],
             ),
-
           ],
         ),
       ),
@@ -345,7 +341,6 @@ class _SalesDashboardScreenState extends State<SalesDashboardScreen> with Ticker
     /*return Scaffold(
     key: _scaffoldKey,
     backgroundColor: const Color(0xFFF2F4F8),
-
     appBar: AppBar(
       backgroundColor: appbar_color.withOpacity(0.9),
       actions: [
@@ -842,8 +837,6 @@ class _SalesDashboardScreenState extends State<SalesDashboardScreen> with Ticker
       ),
     );
   }
-
-
 
 }
 

@@ -45,10 +45,7 @@ class TenantDashboardScreen extends StatefulWidget {
   _SalesDashboardScreenState createState() => _SalesDashboardScreenState();
 }
 
-
 class _SalesDashboardScreenState extends State<TenantDashboardScreen> with TickerProviderStateMixin {
-
-
 
   /*String? selectedYear;
   Map<String, Map<String, int>> salesData = {
@@ -131,7 +128,6 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
   String? selectedApartment;
   // Current selected apartment
 
-
   // Current index for CupertinoPicker
   int selectedIndex = 0;
 
@@ -152,7 +148,6 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
       };
     }).toList();
   }
-
 
   @override
   void initState() {
@@ -177,23 +172,16 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
     });*/
 
     setState(() {
-
       selectedApartment = "${apartments[selectedIndex]['apartment']} (${apartments[selectedIndex]['building']})";
-
     });
-
-
-
 
   }
 
-
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-
 
   @override
   Widget build(BuildContext context) {
-   /* List<String> years = salesData.keys.toList();
+/* List<String> years = salesData.keys.toList();
 
     int initialYearIndex = years.indexOf(selectedYear ?? years.last);
 */
@@ -218,7 +206,6 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
     ];
 
     final chartData = groupInvoicesByMonth(invoices);
-
 
     /*return Scaffold(
       key: _scaffoldKey,
@@ -1015,10 +1002,6 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
                       ))),
             ),
 
-
-
-
-
             SizedBox(height: 10),
             // Pie Chart
 
@@ -1082,10 +1065,8 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
             ),
 
             SizedBox(height: 15),
+
             // Pending Invoices Bar Chart
-
-
-
             Container(
               height: 275,
               decoration: BoxDecoration(
@@ -1325,7 +1306,6 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
     return "$month-${year.substring(2)}"; // Format as 'MMM-yy'
   }
 }*/
-
 
 double _getReservedSize(List<int> salesValues) {
   if (salesValues.isEmpty) return 40; // Default size if there are no sales values

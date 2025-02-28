@@ -183,7 +183,6 @@ class _SalesDashboardScreenState extends State<SalesDashboardScreen> with Ticker
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-
             Container(
               height: 70,
               decoration: BoxDecoration(
@@ -222,9 +221,6 @@ class _SalesDashboardScreenState extends State<SalesDashboardScreen> with Ticker
                                   .toList(),
                             ),
                           ),
-
-
-
                           Tooltip(
                             message: 'Scroll up/down to change year',
                             child: IconButton(
@@ -262,20 +258,11 @@ class _SalesDashboardScreenState extends State<SalesDashboardScreen> with Ticker
                               },
                             ),
                           ),
-
-
                         ],
                       ))),
             ),
 
-
-
-
-
-
             SizedBox(height: 10),
-
-
 
             Container(
               height: 275,
@@ -306,11 +293,9 @@ class _SalesDashboardScreenState extends State<SalesDashboardScreen> with Ticker
                     SizedBox(height: 20),
                     Expanded(
                       child: SalesBarChart(salesData: salesData, selectedYear: selectedYear!),
-
                     ),
                   ],
                 ),
-
               ),
             ),
             SizedBox(height: 20),

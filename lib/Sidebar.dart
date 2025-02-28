@@ -52,8 +52,6 @@ class _SidebarState extends State<Sidebar> {
       userName = prefs.getString("user_name") ?? "Guest User";
       userEmail = prefs.getString("user_email") ?? "guest@example.com";
 
-
-
       companyName = prefs.getString("company_name") ?? prefs.getString("flat_name") ?? "Unknown";
 
       /*serialNo = prefs.getString("serial_no") ?? "Unknown";*/

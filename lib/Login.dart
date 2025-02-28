@@ -261,9 +261,6 @@ class _LoginPageState extends State<Login> {
             }).where((flat) => flat != null).cast<Map<String, dynamic>>()).toList();
           }).toList();
 
-
-
-
           await prefs.setString("flats_list", jsonEncode(flatsList));
 
           loadTokens();

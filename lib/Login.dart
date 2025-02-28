@@ -163,8 +163,6 @@ class _LoginPageState extends State<Login> {
           await prefs.setInt("company_id", firstUser.companyId ?? 0);
           await prefs.setBool('is_admin', isAdmin==true ? true : false);
 
-
-
           List<Map<String, dynamic>> companiesJson = usersList
               .map((user) => {
             'id': user.companyId ?? 0,

@@ -33,7 +33,7 @@ class TenantDashboard extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Tenant Dashboard',
+      title: 'Dashboard',
       theme: ThemeData(primarySwatch: Colors.blue),
       home: TenantDashboardScreen(),
     );

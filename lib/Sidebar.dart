@@ -1,3 +1,4 @@
+import 'package:cshrealestatemobile/FlatSelection.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'constants.dart';
@@ -35,6 +36,8 @@ class _SidebarState extends State<Sidebar> {
   int companyID = 0;
 
   int userID = 0;
+  bool is_admin = true;
+
 
   @override
   void initState() {
@@ -54,6 +57,7 @@ class _SidebarState extends State<Sidebar> {
       /*serialID = prefs.getInt("serial_id") ?? 0;*/
       companyID = prefs.getInt("company_id") ?? 0;
       userID = prefs.getInt("user_id") ?? 0;
+      is_admin = prefs.getBool("is_admin") ?? true;
 
 
     });
@@ -184,19 +188,28 @@ class _SidebarState extends State<Sidebar> {
               child: ListView(
                 padding: EdgeInsets.zero,
                 children: [
-                  _buildDrawerItem(Icons.dashboard, "Sales", widget.isDashEnable, () {
+                  if(is_admin)
+                    _buildDrawerItem(Icons.dashboard, "Dashboard", widget.isDashEnable, () {
                     _navigateTo(context, SalesDashboard());
                   }),
-                  _buildDrawerItem(Icons.dashboard, "Tenant", true, () {
+                  if(!is_admin)
+                    _buildDrawerItem(Icons.dashboard, "Dashboard", true, () {
                     _navigateTo(context, TenantDashboardScreen());
                   }),
-                  _buildDrawerItem(Icons.dashboard, "Landlord", true, () {
+                  if(is_admin)
+                    _buildDrawerItem(Icons.dashboard, "Landlord Dashboard", true, () {
                     _navigateTo(context, LandlordDashboardScreen());
                   }),
-                  _buildDrawerItem(Icons.business, "Companies", true, () {
+                  if(is_admin)
+                    _buildDrawerItem(Icons.business, "Companies", true, () {
                     _navigateTo(context, CompanySelection());
                   }),
-                  _buildDrawerItem(Icons.settings, "Settings", true, () {
+                  if(!is_admin)
+                    _buildDrawerItem(Icons.business, "Flats", true, () {
+                      _navigateTo(context, FlatSelection());
+                    }),
+
+                    _buildDrawerItem(Icons.settings, "Settings", true, () {
                     _navigateTo(context, SettingsScreen());
                   }),
                   Divider(),

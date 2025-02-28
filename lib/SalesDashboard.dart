@@ -18,7 +18,7 @@ class SalesDashboard extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Sales Dashboard',
+      title: 'Dashboard',
       theme: ThemeData(primarySwatch: Colors.blue),
       home: SalesDashboardScreen(),
     );

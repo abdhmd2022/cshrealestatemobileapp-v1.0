@@ -117,7 +117,7 @@ class _FlatSelectionState extends State<FlatSelection> {
                     flats.map((flat) {
                       return DropdownMenuItem(
                         value: flat,
-                        child: Text("${flat['name']} - ${flat['building']}"),
+                        child: Text("${flat['name']} - ${flat['building']}, ${flat['state']}"),
                       );
                     }).toList(),
                         (Map<String, dynamic>? newFlat) async {

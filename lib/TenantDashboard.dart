@@ -220,8 +220,7 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
     final chartData = groupInvoicesByMonth(invoices);
 
 
-
-    return Scaffold(
+    /*return Scaffold(
       key: _scaffoldKey,
       backgroundColor: const Color(0xFFF2F4F8),
       appBar: AppBar(
@@ -288,88 +287,88 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child:  Container(
-                  width: MediaQuery.of(context).size.width,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Cheque(s)',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                      )
-                      ,
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                  scrollDirection: Axis.horizontal,
+                  child:  Container(
+                      width: MediaQuery.of(context).size.width,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Container(
-                            height: 65,
-                            width: containerWidth,
-                            child: CupertinoPicker(
-                              scrollController: FixedExtentScrollController(initialItem: selectedIndex),
-                              itemExtent: 40,
-                              onSelectedItemChanged: (index) {
-                                setState(() {
-                                  selectedIndex = index;
-                                  final selected = apartments[index];
-                                  selectedApartment =
-                                  "${selected['apartment']} (${selected['building']})";
-                                });
-                              },
-                              children: apartments
-                                  .map((apartment) => Center(
-                                child: Text(
-                                  "${apartment['apartment']} (${apartment['building']})",
-                                  style: TextStyle(fontSize: 18.0,),
+                          Text(
+                            'Cheque(s)',
+                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                          )
+                          ,
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                height: 65,
+                                width: containerWidth,
+                                child: CupertinoPicker(
+                                  scrollController: FixedExtentScrollController(initialItem: selectedIndex),
+                                  itemExtent: 40,
+                                  onSelectedItemChanged: (index) {
+                                    setState(() {
+                                      selectedIndex = index;
+                                      final selected = apartments[index];
+                                      selectedApartment =
+                                      "${selected['apartment']} (${selected['building']})";
+                                    });
+                                  },
+                                  children: apartments
+                                      .map((apartment) => Center(
+                                    child: Text(
+                                      "${apartment['apartment']} (${apartment['building']})",
+                                      style: TextStyle(fontSize: 18.0,),
+                                    ),
+                                  ))
+                                      .toList(),
                                 ),
-                              ))
-                                  .toList(),
-                            ),
-                          ),
+                              ),
 
 
-                          Tooltip(
-                            message: 'Scroll up/down to change unit',
-                            child: IconButton(
-                              icon: Icon(Icons.info_outline),
-                              onPressed: () {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Row(
-                                      children: [
-                                        Icon(Icons.info, color: Colors.white),
-                                        SizedBox(width: 10),
-                                        Expanded(
-                                          child: Text(
-                                            'Scroll up/down to change unit',
-                                            style: TextStyle(color: Colors.white),
-                                          ),
+                              Tooltip(
+                                message: 'Scroll up/down to change unit',
+                                child: IconButton(
+                                  icon: Icon(Icons.info_outline),
+                                  onPressed: () {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Row(
+                                          children: [
+                                            Icon(Icons.info, color: Colors.white),
+                                            SizedBox(width: 10),
+                                            Expanded(
+                                              child: Text(
+                                                'Scroll up/down to change unit',
+                                                style: TextStyle(color: Colors.white),
+                                              ),
+                                            ),
+                                          ],
                                         ),
-                                      ],
-                                    ),
-                                    backgroundColor: appbar_color.shade700,
-                                    behavior: SnackBarBehavior.floating,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                    action: SnackBarAction(
-                                      label: 'Got it',
-                                      textColor: Colors.lightGreenAccent,
-                                      onPressed: () {
-                                        // Optional: Add action logic
-                                      },
-                                    ),
-                                    duration: Duration(seconds: 2),
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
+                                        backgroundColor: appbar_color.shade700,
+                                        behavior: SnackBarBehavior.floating,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(10),
+                                        ),
+                                        action: SnackBarAction(
+                                          label: 'Got it',
+                                          textColor: Colors.lightGreenAccent,
+                                          onPressed: () {
+                                            // Optional: Add action logic
+                                          },
+                                        ),
+                                        duration: Duration(seconds: 2),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
 
+                            ],
+                          ),
                         ],
-                      ),
-                    ],
-                  ))),
+                      ))),
               SizedBox(height: 20),
               // Pie Chart
               SizedBox(
@@ -388,7 +387,7 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
                         title: 'Cleared\n${data["Cleared"]}',
                         radius: 140,
                         titleStyle: TextStyle(fontSize: 15.0, fontWeight: FontWeight.bold,
-                        color: Colors.white),
+                            color: Colors.white),
                       ),
                       PieChartSectionData(
                         gradient: LinearGradient(
@@ -400,7 +399,7 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
                         title: 'Pending\n${data["Pending"]}',
                         radius: 140,
                         titleStyle: TextStyle(fontSize: 15.0, fontWeight: FontWeight.bold,
-                        color: Colors.white),
+                            color: Colors.white),
                       ),
                     ],
                   ),
@@ -419,16 +418,16 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
                     ),
                     SizedBox(height: 10),
 
-                Container(
-                  height: MediaQuery.of(context).size.height * 0.4,
-                  child: Center(
-                    child: ApartmentBarChart(
-                      selectedApartment: selectedApartment!,
-                      pendingInvoicesData: pendingInvoicesData,
-                    ),
-                  ),
+                    Container(
+                      height: MediaQuery.of(context).size.height * 0.4,
+                      child: Center(
+                        child: ApartmentBarChart(
+                          selectedApartment: selectedApartment!,
+                          pendingInvoicesData: pendingInvoicesData,
+                        ),
+                      ),
 
-                )
+                    )
 
 
                   ],
@@ -497,277 +496,277 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
               SizedBox(height: 20),
 
               Container(
-                width: MediaQuery.of(context).size.width,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    IntrinsicHeight(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          // First Button
-                          Expanded(
-                            child: ElevatedButton(
-                              onPressed: () {
-                                Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(builder: (context) => TenantmoveinoutRequest()),          // navigate to users screen
-                                );
-                              },
-                              style: ElevatedButton.styleFrom(
-                                padding: EdgeInsets.zero, // Remove padding from button to ensure container fills the space
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(16), // Rounded corners for the button
-                                ),
-                                backgroundColor: Colors.transparent, // Transparent background to allow the container to show
-                                shadowColor: Colors.black.withOpacity(0.2), // Soft shadow for depth
-                                elevation: 5, // Moderate elevation for a subtle 3D effect
-                              ),
-
-                              child: Container(
-                                padding: EdgeInsets.all(16),
-                                width: double.infinity, // Ensure container fills the button space
-                                height: double.infinity, // Ensure container fills the button space
-                                decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    colors: [appbar_color.withOpacity(0.6), appbar_color.withOpacity(0.8)], // Gradient background
-                                    begin: Alignment.topCenter,
-                                    end: Alignment.bottomCenter,
-                                  ),
-                                  borderRadius: BorderRadius.circular(16), // Consistent rounded corners
-                                ),
-                                child: Center(
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Icon(
-                                        Icons.transfer_within_a_station_outlined,
-                                        color: Colors.white,
-                                      ),
-                                      SizedBox(height: 10),
-                                      Text(
-                                        'Move In/Out Request',
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.w600,
-                                          color: Colors.white,
-                                          letterSpacing: 0.8,
-                                        ))]))))),
-
-                          SizedBox(width: 10),
-                          // Second Button
-                          Expanded(
-                            child: ElevatedButton(
-                              onPressed: () {
-                                Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(builder: (context) => TenantAccessCardRequest()),          // navigate to users screen
-                                );
-                              },
-                              style: ElevatedButton.styleFrom(
-                                padding: EdgeInsets.all(0), // Remove padding for full gradient coverage
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(16),
-                                ),
-                                backgroundColor: Colors.transparent, // Transparent background
-                                shadowColor: Colors.black.withOpacity(0.2),
-                                elevation: 5,
-                              ),
-                              child: Container(
-                                padding: EdgeInsets.all(16),
-                                width: double.infinity,
-                                height: double.infinity,
-                                decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    colors: [appbar_color.withOpacity(0.6), appbar_color.withOpacity(0.8)], // Gradient background
-                                    begin: Alignment.topCenter,
-                                    end: Alignment.bottomCenter,
-                                  ),
-                                  borderRadius: BorderRadius.circular(16), // Consistent rounded corners
-                                ),
-                                child: Center(
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Icon(
-                                        Icons.refresh,
-                                        color: Colors.white,
-                                      ),
-                                      SizedBox(height: 10),
-                                      Text(
-                                        'Access Card Replacement Request',
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.w600,
-                                          color: Colors.white,
-                                          letterSpacing: 0.8,
-                                        ))])))))])),
-
-                    SizedBox(height: 10),
-
-                    Row(
+                  width: MediaQuery.of(context).size.width,
+                  child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Expanded(
-                          child: ElevatedButton(
-                            onPressed: () {
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(builder: (context) => AvailableUnitsReport()),          // navigate to users screen
-                              );
-                            },
-                            style: ElevatedButton.styleFrom(
-                              padding: EdgeInsets.all(0), // Remove padding for full gradient coverage
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                              backgroundColor: Colors.transparent, // Transparent background
-                              shadowColor: Colors.black.withOpacity(0.2),
-                              elevation: 5,
-                            ),
-                            child: Container(
-                              padding: EdgeInsets.all(16),
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  colors: [appbar_color.withOpacity(0.6), appbar_color.withOpacity(0.8)], // Gradient background
-                                  begin: Alignment.topCenter,
-                                  end: Alignment.bottomCenter,
-                                ),
-                                borderRadius: BorderRadius.circular(16), // Consistent rounded corners
-                              ),
-                              child: Center(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(
-                                      Icons.home,
-                                      color: Colors.white,
+                        IntrinsicHeight(
+                            child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  // First Button
+                                  Expanded(
+                                      child: ElevatedButton(
+                                          onPressed: () {
+                                            Navigator.pushReplacement(
+                                              context,
+                                              MaterialPageRoute(builder: (context) => TenantmoveinoutRequest()),          // navigate to users screen
+                                            );
+                                          },
+                                          style: ElevatedButton.styleFrom(
+                                            padding: EdgeInsets.zero, // Remove padding from button to ensure container fills the space
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.circular(16), // Rounded corners for the button
+                                            ),
+                                            backgroundColor: Colors.transparent, // Transparent background to allow the container to show
+                                            shadowColor: Colors.black.withOpacity(0.2), // Soft shadow for depth
+                                            elevation: 5, // Moderate elevation for a subtle 3D effect
+                                          ),
+
+                                          child: Container(
+                                              padding: EdgeInsets.all(16),
+                                              width: double.infinity, // Ensure container fills the button space
+                                              height: double.infinity, // Ensure container fills the button space
+                                              decoration: BoxDecoration(
+                                                gradient: LinearGradient(
+                                                  colors: [appbar_color.withOpacity(0.6), appbar_color.withOpacity(0.8)], // Gradient background
+                                                  begin: Alignment.topCenter,
+                                                  end: Alignment.bottomCenter,
+                                                ),
+                                                borderRadius: BorderRadius.circular(16), // Consistent rounded corners
+                                              ),
+                                              child: Center(
+                                                  child: Column(
+                                                      mainAxisAlignment: MainAxisAlignment.center,
+                                                      children: [
+                                                        Icon(
+                                                          Icons.transfer_within_a_station_outlined,
+                                                          color: Colors.white,
+                                                        ),
+                                                        SizedBox(height: 10),
+                                                        Text(
+                                                            'Move In/Out Request',
+                                                            textAlign: TextAlign.center,
+                                                            style: TextStyle(
+                                                              fontWeight: FontWeight.w600,
+                                                              color: Colors.white,
+                                                              letterSpacing: 0.8,
+                                                            ))]))))),
+
+                                  SizedBox(width: 10),
+                                  // Second Button
+                                  Expanded(
+                                      child: ElevatedButton(
+                                          onPressed: () {
+                                            Navigator.pushReplacement(
+                                              context,
+                                              MaterialPageRoute(builder: (context) => TenantAccessCardRequest()),          // navigate to users screen
+                                            );
+                                          },
+                                          style: ElevatedButton.styleFrom(
+                                            padding: EdgeInsets.all(0), // Remove padding for full gradient coverage
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.circular(16),
+                                            ),
+                                            backgroundColor: Colors.transparent, // Transparent background
+                                            shadowColor: Colors.black.withOpacity(0.2),
+                                            elevation: 5,
+                                          ),
+                                          child: Container(
+                                              padding: EdgeInsets.all(16),
+                                              width: double.infinity,
+                                              height: double.infinity,
+                                              decoration: BoxDecoration(
+                                                gradient: LinearGradient(
+                                                  colors: [appbar_color.withOpacity(0.6), appbar_color.withOpacity(0.8)], // Gradient background
+                                                  begin: Alignment.topCenter,
+                                                  end: Alignment.bottomCenter,
+                                                ),
+                                                borderRadius: BorderRadius.circular(16), // Consistent rounded corners
+                                              ),
+                                              child: Center(
+                                                  child: Column(
+                                                      mainAxisAlignment: MainAxisAlignment.center,
+                                                      children: [
+                                                        Icon(
+                                                          Icons.refresh,
+                                                          color: Colors.white,
+                                                        ),
+                                                        SizedBox(height: 10),
+                                                        Text(
+                                                            'Access Card Replacement Request',
+                                                            textAlign: TextAlign.center,
+                                                            style: TextStyle(
+                                                              fontWeight: FontWeight.w600,
+                                                              color: Colors.white,
+                                                              letterSpacing: 0.8,
+                                                            ))])))))])),
+
+                        SizedBox(height: 10),
+
+                        Row(
+                            children: [
+                              Expanded(
+                                  child: ElevatedButton(
+                                      onPressed: () {
+                                        Navigator.pushReplacement(
+                                          context,
+                                          MaterialPageRoute(builder: (context) => AvailableUnitsReport()),          // navigate to users screen
+                                        );
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                        padding: EdgeInsets.all(0), // Remove padding for full gradient coverage
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(16),
+                                        ),
+                                        backgroundColor: Colors.transparent, // Transparent background
+                                        shadowColor: Colors.black.withOpacity(0.2),
+                                        elevation: 5,
+                                      ),
+                                      child: Container(
+                                          padding: EdgeInsets.all(16),
+                                          decoration: BoxDecoration(
+                                            gradient: LinearGradient(
+                                              colors: [appbar_color.withOpacity(0.6), appbar_color.withOpacity(0.8)], // Gradient background
+                                              begin: Alignment.topCenter,
+                                              end: Alignment.bottomCenter,
+                                            ),
+                                            borderRadius: BorderRadius.circular(16), // Consistent rounded corners
+                                          ),
+                                          child: Center(
+                                              child: Column(
+                                                  mainAxisAlignment: MainAxisAlignment.center,
+                                                  children: [
+                                                    Icon(
+                                                      Icons.home,
+                                                      color: Colors.white,
+                                                    ),
+                                                    SizedBox(height: 10),
+                                                    Text(
+                                                        'Available Units',
+                                                        textAlign: TextAlign.center,
+                                                        style: TextStyle(
+                                                          fontWeight: FontWeight.w600,
+                                                          color: Colors.white,
+                                                          letterSpacing: 0.8,
+                                                        ))])))))]),
+
+                        SizedBox(height: 10,),
+
+                        IntrinsicHeight(child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.pushReplacement
+                                      (
+                                      context,
+                                      MaterialPageRoute(builder: (context) => DecentTenantKYCForm()), // navigate to company and serial select screen
+                                    );
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    padding: EdgeInsets.zero, // Remove padding from button to ensure container fills the space
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(16), // Rounded corners for the button
                                     ),
-                                    SizedBox(height: 10),
-                                    Text(
-                                      'Available Units',
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.w600,
-                                        color: Colors.white,
-                                        letterSpacing: 0.8,
-                                      ))])))))]),
-
-                    SizedBox(height: 10,),
-
-                    IntrinsicHeight(child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(
-                          child: ElevatedButton(
-                            onPressed: () {
-                              Navigator.pushReplacement
-                                (
-                                context,
-                                MaterialPageRoute(builder: (context) => DecentTenantKYCForm()), // navigate to company and serial select screen
-                              );
-                            },
-                            style: ElevatedButton.styleFrom(
-                              padding: EdgeInsets.zero, // Remove padding from button to ensure container fills the space
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16), // Rounded corners for the button
-                              ),
-                              backgroundColor: Colors.transparent, // Transparent background to allow the container to show
-                              shadowColor: Colors.black.withOpacity(0.2), // Soft shadow for depth
-                              elevation: 5, // Moderate elevation for a subtle 3D effect
-                            ),
-                            child: Container(
-                                alignment: Alignment.center, // Center the content inside the container
-                                padding: EdgeInsets.all(16),
-                                decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    colors: [appbar_color.withOpacity(0.6), appbar_color.withOpacity(0.8)], // Gradient background
-                                    begin: Alignment.topCenter,
-                                    end: Alignment.bottomCenter,
+                                    backgroundColor: Colors.transparent, // Transparent background to allow the container to show
+                                    shadowColor: Colors.black.withOpacity(0.2), // Soft shadow for depth
+                                    elevation: 5, // Moderate elevation for a subtle 3D effect
                                   ),
-                                  borderRadius: BorderRadius.circular(16), // Consistent rounded corners
-                                ),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(
-                                      Icons.upload_file,
-                                      color: Colors.white,
-                                    ),
+                                  child: Container(
+                                      alignment: Alignment.center, // Center the content inside the container
+                                      padding: EdgeInsets.all(16),
+                                      decoration: BoxDecoration(
+                                        gradient: LinearGradient(
+                                          colors: [appbar_color.withOpacity(0.6), appbar_color.withOpacity(0.8)], // Gradient background
+                                          begin: Alignment.topCenter,
+                                          end: Alignment.bottomCenter,
+                                        ),
+                                        borderRadius: BorderRadius.circular(16), // Consistent rounded corners
+                                      ),
+                                      child: Column(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          Icon(
+                                            Icons.upload_file,
+                                            color: Colors.white,
+                                          ),
 
-                                    SizedBox(height: 10,),
-                                    Text(
-                                      'KYC Update',
-                                      style: TextStyle(fontSize: 16,
-                                          color: Colors.white),
-                                    ),
-                                  ],
-                                )
-                            ),
-                          ),
-                        ),
-                        SizedBox(width: 10),
-                        Expanded(
-                          child: ElevatedButton(
-                            onPressed: () {
-                              Navigator.pushReplacement
-                                (
-                                context,
-                                MaterialPageRoute(builder: (context) => TenantComplaint()), // navigate to company and serial select screen
-                              );
-                            },
-                            style: ElevatedButton.styleFrom(
-                              padding: EdgeInsets.zero, // Remove padding from button to ensure container fills the space
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16), // Rounded corners for the button
-                              ),
-                              backgroundColor: Colors.transparent, // Transparent background to allow the container to show
-                              shadowColor: Colors.black.withOpacity(0.2), // Soft shadow for depth
-                              elevation: 5, // Moderate elevation for a subtle 3D effect
-                            ),
-                            child: Container(
-                                alignment: Alignment.center, // Center the content inside the container
-                                padding: EdgeInsets.all(16),
-                                decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    colors: [appbar_color.withOpacity(0.6), appbar_color.withOpacity(0.8)], // Gradient background
-                                    begin: Alignment.topCenter,
-                                    end: Alignment.bottomCenter,
+                                          SizedBox(height: 10,),
+                                          Text(
+                                            'KYC Update',
+                                            style: TextStyle(fontSize: 16,
+                                                color: Colors.white),
+                                          ),
+                                        ],
+                                      )
                                   ),
-                                  borderRadius: BorderRadius.circular(16), // Consistent rounded corners
                                 ),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Icon(
-                                        Icons.info_outline,
-                                        color: Colors.white
-                                    ),
-                                    SizedBox(height: 10,),
-                                    Text(
-                                      'Complaints/Suggestions',
-                                      style: TextStyle(fontSize: 16,
-                                          color: Colors.white),
-                                    )
-                                  ]
-                                )
-                            )
-                          )
-                        )
+                              ),
+                              SizedBox(width: 10),
+                              Expanded(
+                                  child: ElevatedButton(
+                                      onPressed: () {
+                                        Navigator.pushReplacement
+                                          (
+                                          context,
+                                          MaterialPageRoute(builder: (context) => TenantComplaint()), // navigate to company and serial select screen
+                                        );
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                        padding: EdgeInsets.zero, // Remove padding from button to ensure container fills the space
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(16), // Rounded corners for the button
+                                        ),
+                                        backgroundColor: Colors.transparent, // Transparent background to allow the container to show
+                                        shadowColor: Colors.black.withOpacity(0.2), // Soft shadow for depth
+                                        elevation: 5, // Moderate elevation for a subtle 3D effect
+                                      ),
+                                      child: Container(
+                                          alignment: Alignment.center, // Center the content inside the container
+                                          padding: EdgeInsets.all(16),
+                                          decoration: BoxDecoration(
+                                            gradient: LinearGradient(
+                                              colors: [appbar_color.withOpacity(0.6), appbar_color.withOpacity(0.8)], // Gradient background
+                                              begin: Alignment.topCenter,
+                                              end: Alignment.bottomCenter,
+                                            ),
+                                            borderRadius: BorderRadius.circular(16), // Consistent rounded corners
+                                          ),
+                                          child: Column(
+                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              crossAxisAlignment: CrossAxisAlignment.center,
+                                              children: [
+                                                Icon(
+                                                    Icons.info_outline,
+                                                    color: Colors.white
+                                                ),
+                                                SizedBox(height: 10,),
+                                                Text(
+                                                  'Complaints/Suggestions',
+                                                  style: TextStyle(fontSize: 16,
+                                                      color: Colors.white),
+                                                )
+                                              ]
+                                          )
+                                      )
+                                  )
+                              )
+                            ]
+                        ))
                       ]
-                    ))
-                  ]
-                )
+                  )
               ),
 
 
               SizedBox(height: 30),
 
               // Sales Bar Chart
-              /*Row(
+              *//*Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
@@ -843,15 +842,226 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
                 ],
               ),
 
-              SizedBox(height: 50,),*/
+              SizedBox(height: 50,),*//*
 
 
-             /* Container(
+              *//* Container(
                 height: MediaQuery.of(context).size.height * 0.4,
                 width: MediaQuery.of(context).size.width,
                 child: SalesBarChart(salesData: salesData, selectedYear: selectedYear!),
-              ),*/
+              ),*//*
 
+            ],
+          ),
+        ),
+      ),
+    );*/
+
+    return Scaffold(
+      key: _scaffoldKey,
+      backgroundColor: Color(0xFFF8F9FB),
+      appBar: AppBar(
+        backgroundColor: appbar_color,
+        elevation: 1,
+        title: Text(
+          'Dashboard',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        centerTitle: true,
+        leading: IconButton(
+          icon: Icon(Icons.menu, color: Colors.white),
+          onPressed: () => _scaffoldKey.currentState!.openDrawer(),
+        ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 12.0),
+            child: InkWell(
+              onTap: () {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => TenantProfile()), // Navigate to the profile screen
+                );
+              },
+              child: Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: LinearGradient(
+                    colors: [appbar_color.shade200, appbar_color.shade700],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.2),
+                      blurRadius: 5,
+                      offset: Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Icon(
+                  Icons.person,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+        ],
+
+      ),
+      drawer: Sidebar(  isDashEnable: true,
+        isRolesVisible: true,
+        isRolesEnable: true,
+        isUserEnable: true,
+        isUserVisible: true,),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Section Title
+            Text(
+              'Cheque(s)',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 10),
+            // Pie Chart
+            Container(
+              height: 250,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 10,
+                    offset: Offset(0, 4),
+                  ),
+                ],
+              ),
+              padding: EdgeInsets.all(16),
+              child: PieChart(
+                PieChartData(
+                  sectionsSpace: 0, // Small gap between sections for better visual appeal
+                  centerSpaceRadius: 0, // Space in the middle of the pie chart
+                  sections: [
+                    PieChartSectionData(
+                      gradient: LinearGradient(
+                        colors: [Colors.blueAccent.shade100,Colors.blueAccent.shade200, Colors.blueAccent.shade200], // Gradient background
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                      ),                        value: data["Cleared"]!.toDouble(),
+                      title: 'Cleared\n${data["Cleared"]}',
+                      radius: 110,
+                      titleStyle: TextStyle(fontSize: 15.0, fontWeight: FontWeight.bold,
+                          color: Colors.white),
+                    ),
+                    PieChartSectionData(
+                      gradient: LinearGradient(
+                        colors: [Colors.orangeAccent.shade100,Colors.orangeAccent.shade200, Colors.orangeAccent.shade200], // Gradient background
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                      ),
+                      value: data["Pending"]!.toDouble(),
+                      title: 'Pending\n${data["Pending"]}',
+                      radius: 110,
+                      titleStyle: TextStyle(fontSize: 15.0, fontWeight: FontWeight.bold,
+                          color: Colors.white),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            SizedBox(height: 20),
+            // Pending Invoices Bar Chart
+            Text(
+              'Pending Invoices',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 10),
+            Container(
+              height: 220,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 10,
+                    offset: Offset(0, 4),
+                  ),
+                ],
+              ),
+              padding: EdgeInsets.all(16),
+              child: Container(
+                child: Center(
+                  child: ApartmentBarChart(
+                    selectedApartment: selectedApartment!,
+                    pendingInvoicesData: pendingInvoicesData,
+                  ),
+                ),
+
+              )
+            ),
+            SizedBox(height: 20),
+            // Action Buttons
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _buildDashboardButton(Icons.build, 'Maintenance', Colors.blueAccent, () {
+                  Navigator.push
+                    (
+                    context,
+                    MaterialPageRoute(builder: (context) => MaintenanceTicketReport()), // navigate to company and serial select screen
+                  );
+                }),
+                _buildDashboardButton(Icons.move_to_inbox, 'Move In/Out', Colors.green, () {}),
+              ],
+            ),
+            SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _buildDashboardButton(Icons.credit_card, 'Access Card', Colors.purpleAccent, () {}),
+                _buildDashboardButton(Icons.home, 'Available Units', Colors.orangeAccent, () {}),
+              ],
+            ),
+            SizedBox(height: 20),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDashboardButton(IconData icon, String label, Color color, VoidCallback onTap) {
+    return Expanded(
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          margin: EdgeInsets.symmetric(horizontal: 5),
+          height: 90,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black12,
+                blurRadius: 8,
+                offset: Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, color: color, size: 32),
+              SizedBox(height: 8),
+              Text(label, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
             ],
           ),
         ),

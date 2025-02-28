@@ -333,8 +333,6 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
       return;
     }
 
-
-
     TextEditingController subjectController = TextEditingController();
     TextEditingController bodyController = TextEditingController();
 

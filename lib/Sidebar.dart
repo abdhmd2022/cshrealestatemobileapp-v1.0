@@ -136,7 +136,22 @@ class _SidebarState extends State<Sidebar> {
                             style: TextStyle(fontSize: 14, color: Colors.white),
                             softWrap: true, // Allows text to wrap instead of overflowing
                           ),
-                        ],
+
+                          SizedBox(height: 2),
+                          if(is_admin)
+                          Text(
+                            'Admin (for testing purpose)',
+                            style: TextStyle(fontSize: 14, color: Colors.white),
+                            softWrap: true, // Allows text to wrap instead of overflowing
+                          ),
+                          if(!is_admin)
+                            Text(
+                              'Tenant (for testing purpose)',
+                              style: TextStyle(fontSize: 14, color: Colors.white),
+                              softWrap: true, // Allows text to wrap instead of overflowing
+                            ),
+
+                            ],
                       ),
                     ),
                   ],
@@ -209,7 +224,7 @@ class _SidebarState extends State<Sidebar> {
                     _buildDrawerItem(Icons.business, "Flats", true, () {
                       _navigateTo(context, FlatSelection());
                     }),
-
+                  if(is_admin)
                     _buildDrawerItem(Icons.settings, "Settings", true, () {
                     _navigateTo(context, SettingsScreen());
                   }),

@@ -5,6 +5,7 @@ import 'package:cshrealestatemobile/SalesDashboard.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'FlatSelection.dart';
 import 'SerialSelect.dart';
 import 'constants.dart';
 import 'models/serial_model.dart'; // ✅ Import common Serial model
@@ -109,11 +110,9 @@ class _LoginPageState extends State<Login> {
      prefs= await SharedPreferences.getInstance();
   }
 
-  Future<void> _adminlogin(String email, String password, bool isAdmin) async {
+  Future<void> _adminlogin(String email, String password) async {
 
-        String url = isAdmin
-        ? "$BASE_URL_config/v1/auth/login"
-        : "$BASE_URL_config/v1/auth/tenent/login";
+        String url = "$BASE_URL_config/v1/auth/login";
     String token = 'Bearer $authTokenBase';
 
     setState(() => _isLoading = true);
@@ -205,6 +204,118 @@ class _LoginPageState extends State<Login> {
       setState(() => _isLoading = false);
     }
   }
+
+  Future<void> tenantLogin(String email, String password) async {
+    String url = "$BASE_URL_config/v1/auth/tenent/login";
+    String token = 'Bearer $authTokenBase';
+
+    setState(() => _isLoading = true);
+    dynamic responseData;
+
+    try {
+      Map<String, String> headers = {
+        'Authorization': token,
+        "Content-Type": "application/json"
+      };
+
+      var body = jsonEncode({'email': email, 'password': password});
+      var response = await http.post(
+        Uri.parse(url),
+        body: body,
+        headers: headers,
+      );
+      responseData = json.decode(response.body);
+
+      if (response.statusCode == 200 && responseData['success']) {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+
+        List<dynamic> tenantsData = responseData['data']['tenents'] ?? [];
+
+        if (tenantsData.isNotEmpty) {
+          var firstTenant = tenantsData[0];
+
+          // ✅ Fetching Tenant Details
+          await prefs.setInt("user_id", firstTenant['id']);
+          await prefs.setString("user_name", firstTenant['name']);
+          await prefs.setString("user_email", firstTenant['email']);
+          await prefs.setString("company_token", firstTenant['token']);
+          await prefs.setInt("company_id", firstTenant['company_id'] ?? 0);
+          await prefs.setBool('is_admin', false);
+
+          // ✅ Extract Flats (Instead of Companies)
+          List<Map<String, dynamic>> flatsList = tenantsData.expand((tenant) {
+            return ((tenant['flats'] as List<dynamic>? ?? []).map((flatObj) {
+              if (flatObj is Map<String, dynamic> && flatObj.containsKey('flat')) {
+                var flat = (flatObj['flat'] as Map<dynamic, dynamic>).cast<String, dynamic>();
+
+                return {
+                  'id': flat['id'] ?? 0,
+                  'name': flat['name'] ?? 'Unknown Flat',
+                  'floor': (flat['floor'] as Map?)?.cast<String, dynamic>()['name'] ?? 'Unknown Floor',
+                  'flat_type': (flat['flat_type'] as Map?)?.cast<String, dynamic>()['name'] ?? 'Unknown Type',
+                  'building': (flat['building'] as Map?)?.cast<String, dynamic>()['name'] ?? 'Unknown Building',
+                  'area': (flat['building']?['area'] as Map?)?.cast<String, dynamic>()['name'] ?? 'Unknown Area',
+                  'state': (flat['building']?['area']?['state'] as Map?)?.cast<String, dynamic>()['name'] ?? 'Unknown State',
+                  'country': (flat['building']?['area']?['state']?['country'] as Map?)?.cast<String, dynamic>()['name'] ?? 'Unknown Country',
+                };
+              }
+              return null; // Instead of an empty map, return null to filter out later
+            }).where((flat) => flat != null).cast<Map<String, dynamic>>()).toList();
+          }).toList();
+
+
+
+
+          await prefs.setString("flats_list", jsonEncode(flatsList));
+
+          loadTokens();
+
+          // ✅ Redirect to Flat Selection if multiple flats exist
+          if (flatsList.length > 1) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => CompanySelection()),
+            );
+          } else {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => TenantDashboard()),
+            );
+          }
+        } else {
+          throw Exception("No tenant data found.");
+        }
+      } else {
+        throw Exception("Invalid credentials");
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error: ${responseData['message'] ?? 'Login failed'}")),
+      );
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
+
+  void loginUser(String email, String password, bool isAdmin) {
+    if (isAdmin) {
+      _adminlogin(email, password).then((_) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => CompanySelection()),
+        );
+      });
+    } else {
+      tenantLogin(email, password).then((_) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => FlatSelection()),
+        );
+      });
+    }
+  }
+
+
 
 
   /*Future<void> _adminlogin(String email, String password) async {
@@ -562,7 +673,8 @@ class _LoginPageState extends State<Login> {
 
                                             String email = emailController.text;
                                             String pass = passwordController.text;
-                                            _adminlogin(email,pass,isAdmin);
+                                            loginUser(email,pass,isAdmin);
+                                            /*_adminlogin(email,pass,isAdmin);*/
                                           }
 
 

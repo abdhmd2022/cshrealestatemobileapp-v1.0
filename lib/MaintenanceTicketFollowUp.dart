@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:signature/signature.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
@@ -55,6 +56,9 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
     //{"role": "Closed", "description": "Ticket closed"},
   ];
 
+  DateTime? nextFollowupDate;
+
+
   MaintenanceStatus? selectedStatus;
 
    SignatureController _signatureController = SignatureController(
@@ -72,6 +76,35 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
 
   List<Map<String, dynamic>> subTickets = [];
   int? selectedSubTicketId;
+
+
+  Future<void> _selectNextFollowupDate(BuildContext context) async {
+    DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: nextFollowupDate ?? DateTime.now(),
+      firstDate: DateTime.now(), // Restricts past dates
+      lastDate: DateTime(2100),  // You can set this to any future date
+      builder: (context, child) {
+        return Theme(
+          data: ThemeData.light().copyWith(
+            primaryColor: Colors.blueAccent,
+            colorScheme: ColorScheme.light(
+              primary: Colors.blueAccent, // Highlights selection in blue
+            ),
+            buttonTheme: ButtonThemeData(textTheme: ButtonTextTheme.primary),
+          ),
+          child: child!,
+        );
+      },
+    );
+
+    if (pickedDate != null && pickedDate != nextFollowupDate) {
+      setState(() {
+        nextFollowupDate = pickedDate;
+      });
+    }
+  }
+
 
   Future<void> _pickImages({bool fromCamera = false}) async {
     List<XFile>? pickedFiles;
@@ -787,7 +820,31 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
     ),
     ),
 
-              SizedBox(height: 6),
+
+
+              SizedBox(
+                width: double.infinity, // Expands to full screen width
+                height: 40, // Standard button height
+                child: ElevatedButton(
+                  onPressed: () => _selectNextFollowupDate(context),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: appbar_color, // Blue button
+                    foregroundColor: Colors.white, // White text
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12), // Slightly rounded corners
+                    ),
+                  ),
+                  child: Text(
+                    nextFollowupDate == null
+                        ? "Select Next Follow-up Date"
+                        : "Next Follow-up Date: ${DateFormat('dd-MMM-yyyy').format(nextFollowupDate!)}",
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
+                  ),
+                ),
+              ),
+
+
+              SizedBox(height: 10),
 
              /* Center(
                 child: DropdownButton<int>(
@@ -811,7 +868,7 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
 
               SizedBox(height: 6),*/
 
-              Padding(
+             /* Padding(
                 padding: EdgeInsets.only(top: 0),
                 child: TextFormField(
 
@@ -840,10 +897,10 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
                 ),
               ),
 
-              SizedBox(height: 6),
+              SizedBox(height: 6),*/
 
 
-              SizedBox(height: 16),
+
 
               TextFormField(
                 controller: _remarksController,
@@ -1148,15 +1205,10 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
                           ),
                           onPressed: () {
                             setState(() {
-
                               selectedStatus = null;
-
                               _amountController.clear();
                               _remarksController.clear();
-
-
                               _signatureController.clear();
-
                             });
                           },
                           child: Text('Clear'),

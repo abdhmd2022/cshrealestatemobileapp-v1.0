@@ -442,14 +442,14 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
               SizedBox(height: 10,),
 
               tenantFlatDetails != null
-                  ? Card(
+                ? Card(
                 elevation: 3,
                 color: Colors.white,
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12)),
+                borderRadius: BorderRadius.circular(12)),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 12, horizontal: 16),
+                padding: const EdgeInsets.symmetric(
+                vertical: 12, horizontal: 16),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [

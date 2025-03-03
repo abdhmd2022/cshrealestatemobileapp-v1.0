@@ -656,9 +656,7 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
                   }).toList(),
                 ),),*/
 
-
               SizedBox(height: 10),
-
 
               Container(
                 margin: EdgeInsets.only(left: 0, right: 20,bottom:6),
@@ -715,8 +713,6 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
                   },
                 ),
               ),
-
-
 
               // Display Selected SubTicket Follow-ups
             if (selectedSubTicketId != null)

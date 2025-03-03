@@ -756,14 +756,11 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-
-
                           Text(
                             "Follow-ups",
                             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                           ),
                           SizedBox(height: 6),
-
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -787,30 +784,11 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
                                         style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
                                     Text(followup["description"],
                                         style: TextStyle(fontSize: 14, color: Colors.grey[600])),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
+                                  ]
+                                )
+                              )])]));});})]))),
 
-                    );
-                  },
-                );
-              },
-            ),
-
-
-          ],
-        ),
-      ),
-    ),
-
-
-
-
-    Container(
+              Container(
                 margin: EdgeInsets.only(left: 0, right: 20,bottom:6),
                 child: Row(
                   children: [
@@ -868,8 +846,6 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
     },
     ),
     ),
-
-
 
               SizedBox(
                 width: double.infinity, // Expands to full screen width
@@ -948,9 +924,6 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
 
               SizedBox(height: 6),*/
 
-
-
-
               TextFormField(
                 controller: _remarksController,
                 keyboardType: TextInputType.multiline,
@@ -991,7 +964,7 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
 
               if(selectedStatus !=null && selectedStatus!.category == "Close")
 
-                Column(
+              Column(
                   children: [
                     Container(
                       margin: EdgeInsets.only(left: 0, right: 20,bottom:6),

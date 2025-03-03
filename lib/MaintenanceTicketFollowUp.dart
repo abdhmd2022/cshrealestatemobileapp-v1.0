@@ -375,10 +375,14 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
           var tenantFlat = jsonData['data']['ticket']['tenent_flat'];
 
           setState(() {
+
+
             subTickets = tickets.map((ticket) {
               return {
                 "id": ticket["id"],
-                "name": ticket["type"]["name"]
+                "name": ticket["type"]["name"],
+                "followps": ticket["followps"] as List
+
               };
             }).toList();
 
@@ -498,10 +502,7 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
                                     style:
                                     GoogleFonts.poppins(fontSize: 12),
                                     overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                              ],
-                            ),
+                                  ))]),
                             SizedBox(height: 4),
                             Row(
                               children: [
@@ -527,7 +528,12 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
               )
                   : Center(child: CircularProgressIndicator()),
 
-              SizedBox(height: 10),
+
+
+
+
+
+              /*SizedBox(height: 10),
 
               Padding(padding: EdgeInsets.only(left: 5,top: 10,bottom: 10),
                 child:  Column(
@@ -561,7 +567,7 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
                       ],
                     );
                   }).toList(),
-                ),),
+                ),),*/
 
 
               SizedBox(height: 10),
@@ -623,7 +629,106 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
                 ),
               ),
 
-              Container(
+
+
+              // Display Selected SubTicket Follow-ups
+            if (selectedSubTicketId != null)
+          Card(
+            color: Colors.white,
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Container(
+        padding: EdgeInsets.only(left:20,right:20),
+
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+
+            Builder(
+              builder: (context) {
+                var followups = subTickets
+                    .firstWhere((ticket) => ticket["id"] == selectedSubTicketId)["followps"];
+
+                if (followups.isEmpty) {
+                  return Container(
+                    width: double.infinity,
+                    alignment: Alignment.center,
+                    padding: EdgeInsets.symmetric(vertical: 12),
+                    child: Text(
+                      "No follow-ups available",
+                      style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                    ),
+                  );
+                }
+
+                return ListView.builder(
+                  shrinkWrap: true,
+                  clipBehavior: Clip.none,
+                  physics: NeverScrollableScrollPhysics(),
+                  itemCount: followups.length,
+                  itemBuilder: (context, index) {
+                    var followup = followups[index];
+                    return Padding(
+                      padding: EdgeInsets.only(top:12,bottom:0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+
+
+                          Text(
+                            "Follow-ups",
+                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                          ),
+                          SizedBox(height: 6),
+
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+
+                              Column(
+                                children: [
+                                  Container(
+                                    margin: EdgeInsets.only(top: 2),
+                                    child: Icon(Icons.circle, size: 12, color: Colors.blueAccent),
+                                  ),
+                                  if (index != followups.length)
+                                    Container(height: 32, width: 2, color: Colors.blueAccent),
+                                ],
+                              ),
+                              SizedBox(width: 6),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(followup["created_user"]["name"],
+                                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                                    Text(followup["description"],
+                                        style: TextStyle(fontSize: 14, color: Colors.grey[600])),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+
+                    );
+                  },
+                );
+              },
+            ),
+
+
+          ],
+        ),
+      ),
+    ),
+
+
+
+
+    Container(
                 margin: EdgeInsets.only(left: 0, right: 20,bottom:6),
                 child: Row(
                   children: [

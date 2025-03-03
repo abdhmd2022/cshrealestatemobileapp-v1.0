@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:signature/signature.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
@@ -69,6 +70,9 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
   TextEditingController _remarksController = TextEditingController();
   TextEditingController _amountController = TextEditingController();
 
+  List<Map<String, dynamic>> subTickets = [];
+  int? selectedSubTicketId;
+
   Future<void> _pickImages({bool fromCamera = false}) async {
     List<XFile>? pickedFiles;
 
@@ -105,9 +109,15 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
   Future<void> _initSharedPreferences() async {
 
     fetchMaintenanceStatus();
+
+    print('ticket id ${widget.ticketid}');
+    fetchTickets(widget.ticketid);
   }
 
   File? _signatureFile; // Store the signature separately
+
+  Map<String, dynamic>? tenantFlatDetails;
+
 
   Future<void> _saveSignature(String id) async {
     try {
@@ -338,6 +348,64 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
     }
   }
 
+  Future<void> fetchTickets(String ticketID) async {
+
+
+    String url = is_admin
+        ? "$BASE_URL_config/v1/maintenance/$ticketID"
+        : '';
+
+    /*final String url = "$BASE_URL_config/v1/maintenance"; // will change it for tenant*/
+
+    print('url $url');
+
+    try {
+      final Map<String, String> headers = {
+        'Authorization': 'Bearer $Company_Token', // Example of an Authorization header
+        'Content-Type': 'application/json', // Example Content-Type header
+        // Add other headers as required
+      };
+      final response = await http.get(Uri.parse(url), headers: headers);
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> responseBody = json.decode(response.body);
+        if (responseBody['success'] == true) {
+
+          var jsonData = json.decode(response.body);
+          var tickets = jsonData['data']['ticket']['sub_tickets'] as List;
+          var tenantFlat = jsonData['data']['ticket']['tenent_flat'];
+
+          setState(() {
+            subTickets = tickets.map((ticket) {
+              return {
+                "id": ticket["id"],
+                "name": ticket["type"]["name"]
+              };
+            }).toList();
+
+            tenantFlatDetails = {
+              "tenantName": tenantFlat["tenent"]["name"],
+              "tenantMobile": tenantFlat["tenent"]["mobile"] ?? "",
+              "flatName": tenantFlat["flat"]["name"],
+              "buildingName": tenantFlat["flat"]["building"]["name"],
+              "areaName": tenantFlat["flat"]["building"]["area"]["name"],
+              "stateName": tenantFlat["flat"]["building"]["area"]["state"]["name"]
+            };
+          });
+        } else {
+          print("API returned success: false");
+        }
+      } else {
+        print("Error fetching data: ${response.statusCode}");
+        print("Error fetching data: ${response.body}");
+
+      }
+    } catch (e) {
+      print("Error fetching data: $e");
+    }
+
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -371,7 +439,96 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
 
-              SizedBox(height: 16,),
+              SizedBox(height: 10,),
+
+              tenantFlatDetails != null
+                  ? Card(
+                elevation: 3,
+                color: Colors.white,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 12, horizontal: 16),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      // Tenant Icon
+                      CircleAvatar(
+                        backgroundColor: appbar_color,
+                        radius: 22,
+                        child: Icon(Icons.person, color: Colors.white),
+                      ),
+                      SizedBox(width: 10),
+
+                      // Tenant & Flat Info
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              tenantFlatDetails!["tenantName"],
+                              style: GoogleFonts.poppins(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold),
+                            ),
+
+                            if(tenantFlatDetails!["tenantMobile"].toString().isNotEmpty)
+                            Text(
+                              tenantFlatDetails!["tenantMobile"],
+                              style: GoogleFonts.poppins(fontSize: 12),
+                            ),
+                            SizedBox(height: 4),
+                            Row(
+                              children: [
+                                Icon(Icons.apartment,
+                                    size: 16, color: Colors.blue),
+                                SizedBox(width: 4),
+                                Text(
+                                  "${tenantFlatDetails!["flatName"]}",
+                                  style: GoogleFonts.poppins(fontSize: 12),
+                                ),
+                                SizedBox(width: 12),
+                                Icon(Icons.business,
+                                    size: 16, color: Colors.orange),
+                                SizedBox(width: 4),
+                                Expanded(
+                                  child: Text(
+                                    "${tenantFlatDetails!["buildingName"]}",
+                                    style:
+                                    GoogleFonts.poppins(fontSize: 12),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 4),
+                            Row(
+                              children: [
+                                Icon(Icons.location_on,
+                                    size: 16, color: Colors.red),
+                                SizedBox(width: 4),
+                                Expanded(
+                                  child: Text(
+                                    "${tenantFlatDetails!["areaName"]}, ${tenantFlatDetails!["stateName"]}",
+                                    style:
+                                    GoogleFonts.poppins(fontSize: 12),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              )
+                  : Center(child: CircularProgressIndicator()),
+
+              SizedBox(height: 10),
+
               Padding(padding: EdgeInsets.only(left: 5,top: 10,bottom: 10),
                 child:  Column(
                   children: followUps.asMap().entries.map((entry) {
@@ -406,7 +563,65 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
                   }).toList(),
                 ),),
 
-              SizedBox(height: 10,),
+
+              SizedBox(height: 10),
+
+
+              Container(
+                margin: EdgeInsets.only(left: 0, right: 20,bottom:6),
+                child: Row(
+                  children: [
+                    Text(
+                      'Maintenance Type',
+                      style: TextStyle(fontSize: 16,
+                        fontWeight: FontWeight.bold,),
+                    ),
+                    SizedBox(width: 2),
+                    Text(
+                      '*', // Red asterisk for required field
+                      style: TextStyle(
+                        fontSize: 20,
+                        color: Colors.red, // Red color for the asterisk
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 12),
+                margin: EdgeInsets.only(left: 0, right: 0, bottom: 10),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.black, width: 0.75),
+                ),
+                child: DropdownButtonFormField<int>(
+                  value: selectedSubTicketId,
+                  items: subTickets.map((subTicket) {
+                    return DropdownMenuItem<int>(
+                      value: subTicket["id"],
+                      child: Text(subTicket["name"]),
+                    );
+                  }).toList(),
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 14),
+                  ),
+                  icon: Icon(Icons.arrow_drop_down, color: Colors.black54),
+                  hint: Text(
+                    "Select Maintenance Type",
+                    style: TextStyle(color: Colors.black54, fontSize: 16),
+                  ),
+                  onChanged: (value) {
+                    setState(() {
+                      selectedSubTicketId = value;
+                      print("Selected SubTicket ID: $selectedSubTicketId");
+
+                    });
+                  },
+                ),
+              ),
 
               Container(
                 margin: EdgeInsets.only(left: 0, right: 20,bottom:6),
@@ -469,6 +684,28 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
 
               SizedBox(height: 6),
 
+             /* Center(
+                child: DropdownButton<int>(
+                  value: selectedSubTicketId,
+                  hint: Text("Select Maintenance Type"),
+                  items: subTickets.map((subTicket) {
+                    return DropdownMenuItem<int>(
+                      value: subTicket["id"],
+                      child: Text(subTicket["name"]),
+                    );
+                  }).toList(),
+                  onChanged: (int? newValue) {
+                    setState(() {
+                      selectedSubTicketId = newValue;
+                    });
+                    print("Selected SubTicket ID: $selectedSubTicketId");
+                  },
+                ),
+              ),
+
+
+              SizedBox(height: 6),*/
+
               Padding(
                 padding: EdgeInsets.only(top: 0),
                 child: TextFormField(
@@ -497,6 +734,9 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
                   ),
                 ),
               ),
+
+              SizedBox(height: 6),
+
 
               SizedBox(height: 16),
 

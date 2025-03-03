@@ -917,7 +917,10 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
           Future<void> sendFormData() async {
 
           try {
-            final String url = "$BASE_URL_config/v1/tenent/maintenance";
+
+            String url = is_admin
+                ? "$BASE_URL_config/v1/tenent/maintenance"
+                : "$BASE_URL_config/v1/tenent/maintenance";
 
             var uuid = Uuid();
             String uuidValue = uuid.v4();

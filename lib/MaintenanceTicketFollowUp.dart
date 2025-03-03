@@ -108,7 +108,6 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
   Future<void> sendFormData() async {
 
     try {
-
       String url = is_admin
           ? "$BASE_URL_config/v1/maintenanceFollowup"
           : "$BASE_URL_config/v1/maintenanceFollowup";
@@ -144,7 +143,8 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
          nextFollowupDate = null;
 
          fetchTickets(widget.ticketid);
-      } else {
+      }
+      else {
         print('Upload failed with status code: ${response.statusCode}');
         print('Upload failed with response: ${response.body}');
       }

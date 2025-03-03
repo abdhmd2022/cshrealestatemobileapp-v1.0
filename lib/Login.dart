@@ -112,7 +112,7 @@ class _LoginPageState extends State<Login> {
 
   Future<void> _adminlogin(String email, String password) async {
 
-        String url = "$BASE_URL_config/v1/auth/login";
+    String url = "$BASE_URL_config/v1/auth/login";
     String token = 'Bearer $authTokenBase';
 
     setState(() => _isLoading = true);
@@ -414,8 +414,8 @@ class _LoginPageState extends State<Login> {
           ),),
         ),
         body: Container(
-            height: MediaQuery.of(context).size.height,
-            width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height,
+          width: MediaQuery.of(context).size.width,
           color: Colors.white,
             /*decoration:BoxDecoration(
               gradient: LinearGradient(
@@ -427,7 +427,7 @@ class _LoginPageState extends State<Login> {
                   end: Alignment.bottomCenter
               ),
             ),*/
-            child:    SingleChildScrollView(
+            child: SingleChildScrollView(
               child:  Column(
                   children: [
                     Container(
@@ -438,8 +438,6 @@ class _LoginPageState extends State<Login> {
                           color: appbar_color,
                         )
                     ),
-
-
 
                     Visibility(
                         visible: isVisibleAdminLoginForm,
@@ -463,10 +461,7 @@ class _LoginPageState extends State<Login> {
                             child:Form(
                                 key: _formKey,
                                 child: Column(
-
                                     children: [
-
-
                                       Container(
                                         margin: EdgeInsets.symmetric(vertical: 20, horizontal: 50),
                                         padding: EdgeInsets.all(8),
@@ -482,7 +477,6 @@ class _LoginPageState extends State<Login> {
                                           ],
                                         ),
                                         child: ToggleButtons(
-
                                           isSelected: [!isAdmin, isAdmin],
                                           onPressed: (index) => setState(() => isAdmin = index == 1),
                                           borderRadius: BorderRadius.circular(30),
@@ -631,7 +625,6 @@ class _LoginPageState extends State<Login> {
                                               'Remember Me',
                                               style: TextStyle(fontSize: 16,color: Colors.black54),
                                             ),
-
                                           ]))
                                         ],
                                       ),
@@ -660,8 +653,6 @@ class _LoginPageState extends State<Login> {
                                             loginUser(email,pass,isAdmin);
                                             /*_adminlogin(email,pass,isAdmin);*/
                                           }
-
-
                                           },
                                           child: Text('Login',
                                               style: TextStyle(
@@ -695,13 +686,10 @@ class _LoginPageState extends State<Login> {
                     /*Visibility(
                       visible: isVisibleResetPassForm,
                       child:Expanded(child:Container(
-
-
                           padding: EdgeInsets.only(left: 32,right: 32,top: 70),
                           decoration: BoxDecoration(
                               color: Colors.white,
                               boxShadow: [
-
                                 BoxShadow(
                                   color: Colors.black.withOpacity(0.1),
                                   spreadRadius: 0, // Spread radius

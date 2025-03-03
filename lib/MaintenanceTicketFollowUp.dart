@@ -717,7 +717,7 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
             if (selectedSubTicketId != null)
           Card(
             color: Colors.white,
-      elevation: 2,
+      elevation: 1,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Container(
         padding: EdgeInsets.only(left:20,right:20),

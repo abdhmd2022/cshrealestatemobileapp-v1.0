@@ -448,7 +448,6 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
             _buildTicketHeader(ticket),
             Divider(color: Colors.grey[300]),
             _buildTicketDetails(ticket),
-
             Container(
                 width: MediaQuery
                     .of(context)

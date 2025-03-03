@@ -176,6 +176,8 @@ class _LoginPageState extends State<Login> {
           loadTokens();
 
           // Redirect based on user type and company count
+
+          print('userlist ${usersList.length}');
           if (usersList.length > 1) {
             Navigator.pushReplacement(
               context,
@@ -269,7 +271,7 @@ class _LoginPageState extends State<Login> {
           if (flatsList.length > 1) {
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) => CompanySelection()),
+              MaterialPageRoute(builder: (context) => FlatSelection()),
             );
           } else {
             Navigator.pushReplacement(
@@ -294,19 +296,9 @@ class _LoginPageState extends State<Login> {
 
   void loginUser(String email, String password, bool isAdmin) {
     if (isAdmin) {
-      _adminlogin(email, password).then((_) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => CompanySelection()),
-        );
-      });
+      _adminlogin(email, password);
     } else {
-      tenantLogin(email, password).then((_) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => FlatSelection()),
-        );
-      });
+      tenantLogin(email, password);
     }
   }
 

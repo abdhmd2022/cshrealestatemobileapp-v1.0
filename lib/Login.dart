@@ -661,7 +661,7 @@ class _LoginPageState extends State<Login> {
                                         ),
                                       ),
 
-                                      /*SizedBox(height: 5),
+                                    /*SizedBox(height: 5),
 
                                     GestureDetector(onTap: ()
                                     {
@@ -679,10 +679,8 @@ class _LoginPageState extends State<Login> {
                                                       style: TextStyle(color: Colors.black54,
                                                           fontWeight: FontWeight.bold,
                                                           decoration: TextDecoration.underline))
-                                                ])))*/]))
-
-                        )
-                    ),
+                                                ])))*/
+                                    ])))),
                     /*Visibility(
                       visible: isVisibleResetPassForm,
                       child:Expanded(child:Container(

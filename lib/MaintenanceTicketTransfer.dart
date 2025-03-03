@@ -18,12 +18,13 @@ class User {
   final String email;
   final int id;
   final String name;
-  final String isAdmin;
+  final bool isAdmin;
   final String createdAt;
-  final String alteredAt;
-  final String isActive;
-  final int serialId;
+  final bool isActive;
   final int? externalRoleId;
+  final int companyId;
+  final String companyName;
+
 
   User({
     required this.email,
@@ -31,10 +32,10 @@ class User {
     required this.name,
     required this.isAdmin,
     required this.createdAt,
-    required this.alteredAt,
     required this.isActive,
-    required this.serialId,
     this.externalRoleId,
+    required this.companyId,
+    required this.companyName,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -42,12 +43,12 @@ class User {
       email: json['email'],
       id: json['id'],
       name: json['name'],
-      isAdmin: json['is_admin'],
+      isAdmin: json['is_admin'] == "true",
       createdAt: json['created_at'],
-      alteredAt: json['altered_at'],
-      isActive: json['is_active'],
-      serialId: json['serial_id'],
-      externalRoleId: json['external_role_id'],
+      isActive: json['is_active'] == "true",
+      externalRoleId: json['role_id'],
+      companyId: json['company_id'],
+      companyName: json['company'] != null ? json['company']['name'] : '',
     );
   }
 }
@@ -124,13 +125,15 @@ class _MaintenanceTicketTransferPageState extends State<MaintenanceTicketTransfe
 
         setState(() {
 
-          final usersJson = List<Map<String, dynamic>>.from(data['data']['users']);
-          transfer_to_list = usersJson.map((userJson) => User.fromJson(userJson)).toList();
-          print('list ${response.body}');
+          final List<dynamic> usersJson = data['data']['users'];
+          print('list ${usersJson}');
+
+          transfer_to_list = usersJson.map((userJson) => User.fromJson(userJson as Map<String, dynamic>)).toList();
 
         });
       } else {
-        throw Exception('Failed to load data');
+        print('Upload failed with status code: ${response.statusCode}');
+        print('Response body: ${response.body}');
       }
     } catch (e) {
 

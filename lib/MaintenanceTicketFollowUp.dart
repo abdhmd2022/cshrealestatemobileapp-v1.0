@@ -60,7 +60,6 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
 
   DateTime? nextFollowupDate;
 
-
   MaintenanceStatus? selectedStatus;
 
    SignatureController _signatureController = SignatureController(
@@ -78,7 +77,6 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
 
   List<Map<String, dynamic>> subTickets = [];
   int? selectedSubTicketId;
-
 
   Future<void> _selectNextFollowupDate(BuildContext context) async {
     DateTime? pickedDate = await showDatePicker(
@@ -106,7 +104,6 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
       });
     }
   }
-
 
   Future<void> sendFormData() async {
 
@@ -155,7 +152,6 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
       print('Error during upload: $e');
     }
   }
-
 
   Future<void> _pickImages({bool fromCamera = false}) async {
     List<XFile>? pickedFiles;
@@ -608,16 +604,7 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
                                     GoogleFonts.poppins(fontSize: 12),
                                     overflow: TextOverflow.ellipsis,
                                   ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              )
+                                ),],),],),),],),),)
                  : Center(child: platformLoader()),
 
               /*SizedBox(height: 10),
@@ -718,14 +705,14 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
             if (selectedSubTicketId != null)
           Card(
             color: Colors.white,
-      elevation: 1,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Container(
-        padding: EdgeInsets.only(left:20,right:20),
+            elevation: 1,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            child: Container(
+            padding: EdgeInsets.only(left:20,right:20),
 
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+            child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
 
             Builder(
               builder: (context) {

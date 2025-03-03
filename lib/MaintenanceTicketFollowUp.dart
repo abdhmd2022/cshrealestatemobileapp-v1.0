@@ -501,6 +501,7 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
       strokeWidth: 3, // Thin and modern look
     );
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -617,7 +618,7 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
                   ),
                 ),
               )
-                  : Center(child: platformLoader()),
+                 : Center(child: platformLoader()),
 
               /*SizedBox(height: 10),
 

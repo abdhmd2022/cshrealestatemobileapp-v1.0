@@ -415,7 +415,7 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
 
         final jsonData = json.decode(response.body);
 
-        print('data $jsonData');
+        /*print('data $jsonData');*/
         final List<dynamic> statuses = jsonData['data']['maintenanceStatus'];
         setState(() {
           maintenanceStatusList =
@@ -440,7 +440,7 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
 
     /*final String url = "$BASE_URL_config/v1/maintenance"; // will change it for tenant*/
 
-    print('url $url');
+    /*print('url $url');*/
 
     try {
       final Map<String, String> headers = {
@@ -491,7 +491,6 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
     }
 
   }
-
 
   @override
   Widget build(BuildContext context) {

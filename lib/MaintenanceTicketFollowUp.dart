@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
@@ -492,6 +493,14 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
 
   }
 
+  Widget platformLoader() {
+    return Platform.isIOS
+        ? CupertinoActivityIndicator(radius: 12) // iOS-style loader
+        : CircularProgressIndicator(
+      color: appbar_color, // Matches button text color
+      strokeWidth: 3, // Thin and modern look
+    );
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -608,12 +617,7 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
                   ),
                 ),
               )
-                  : Center(child: CircularProgressIndicator()),
-
-
-
-
-
+                  : Center(child: platformLoader()),
 
               /*SizedBox(height: 10),
 
@@ -867,7 +871,6 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
                   ),
                 ),
               ),
-
 
               SizedBox(height: 10),
 

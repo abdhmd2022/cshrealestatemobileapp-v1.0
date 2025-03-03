@@ -483,7 +483,6 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                                       Navigator.pushReplacement(
                                         context,
                                         MaterialPageRoute(builder: (context) => MaintenanceTicketTransfer(/*name: ticket., id: id, email: email*/)),
-
                                       );
                                 },
                               ),

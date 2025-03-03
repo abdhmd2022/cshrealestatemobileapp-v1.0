@@ -11,6 +11,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart'; // For kIsWeb check
 import 'package:pdf/pdf.dart'; // For kIsWeb check
 import 'package:http/http.dart' as http;
+import 'package:uuid/uuid.dart';
 import 'MaintenanceTicketReport.dart';
 import 'constants.dart';
 import 'package:printing/printing.dart'; // For PDF preview
@@ -102,6 +103,55 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
       setState(() {
         nextFollowupDate = pickedDate;
       });
+    }
+  }
+
+
+  Future<void> sendFormData() async {
+
+    try {
+
+      String url = is_admin
+          ? "$BASE_URL_config/v1/maintenanceFollowup"
+          : "$BASE_URL_config/v1/maintenanceFollowup";
+
+      var uuid = Uuid();
+      String uuidValue = uuid.v4();
+      String todayDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
+
+      final Map<String, dynamic> requestBody = {
+        "uuid":uuidValue,
+        "sub_ticket_id":selectedSubTicketId,
+        "status_id":selectedStatus!.id,
+        "date":todayDate,
+        "description": _remarksController.text,
+        "next_followup_date":DateFormat('yyyy-MM-dd').format(nextFollowupDate!)
+      };
+
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $Company_Token",
+        },
+        body: jsonEncode(requestBody),
+      );
+
+      if (response.statusCode == 201) {
+         print('follow up successfull');
+
+         selectedStatus = null;
+         selectedSubTicketId = null;
+         _remarksController.clear();
+         nextFollowupDate = null;
+
+         fetchTickets(widget.ticketid);
+      } else {
+        print('Upload failed with status code: ${response.statusCode}');
+        print('Upload failed with response: ${response.body}');
+      }
+    } catch (e) {
+      print('Error during upload: $e');
     }
   }
 
@@ -383,7 +433,7 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
 
   Future<void> fetchTickets(String ticketID) async {
 
-
+    subTickets.clear();
     String url = is_admin
         ? "$BASE_URL_config/v1/maintenance/$ticketID"
         : '';
@@ -1235,7 +1285,7 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
                               }
                             else
                               {
-                                // for no close category
+                                sendFormData();
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(content: Text('Submit.')),
                                 );

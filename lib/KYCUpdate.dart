@@ -68,7 +68,6 @@ class _DecentTenantKYCFormState extends State<DecentTenantKYCForm> {
         elevation: 1,
         backgroundColor: appbar_color.withOpacity(0.9),
         iconTheme: IconThemeData(color: Colors.white),
-
         leading: GestureDetector(
           onTap: ()
           {
@@ -230,7 +229,6 @@ class _DecentTenantKYCFormState extends State<DecentTenantKYCForm> {
             ],
           ),
         ),
-
       ),
     );
   }

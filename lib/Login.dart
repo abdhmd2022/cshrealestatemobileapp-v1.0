@@ -19,8 +19,6 @@ class Login extends StatefulWidget {
   State<Login> createState() => _LoginPageState();
 }
 
-
-
 // User Model
 class User {
   final int id;
@@ -29,7 +27,6 @@ class User {
   final String token;
   final int? companyId;
   final String? companyName; // Now added to extract company name
-
 
   User({required this.id, required this.name, required this.email, required this.token, this.companyId,    this.companyName,
   });
@@ -42,7 +39,6 @@ class User {
       token: json['token'] ?? "",
       companyId: json['company_id'],
       companyName: json['company'] != null ? json['company']['name'] : "Unknown Company", // Extracts company name correctly
-
     );
   }
 }
@@ -54,7 +50,6 @@ class _LoginPageState extends State<Login> {
   Color _buttonColor = appbar_color;
 
   bool isAdmin = false; // Toggle state
-
 
   final _formKey = GlobalKey<FormState>();
 
@@ -113,7 +108,7 @@ class _LoginPageState extends State<Login> {
   Future<void> _adminlogin(String email, String password) async {
 
     String url = "$BASE_URL_config/v1/auth/login";
-    
+
     String token = 'Bearer $authTokenBase';
 
     setState(() => _isLoading = true);

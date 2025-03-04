@@ -188,7 +188,7 @@ class _ActivitySourceReportState extends State<ActivitySourceReport> {
                       borderSide: BorderSide(color: appbar_color),
                     ),
                     enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.black54!),
+                      borderSide: BorderSide(color: Colors.black54),
                     ),
                   ),
                 ),
@@ -259,7 +259,7 @@ class _ActivitySourceReportState extends State<ActivitySourceReport> {
                       borderSide: BorderSide(color: appbar_color),
                     ),
                     enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.black54!),
+                      borderSide: BorderSide(color: Colors.black54),
                     )))])
           ),
 

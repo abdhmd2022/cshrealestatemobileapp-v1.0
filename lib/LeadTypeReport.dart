@@ -196,7 +196,7 @@ class _LeadFollowupTypeReportState extends State<LeadFollowupTypeReport> {
                       borderSide: BorderSide(color: appbar_color),
                     ),
                     enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.black54!),
+                      borderSide: BorderSide(color: Colors.black54),
                     ),
                   ),
                 ),
@@ -275,7 +275,7 @@ class _LeadFollowupTypeReportState extends State<LeadFollowupTypeReport> {
                       borderSide: BorderSide(color: appbar_color),
                     ),
                     enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.black54!),
+                      borderSide: BorderSide(color: Colors.black54),
                     ),
                   ),
                 ),

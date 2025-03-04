@@ -190,7 +190,7 @@ class PieChartGraph extends StatelessWidget {
     // Combine occupied and available units for a single building
     int totalOccupied = occupiedUnits[0]; // Assuming single building
     int totalAvailable = availableUnits[0];
-    int totalUnits = totalOccupied + totalAvailable;
+    /*int totalUnits = totalOccupied + totalAvailable;*/
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,

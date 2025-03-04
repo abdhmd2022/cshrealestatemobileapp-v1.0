@@ -8,8 +8,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'FlatSelection.dart';
 import 'SerialSelect.dart';
 import 'constants.dart';
-import 'models/serial_model.dart'; // ✅ Import common Serial model
-
 
 class Login extends StatefulWidget {
   const Login({super.key, required this.title});

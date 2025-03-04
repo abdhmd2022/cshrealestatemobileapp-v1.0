@@ -7,8 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
-import 'package:intl/intl.dart';
-import 'dart:ui' as ui;
 import 'SalesInquiryReport.dart';
 import 'Sidebar.dart';
 
@@ -931,13 +929,14 @@ class SalesBarChart extends StatelessWidget {
                       ),
                     );
                   },
-                  reservedSize: _getReservedSize(salesData[selectedYear]?.values?.toList() ?? []),
+                  reservedSize: _getReservedSize(salesData[selectedYear]?.values.toList() ?? []),
                 ),
               ),
               topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
               rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
             ),
             gridData: FlGridData(show: true, drawVerticalLine: false),
+            
             borderData: FlBorderData(show: false, border: Border.all(color: Colors.black, width: 1)),
             alignment: BarChartAlignment.spaceEvenly,
           ),

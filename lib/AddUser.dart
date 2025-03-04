@@ -1,11 +1,8 @@
-import 'dart:convert';
 import 'package:cshrealestatemobile/UsersReport.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'Sidebar.dart';
 import 'constants.dart';
-import 'package:http/http.dart' as http;
-
 
 class AddUser extends StatefulWidget
 {

@@ -1,4 +1,3 @@
-import 'package:cshrealestatemobile/SalesDashboard.dart';
 import 'package:cshrealestatemobile/TenantDashboard.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
@@ -376,7 +375,6 @@ class _DecentTenantKYCFormState extends State<DecentTenantKYCForm> {
                     Colors.deepOrange,
                     onCaptureFile
                 ),
-
               ],
             ),
           ],

@@ -79,7 +79,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
   final ImagePicker _picker = ImagePicker();
 
   void _showFlatPicker(BuildContext context) {
-    if (flats == null || flats.isEmpty) {
+    if (flats.isEmpty) {
       print("Flats list is empty or null: $flats"); // Debugging statement
       ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("No flats available to select."))

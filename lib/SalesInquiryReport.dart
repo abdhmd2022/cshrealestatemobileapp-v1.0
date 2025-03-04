@@ -136,13 +136,13 @@ class InquiryModel {
       lastFollowupDate: lastFollowupDate ,
       // color: leadStatusColor,
 
-      inquiryNo: json['id'].toString() ?? '',
+      inquiryNo: json['id'].toString(),
       creationDate: formattedDate,
       leadStatusCategory: leadStatusCategory,
 
       minPrice: (json['min_price'] as num?)?.toDouble() ?? 0.0,
       maxPrice: (json['max_price'] as num?)?.toDouble() ?? 0.0,
-      status: leadStatusName ?? 'In Progress',
+      status: leadStatusName ,
       preferredAreas: (json['preferred_areas'] as List<dynamic>?)
           ?.map((area) => area as Map<String, dynamic>)
           .toList() ??

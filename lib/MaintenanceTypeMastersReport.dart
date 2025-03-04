@@ -283,7 +283,7 @@ class _MaintenanceTypeMastersReportState extends State<MaintenanceTypeMastersRep
                       borderSide: BorderSide(color: appbar_color),
                     ),
                     enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.black54!),
+                      borderSide: BorderSide(color: Colors.black54),
                     ),
                   ),
                 ),
@@ -436,7 +436,7 @@ class _MaintenanceTypeMastersReportState extends State<MaintenanceTypeMastersRep
                       borderSide: BorderSide(color: appbar_color),
                     ),
                     enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.black54!),
+                      borderSide: BorderSide(color: Colors.black54),
                     ),
                   ),
                 ),

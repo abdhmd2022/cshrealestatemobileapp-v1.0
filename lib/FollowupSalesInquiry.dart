@@ -532,7 +532,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
 
                                 if (pickedDate != null) {
                                   setState(() {
-                                    buttonText ='Next Follow-up: ${DateFormat("dd-MMM-yyyy").format(pickedDate!)}';
+                                    buttonText ='Next Follow-up: ${DateFormat("dd-MMM-yyyy").format(pickedDate)}';
                                     nextFollowUpDate = pickedDate; // Save selected date
                                   });
 
@@ -860,7 +860,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
 
                             if (pickedDate != null) {
                               setState(() {
-                                buttonText ='Next Follow-up: ${DateFormat("dd-MMM-yyyy").format(pickedDate!)}';
+                                buttonText ='Next Follow-up: ${DateFormat("dd-MMM-yyyy").format(pickedDate)}';
                                 nextFollowUpDate = pickedDate; // Save selected date
                               });
 
@@ -1503,7 +1503,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
       selectedEmiratesString = emirates
           .where((emirate) => emirate['isSelected'])
           .map((emirate) => emirate['label'])
-          .join(', ') ?? "Select Emirate";
+          .join(', ') ;
     });
   }
 

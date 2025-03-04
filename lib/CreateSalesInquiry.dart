@@ -374,7 +374,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
     // converting amenities set to list
     final List<int> amenitiesList = selectedPreferences.union(selectedAmenities).toList();
 
-    List<int> emiratesIds = selectedEmiratesList.map((emirate) => emirate['id'] as int).toList();
+    /*List<int> emiratesIds = selectedEmiratesList.map((emirate) => emirate['id'] as int).toList();*/
 
     List<int> areasIds = selectedAreas.map((area) => area['id'] as int).toList();
 
@@ -410,8 +410,8 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
       "next_followup_date": formattedDate,
       "property_type": selectedPropertyType,
       "interest_type": interestTypes[selectedInterestType ?? 0],
-      "max_price": _currentRangeValues!.end.round().toString(),
-      "min_price": _currentRangeValues!.start.round().toString(),
+      "max_price": _currentRangeValues.end.round().toString(),
+      "min_price": _currentRangeValues.start.round().toString(),
       "amenities": amenitiesList,
       "description" : descriptioncontroller.text,
       'activity_source_id' : selectedactivity_source!.id,
@@ -481,8 +481,8 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
           _currentRangeValues = RangeValues(range_start, range_end);
 
-          startController.text = _currentRangeValues!.start.toStringAsFixed(0);
-          endController.text = _currentRangeValues!.end.toStringAsFixed(0);
+          startController.text = _currentRangeValues.start.toStringAsFixed(0);
+          endController.text = _currentRangeValues.end.toStringAsFixed(0);
 
           isAllEmiratesSelected = false;
 
@@ -685,7 +685,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
       selectedEmiratesString = emirates
           .where((emirate) => emirate['isSelected'])
           .map((emirate) => emirate['label'])
-          .join(', ') ?? "Select Emirate";
+          .join(', ');
     });
   }
 
@@ -1199,8 +1199,8 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
       _currentRangeValues = RangeValues(range_start, range_end);
 
-      startController.text = _currentRangeValues!.start.toStringAsFixed(0);
-      endController.text = _currentRangeValues!.end.toStringAsFixed(0);
+      startController.text = _currentRangeValues.start.toStringAsFixed(0);
+      endController.text = _currentRangeValues.end.toStringAsFixed(0);
     });
     fetchActivitySources();
     fetchEmirates();
@@ -2725,7 +2725,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                         RangeSlider(
                                           activeColor: appbar_color,
                                           inactiveColor: appbar_color.withOpacity(0.4),
-                                          values: _currentRangeValues!,
+                                          values: _currentRangeValues,
                                           min: range_min!,
                                           max: range_max!,
                                           divisions: 20,
@@ -3019,8 +3019,8 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
                                                   _currentRangeValues = RangeValues(range_start, range_end);
 
-                                                  startController.text = _currentRangeValues!.start.toStringAsFixed(0);
-                                                  endController.text = _currentRangeValues!.end.toStringAsFixed(0);
+                                                  startController.text = _currentRangeValues.start.toStringAsFixed(0);
+                                                  endController.text = _currentRangeValues.end.toStringAsFixed(0);
 
                                                   isAllEmiratesSelected = false;
 

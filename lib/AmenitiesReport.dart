@@ -215,7 +215,7 @@ class _AmentiesReportState extends State<AmentiesReport> {
                       borderSide: BorderSide(color: appbar_color),
                     ),
                     enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.black54!),
+                      borderSide: BorderSide(color: Colors.black54),
                     ),
                   ),
                 ),
@@ -326,7 +326,7 @@ class _AmentiesReportState extends State<AmentiesReport> {
                       borderSide: BorderSide(color: appbar_color),
                     ),
                     enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.black54!),
+                      borderSide: BorderSide(color: Colors.black54),
                     ),
                   ),
                 ),
@@ -476,7 +476,6 @@ class _AmentiesReportState extends State<AmentiesReport> {
         itemCount: amenities.length,
         itemBuilder: (context, index) {
           final amenity = amenities[index];
-          final isQualified = amenity['is_special'] == 'true';
           return Card(
             color: Colors.white,
             margin: const EdgeInsets.symmetric(
@@ -522,7 +521,7 @@ class _AmentiesReportState extends State<AmentiesReport> {
 
                         if(amenity['is_special'] == 'true')
                           Text(
-                            'Yes' ?? 'Unnamed',
+                            'Yes',
                             style: TextStyle(
                               fontWeight: FontWeight.normal,
                               color: appbar_color[800],
@@ -531,7 +530,7 @@ class _AmentiesReportState extends State<AmentiesReport> {
 
                         if(amenity['is_special'] == 'false')
                           Text(
-                            'No' ?? 'Unnamed',
+                            'No',
                             style: TextStyle(
                               fontWeight: FontWeight.normal,
                               color: appbar_color[800],

@@ -141,7 +141,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
           final List<dynamic> apiTickets = responseBody['data']['tickets'];
           final List<Map<String, dynamic>> formattedTickets = apiTickets.map((apiTicket) {
             return {
-              'ticketNumber': apiTicket['id'].toString() ?? '',
+              'ticketNumber': apiTicket['id'].toString(),
               'unitNumber': apiTicket['tenent_flat']['flat']['name'].toString(),
               'buildingName':  apiTicket['tenent_flat']['flat']['building']['name'].toString(),
               'emirate': apiTicket['tenent_flat']['flat']['building']['area']['state']['name'] ?? 'N/A',

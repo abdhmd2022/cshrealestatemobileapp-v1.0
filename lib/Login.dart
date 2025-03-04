@@ -113,6 +113,7 @@ class _LoginPageState extends State<Login> {
   Future<void> _adminlogin(String email, String password) async {
 
     String url = "$BASE_URL_config/v1/auth/login";
+    
     String token = 'Bearer $authTokenBase';
 
     setState(() => _isLoading = true);

@@ -47,7 +47,7 @@ class _LoginPageState extends State<Login> {
 
   bool isVisibleAdminLoginForm= true,_isLoading = false,isButtonDisabled = false;
 
-  Color _buttonColor = appbar_color;
+  Color _buttonColor = Colors.grey;
 
   bool isAdmin = false; // Toggle state
 
@@ -91,7 +91,6 @@ class _LoginPageState extends State<Login> {
   }
 
   SharedPreferences? prefs;
-
 
   @override
   void initState() {
@@ -350,7 +349,8 @@ class _LoginPageState extends State<Login> {
             List<Map<String, dynamic>> companiesJson =
             apiResponse.companies.map((company) => company.toJson()).toList();
 
-            *//*print("✅ Extracted Users Before Saving:");
+            */
+  /*print("✅ Extracted Users Before Saving:");
             for (var user in apiResponse.users) {
               print("📌 User: ${user.name}, Token: ${user.token}");
             }
@@ -358,7 +358,8 @@ class _LoginPageState extends State<Login> {
             print("✅ Extracted Companies Before Saving:");
             for (var company in apiResponse.companies) {
               print("📌 Company ID: ${company.id}, Token: ${company.token}");
-            }*//*
+            }*/
+  /*
 
             await prefs.setString("users_list", jsonEncode(usersJson));
             await prefs.setString("companies_list", jsonEncode(companiesJson));
@@ -395,6 +396,7 @@ class _LoginPageState extends State<Login> {
       });
     }
   }*/
+
 
   @override
   Widget build(BuildContext context) {

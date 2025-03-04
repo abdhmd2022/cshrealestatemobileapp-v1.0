@@ -6,7 +6,6 @@ import 'Sidebar.dart';
 import 'constants.dart';
 import 'package:http/http.dart' as http;
 
-
 class ModifyUser extends StatefulWidget
 {
   const ModifyUser({Key? key}) : super(key: key);

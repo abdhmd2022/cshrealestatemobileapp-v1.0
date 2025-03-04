@@ -139,13 +139,9 @@ class _MaintenanceTicketTransferPageState extends State<MaintenanceTicketTransfe
 
       print('Error fetching data: $e');
     }
-
-
   }
 
   /*Future<void> sendTransferInquiryRequest() async {
-
-
 
     // Replace with your API endpoint
     final String url = "$BASE_URL_config/v1/leads/${widget.id}";
@@ -159,7 +155,6 @@ class _MaintenanceTicketTransferPageState extends State<MaintenanceTicketTransfe
     final Map<String, dynamic> requestBody = {
       "uuid": uuidValue,
       "assigned_to":selectedTransferToId,
-
     };
 
     print('create request body $requestBody');
@@ -181,7 +176,6 @@ class _MaintenanceTicketTransferPageState extends State<MaintenanceTicketTransfe
           _formKey.currentState?.reset();
           selectedTransferToId = null;
           _remarksController.clear();
-
         });
 
       } else {
@@ -194,8 +188,6 @@ class _MaintenanceTicketTransferPageState extends State<MaintenanceTicketTransfe
       print("Exception: $error");
     }
   }*/
-
-
 
   @override
   void initState() {

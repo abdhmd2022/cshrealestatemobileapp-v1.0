@@ -44,8 +44,8 @@ class _SalesDashboardScreenState extends State<SalesDashboardScreen> with Ticker
       "Oct": 2300,
       "Nov": 2400,
       "Dec": 2500,
-
     },
+
     "2023": {
       "Jan": 1200,
       "Feb": 1800,
@@ -76,7 +76,7 @@ class _SalesDashboardScreenState extends State<SalesDashboardScreen> with Ticker
     },
     "2021": {
       "Jan": 5100,
-      "Feb":6200,
+      "Feb": 6200,
       "Mar": 7300,
       "Apr": 8400,
       "May": 9500,

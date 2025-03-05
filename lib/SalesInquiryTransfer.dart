@@ -81,7 +81,6 @@ class _SalesInquiryTransferPageState extends State<SalesInquiryTransfer> with Ti
       isUserEnable = true,
       isUserVisible = true,
       isRolesEnable = true,
-      _isLoading = false,
       isVisibleNoRoleFound = false;
 
   String name = "",email = "";
@@ -127,7 +126,7 @@ class _SalesInquiryTransferPageState extends State<SalesInquiryTransfer> with Ti
     // Replace with your API endpoint
     final String url = "$BASE_URL_config/v1/leads/${widget.id}";
 
-    var uuid = Uuid();
+    var uuid = const Uuid();
 
     // Generate a v4 (random) UUID
     String uuidValue = uuid.v4();
@@ -242,9 +241,7 @@ class _SalesInquiryTransferPageState extends State<SalesInquiryTransfer> with Ti
             ),*/
             child: SingleChildScrollView(
                 child: Container(
-
                   height: MediaQuery.of(context).size.height,
-
                   child: Form(
                       key: _formKey,
                       child: ListView(
@@ -274,7 +271,7 @@ class _SalesInquiryTransferPageState extends State<SalesInquiryTransfer> with Ti
                                             child:Row(
                                               children: [
                                                 Icon(
-                                                FontAwesomeIcons.userCircle,
+                                                FontAwesomeIcons.circleUser,
                                                     color: appbar_color.withOpacity(1),
                                                   size: 20,
 

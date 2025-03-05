@@ -66,10 +66,7 @@ class SalesInquiryTransfer extends StatefulWidget
 class _SalesInquiryTransferPageState extends State<SalesInquiryTransfer> with TickerProviderStateMixin {
 
   int? selectedTransferToId; // To store the selected dropdown value
-   List<User> transfer_to_list = [
-
-  ];
-
+    List<User> transfer_to_list= [];
   TextEditingController _remarksController = TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
@@ -106,10 +103,9 @@ class _SalesInquiryTransferPageState extends State<SalesInquiryTransfer> with Ti
         print('data : $data');
 
         setState(() {
-
           final usersJson = List<Map<String, dynamic>>.from(data['data']['users']);
           transfer_to_list = usersJson.map((userJson) => User.fromJson(userJson)).toList();
-          print('list ${response.body}');
+          /*print('list ${response.body}');*/
 
         });
       } else {
@@ -370,7 +366,6 @@ class _SalesInquiryTransferPageState extends State<SalesInquiryTransfer> with Ti
                                         }
                                         return null;
                                       },
-
                                       items: transfer_to_list.map((User item) { // Replace 'items' with your list
                                         return DropdownMenuItem<int>(
                                           value: item.id,

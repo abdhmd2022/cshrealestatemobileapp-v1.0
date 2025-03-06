@@ -230,17 +230,13 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
 
 
         setState(() {
-
           _amountController.clear();
-
           selectedStatus = null;
           selectedSubTicketId = null;
           _remarksController.clear();
           nextFollowupDate = null;
-
           _signatureController.clear();
           _attachment.clear();
-
         });
 
         fetchTickets(widget.ticketid);
@@ -253,7 +249,6 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
       print('Error during upload: $e');
     }
   }
-
 
   Future<void> _pickImages({bool fromCamera = false}) async {
     List<XFile>? pickedFiles;

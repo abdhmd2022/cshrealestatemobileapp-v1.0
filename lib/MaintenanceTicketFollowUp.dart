@@ -228,7 +228,6 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
 
         print('then follow up with image successfull');
 
-
         setState(() {
           _amountController.clear();
           selectedStatus = null;
@@ -294,7 +293,6 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
   File? _signatureFile; // Store the signature separately
 
   Map<String, dynamic>? tenantFlatDetails;
-
 
   Future<void> _saveSignature(String id,BuildContext context) async {
     try {

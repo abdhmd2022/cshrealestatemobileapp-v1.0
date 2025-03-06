@@ -5,6 +5,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:mime/mime.dart';
+import 'package:path/path.dart';
 import 'package:signature/signature.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
@@ -17,6 +19,7 @@ import 'MaintenanceTicketReport.dart';
 import 'constants.dart';
 import 'package:printing/printing.dart'; // For PDF preview
 import 'package:pdf/widgets.dart' as pw;
+import 'package:http_parser/src/media_type.dart';
 
 class MaintenanceStatus {
   final int id;
@@ -135,14 +138,20 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
       );
 
       if (response.statusCode == 201) {
-         print('follow up successfull');
 
-         selectedStatus = null;
+        Map<String, dynamic> decodedResponse = jsonDecode(response.body);
+        int followupId = decodedResponse["data"]["followp"]["id"];
+        sendImageData(followupId);
+
+        print('follow up without image successfull');
+
+        /* selectedStatus = null;
          selectedSubTicketId = null;
          _remarksController.clear();
-         nextFollowupDate = null;
+         nextFollowupDate = null;*/
 
-         fetchTickets(widget.ticketid);
+
+
       }
       else {
         print('Upload failed with status code: ${response.statusCode}');
@@ -152,6 +161,100 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
       print('Error during upload: $e');
     }
   }
+
+  bool isValidImage(dynamic file) {
+    final validExtensions = ['jpg', 'jpeg', 'png'];
+
+    if (file is File) {
+      // For mobile, check the file extension
+
+      final extension = file.path.split('.').last.toLowerCase();
+      return validExtensions.contains(extension);
+    } else if (file is Uint8List) {
+      // For web, check the MIME type
+      final mimeType = lookupMimeType('', headerBytes: file);
+      return mimeType != null && mimeType.startsWith('image/');
+    }
+    return false;
+  }
+  String getMimeType(String path) {
+    final mimeType = lookupMimeType(path);
+    return mimeType?.split('/').last ?? 'jpeg'; // Default to JPEG
+  }
+
+  Future<void> sendImageData(int id) async {
+    try {
+      final String urll = "$BASE_URL_config/v1/maintenanceFollowup/uploads/$id";
+      final url = Uri.parse(urll);
+
+      final request = http.MultipartRequest('POST', url);
+
+      request.headers.addAll({
+        'Authorization': 'Bearer $Company_Token', // Authentication token
+      });
+
+      // ✅ Ensure only valid images are uploaded
+      _attachment = _attachment.where(isValidImage).toList();
+
+      for (var file in _attachment) {
+        if (file is File) {
+          // ✅ Mobile (iOS & Android) - Use file path
+          request.files.add(
+            await http.MultipartFile.fromPath(
+              'images',
+              file.path,
+              filename: basename(file.path),
+              contentType: MediaType('image', getMimeType(file.path)),
+            ),
+          );
+        } else if (file is Uint8List) {
+          // ✅ Web - Use in-memory file
+          request.files.add(
+            http.MultipartFile.fromBytes(
+              'images',
+              file,
+              filename: 'followup_image_${DateTime.now().millisecondsSinceEpoch}.png',
+              contentType: MediaType('image', 'png'), // Defaulting to PNG
+            ),
+          );
+        }
+      }
+
+      // ✅ Send request & handle response
+      var streamedResponse = await request.send();
+      var response = await http.Response.fromStream(streamedResponse);
+
+      if (response.statusCode == 201) {
+
+        print('then follow up with image successfull');
+
+
+        setState(() {
+
+          _amountController.clear();
+
+          selectedStatus = null;
+          selectedSubTicketId = null;
+          _remarksController.clear();
+          nextFollowupDate = null;
+
+          _signatureController.clear();
+          _attachment.clear();
+
+
+        });
+
+        fetchTickets(widget.ticketid);
+
+      } else {
+        print('Upload failed with status code: ${response.statusCode}');
+        print('Response body: ${response.body}');
+      }
+    } catch (e) {
+      print('Error during upload: $e');
+    }
+  }
+
 
   Future<void> _pickImages({bool fromCamera = false}) async {
     List<XFile>? pickedFiles;
@@ -199,7 +302,7 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
   Map<String, dynamic>? tenantFlatDetails;
 
 
-  Future<void> _saveSignature(String id) async {
+  Future<void> _saveSignature(String id,BuildContext context) async {
     try {
       if (_signatureController.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -1018,11 +1121,12 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
                             ),
                           ),
                           onPressed: () {
-                            setState(() {
 
-                              _signatureController.clear();
 
-                            });
+                            _signatureController.clear();
+
+                            /*fetchTickets(widget.ticketid);*/
+
                           },
                           child: Text('Clear'),
                         ),
@@ -1214,10 +1318,15 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
                           ),
                           onPressed: () {
                             setState(() {
-                              selectedStatus = null;
                               _amountController.clear();
+
+                              selectedStatus = null;
+                              selectedSubTicketId = null;
                               _remarksController.clear();
+                              nextFollowupDate = null;
+
                               _signatureController.clear();
+                              _attachment.clear();
                             });
                           },
                           child: Text('Clear'),
@@ -1240,14 +1349,11 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
                           {
                             if(selectedStatus!.category == "Close")
                               {
-                                _saveSignature(widget.ticketid);
+                                _saveSignature(widget.ticketid,context);
                               }
                             else
                               {
                                 sendFormData();
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text('Submit.')),
-                                );
                               }
                           },
                           child: Text('Submit'),

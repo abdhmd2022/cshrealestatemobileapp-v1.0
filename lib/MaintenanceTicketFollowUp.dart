@@ -241,7 +241,6 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
           _signatureController.clear();
           _attachment.clear();
 
-
         });
 
         fetchTickets(widget.ticketid);

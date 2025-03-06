@@ -177,6 +177,15 @@ class _LoginPageState extends State<Login> {
               MaterialPageRoute(builder: (context) => CompanySelection()),
             );
           } else {
+
+
+            await prefs.setInt("company_id", firstUser.companyId??0);
+            await prefs.setString("company_token", firstUser.token);
+            await prefs.setString("company_name", firstUser.companyName ?? "");
+
+            print("✅ Selected Company: ${ firstUser.companyName ?? ""}");
+            print("🔑 Company Token: ${firstUser.token}");
+
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(builder: (context) =>

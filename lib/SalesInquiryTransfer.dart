@@ -104,8 +104,12 @@ class _SalesInquiryTransferPageState extends State<SalesInquiryTransfer> with Ti
 
         setState(() {
           final usersJson = List<Map<String, dynamic>>.from(data['data']['users']);
-          transfer_to_list = usersJson.map((userJson) => User.fromJson(userJson)).toList();
-          /*print('list ${response.body}');*/
+          final excludedUserId = user_id;
+
+          transfer_to_list = usersJson
+              .where((userJson) => userJson['id'] != excludedUserId)
+              .map((userJson) => User.fromJson(userJson))
+              .toList();          print('list ${response.body}');
 
         });
       } else {
@@ -349,12 +353,12 @@ class _SalesInquiryTransferPageState extends State<SalesInquiryTransfer> with Ti
                                     margin: EdgeInsets.only(left: 00,right: 0,bottom: 20),
                                     decoration: BoxDecoration(
                                       color: Colors.white,
-                                      borderRadius: BorderRadius.circular(8),
-                                      border: Border.all(color: Colors.grey.shade300, width: 1.5),
+                                      borderRadius: BorderRadius.circular(10),
+                                      border: Border.all(color: Colors.black, width: 0.75),
                                     ),
                                     child: DropdownButtonFormField<int>(
                                       decoration: InputDecoration(
-                                        border: InputBorder.none, // Remove default border
+                                        border: InputBorder.none,
                                         contentPadding: EdgeInsets.zero, // Remove extra padding
                                       ),
                                       value: selectedTransferToId, // Replace with your variable

@@ -179,9 +179,7 @@ class _LoginPageState extends State<Login> {
           } else {
 
 
-            await prefs.setInt("company_id", firstUser.companyId??0);
-            await prefs.setString("company_token", firstUser.token);
-            await prefs.setString("company_name", firstUser.companyName ?? "");
+
 
             print("✅ Selected Company: ${ firstUser.companyName ?? ""}");
             print("🔑 Company Token: ${firstUser.token}");
@@ -276,6 +274,17 @@ class _LoginPageState extends State<Login> {
               MaterialPageRoute(builder: (context) => FlatSelection()),
             );
           } else {
+
+
+            await prefs.setInt("flat_id", flatsList.first['id']);
+            await prefs.setString("flat_name", flatsList.first['name']);
+            await prefs.setString("floor", flatsList.first['floor']);
+            await prefs.setString("flat_type", flatsList.first['flat_type']);
+            await prefs.setString("building", flatsList.first['building']);
+            await prefs.setString("area", flatsList.first['area']);
+            await prefs.setString("state", flatsList.first['state']);
+            await prefs.setString("country", flatsList.first['country']);
+
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(builder: (context) => TenantDashboard()),

@@ -577,7 +577,6 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
               ),
             ),
 
-
             isLoading
                 ? Expanded(child: Center(
               child: Platform.isIOS

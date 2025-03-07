@@ -30,6 +30,10 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
   Map<int, double> ratings = {};
   Map<int, String> feedbacks = {};
 
+  DateTime startDate = DateTime(DateTime.now().year, DateTime.now().month, 1); // ✅ First day of current month
+  DateTime endDate = DateTime(DateTime.now().year, DateTime.now().month + 1, 0); // ✅ Last day of current month
+
+
   TextEditingController commentController = TextEditingController();
 
   @override
@@ -123,7 +127,70 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
         ? "$BASE_URL_config/v1/maintenance"
         : "$BASE_URL_config/v1/tenent/maintenance?tenent_id=$user_id&flat_id=$flat_id";
 
-    /*final String url = "$BASE_URL_config/v1/maintenance"; // will change it for tenant*/
+    print('Fetching tickets from URL: $url');
+
+    try {
+      final Map<String, String> headers = {
+        'Authorization': 'Bearer $Company_Token',
+        'Content-Type': 'application/json',
+      };
+
+      final response = await http.get(Uri.parse(url), headers: headers);
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> responseBody = json.decode(response.body);
+        if (responseBody['success'] == true) {
+          final List<dynamic> apiTickets = responseBody['data']['tickets'];
+
+          final List<Map<String, dynamic>> formattedTickets = apiTickets.map((apiTicket) {
+            return {
+              'ticketNumber': apiTicket['id'].toString(),
+              'unitNumber': apiTicket['tenent_flat']['flat']['name'].toString(),
+              'buildingName': apiTicket['tenent_flat']['flat']['building']['name'].toString(),
+              'emirate': apiTicket['tenent_flat']['flat']['building']['area']['state']['name'] ?? 'N/A',
+              'status': 'N/A',
+              'date': apiTicket['created_at']?.split('T')[0] ?? '',
+              'maintenanceTypes': apiTicket['sub_tickets'].map((subTicket) {
+                return {
+                  'subTicketId': subTicket['id'].toString(),
+                  'type': subTicket['type']['name'],
+                  'category': subTicket['type']['category']
+                };
+              }).toList(),
+              'description': apiTicket['description'] ?? '',
+            };
+          }).toList();
+
+          setState(() {
+            tickets = formattedTickets;
+            filterTickets(); // Apply date filter after fetching tickets
+          });
+        } else {
+          print("API returned success: false");
+        }
+      } else {
+        print("Error fetching data: ${response.statusCode}");
+        print("Response: ${response.body}");
+      }
+    } catch (e) {
+      print("Error fetching data: $e");
+    }
+
+    setState(() {
+      isLoading = false;
+    });
+  }
+
+  /*Future<void> fetchTickets() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    String url = is_admin
+        ? "$BASE_URL_config/v1/maintenance"
+        : "$BASE_URL_config/v1/tenent/maintenance?tenent_id=$user_id&flat_id=$flat_id";
+
+    *//*final String url = "$BASE_URL_config/v1/maintenance"; // will change it for tenant*//*
 
     print('url $url');
 
@@ -177,7 +244,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
     setState(() {
       isLoading = false;
     });
-  }
+  }*/
 
   Future<void> saveFeedback(int ticketId, String description, num ratings) async {
 
@@ -292,7 +359,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
     }
   }
 
-  void _updateSearchQuery(String query) {
+  /*void _updateSearchQuery(String query) {
     setState(() {
       searchQuery = query;
       filteredTickets = tickets
@@ -305,7 +372,71 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
           ticket['maintenanceType'].toLowerCase().contains(query.toLowerCase()))
           .toList();
     });
+  }*/
+
+  void filterTickets() {
+    print("Filtering tickets by date...");
+    _applyFilters(); // ✅ This now applies BOTH filters
   }
+
+  void _updateSearchQuery(String query) {
+    setState(() {
+      searchQuery = query;
+    });
+    _applyFilters(); // ✅ This now applies BOTH filters
+  }
+
+
+
+  void _applySearchFilter(List<Map<String, dynamic>> listToFilter) {
+    setState(() {
+      filteredTickets = listToFilter.where((ticket) {
+        // Ensure 'maintenanceTypes' is a List before using `.any()`
+        bool hasMatchingSubTicket = ticket['maintenanceTypes'] is List &&
+            (ticket['maintenanceTypes'] as List).any((subTicket) =>
+            subTicket is Map &&
+                subTicket.containsKey('type') &&
+                subTicket['type'] is String &&
+                subTicket['type'].toLowerCase().contains(searchQuery.toLowerCase()));
+
+        return ticket['ticketNumber'].toLowerCase().contains(searchQuery.toLowerCase()) ||
+            ticket['unitNumber'].toLowerCase().contains(searchQuery.toLowerCase()) ||
+            ticket['buildingName'].toLowerCase().contains(searchQuery.toLowerCase()) ||
+            ticket['emirate'].toLowerCase().contains(searchQuery.toLowerCase()) ||
+            ticket['status'].toLowerCase().contains(searchQuery.toLowerCase()) ||
+            hasMatchingSubTicket; // ✅ Uses the correct `any()` check
+      }).toList();
+
+      _expandedTickets = List<bool>.filled(filteredTickets.length, false);
+    });
+
+    print("Final Filtered Tickets Count: ${filteredTickets.length}");
+  }
+
+  void _applyFilters() {
+    print("Applying both Date and Search Filters...");
+
+    // 1️⃣ First, filter by date
+    List<Map<String, dynamic>> dateFilteredTickets = tickets.where((ticket) {
+      DateTime? ticketDate;
+      try {
+        ticketDate = DateTime.parse(ticket['date']);
+      } catch (e) {
+        print("Invalid Date: ${ticket['date']}");
+        ticketDate = null;
+      }
+
+      bool withinDateRange = ticketDate != null &&
+          (ticketDate.isAtSameMomentAs(startDate) || ticketDate.isAfter(startDate.subtract(Duration(days: 1)))) &&
+          (ticketDate.isBefore(endDate.add(Duration(days: 1))) || ticketDate.isAtSameMomentAs(endDate));
+
+      return withinDateRange;
+    }).toList();
+
+    // 2️⃣ Then, pass the date-filtered list to the search function
+    _applySearchFilter(dateFilteredTickets);
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -364,35 +495,128 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
       body: Container(
         color: Colors.white,
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
-        child: isLoading
-            ? Center(
-          child: Platform.isIOS
-              ? CupertinoActivityIndicator(
-            radius: 15.0, // Adjust size if needed
-          )
-              : CircularProgressIndicator(
-            valueColor: AlwaysStoppedAnimation<Color>(Colors.blue), // Change color here
-            strokeWidth: 4.0, // Adjust thickness if needed
-          ),
-        )
-            : filteredTickets.isEmpty
-            ? Center(
-          child: Text(
-            "No data available",
-            style: TextStyle(
-              fontSize: 18,
-              color: Colors.grey,
-              fontWeight: FontWeight.bold,
+        child: Column(
+
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 0.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  GestureDetector(
+                    onTap: () async {
+                      final DateTimeRange? picked = await showDateRangePicker(
+                        context: context,
+                        firstDate: DateTime(2020),
+                        lastDate: DateTime(2100),
+                        initialDateRange: DateTimeRange(start: startDate, end: endDate),
+                        builder: (context, child) {
+                          return Theme(
+                            data: ThemeData.light().copyWith(
+                              primaryColor: appbar_color, // ✅ Header & buttons color
+                              scaffoldBackgroundColor: Colors.white,
+
+                              colorScheme: ColorScheme.light(
+                                primary: appbar_color, // ✅ Start & End date circle color
+                                onPrimary: Colors.white, // ✅ Text inside Start & End date
+                                secondary: appbar_color.withOpacity(0.6), // ✅ In-Between date highlight color
+                                onSecondary: Colors.white, // ✅ Text color inside In-Between dates
+                                surface: Colors.white, // ✅ Background color
+                                onSurface: Colors.black, // ✅ Default text color
+                              ),
+                              dialogBackgroundColor: Colors.white,
+                            ),
+                            child: child!,
+                          );
+                        },
+                      );
+
+                      if (picked != null) {
+                        setState(() {
+                          startDate = picked.start;
+                          endDate = picked.end;
+                        });
+                        filterTickets(); // ✅ Apply date filter
+                      }
+                    },
+                    child: Container(
+                      padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: appbar_color, width: 1.5),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black12,
+                            blurRadius: 4,
+                            offset: Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Icon(Icons.calendar_today, color: appbar_color, size: 18),
+                          Expanded(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  "${DateFormat('dd-MMM-yyyy').format(startDate)} - ${DateFormat('dd-MMM-yyyy').format(endDate)}",
+                                  style: TextStyle(fontSize: 14, color: Colors.black87),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Icon(Icons.calendar_today, color: appbar_color, size: 18),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-        )
-            : ListView.builder(
-          itemCount: filteredTickets.length,
-          itemBuilder: (context, index) {
-            final ticket = filteredTickets[index];
-            return _buildTicketCard(ticket, index);
-          },
+
+
+            isLoading
+                ? Expanded(child: Center(
+              child: Platform.isIOS
+                  ? CupertinoActivityIndicator(
+                radius: 15.0, // Adjust size if needed
+              )
+                  : CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.blue), // Change color here
+                strokeWidth: 4.0, // Adjust thickness if needed
+              ),
+            )
+              ,)
+                : filteredTickets.isEmpty
+                ? Expanded(
+              child:  Center(
+                child: Text(
+                  "No data available",
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Colors.grey,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              )
+            )
+
+                : Expanded(
+              child: ListView.builder(
+              itemCount: filteredTickets.length,
+              itemBuilder: (context, index) {
+                final ticket = filteredTickets[index];
+                return _buildTicketCard(ticket, index);
+              },
+            ),
+            )
+
+          ],
         ),
+
       ),
     floatingActionButton: Container(
         decoration: BoxDecoration(

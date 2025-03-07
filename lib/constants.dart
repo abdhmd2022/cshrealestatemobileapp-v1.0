@@ -50,9 +50,6 @@ Future<void> loadTokens() async {
       flatsList = jsonDecode(flatsJson);
     }
 
-
-
-
   print("Loaded Company Token: $Company_Token");
   print("Loaded Company ID: $company_id");
   print("Loaded User ID: $user_id");

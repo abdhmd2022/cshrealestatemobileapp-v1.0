@@ -115,7 +115,6 @@ class InquiryModel {
       lastFollowupRemarks = lastFollowup['remarks'] ?? 'null';
       lastFollowupDate = _formatDate(lastFollowup['date'] ?? '');
 
-
       print('Last Lead Status Name: $leadStatusName');
     } else {
       print('No follow-up records found.');

@@ -273,9 +273,9 @@ class _LoginPageState extends State<Login> {
               context,
               MaterialPageRoute(builder: (context) => FlatSelection()),
             );
-          } else {
-
-
+          }
+          else
+          {
             await prefs.setInt("flat_id", flatsList.first['id']);
             await prefs.setString("flat_name", flatsList.first['name']);
             await prefs.setString("floor", flatsList.first['floor']);

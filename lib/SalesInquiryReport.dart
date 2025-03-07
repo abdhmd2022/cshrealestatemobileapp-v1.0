@@ -226,7 +226,8 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
 
           // ✅ Automatically select first "Normal" category status, fallback to "All"
           InquiryStatus? firstNormalStatus = inquirystatus_list.firstWhere(
-                (status) => status.category == "Normal",
+                (status) => status.category == "All",
+
             orElse: () => inquirystatus_list.first, // Defaults to "All" if none found
           );
 
@@ -470,7 +471,7 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
       final response = await http.get(Uri.parse(url), headers: headers);
       if (response.statusCode == 200) {
         setState(() {
-          print(response.body);
+          print("fetched record for inquiries : ${response.body}");
           final jsonResponse = json.decode(response.body);
           salesinquiry = parseInquiries(jsonResponse);
           _expandedinquirys = List.generate(salesinquiry.length, (index) => false);

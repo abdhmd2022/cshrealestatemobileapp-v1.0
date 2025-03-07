@@ -426,7 +426,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
         Uri.parse(url),
         headers: {
           "Content-Type": "application/json",
-
           "Authorization": "Bearer $Company_Token",
         },
         body: jsonEncode(requestBody),

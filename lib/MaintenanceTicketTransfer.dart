@@ -260,8 +260,7 @@ class _MaintenanceTicketTransferPageState extends State<MaintenanceTicketTransfe
                         child: ListView(
                             children: [
 
-                              SizedBox(height: 16,),
-                              Padding(padding: EdgeInsets.only(left: 25,top: 10,bottom: 10),
+                              /*Padding(padding: EdgeInsets.only(left: 25,top: 10,bottom: 10),
                                 child:  Column(
                                   children: followUps.asMap().entries.map((entry) {
                                     int index = entry.key;
@@ -293,7 +292,7 @@ class _MaintenanceTicketTransferPageState extends State<MaintenanceTicketTransfe
                                       ],
                                     );
                                   }).toList(),
-                                ),),
+                                ),),*/
 
 
 

@@ -218,6 +218,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
     required String body,
     required Map<String, dynamic> smtpConfig,
     required String recipientEmail,
+    required TextEditingController ccController
   }) async {
     // Configure your SMTP server using the details from the API.
     final smtpServer = SmtpServer(
@@ -227,12 +228,21 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
       password: smtpConfig['password'],
     );
 
+    List<String> ccEmails = ccController.text
+        .split(',')
+        .map((e) => e.trim())
+        .where((e) => e.isNotEmpty)
+        .toList();
+
     // Create the email message
     final message = Message()
       ..from = Address(smtpConfig['username'], 'Your Company Name')
       ..recipients.add(recipientEmail)
       ..subject = subject
-      ..text = body;
+      ..text = body
+      ..ccRecipients.addAll(ccEmails);
+
+
 
     try {
       /*final sendReport = await send(message, smtpServer);
@@ -334,6 +344,8 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
     }
 
     TextEditingController subjectController = TextEditingController();
+    TextEditingController ccController = TextEditingController();
+
     TextEditingController bodyController = TextEditingController();
 
     subjectController.text = 'Followup for inquiry # $no';
@@ -341,6 +353,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
 
     bool isSubjectEmpty = false;
     bool isBodyEmpty = false;
+
     bool isFollowUpTypeEmpty = false;
     bool isFollowUpStatusEmpty = false;
     bool isFollowUpDateEmpty = false;
@@ -419,6 +432,27 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                             isBodyEmpty = value.trim().isEmpty;
                           });
                         },
+                      ),
+                      SizedBox(height: 10),
+                      TextField(
+                        controller: ccController,
+                        enabled: true,
+                        style: TextStyle(color: Colors.black54),
+                        decoration: InputDecoration(
+                          labelText: "CC Emails (comma-separated)",
+                          labelStyle: TextStyle(color: Colors.black54),
+                          hintText: "example1@mail.com, example2@mail.com",
+
+                          border: OutlineInputBorder(
+                            borderSide: BorderSide(color:  Colors.black),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color:  appbar_color),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+
                       ),
                       SizedBox(height: 10),
 
@@ -643,6 +677,8 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                           body: bodyController.text,
                           smtpConfig: smtpDetails,
                           recipientEmail: "saadan@ca-eim.com",
+                          ccController: ccController
+
                         );
                         Navigator.of(context).pop(); // Close the dialog
 
@@ -654,6 +690,9 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                           body: bodyController.text,
                           smtpConfig: smtpDetails,
                           recipientEmail: "saadan@ca-eim.com",
+                            ccController: ccController
+
+
                         );
 
                         Navigator.of(context).pop(); // Close the dialog

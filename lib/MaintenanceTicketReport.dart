@@ -36,6 +36,10 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
 
   TextEditingController commentController = TextEditingController();
 
+  List<dynamic> commentHistoryList = [];
+
+  List<dynamic> feedbackHistoryList = [];
+
   @override
   void initState() {
     super.initState();
@@ -117,6 +121,312 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
       },
     );
   }
+
+  Future<List<dynamic>> fetchCommentHistory(String id) async {
+
+    commentHistoryList.clear();
+
+    String url = is_admin
+        ? '$BASE_URL_config/v1/maintenanceComments/?ticket_id=$id'
+        : '$BASE_URL_config/v1/tenent/maintenanceComments/?ticket_id=$id';;
+
+    String token = 'Bearer $Company_Token'; // Auth token
+
+    Map<String, String> headers = {
+      'Authorization': token,
+      "Content-Type": "application/json"
+    };
+
+    final response = await http.get(Uri.parse(url), headers: headers);
+    final Map<String, dynamic> jsonData = jsonDecode(response.body);
+
+    if (response.statusCode == 200) {
+
+      commentHistoryList = jsonData["data"]["comments"];
+      // Filter only where lead_id == 6
+
+      return commentHistoryList;
+    } else {
+      String message = 'Code: ${response.statusCode}\nMessage: ${jsonData['message']}';
+      Fluttertoast.showToast(
+        msg: message,
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM, // Change to CENTER or TOP if needed
+        backgroundColor: Colors.black,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
+      print('Upload failed with status code: ${response.statusCode}');
+      print('Upload failed with response: ${response.body}');
+      return commentHistoryList;
+    }
+  }
+
+  Future<List<dynamic>> fetchFeedbackHistory(String id) async {
+
+    feedbackHistoryList.clear();
+
+    List<dynamic> filteredFeedbacks = [];
+
+    String url = is_admin
+        ? '$BASE_URL_config/v1/maintenanceFeedback/?ticket_id=$id'
+        : '$BASE_URL_config/v1/tenent/maintenanceFeedback/?ticket_id=$id';;
+
+    String token = 'Bearer $Company_Token'; // Auth token
+
+    Map<String, String> headers = {
+      'Authorization': token,
+      "Content-Type": "application/json"
+    };
+
+    final response = await http.get(Uri.parse(url), headers: headers);
+    final Map<String, dynamic> jsonData = jsonDecode(response.body);
+
+    if (response.statusCode == 200) {
+
+      feedbackHistoryList = jsonData["data"]["feedbacks"];
+
+      filteredFeedbacks = feedbackHistoryList
+          .where((feedback) => feedback["ticket_id"] == int.parse(id))
+          .toList();
+      // Filter only where lead_id == 6
+
+      return filteredFeedbacks;
+    } else {
+      String message = 'Code: ${response.statusCode}\nMessage: ${jsonData['message']}';
+      Fluttertoast.showToast(
+        msg: message,
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM, // Change to CENTER or TOP if needed
+        backgroundColor: Colors.black,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
+      print('Upload failed with status code: ${response.statusCode}');
+      print('Upload failed with response: ${response.body}');
+      return filteredFeedbacks;
+    }
+  }
+
+
+
+  void _showViewCommentPopup(BuildContext context,String id) async {
+    List<dynamic> filteredData = [];
+
+    try {
+      filteredData = await fetchCommentHistory(id);
+    } catch (e) {
+      print('Error fetching data: $e');
+    }
+
+    showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        builder: (context) {
+          return Container(
+              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              height: MediaQuery.of(context).size.height * 0.6,
+              color: Colors.white,
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Header
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          "Comments History",
+                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.close, color: Colors.grey),
+                          onPressed: () => Navigator.pop(context),
+                        ),
+                      ],
+                    ),
+                    Divider(),
+                    // Content
+                    Expanded(
+                        child: filteredData.isEmpty
+                            ? Center(child: Text("No Comments Found"))
+                            : ListView.builder(
+                            itemCount: filteredData.length,
+                            itemBuilder: (context, index) {
+                              var item = filteredData.reversed.toList()[index];
+                              var username = item["created_user"]?["name"] ?? item["tenent"]["name"];
+                              return Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(12), // Rounded corners
+
+                                  ),
+
+                                  child: Card(
+                                      margin: EdgeInsets.symmetric(vertical: 8),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      elevation: 5,
+                                      child: Container(
+                                          decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            borderRadius: BorderRadius.circular(12), // Rounded corners
+                                          ),
+                                          padding: EdgeInsets.all(16),
+                                          child: Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+
+                                                Text(
+                                                  username,
+                                                  style: TextStyle(
+                                                      fontSize: 16, fontWeight: FontWeight.w600),
+                                                ),
+                                                SizedBox(height: 6),
+                                                Row(
+                                                  children: [
+                                                    Text(
+                                                      item["description"],
+                                                      style: TextStyle(
+                                                        color: Colors.grey.shade800,
+                                                        fontWeight: FontWeight.w500,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                SizedBox(height: 8),
+                                                Text(
+                                                  "Date: ${formatDate(item["created_at"])}",
+                                                  style: TextStyle(color: Colors.grey.shade700),
+                                                ),
+                                                if (item["remarks"] != null) ...[
+                                                  SizedBox(height: 6),
+                                                  Text(
+                                                    "Description: ${item["description"]}",
+                                                    style: TextStyle(color: Colors.grey.shade700),
+                                                  ),
+                                                ],
+                                                ]))));}))]));});}
+
+  void _showViewFeedbackPopup(BuildContext context,String id) async {
+    List<dynamic> filteredData = [];
+
+    try {
+      filteredData = await fetchFeedbackHistory(id);
+
+
+
+
+
+      print('feedlack list $filteredData');
+    } catch (e) {
+      print('Error fetching data: $e');
+    }
+
+    showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        builder: (context) {
+          return Container(
+              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              height: MediaQuery.of(context).size.height * 0.6,
+              color: Colors.white,
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Header
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          "Feedback",
+                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.close, color: Colors.grey),
+                          onPressed: () => Navigator.pop(context),
+                        ),
+                      ],
+                    ),
+                    Divider(),
+                    // Content
+                    Expanded(
+                        child: filteredData.isEmpty
+                            ? Center(child: Text("No Feedback Found"))
+                            : ListView.builder(
+                            itemCount: filteredData.length,
+                            itemBuilder: (context, index) {
+                              var item = filteredData.reversed.toList()[index];
+                              return Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(12), // Rounded corners
+
+                                  ),
+
+                                  child: Card(
+                                    margin: EdgeInsets.symmetric(vertical: 8),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    elevation: 5,
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(12), // Rounded corners
+                                      ),
+                                      padding: EdgeInsets.all(16),
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              // Star Rating Widget
+                                              for (int i = 0; i < (item["ratings"]); i++)
+                                                Icon(Icons.star, color: Colors.amber, size: 20),
+                                              for (int i = (item["ratings"]); i < 5; i++)
+                                                Icon(Icons.star_border, color: Colors.amber, size: 20),
+                                            ],
+                                          ),
+
+                                          SizedBox(height: 6),
+                                          Row(
+                                            children: [
+                                              Expanded(
+                                                child: Text(
+                                                  item["description"],
+                                                  style: TextStyle(
+                                                    color: Colors.grey.shade900,
+                                                    fontWeight: FontWeight.w500,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          SizedBox(height: 8),
+                                          Text(
+                                            "Date: ${formatDate(item["created_at"])}",
+                                            style: TextStyle(color: Colors.grey.shade700),
+                                          ),
+                                          if (item["remarks"] != null) ...[
+                                            SizedBox(height: 6),
+                                            Text(
+                                              "Remarks: ${item["remarks"]}",
+                                              style: TextStyle(color: Colors.grey.shade700),
+                                            ),
+                                          ],
+                                        ],
+                                      ),
+                                    ),
+                                  )
+                              );}))]));});}
+
 
   Future<void> fetchTickets() async {
     setState(() {
@@ -246,7 +556,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
     });
   }*/
 
-  Future<void> saveFeedback(int ticketId, String description, num ratings) async {
+  Future<void> saveFeedback(int ticketId, String description, num rating) async {
 
     try {
       final String url = "$BASE_URL_config/v1/tenent/maintenanceFeedback";
@@ -258,7 +568,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
         "uuid": uuidValue,
         "ticket_id": ticketId, // Updated key from flat_masterid to flat_id
         "description": description,
-        "ratings": ratings.toInt(), // Converts the list of objects to a list of IDs
+        "ratings": rating.toInt(), // Converts the list of objects to a list of IDs
       };
 
       print('feedback body ${requestBody}');
@@ -283,6 +593,8 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
           textColor: Colors.white,
           fontSize: 16.0,
         );
+
+        ratings.clear();
 
       } else {
 
@@ -728,9 +1040,36 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                                             builder: (context, setState) {
                                               return AlertDialog(
                                                 backgroundColor: Colors.white, // Apply appbar_color to full
-                                                title: Text(
-                                                  "Comment",
-                                                  style: TextStyle(color: Colors.black),
+                                                title: Row(
+                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                  children: [
+
+                                                    Text(
+                                                      "Comment",
+                                                      style: TextStyle(color: Colors.black),
+                                                    ),
+
+
+                                                    GestureDetector(
+                                                      onTap: ()
+                                                      {
+                                                        _showViewCommentPopup(context,ticket['ticketNumber']);
+
+                                                      },
+                                                      child: Container(
+                                                        decoration: BoxDecoration(
+                                                          border: Border.all(color: appbar_color, width: 1), // Border color and width
+                                                          borderRadius: BorderRadius.circular(20),
+                                                        ),
+                                                        padding: EdgeInsets.all(8), // Padding for spacing inside the border
+                                                        child: Icon(
+                                                          Icons.remove_red_eye,
+                                                          color: appbar_color,
+                                                        ),
+                                                      )
+                                                    )
+
+                                                  ],
                                                 ),
                                                 content: Column(
                                                   mainAxisSize: MainAxisSize.min,
@@ -800,6 +1139,15 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                                       _showFeedbackDialog(int.parse(ticket['ticketNumber']));
                                     }
                               ),
+                              if(is_admin)
+                              _buildDecentButton(
+                                  'Feedback',
+                                  Icons.feedback,
+                                  Colors.blue,
+                                      () {
+                                    _showViewFeedbackPopup(context,ticket['ticketNumber']);
+                                  }
+                              ),
                             ],),
 
                           /*_buildDecentButton(
@@ -816,6 +1164,9 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                     )
                 )
             ),
+
+
+
 
             if (_expandedTickets[index]) _buildExpandedTicketView(ticket),
             SizedBox(height: 10), // Top space before the toggle
@@ -1028,6 +1379,48 @@ Widget _buildDecentButton(String label, IconData icon, Color color,
                 fontWeight: FontWeight.w600,
               ),
             ),*/
+        ],
+      ),
+    ),
+  );
+}
+
+Widget _buildDecentButtonWithLabel(String label, IconData icon, Color color,
+    VoidCallback onPressed) {
+  return InkWell(
+    onTap: onPressed,
+    borderRadius: BorderRadius.circular(30.0),
+    splashColor: color.withOpacity(0.2),
+    highlightColor: color.withOpacity(0.1),
+    child: Container(
+      margin: EdgeInsets.only(top: 10.0),
+      padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(30.0),
+        color: Colors.white,
+        border: Border.all(
+          color: color.withOpacity(0.3),
+          width: 1.5,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: color.withOpacity(0.1),
+            blurRadius: 8.0,
+            offset: Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Icon(icon, color: color),
+          SizedBox(width: 8.0),
+            Text(
+              label,
+              style: TextStyle(
+                color: color,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
         ],
       ),
     ),

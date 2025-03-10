@@ -394,9 +394,14 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                                         color: Colors.white,
                                         shape: RoundedRectangleBorder(
                                             borderRadius: BorderRadius.circular(12)),
-                                        child: Padding(
+                                        child: Container(
                                           padding: const EdgeInsets.symmetric(
                                               vertical: 12, horizontal: 16),
+                                          decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            borderRadius: BorderRadius.circular(12), // Rounded corners
+
+                                          ),
                                           child: Row(
                                             crossAxisAlignment: CrossAxisAlignment.center,
                                             children: [
@@ -523,7 +528,6 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                               );}))]));}
     );
   }
-
 
   Future<void> fetchTickets() async {
     setState(() {

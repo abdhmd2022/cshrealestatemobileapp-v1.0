@@ -333,11 +333,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
     try {
       filteredData = await fetchFeedbackHistory(id);
 
-
-
-
-
-      print('feedlack list $filteredData');
+      /*print('feedlack list $filteredData');*/
     } catch (e) {
       print('Error fetching data: $e');
     }
@@ -716,7 +712,6 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
   Future<void> saveComment(int ticketId, String description) async {
 
     try {
-
       String url = is_admin
           ? "$BASE_URL_config/v1/maintenanceComments"
           : "$BASE_URL_config/v1/tenent/maintenanceComments";
@@ -798,8 +793,6 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
     _applyFilters(); // ✅ This now applies BOTH filters
   }
 
-
-
   void _applySearchFilter(List<Map<String, dynamic>> listToFilter) {
     setState(() {
       filteredTickets = listToFilter.where((ticket) {
@@ -845,10 +838,8 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
       return withinDateRange;
     }).toList();
 
-    // 2️⃣ Then, pass the date-filtered list to the search function
     _applySearchFilter(dateFilteredTickets);
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -908,7 +899,6 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
         color: Colors.white,
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
         child: Column(
-
           children: [
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 0.0),
@@ -927,7 +917,6 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                             data: ThemeData.light().copyWith(
                               primaryColor: appbar_color, // ✅ Header & buttons color
                               scaffoldBackgroundColor: Colors.white,
-
                               colorScheme: ColorScheme.light(
                                 primary: appbar_color, // ✅ Start & End date circle color
                                 onPrimary: Colors.white, // ✅ Text inside Start & End date
@@ -942,7 +931,6 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                           );
                         },
                       );
-
                       if (picked != null) {
                         setState(() {
                           startDate = picked.start;
@@ -1014,8 +1002,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                 ),
               )
             )
-
-                : Expanded(
+              : Expanded(
               child: ListView.builder(
               itemCount: filteredTickets.length,
               itemBuilder: (context, index) {
@@ -1024,7 +1011,6 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
               },
             ),
             )
-
           ],
         ),
 
@@ -1263,9 +1249,6 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                 )
             ),
 
-
-
-
             if (_expandedTickets[index]) _buildExpandedTicketView(ticket),
             SizedBox(height: 10), // Top space before the toggle
             Align(
@@ -1397,7 +1380,6 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
     );
   }
 
-
   Widget _getStatusBadge(String status) {
     Color color;
     switch (status) {
@@ -1410,7 +1392,6 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
       default:
         color = Colors.grey;
     }
-
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),

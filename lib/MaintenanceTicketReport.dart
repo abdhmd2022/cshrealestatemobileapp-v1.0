@@ -449,23 +449,8 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                                                                     Text(
                                                                       "${item!['ticket']["tenent_flat"]['tenent']['mobile']}",
                                                                       style: GoogleFonts.poppins(fontSize: 12),
-                                                                    ),
-                                                                  ],
-                                                                ),
-                                                              )
-
-
-
-
-
-
-
-
-
-
-                                                            ]),
+                                                                    )]))]),
                                                       ],),
-
 
                                                     SizedBox(height: 4),
                                                     Row(
@@ -477,7 +462,6 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                                                             "${item!['ticket']["tenent_flat"]['tenent']['email']}",
                                                             style: GoogleFonts.poppins(fontSize: 12),
                                                           ),
-
                                                          ]),
                                                    ],),),],),),),
 

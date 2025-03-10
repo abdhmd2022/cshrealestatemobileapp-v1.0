@@ -8,6 +8,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 import 'Sidebar.dart';
@@ -371,61 +372,135 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
 
                                   ),
 
-                                  child: Card(
-                                    margin: EdgeInsets.symmetric(vertical: 8),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    elevation: 5,
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius: BorderRadius.circular(12), // Rounded corners
-                                      ),
-                                      padding: EdgeInsets.all(16),
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Row(
-                                            children: [
-                                              // Star Rating Widget
-                                              for (int i = 0; i < (item["ratings"]); i++)
-                                                Icon(Icons.star, color: Colors.amber, size: 20),
-                                              for (int i = (item["ratings"]); i < 5; i++)
-                                                Icon(Icons.star_border, color: Colors.amber, size: 20),
-                                            ],
-                                          ),
+                                  child: Column(
+                                    children: [
 
-                                          SizedBox(height: 6),
-                                          Row(
+                                      Card(
+                                        elevation: 3,
+                                        color: Colors.white,
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(12)),
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 12, horizontal: 16),
+                                          child: Row(
+                                            crossAxisAlignment: CrossAxisAlignment.center,
                                             children: [
-                                              Expanded(
-                                                child: Text(
-                                                  item["description"],
-                                                  style: TextStyle(
-                                                    color: Colors.grey.shade900,
-                                                    fontWeight: FontWeight.w500,
-                                                  ),
-                                                ),
+                                              // Tenant Icon
+                                              CircleAvatar(
+                                                backgroundColor: appbar_color,
+                                                radius: 22,
+                                                child: Icon(Icons.person, color: Colors.white),
                                               ),
+                                              SizedBox(width: 10),
+
+                                              // Tenant & Flat Info
+                                              Expanded(
+                                                child: Column(
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      item['ticket']["tenent_flat"]['tenent']['name'],
+                                                      style: GoogleFonts.poppins(
+                                                          fontSize: 14,
+                                                          fontWeight: FontWeight.bold),
+                                                    ),
+
+
+                                                    if(item!['ticket']["tenent_flat"]['tenent']['mobile'].toString() =='!null')
+
+                                                      Column(
+
+                                                        children: [
+
+                                                          SizedBox(height: 3),
+
+                                                          Row(
+                                                            children: [
+                                                              Icon(Icons.call,
+                                                                  size: 16, color: Colors.green),
+                                                              SizedBox(width: 4),
+                                                              Text(
+                                                                "${item!['ticket']["tenent_flat"]['tenent']['mobile']}",
+                                                                style: GoogleFonts.poppins(fontSize: 12),
+                                                              ),
+
+                                                            ]),
+                                                      ],),
+
+
+                                                    SizedBox(height: 4),
+                                                    Row(
+                                                        children: [
+                                                          Icon(Icons.email,
+                                                              size: 16, color: Colors.blue),
+                                                          SizedBox(width: 4),
+                                                          Text(
+                                                            "${item!['ticket']["tenent_flat"]['tenent']['email']}",
+                                                            style: GoogleFonts.poppins(fontSize: 12),
+                                                          ),
+
+                                                         ]),
+                                                   ],),),],),),),
+
+                                      Card(
+                                        margin: EdgeInsets.symmetric(vertical: 8),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(12),
+                                        ),
+                                        elevation: 5,
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            borderRadius: BorderRadius.circular(12), // Rounded corners
+                                          ),
+                                          padding: EdgeInsets.all(16),
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Row(
+                                                children: [
+                                                  // Star Rating Widget
+                                                  for (int i = 0; i < (item["ratings"]); i++)
+                                                    Icon(Icons.star, color: Colors.amber, size: 20),
+                                                  for (int i = (item["ratings"]); i < 5; i++)
+                                                    Icon(Icons.star_border, color: Colors.amber, size: 20),
+                                                ],
+                                              ),
+
+                                              SizedBox(height: 6),
+                                              Row(
+                                                children: [
+                                                  Expanded(
+                                                    child: Text(
+                                                      item["description"],
+                                                      style: TextStyle(
+                                                        color: Colors.grey.shade900,
+                                                        fontWeight: FontWeight.w500,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              SizedBox(height: 8),
+                                              Text(
+                                                "Date: ${formatDate(item["created_at"])}",
+                                                style: TextStyle(color: Colors.grey.shade700),
+                                              ),
+                                              if (item["remarks"] != null) ...[
+                                                SizedBox(height: 6),
+                                                Text(
+                                                  "Remarks: ${item["remarks"]}",
+                                                  style: TextStyle(color: Colors.grey.shade700),
+                                                ),
+                                              ],
                                             ],
                                           ),
-                                          SizedBox(height: 8),
-                                          Text(
-                                            "Date: ${formatDate(item["created_at"])}",
-                                            style: TextStyle(color: Colors.grey.shade700),
-                                          ),
-                                          if (item["remarks"] != null) ...[
-                                            SizedBox(height: 6),
-                                            Text(
-                                              "Remarks: ${item["remarks"]}",
-                                              style: TextStyle(color: Colors.grey.shade700),
-                                            ),
-                                          ],
-                                        ],
-                                      ),
-                                    ),
-                                  )
+                                        ),
+                                      )
+                                    ],
+                                  ),
+
                               );}))]));});}
 
 

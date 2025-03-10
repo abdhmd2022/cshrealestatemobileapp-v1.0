@@ -8,8 +8,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:uuid/uuid.dart';
 import 'Sidebar.dart';
 import 'package:http/http.dart' as http;
@@ -36,6 +38,18 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
 
 
   TextEditingController commentController = TextEditingController();
+
+  Future<void> openCaller(String no) async {
+    final Uri phoneUri = Uri(scheme: "tel", path: no);
+
+    if (await canLaunchUrl(phoneUri)) {
+      await launchUrl(phoneUri, mode: LaunchMode.externalApplication);
+    } else {
+      debugPrint('Could not launch $phoneUri');
+    }
+  }
+
+
 
   List<dynamic> commentHistoryList = [];
 
@@ -407,7 +421,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                                                     ),
 
 
-                                                    if(item!['ticket']["tenent_flat"]['tenent']['mobile'].toString() =='!null')
+                                                    if(item!['ticket']["tenent_flat"]['tenent']['mobile'].toString() =='!null' && item!['ticket']["tenent_flat"]['tenent']['mobile'].toString().isNotEmpty)
 
                                                       Column(
 
@@ -416,14 +430,39 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                                                           SizedBox(height: 3),
 
                                                           Row(
+                                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                             children: [
-                                                              Icon(Icons.call,
-                                                                  size: 16, color: Colors.green),
-                                                              SizedBox(width: 4),
-                                                              Text(
-                                                                "${item!['ticket']["tenent_flat"]['tenent']['mobile']}",
-                                                                style: GoogleFonts.poppins(fontSize: 12),
-                                                              ),
+
+                                                              GestureDetector(
+                                                                onTap: ()
+                                                                {
+                                                                  openCaller(item!['ticket']["tenent_flat"]['tenent']['mobile']);
+                                                                  /*openCaller("+971588313352");*/
+                                                                },
+                                                                child: Row(
+                                                                  children: [
+                                                                    Icon(
+
+                                                                        FontAwesomeIcons.phone,
+                                                                        color: Colors.green,
+                                                                        size: 14),
+                                                                    SizedBox(width: 4),
+                                                                    Text(
+                                                                      "${item!['ticket']["tenent_flat"]['tenent']['mobile']}",
+                                                                      style: GoogleFonts.poppins(fontSize: 12),
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                              )
+
+
+
+
+
+
+
+
+
 
                                                             ]),
                                                       ],),

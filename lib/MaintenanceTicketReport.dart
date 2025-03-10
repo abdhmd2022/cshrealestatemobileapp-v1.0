@@ -144,7 +144,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
 
     String url = is_admin
         ? '$BASE_URL_config/v1/maintenanceComments/?ticket_id=$id'
-        : '$BASE_URL_config/v1/tenent/maintenanceComments/?ticket_id=$id';;
+        : '$BASE_URL_config/v1/tenent/maintenanceComments/?ticket_id=$id';
 
     String token = 'Bearer $Company_Token'; // Auth token
 

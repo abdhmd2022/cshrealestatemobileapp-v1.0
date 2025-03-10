@@ -261,7 +261,6 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
         "ratings": ratings.toInt(), // Converts the list of objects to a list of IDs
       };
 
-
       print('feedback body ${requestBody}');
 
       final response = await http.post(
@@ -307,7 +306,10 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
   Future<void> saveComment(int ticketId, String description) async {
 
     try {
-      final String url = "$BASE_URL_config/v1/tenent/maintenanceComments";
+
+      String url = is_admin
+          ? "$BASE_URL_config/v1/maintenanceComments"
+          : "$BASE_URL_config/v1/tenent/maintenanceComments";
 
       var uuid = Uuid();
       String uuidValue = uuid.v4();
@@ -684,6 +686,8 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                             Row(children: [
+
+                              if(is_admin)
                               _buildDecentButton(
                                 'Follow Up',
                                 Icons.schedule,
@@ -697,6 +701,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                                     }
                               ),
                               SizedBox(width: 5),
+                              if(is_admin)
                               _buildDecentButton(
                                 'Transfer',
                                 Icons.swap_horiz,
@@ -786,6 +791,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                               ),
                               SizedBox(width: 5),
 
+                              if(!is_admin)
                               _buildDecentButton(
                                 'Feedback',
                                 Icons.feedback,

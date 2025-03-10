@@ -442,7 +442,6 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                           labelText: "CC Emails (comma-separated)",
                           labelStyle: TextStyle(color: Colors.black54),
                           hintText: "example1@mail.com, example2@mail.com",
-
                           border: OutlineInputBorder(
                             borderSide: BorderSide(color:  Colors.black),
                             borderRadius: BorderRadius.circular(8),

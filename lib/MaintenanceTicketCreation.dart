@@ -134,7 +134,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                 },
                 children: flats.map((flat) {
                   // Extract building and state names
-                  String buildingName = flat['flat']['building']['area']['name'] ?? "Unknown";
+                  String buildingName = flat['flat']['building']['name'] ?? "Unknown";
                   String stateName = flat['flat']['building']['area']['state']['name'] ?? "N/A";
 
                   return Center(
@@ -197,7 +197,11 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
 
     print('user id $user_id');
 
-    final url = '$BASE_URL_config/v1/tenents/$user_id'; // Replace with your API endpoint
+    String url = is_admin
+        ? '$BASE_URL_config/v1/tenents/$user_id'
+        : '$BASE_URL_config/v1/tenents/$user_id';
+
+
     String token = 'Bearer $Company_Token'; // auth token for request
 
     print('url $url');
@@ -508,7 +512,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                               Text(
                                 selectedFlat != null
                                     ? '${selectedFlat!['flat']['name'] ?? "Select Flat"} | '
-                                    '${selectedFlat!['flat']['building']['area']['name'] ?? "Unknown"}, '
+                                    '${selectedFlat!['flat']['building']['name'] ?? "Unknown"}, '
                                     '${selectedFlat!['flat']['building']['area']['state']['name'] ?? "N/A"}'
                                     : "Select Flat",
                                 style: TextStyle(

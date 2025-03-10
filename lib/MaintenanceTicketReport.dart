@@ -325,7 +325,9 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                                                     style: TextStyle(color: Colors.grey.shade700),
                                                   ),
                                                 ],
-                                                ]))));}))]));});}
+                                                ]))));}))]));}
+    );
+  }
 
   void _showViewFeedbackPopup(BuildContext context,String id) async {
     List<dynamic> filteredData = [];
@@ -356,10 +358,12 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
+
                         Text(
                           "Feedback",
                           style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
                         ),
+
                         IconButton(
                           icon: Icon(Icons.close, color: Colors.grey),
                           onPressed: () => Navigator.pop(context),
@@ -437,7 +441,6 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                                                                 child: Row(
                                                                   children: [
                                                                     Icon(
-
                                                                         FontAwesomeIcons.phone,
                                                                         color: Colors.green,
                                                                         size: 14),
@@ -459,7 +462,9 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                                                             style: GoogleFonts.poppins(fontSize: 12),
                                                           ),
                                                          ]),
-                                                   ],),),],),),),
+                                                   ]))])
+                                        )
+                                      ),
 
                                       Card(
                                         margin: EdgeInsets.symmetric(vertical: 8),
@@ -496,30 +501,28 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                                                         color: Colors.grey.shade900,
                                                         fontWeight: FontWeight.w500,
                                                       ),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
+                                                    ))]),
                                               SizedBox(height: 8),
                                               Text(
                                                 "Date: ${formatDate(item["created_at"])}",
                                                 style: TextStyle(color: Colors.grey.shade700),
                                               ),
-                                              if (item["remarks"] != null) ...[
+                                              /*if (item["remarks"] != null) ...[
                                                 SizedBox(height: 6),
                                                 Text(
                                                   "Remarks: ${item["remarks"]}",
                                                   style: TextStyle(color: Colors.grey.shade700),
                                                 ),
-                                              ],
+                                              ],*/
                                             ],
                                           ),
                                         ),
                                       )
                                     ],
                                   ),
-
-                              );}))]));});}
+                              );}))]));}
+    );
+  }
 
 
   Future<void> fetchTickets() async {

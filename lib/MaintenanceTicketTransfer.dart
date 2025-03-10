@@ -381,7 +381,6 @@ class _MaintenanceTicketTransferPageState extends State<MaintenanceTicketTransfe
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   fontSize: 16
-
                                               )
                                           ),
                                           SizedBox(width: 2),

@@ -420,7 +420,6 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                                                           fontWeight: FontWeight.bold),
                                                     ),
 
-
                                                     if(item!['ticket']["tenent_flat"]['tenent']['mobile'].toString() =='!null' && item!['ticket']["tenent_flat"]['tenent']['mobile'].toString().isNotEmpty)
 
                                                       Column(

@@ -294,8 +294,6 @@ class _MaintenanceTicketTransferPageState extends State<MaintenanceTicketTransfe
                                   }).toList(),
                                 ),),*/
 
-
-
                               Container(
                                 margin: EdgeInsets.only(left: 20,right: 20,top: 20),
                                 child: Column(

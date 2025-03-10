@@ -63,6 +63,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                 minRating: 1,
                 maxRating: 5,
                 direction: Axis.horizontal,
+
                 allowHalfRating: false,
                 itemCount: 5,
                 itemPadding: const EdgeInsets.symmetric(horizontal: 2.0),

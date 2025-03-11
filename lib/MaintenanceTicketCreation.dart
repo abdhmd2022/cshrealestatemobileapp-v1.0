@@ -528,7 +528,6 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                       ),
                     ),
 
-
                     Container(
                       margin: EdgeInsets.only(left: 20,right: 20,top: 0),
                       child: Column(

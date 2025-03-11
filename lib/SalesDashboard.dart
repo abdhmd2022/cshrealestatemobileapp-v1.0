@@ -300,8 +300,8 @@ class _SalesDashboardScreenState extends State<SalesDashboardScreen> with Ticker
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _buildDashboardButton(Icons.show_chart, 'In Progress', '12', Colors.blueAccent, () {}),
-                _buildDashboardButton(Icons.check_circle_outline, 'Closed', '8', Colors.green, () {}),
+                _buildDashboardButton(Icons.show_chart, 'In Progress', '12', appbar_color, () {}),
+                _buildDashboardButton(Icons.check_circle_outline, 'Closed', '8', appbar_color, () {}),
               ],
             ),
             SizedBox(height: 10),
@@ -327,7 +327,7 @@ class _SalesDashboardScreenState extends State<SalesDashboardScreen> with Ticker
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _buildDashboardButton(Icons.build, 'Maintenance', '', Colors.blueAccent, () {
+                _buildDashboardButton(Icons.build, 'Maintenance', '', appbar_color, () {
 
                   Navigator.push(
                     context,

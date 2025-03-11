@@ -203,7 +203,6 @@ class PieChartGraph extends StatelessWidget {
             PieChartData(
               centerSpaceRadius: 0,
               sectionsSpace: 0,
-
               sections: [
                 PieChartSectionData(
                   value: totalOccupied.toDouble(),

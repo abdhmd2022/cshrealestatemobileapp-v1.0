@@ -1108,7 +1108,7 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
 
-                _buildDashboardButton(Icons.build, 'Maintenance', Colors.blueAccent, () {
+                _buildDashboardButton(Icons.build, 'Maintenance', appbar_color, () {
                   Navigator.push
                     (
                     context,

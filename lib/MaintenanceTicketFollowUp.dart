@@ -90,9 +90,9 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
       builder: (context, child) {
         return Theme(
           data: ThemeData.light().copyWith(
-            primaryColor: Colors.blueAccent,
+            primaryColor: appbar_color,
             colorScheme: ColorScheme.light(
-              primary: Colors.blueAccent, // Highlights selection in blue
+              primary: appbar_color, // Highlights selection in blue
             ),
             buttonTheme: ButtonThemeData(textTheme: ButtonTextTheme.primary),
           ),
@@ -852,10 +852,10 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
                                 children: [
                                   Container(
                                     margin: EdgeInsets.only(top: 2),
-                                    child: Icon(Icons.circle, size: 12, color: Colors.blueAccent),
+                                    child: Icon(Icons.circle, size: 12, color: appbar_color),
                                   ),
                                   if (index != followups.length)
-                                    Container(height: 32, width: 2, color: Colors.blueAccent),
+                                    Container(height: 32, width: 2, color: appbar_color),
                                 ],
                               ),
                               SizedBox(width: 6),

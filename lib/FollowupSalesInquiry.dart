@@ -2321,7 +2321,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                                           _buildDecentButton(
                                                             'Call',
                                                             FontAwesomeIcons.phone,
-                                                            Colors.blueAccent,
+                                                            appbar_color,
                                                             openCaller,
                                                           ),
                                                         ],
@@ -2421,7 +2421,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                                       _buildDecentButtonwithLabel(
                                                         'Send',
                                                         FontAwesomeIcons.envelope,
-                                                        Colors.blueAccent,
+                                                        appbar_color,
                                                             () {
                                                               _showEmailPopup(() {
                                                                 setState(() {}); // Updates the main widget

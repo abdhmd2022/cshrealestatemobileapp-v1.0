@@ -363,7 +363,7 @@ class _DecentTenantKYCFormState extends State<DecentTenantKYCForm> {
                 _buildDecentButton(
                   'Upload',
                   Icons.upload,
-                  Colors.blueAccent,
+                    appbar_color,
                     onPickFile
                 ),
 

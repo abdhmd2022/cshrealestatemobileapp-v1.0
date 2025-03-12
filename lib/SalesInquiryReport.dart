@@ -26,7 +26,6 @@ class InquiryModel {
   final String description;
   final String contactNo;
   final String whatsapp_no;
-
   final String email;
   final String inquiryNo;
   final String creationDate;
@@ -102,7 +101,6 @@ class InquiryModel {
     final created_by = (json['created_user'] as Map<String, dynamic>?)?['name'] ?? 'N/A';
 
     final assigned_to = (json['assigned_to_user'] as Map<String, dynamic>?)?['name'] ?? 'N/A';
-
 
     if (leadsFollowup != null && leadsFollowup.isNotEmpty) {
 

@@ -92,8 +92,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
   bool _useContactAsWhatsapp = true;
 
-
-  double? range_min, range_max;
+  double? range_min = 0.0, range_max = 100.0;
 
   InquiryStatus? selectedinquiry_status;
 
@@ -105,7 +104,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
   bool isAreasSelected = false;
 
-  RangeValues _currentRangeValues = RangeValues(0, 100); // Default values
+  RangeValues _currentRangeValues = RangeValues(0.0, 100.0); // Default values
 
   SharedPreferences? prefs;
 

@@ -25,8 +25,18 @@ class User {
   final String token;
   final int? companyId;
   final String? companyName; // Now added to extract company name
+  final String? baseurl;
+  final String? adminurl;
+  final int? allowed_companies;
+  final int? allowed_users_per_company;
+  final int? allowed_tenants_per_company;
+  final int? allowed_buildings_per_company;
+  final int? allowed_flats_per_company;
+  final String? license_expiry;
 
-  User({required this.id, required this.name, required this.email, required this.token, this.companyId,    this.companyName,
+  User({required this.id, required this.name, required this.email, required this.token, this.companyId,
+    this.companyName, this.baseurl,this.adminurl,this.allowed_buildings_per_company, this.allowed_companies,
+  this.allowed_flats_per_company,this.allowed_tenants_per_company,this.allowed_users_per_company,this.license_expiry
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -34,9 +44,16 @@ class User {
       id: json['id'] ?? 0,
       name: json['name'] ?? "Unknown",
       email: json['email'] ?? "Unknown",
-      token: json['token'] ?? "",
+      token: json['accessToken'] ?? "",
       companyId: json['company_id'],
       companyName: json['company'] != null ? json['company']['name'] : "Unknown Company", // Extracts company name correctly
+      baseurl: json['company'] != null ? json['company']['hosting']['baseurl'] : "Unknown baseURL",
+      adminurl: json['company'] != null ? json['company']['hosting']['adminurl'] : "Unknown adminurl",
+      allowed_companies: json['company'] != null ? json['company']['hosting']['allowed_companies'] : "Unknown allowed_companies",
+      allowed_users_per_company: json['company'] != null ? json['company']['hosting']['allowed_users_per_company'] : "Unknown allowed_users_per_company",
+      allowed_buildings_per_company:json['company'] != null ? json['company']['hosting']['allowed_buildings_per_company'] : "Unknown allowed_buildings_per_company",
+      allowed_flats_per_company:json['company'] != null ? json['company']['hosting']['allowed_flats_per_company'] : "Unknown allowed_flats_per_company",
+      license_expiry:json['company'] != null ? json['company']['hosting']['license_expiry'] : "Unknown license_expiry",
     );
   }
 }
@@ -104,20 +121,27 @@ class _LoginPageState extends State<Login> {
 
   Future<void> _adminlogin(String email, String password) async {
 
-    String url = "$BASE_URL_config/v1/auth/login";
+    String url = "$OAuth_URL/oauth/token";
 
-    String token = 'Bearer $authTokenBase';
+    /*String token = 'Bearer $authTokenBase';*/
 
     setState(() => _isLoading = true);
     dynamic responseData;
 
     try {
       Map<String, String> headers = {
-        'Authorization': token,
-        "Content-Type": "application/json"
+        "Content-Type": "application/x-www-form-urlencoded"
       };
 
-      var body = jsonEncode({'email': email, 'password': password});
+      Map<String, String> body = {
+        'username': email,
+        'password': password,
+        'client_id': client_id_constant,
+        'client_secret': client_password_constant,
+        'scope': "user",
+        "grant_type" : "password"
+      };
+      /*var body = jsonEncode({'email': email, 'password': password});*/
 
       var response = await http.post(
         Uri.parse(url),
@@ -126,25 +150,15 @@ class _LoginPageState extends State<Login> {
       );
       responseData = json.decode(response.body);
 
-      if (response.statusCode == 200 && responseData['success']) {
+      if (response.statusCode == 200) {
         SharedPreferences prefs = await SharedPreferences.getInstance();
         List<User> usersList = [];
 
-        print('data ${responseData['data']}');
+        print('data ${responseData['user']}');
 
-        if (responseData['data'].containsKey('users')) {
-          // Admin case
-          usersList = (responseData['data']['users'] as List)
-              .map((user) => User.fromJson(user))
-              .toList();
-        } else if (responseData['data'].containsKey('tenents')) {
-          // Tenant case
-          usersList = (responseData['data']['tenents'] as List)
-              .map((tenant) => User.fromJson(tenant))
-              .toList();
-        } else {
-          throw Exception("Unexpected response format");
-        }
+        usersList = (responseData['user'] as List)
+            .map((user) => User.fromJson(user))
+            .toList();
 
         if (usersList.isNotEmpty) {
           User firstUser = usersList[0];
@@ -155,6 +169,10 @@ class _LoginPageState extends State<Login> {
           await prefs.setString("company_token", firstUser.token);
           await prefs.setInt("company_id", firstUser.companyId ?? 0);
           await prefs.setBool('is_admin', isAdmin==true ? true : false);
+          await prefs.setString("baseurl", firstUser.baseurl ?? "");
+          await prefs.setString("adminurl", firstUser.adminurl ?? "");
+          await prefs.setString("license_expiry", firstUser.license_expiry ?? "");
+
 
           List<Map<String, dynamic>> companiesJson = usersList
               .map((user) => {
@@ -178,9 +196,6 @@ class _LoginPageState extends State<Login> {
             );
           } else {
 
-
-
-
             print("✅ Selected Company: ${ firstUser.companyName ?? ""}");
             print("🔑 Company Token: ${firstUser.token}");
 
@@ -195,17 +210,13 @@ class _LoginPageState extends State<Login> {
         throw Exception("Invalid credentials");
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("Error: ${responseData['message'] ?? 'Login failed'}"),
-        ),
-      );
+      print("❌ Exception: $e");
     } finally {
       setState(() => _isLoading = false);
     }
   }
-
-  Future<void> tenantLogin(String email, String password) async {
+// old tenant login function
+  /*Future<void> tenantLogin(String email, String password) async {
     String url = "$BASE_URL_config/v1/auth/tenent/login";
     String token = 'Bearer $authTokenBase';
 
@@ -218,7 +229,14 @@ class _LoginPageState extends State<Login> {
         "Content-Type": "application/json"
       };
 
-      var body = jsonEncode({'email': email, 'password': password});
+      Map<String, String> body = {
+        'username': email,
+        'password': password,
+        'client_id': client_id_constant,
+        'client_secret': client_password_constant,
+        'scope': "tenant",
+        "grant_type" : "password"
+      };
       var response = await http.post(
         Uri.parse(url),
         body: body,
@@ -229,7 +247,7 @@ class _LoginPageState extends State<Login> {
       if (response.statusCode == 200 && responseData['success']) {
         SharedPreferences prefs = await SharedPreferences.getInstance();
 
-        List<dynamic> tenantsData = responseData['data']['tenents'] ?? [];
+        List<dynamic> tenantsData = responseData['user'] ?? [];
 
         if (tenantsData.isNotEmpty) {
           var firstTenant = tenantsData[0];
@@ -238,13 +256,13 @@ class _LoginPageState extends State<Login> {
           await prefs.setInt("user_id", firstTenant['id']);
           await prefs.setString("user_name", firstTenant['name']);
           await prefs.setString("user_email", firstTenant['email']);
-          await prefs.setString("company_token", firstTenant['token']);
+          await prefs.setString("company_token", firstTenant['accessToken']);
           await prefs.setInt("company_id", firstTenant['company_id'] ?? 0);
           await prefs.setBool('is_admin', false);
 
           // ✅ Extract Flats (Instead of Companies)
           List<Map<String, dynamic>> flatsList = tenantsData.expand((tenant) {
-            return ((tenant['flats'] as List<dynamic>? ?? []).map((flatObj) {
+            return ((tenant['flat'] as List<dynamic>? ?? []).map((flatObj) {
               if (flatObj is Map<String, dynamic> && flatObj.containsKey('flat')) {
                 var flat = (flatObj['flat'] as Map<dynamic, dynamic>).cast<String, dynamic>();
 
@@ -284,6 +302,101 @@ class _LoginPageState extends State<Login> {
             await prefs.setString("area", flatsList.first['area']);
             await prefs.setString("state", flatsList.first['state']);
             await prefs.setString("country", flatsList.first['country']);
+
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => TenantDashboard()),
+            );
+          }
+        } else {
+          throw Exception("No tenant data found.");
+        }
+      } else {
+        throw Exception("Invalid credentials");
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error: ${responseData['message'] ?? 'Login failed'}")),
+      );
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }*/
+  // new tenant login function
+
+  Future<void> tenantLogin(String email, String password) async {
+    String url = "$OAuth_URL/oauth/token";
+    String token = 'Bearer $authTokenBase';
+
+
+    setState(() => _isLoading = true);
+    dynamic responseData;
+
+    try {
+      Map<String, String> headers = {
+        "Content-Type": "application/x-www-form-urlencoded"
+      };
+
+      Map<String, String> body = {
+        'username': email,
+        'password': password,
+        'client_id': client_id_constant,
+        'client_secret': client_password_constant,
+        'scope': "tenant",
+        "grant_type": "password"
+      };
+
+      var response = await http.post(
+        Uri.parse(url),
+        body: body,
+        headers: headers,
+      );
+      responseData = json.decode(response.body);
+
+      if (response.statusCode == 200 && responseData.containsKey('user')) {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+
+        List<dynamic> tenantsData = responseData['user'] ?? [];
+
+        if (tenantsData.isNotEmpty) {
+          var firstTenant = tenantsData[0];
+
+          await prefs.setInt("user_id", firstTenant['tenant_id']);
+          await prefs.setString("user_name", firstTenant['tenant']['name']);
+          await prefs.setString("user_email", firstTenant['tenant']['email']);
+          await prefs.setString("company_token", firstTenant['accessToken']);
+          await prefs.setInt("company_id", firstTenant['company_id'] ?? 0);
+          await prefs.setBool('is_admin', false);
+          await prefs.setString("license_expiry", firstTenant['tenant']['company']['hosting']['license_expiry']);
+          await prefs.setString("baseurl", firstTenant['tenant']['company']['hosting']['baseurl']);
+          await prefs.setString("adminurl", firstTenant['tenant']['company']['hosting']['adminurl']);
+
+          // ✅ Extract Flats (Instead of Companies)
+          List<Map<String, dynamic>> flatsList = tenantsData.map((tenant) {
+            return {
+              'id': tenant['flat_id'] ?? 0,
+              'name': tenant['flat']['name'] ?? 'Unknown Flat',
+              'building': tenant['flat']['building_name'] ?? 'Unknown Building',
+              'company': tenant['tenant']['company']['name'] ?? 'Unknown Company',
+              'baseurl': tenant['tenant']['company']['hosting']['baseurl'] ?? '',
+              'adminurl': tenant['tenant']['company']['hosting']['adminurl'] ?? '',
+              'license_expiry': tenant['tenant']['company']['hosting']['license_expiry'] ?? '',
+            };
+          }).toList();
+
+          await prefs.setString("flats_list", jsonEncode(flatsList));
+          loadTokens();
+
+          // ✅ Redirect to Flat Selection if multiple flats exist
+          if (flatsList.length > 1) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => FlatSelection()),
+            );
+          } else {
+            await prefs.setInt("flat_id", flatsList.first['id']);
+            await prefs.setString("flat_name", flatsList.first['name']);
+            await prefs.setString("building", flatsList.first['building']);
 
             Navigator.pushReplacement(
               context,

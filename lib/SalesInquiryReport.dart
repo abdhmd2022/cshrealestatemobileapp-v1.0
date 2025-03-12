@@ -198,7 +198,7 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
 
     inquirystatus_list.clear();
 
-    final url = '$BASE_URL_config/v1/leadStatus';
+    final url = '$baseurl/lead/status';
     String token = 'Bearer $Company_Token'; // Auth token
 
     Map<String, String> headers = {
@@ -451,14 +451,17 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
       isLoading = true;
     });
 
+
+
     print('Fetching inquiries...');
 
     filteredInquiries.clear();
     salesinquiry.clear();
     _expandedinquirys.clear();
 
-    final url = '$BASE_URL_config/v1/leads';
+    final url = '$baseurl/lead/status';
     String token = 'Bearer $Company_Token'; // Auth token
+    print("url of inquiry: $url");
 
 
     Map<String, String> headers = {

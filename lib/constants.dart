@@ -15,6 +15,14 @@ const String authTokenBase = r'!1--3*%*%*%*9$api$8*%*%*%*5--0!X19fIUBBUyQlYXMxOT
 
 const String BASE_URL_config = "http://192.168.2.185:7750/api";
 
+const String OAuth_URL = "http://192.168.2.185:4555";
+
+const String client_id_constant = "580587447f71610db9ff0a135d897ad3aec183a7";
+
+const String client_password_constant = "internal@001";
+
+
+
 // Serial & Company Tokens (Loaded Dynamically)
 /*late String Company_Token;*/
 late String Company_Token;
@@ -28,6 +36,7 @@ late int flat_id;
 late String flat_name;
 late String flatsJson ;
 late List<dynamic> flatsList;
+late String baseurl,adminurl,license_expiry;
 
 
 /// Load tokens from SharedPreferences
@@ -45,6 +54,10 @@ Future<void> loadTokens() async {
   flat_id = prefs.getInt("flat_id") ?? 0;
   flat_name = prefs.getString("flat_name") ?? '';
   flatsJson = prefs.getString("flats_list") ?? '';
+  baseurl = prefs.getString("baseurl") ?? '';
+  adminurl = prefs.getString("adminurl") ?? '';
+  license_expiry = prefs.getString("license_expiry") ?? '';
+
   if(!is_admin)
     {
       flatsList = jsonDecode(flatsJson);
@@ -56,6 +69,9 @@ Future<void> loadTokens() async {
   print("Loading Admin Status: $is_admin");
   print("Loaded User Email: $user_email");
   print("Loaded User Name: $user_name");
+  print("Loaded BaseURL: $baseurl");
+  print("Loaded AdminURL: $adminurl");
+  print("Loaded license expiry: $license_expiry");
 
 
 

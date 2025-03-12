@@ -273,7 +273,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
     }
   }
 
-
   Future<void> fetchEmirates() async {
 
     print('fetching emirates');

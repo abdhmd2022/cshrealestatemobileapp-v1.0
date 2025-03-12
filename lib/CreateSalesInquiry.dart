@@ -160,9 +160,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
   ];
   int? selectedInterestType = 0;
 
-
-
-
   List<int> selectedUnitIds = [];
 
   List<Map<String, dynamic>>? filteredEmirates;

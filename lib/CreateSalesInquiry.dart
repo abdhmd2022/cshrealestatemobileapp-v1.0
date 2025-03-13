@@ -1567,7 +1567,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                 children: [
                   TextFormField(
                     controller: customercontactnocontroller,
-
                     keyboardType: TextInputType.phone,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -1691,7 +1690,8 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                     hintText: _hintTextWhatsapp,
                     contentPadding: EdgeInsets.all(15),
                     label: Text('WhatsApp No',
-                        style: TextStyle(fontWeight: FontWeight.normal)),
+                        style: TextStyle(fontWeight: FontWeight.normal,
+                            )),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                       borderSide: const BorderSide(color: Colors.black),

@@ -43,7 +43,6 @@ late String baseurl,adminurl,license_expiry,building;
 /// Load tokens from SharedPreferences
 Future<void> loadTokens() async {
 
-
   SharedPreferences prefs = await SharedPreferences.getInstance();
   /*Company_Token = prefs.getString("Company_Token") ?? "";*/
   Company_Token = prefs.getString("company_token") ?? "";
@@ -76,8 +75,6 @@ Future<void> loadTokens() async {
   print("Loaded AdminURL: $adminurl");
   print("Loaded license expiry: $license_expiry");
   print("Loaded Building: $building");
-
-
 
 }
 

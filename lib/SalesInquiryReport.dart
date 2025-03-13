@@ -656,7 +656,6 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
                                       data: ThemeData.light().copyWith(
                                         primaryColor: appbar_color, // ✅ Header & buttons color
                                         scaffoldBackgroundColor: Colors.white,
-
                                         colorScheme: ColorScheme.light(
                                           primary: appbar_color, // ✅ Start & End date circle color
                                           onPrimary: Colors.white, // ✅ Text inside Start & End date
@@ -716,8 +715,7 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
                             ),
                           ),
 
-
-                          /*SizedBox(width: 10),
+                      /*SizedBox(width: 10),
 
                       // 🔹 Filter Toggle Button
                       IconButton(
@@ -786,8 +784,6 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
                   ),
                 ),
 
-
-
                 // Inquiry List
                 Expanded(
                   child: Padding(
@@ -835,7 +831,6 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(builder: (context) => CreateSalesInquiry()),
-
             );
           },
           label: Text(

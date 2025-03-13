@@ -123,23 +123,22 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
               child: CupertinoPicker(
                 scrollController: FixedExtentScrollController(
                   initialItem: flats.indexWhere((flat) =>
-                  flat['flat']['id'] == (selectedFlat?['flat']['id'] ?? 0)),
+                  flat['flat_id'] == (selectedFlat?['flat_id'] ?? 0)),
                 ),
                 itemExtent: 40,
                 onSelectedItemChanged: (index) {
                   setState(() {
                     selectedFlat = flats[index];
-                    print('Selected flat ID: ${flats[index]['flat']['id']}');
+                    print('Selected flat ID: ${flats[index]['flat_id']}');
                   });
                 },
                 children: flats.map((flat) {
                   // Extract building and state names
-                  String buildingName = flat['flat']['building']['name'] ?? "Unknown";
-                  String stateName = flat['flat']['building']['area']['state']['name'] ?? "N/A";
+                  String buildingName = flat['building_name'] ?? "Unknown";
 
                   return Center(
                     child: Text(
-                      '${flat['flat']['name'] ?? "Unknown"} | $buildingName, $stateName',
+                      '${flat['tenant_name']} | ${flat['flat_name']?? "Unknown"} | $buildingName',
                       style: TextStyle(fontSize: 16),
                     ),
                   );
@@ -192,15 +191,13 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
   }
 
   Future<void> fetchUnits() async {
-
     flats.clear();
 
     print('user id $user_id');
 
     String url = is_admin
-        ? '$BASE_URL_config/v1/tenents/$user_id'
-        : '$BASE_URL_config/v1/tenents/$user_id';
-
+        ? '$adminurl/tenant'
+        : '$baseurl/tenant/$user_id';
 
     String token = 'Bearer $Company_Token'; // auth token for request
 
@@ -210,30 +207,46 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
       'Authorization': token,
       "Content-Type": "application/json"
     };
-    try {
-      final response = await http.get(Uri.parse(url),
-        headers: headers,);
 
+    try {
+      final response = await http.get(
+        Uri.parse(url),
+        headers: headers,
+      );
 
       print('code ${response.statusCode}');
       if (response.statusCode == 200) {
-
         final Map<String, dynamic> data = json.decode(response.body);
         print('data: $data');
+
         setState(() {
-          Map<String, dynamic> user = data['data']['tenent'];
+          flats.clear();
+          List<dynamic> tenants = data['data']['tenants'];
 
-           flats = user['flats'];
+          for (var tenant in tenants) {
+            String tenantName = tenant['name']; // Get tenant name
 
-          // Select first flat
-           selectedFlat = flats.isNotEmpty ? flats[0] : {};
+            if (tenant['flats'] != null) {
+              for (var flatData in tenant['flats']) {
+                var flat = flatData['flat'];
+                flats.add({
+                  'tenant_name': tenantName,
+                  'flat_id': flat['id'],
+                  'flat_name': flat['name'],
+                  'building_name': flat['building_name'],
+                });
+              }
+            }
+          }
 
+          // Select first flat if any
+          selectedFlat = flats.isNotEmpty ? flats[0] : {};
         });
       } else {
         print("Error: ${response.statusCode}");
-        print("Message: ${response.body}");      }
+        print("Message: ${response.body}");
+      }
     } catch (e) {
-
       print('Error fetching data: $e');
     }
   }
@@ -509,18 +522,25 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(
-                                selectedFlat != null
-                                    ? '${selectedFlat!['flat']['name'] ?? "Select Flat"} | '
-                                    '${selectedFlat!['flat']['building']['name'] ?? "Unknown"}, '
-                                    '${selectedFlat!['flat']['building']['area']['state']['name'] ?? "N/A"}'
-                                    : "Select Flat",
-                                style: TextStyle(
-                                  color: appbar_color.shade700,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
+                              Flexible(
+                                child: Text(
+                                  selectedFlat != null
+                                      ? '${selectedFlat!['tenant_name'] ?? "Unknown Tenant"} | '
+                                      '${selectedFlat!['flat_name'] ?? "Unknown Flat"} | '
+                                      '${selectedFlat!['building_name'] ?? "Unknown Building"}'
+                                      : "Select Flat",
+                                  style: TextStyle(
+                                    color: appbar_color.shade700,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                  overflow: TextOverflow.ellipsis, // Truncate if too long
+                                  maxLines: 1, // Ensure it stays on one line
+                                  softWrap: false, // Prevents text from wrapping to a new line
                                 ),
                               ),
+
+
                               Icon(Icons.arrow_drop_down, color: appbar_color),
                             ],
                           ),
@@ -930,7 +950,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
 
             final Map<String, dynamic> requestBody = {
               "uuid": uuidValue,
-              "flat_id": selectedFlat?['flat']['id'], // Updated key from flat_masterid to flat_id
+              "flat_id": selectedFlat?['flat_id'], // Updated key from flat_masterid to flat_id
               "description": _descriptionController.text,
               "types": maintenance_types_list.map((type) => type.id).toList(), // Converts the list of objects to a list of IDs
             };

@@ -535,7 +535,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
     });
 
     String url = is_admin
-        ? "$baseurl/v1/maintenance"
+        ? "$baseurl/maintenance"
         : "$BASE_URL_config/v1/tenent/maintenance?tenent_id=$user_id&flat_id=$flat_id";
 
     print('Fetching tickets from URL: $url');

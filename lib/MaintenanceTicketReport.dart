@@ -536,7 +536,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
 
     String url = is_admin
         ? "$baseurl/maintenance"
-        : "$BASE_URL_config/v1/tenent/maintenance?tenent_id=$user_id&flat_id=$flat_id";
+        : "$baseurl/maintenance"; /*"$baseurl/maintenance/?tenent_id=$user_id&flat_id=$flat_id";*/
 
     print('Fetching tickets from URL: $url');
 
@@ -580,6 +580,22 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
           print("API returned success: false");
         }
       } else {
+
+        // to display error message and error status code
+        Map<String, dynamic> data = json.decode(response.body);
+        String error = '';
+
+        if (data.containsKey('message')) {
+          setState(() {
+            error = 'Code: ${response.statusCode} , Message: ${data['message']}';
+          });
+        }
+        else
+        {
+          error = 'Something went wrong!!!';
+        }
+        Fluttertoast.showToast(msg: error);
+
         print("Error fetching data: ${response.statusCode}");
         print("Response: ${response.body}");
       }

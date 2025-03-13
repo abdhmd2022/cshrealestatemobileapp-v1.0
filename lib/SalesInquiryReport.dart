@@ -627,15 +627,12 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
         isUserEnable: true,
         isUserVisible: true,
       ),
-        body:
-
-        Container(
+        body: Container(
             color: Colors.white,
             child:
             Column(
               children: [
                 // Status Filters (Loading Indicator)
-
 
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),

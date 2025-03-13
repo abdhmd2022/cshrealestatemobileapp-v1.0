@@ -1719,9 +1719,9 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                               _selectedCountryCodeWhatsapp = '+${country.phoneCode}';
                               _selectedCountryFlagWhatsapp = country.flagEmoji;
                             });
-                          },
-                        );
-                      },
+                          }
+                          );
+                        },
 
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -1739,10 +1739,8 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                 ),
               ),
 
-            /*Padding(
-
+                                   /*Padding(
                                             padding: EdgeInsets.only(top:20,left: 20,right: 20,bottom: 0),
-
                                             child: TextFormField(
                                               controller: customercontactnocontroller,
                                               keyboardType: TextInputType.number,

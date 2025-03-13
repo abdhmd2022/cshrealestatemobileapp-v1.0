@@ -415,7 +415,7 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
 
     leadFollowupHistoryList.clear();
 
-    final url = '$BASE_URL_config/v1/leadFollowUp/?lead_id=$id';
+    final url = '$baseurl/lead/followup/?lead_id=$id';
 
     String token = 'Bearer $Company_Token'; // Auth token
 
@@ -459,7 +459,7 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
     salesinquiry.clear();
     _expandedinquirys.clear();
 
-    final url = '$baseurl/lead/status';
+    final url = '$baseurl/lead';
     String token = 'Bearer $Company_Token'; // Auth token
     print("url of inquiry: $url");
 
@@ -899,10 +899,8 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
 
-
                           if(inquiry.leadStatusCategory == 'Normal' )
                             Row(children: [
-
                               _buildDecentButton(
                                 'Follow Up',
                                 Icons.schedule,
@@ -946,7 +944,9 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
                                 },
                               ),
                               SizedBox(width: 5),
-                              _buildDecentButton(
+
+                              // hide for sometime
+                              /*_buildDecentButton(
                                 'Transfer',
                                 Icons.swap_horiz,
                                 Colors.orange,
@@ -962,8 +962,8 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
                                             email: email,
                                             id: id,)));
                                 },
-                              ),
-                              SizedBox(width: 5)
+                              ),*/
+                              /*SizedBox(width: 5)*/
                             ],),
 
                           _buildDecentButton(

@@ -156,7 +156,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
 
     maintenance_types_list.clear();
 
-    final url = '$BASE_URL_config/v1/maintenanceTypes'; // Replace with your API endpoint
+    final url = '$baseurl/maintenance/maintenanceType'; // Replace with your API endpoint
     String token = 'Bearer $Company_Token'; // auth token for request
 
     Map<String, String> headers = {

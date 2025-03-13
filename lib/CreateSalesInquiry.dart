@@ -279,7 +279,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
     emirates.clear();
 
-    final url = '$BASE_URL_config/v1/masters/states'; // Replace with your API endpoint
+    final url = '$baseurl/master/state'; // Replace with your API endpoint
     String token = 'Bearer $Company_Token'; // auth token for request
 
     Map<String, String> headers = {
@@ -312,7 +312,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
     areas.clear();
 
-    final url = '$BASE_URL_config/v1/masters/areas'; // Replace with your API endpoint
+    final url = '$baseurl/master/area'; // Replace with your API endpoint
     String token = 'Bearer $Company_Token'; // auth token for request
 
     Map<String, String> headers = {
@@ -332,7 +332,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
       } else {
         print("Error: ${response.statusCode}");
         print("Message: ${response.body}");
-        throw Exception('Failed to load data');
+        throw Exception('Failed to load areas');
       }
     } catch (e) {
 
@@ -383,12 +383,13 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
     }
 
     // Replace with your API endpoint
-    final String url = "$BASE_URL_config/v1/leads";
+    final String url = "$baseurl/lead";
 
     var uuid = Uuid();
 
     // Generate a v4 (random) UUID
     String uuidValue = uuid.v4();
+
 
 
     print('entered whatsapp $_selectedCountryCodeWhatsapp${whatsappnocontroller.text}');
@@ -515,7 +516,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
     print('fetching unit types');
     unitTypes.clear();
 
-    final url = '$BASE_URL_config/v1/masters/flatTypes'; // Replace with your API endpoint
+    final url = '$baseurl/master/flatType'; // Replace with your API endpoint
     String token = 'Bearer $Company_Token'; // auth token for request
 
     Map<String, String> headers = {
@@ -548,7 +549,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
     activitysource_list.clear();
 
-    final url = '$BASE_URL_config/v1/activitySources'; // Replace with your API endpoint
+    final url = '$baseurl/lead/activitySource'; // Replace with your API endpoint
     String token = 'Bearer $Company_Token'; // auth token for request
 
     Map<String, String> headers = {
@@ -587,7 +588,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
     amenities.clear();
 
-    final url = '$BASE_URL_config/v1/amenities'; // Replace with your API endpoint
+    final url = '$baseurl/lead/amenity'; // Replace with your API endpoint
     String token = 'Bearer $Company_Token'; // auth token for request
 
     print('fetch url $url');
@@ -629,7 +630,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
     inquirystatus_list.clear();
 
-    final url = '$BASE_URL_config/v1/leadStatus'; // Replace with your API endpoint
+    final url = '$baseurl/lead/status'; // Replace with your API endpoint
     String token = 'Bearer $Company_Token'; // auth token for request
 
     Map<String, String> headers = {

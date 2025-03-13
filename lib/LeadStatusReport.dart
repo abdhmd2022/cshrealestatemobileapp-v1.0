@@ -49,7 +49,8 @@ class _LeadStatusReportState extends State<LeadStatusReport> {
       "Content-Type": "application/json"
     };
 
-    const String url = "$BASE_URL_config/v1/leadStatus";
+     String url = "$baseurl/lead/status";
+
 
     try{
       final response = await http.post(
@@ -473,7 +474,7 @@ class _LeadStatusReportState extends State<LeadStatusReport> {
     print('fetching lead status');
     leadStatuses.clear();
 
-    final url = '$BASE_URL_config/v1/leadStatus'; // Replace with your API endpoint
+    final url = '$baseurl/lead/status'; // Replace with your API endpoint
     String token = 'Bearer $Company_Token'; // auth token for request
 
     print('fetch url $url');
@@ -506,7 +507,7 @@ class _LeadStatusReportState extends State<LeadStatusReport> {
   }
 
   Future<void> deleteLeadStatus(int id) async {
-    final url = '$BASE_URL_config/v1/leadstatus/$id'; // Replace with your API endpoint
+    final url = '$baseurl/lead/status/$id'; // Replace with your API endpoint
     String token = 'Bearer $Company_Token'; // auth token for request
 
     Map<String, String> headers = {

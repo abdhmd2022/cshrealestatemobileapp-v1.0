@@ -179,6 +179,9 @@ class _LoginPageState extends State<Login> {
             'id': user.companyId ?? 0,
             'name': user.companyName ?? 'Unknown Company', // Use company name
             'token': user.token,
+            'baseurl': user.baseurl,
+            'adminurl': user.adminurl,
+            'license_expiry': user.license_expiry,
           })
               .toList();
 
@@ -374,13 +377,16 @@ class _LoginPageState extends State<Login> {
           // ✅ Extract Flats (Instead of Companies)
           List<Map<String, dynamic>> flatsList = tenantsData.map((tenant) {
             return {
+              'tenant_id': tenant['tenant_id'] ?? 0,
               'id': tenant['flat_id'] ?? 0,
               'name': tenant['flat']['name'] ?? 'Unknown Flat',
               'building': tenant['flat']['building_name'] ?? 'Unknown Building',
-              'company': tenant['tenant']['company']['name'] ?? 'Unknown Company',
+              'company_id': tenant['tenant']['company']['id'] ?? 0,
               'baseurl': tenant['tenant']['company']['hosting']['baseurl'] ?? '',
               'adminurl': tenant['tenant']['company']['hosting']['adminurl'] ?? '',
               'license_expiry': tenant['tenant']['company']['hosting']['license_expiry'] ?? '',
+              'accessToken': tenant['accessToken'] ?? '',
+
             };
           }).toList();
 

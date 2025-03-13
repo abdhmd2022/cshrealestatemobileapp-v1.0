@@ -14,7 +14,6 @@ class _MaintenanceStatusReportState extends State<MaintenanceStatusReport> {
   List<dynamic> maintenanceStatuses = [];
   List<String> categories_list= [
     'Normal',
-    'Drop',
     'Close'
   ];
 
@@ -48,7 +47,7 @@ class _MaintenanceStatusReportState extends State<MaintenanceStatusReport> {
       "Content-Type": "application/json"
     };
 
-    const String url = "$BASE_URL_config/v1/maintenanceStatus";
+    final String url = "$baseurl/maintenance/status";
 
     try{
       final response = await http.post(
@@ -119,7 +118,7 @@ class _MaintenanceStatusReportState extends State<MaintenanceStatusReport> {
       "Content-Type": "application/json"
     };
 
-    String url = "$BASE_URL_config/v1/maintenanceStatus/$id";
+    final String url = "$baseurl/maintenance/status/$id";
 
     try{
       final response = await http.put(
@@ -473,7 +472,7 @@ class _MaintenanceStatusReportState extends State<MaintenanceStatusReport> {
     print('fetching Maintenance status');
     maintenanceStatuses.clear();
 
-    final url = '$BASE_URL_config/v1/maintenanceStatus'; // Replace with your API endpoint
+    final url = '$baseurl/maintenance/status'; // Replace with your API endpoint
     String token = 'Bearer $Company_Token'; // auth token for request
 
     print('fetch url $url');
@@ -506,7 +505,7 @@ class _MaintenanceStatusReportState extends State<MaintenanceStatusReport> {
   }
 
   Future<void> deleteMaintenanceStatus(int id) async {
-    final url = '$BASE_URL_config/v1/maintenancestatus/$id'; // Replace with your API endpoint
+    final url = '$baseurl/maintenance/status/$id'; // Replace with your API endpoint
     String token = 'Bearer $Company_Token'; // auth token for request
 
     Map<String, String> headers = {

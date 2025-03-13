@@ -40,7 +40,7 @@ class _ActivitySourceReportState extends State<ActivitySourceReport> {
       "Content-Type": "application/json"
     };
 
-    const String url = "$BASE_URL_config/v1/activitySources";
+    final String url = "$baseurl/lead/activitySource";
 
     try{
       final response = await http.post(
@@ -106,7 +106,7 @@ class _ActivitySourceReportState extends State<ActivitySourceReport> {
       "Content-Type": "application/json"
     };
 
-    String url = "$BASE_URL_config/v1/activitySources/$id";
+    String url = "$baseurl/lead/activitySource/$id";
 
     try{
       final response = await http.put(
@@ -289,7 +289,7 @@ class _ActivitySourceReportState extends State<ActivitySourceReport> {
     print('fetching activity sources');
     activitySource_list.clear();
 
-    final url = '$BASE_URL_config/v1/activitySources'; // Replace with your API endpoint
+    final url = '$baseurl/lead/activitySource'; // Replace with your API endpoint
     String token = 'Bearer $Company_Token'; // auth token for request
 
     print('fetch url $url');
@@ -322,7 +322,7 @@ class _ActivitySourceReportState extends State<ActivitySourceReport> {
   }
 
   Future<void> deleteActivitySource(int id) async {
-    final url = '$BASE_URL_config/v1/activitySources/$id'; // Replace with your API endpoint
+    final url = '$baseurl/lead/activitySource/$id'; // Replace with your API endpoint
     String token = 'Bearer $Company_Token'; // auth token for request
 
     Map<String, String> headers = {

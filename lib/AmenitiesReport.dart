@@ -42,7 +42,7 @@ class _AmentiesReportState extends State<AmentiesReport> {
       "Content-Type": "application/json"
     };
 
-    const String url = "$BASE_URL_config/v1/amenities";
+     String url = "$baseurl/lead/amenity";
 
     try{
       final response = await http.post(
@@ -114,7 +114,7 @@ class _AmentiesReportState extends State<AmentiesReport> {
       "Content-Type": "application/json"
     };
 
-    String url = "$BASE_URL_config/v1/amenities/$id";
+    String url = "$baseurl/lead/amenity/$id";
 
     try{
       final response = await http.put(
@@ -368,7 +368,7 @@ class _AmentiesReportState extends State<AmentiesReport> {
     print('fetching amenities');
     amenities.clear();
 
-    final url = '$BASE_URL_config/v1/amenities'; // Replace with your API endpoint
+    final url = '$baseurl/lead/amenity'; // Replace with your API endpoint
     String token = 'Bearer $Company_Token'; // auth token for request
 
     print('fetch url $url');
@@ -401,7 +401,7 @@ class _AmentiesReportState extends State<AmentiesReport> {
   }
 
   Future<void> deleteAmenities(int id) async {
-    final url = '$BASE_URL_config/v1/amenities/$id'; // Replace with your API endpoint
+    final url = '$baseurl/lead/amenity/$id'; // Replace with your API endpoint
     String token = 'Bearer $Company_Token'; // auth token for request
 
     Map<String, String> headers = {

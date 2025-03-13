@@ -21,7 +21,6 @@ class _MaintenanceTypeMastersReportState extends State<MaintenanceTypeMastersRep
   List<String> categories_list= [
     'MEP',
     'Pest Control',
-
     'Cleaning'
   ];
 
@@ -52,7 +51,7 @@ class _MaintenanceTypeMastersReportState extends State<MaintenanceTypeMastersRep
       "Content-Type": "application/json"
     };
 
-    const String url = "$BASE_URL_config/v1/maintenanceTypes";
+    final String url = "$baseurl/maintenance/maintenanceType";
 
     try{
       final response = await http.post(
@@ -125,7 +124,7 @@ class _MaintenanceTypeMastersReportState extends State<MaintenanceTypeMastersRep
       "Content-Type": "application/json"
     };
 
-    String url = "$BASE_URL_config/v1/maintenanceTypes/$id";
+    String url = "$baseurl/maintenance/maintenanceType/$id";
 
     try{
       final response = await http.put(
@@ -478,7 +477,7 @@ class _MaintenanceTypeMastersReportState extends State<MaintenanceTypeMastersRep
     print('fetching maintenance type');
     maintenance_types_list.clear();
 
-    final url = '$BASE_URL_config/v1/maintenanceTypes'; // Replace with your API endpoint
+    final url = '$baseurl/maintenance/maintenanceType'; // Replace with your API endpoint
     String token = 'Bearer $Company_Token'; // auth token for request
 
     print('fetch url $url');
@@ -511,7 +510,7 @@ class _MaintenanceTypeMastersReportState extends State<MaintenanceTypeMastersRep
   }
 
   Future<void> deleteMaintenanceType(int id) async {
-    final url = '$BASE_URL_config/v1/maintenanceTypes/$id'; // Replace with your API endpoint
+    final url = '$baseurl/maintenance/maintenanceType/$id'; // Replace with your API endpoint
     String token = 'Bearer $Company_Token'; // auth token for request
 
     Map<String, String> headers = {

@@ -61,16 +61,26 @@ class _FlatSelectionState extends State<FlatSelection> {
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    print('save flat id ${selectedFlat!['id']}');
+    print('selected flat details ${selectedFlat!}');
+
 
     await prefs.setInt("flat_id", selectedFlat!['id']);
     await prefs.setString("flat_name", selectedFlat!['name']);
-    await prefs.setString("floor", selectedFlat!['floor']);
-    await prefs.setString("flat_type", selectedFlat!['flat_type']);
+    await prefs.setInt("company_id", selectedFlat!['company_id']);
+    await prefs.setString("license_expiry", selectedFlat!['license_expiry']);
+    await prefs.setString("baseurl", selectedFlat!['baseurl']);
+    await prefs.setString("adminurl", selectedFlat!['adminurl']);
     await prefs.setString("building", selectedFlat!['building']);
-    await prefs.setString("area", selectedFlat!['area']);
+    await prefs.setInt("user_id", selectedFlat!['tenant_id']);
+    await prefs.setString("company_token", selectedFlat!['accessToken']);
+
+
+    /*await prefs.setString("floor", selectedFlat!['floor']);
+    await prefs.setString("flat_type", selectedFlat!['flat_type']);*/
+
+    /*await prefs.setString("area", selectedFlat!['area']);
     await prefs.setString("state", selectedFlat!['state']);
-    await prefs.setString("country", selectedFlat!['country']);
+    await prefs.setString("country", selectedFlat!['country']);*/
 
     print("✅ Selected Flat: ${selectedFlat!['name']} - ${selectedFlat!['building']}");
 
@@ -130,7 +140,7 @@ class _FlatSelectionState extends State<FlatSelection> {
                     flats.map((flat) {
                       return DropdownMenuItem(
                         value: flat,
-                        child: Text("${flat['name']} - ${flat['building']}, ${flat['state']}"),
+                        child: Text("${flat['name']} - ${flat['building']}"),
                       );
                     }).toList(),
                         (Map<String, dynamic>? newFlat) async {

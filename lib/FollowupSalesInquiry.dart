@@ -1072,7 +1072,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
   Future<void> sendFollowupInquiryRequest() async {
 
     // Replace with your API endpoint
-    final String url = "$BASE_URL_config/v1/leadFollowUp";
+    final String url = "$baseurl/lead/followup";
 
     var uuid = Uuid();
 
@@ -1451,7 +1451,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
 
     followupstatus_list.clear();
 
-    final url = '$BASE_URL_config/v1/leadStatus'; // Replace with your API endpoint
+    final url = '$baseurl/lead/status'; // Replace with your API endpoint
     String token = 'Bearer $Company_Token'; // auth token for request
 
     Map<String, String> headers = {
@@ -1493,7 +1493,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
 
     followuptype_list.clear();
 
-    final url = '$BASE_URL_config/v1/leadFollowUpTypes'; // Replace with your API endpoint
+    final url = '$baseurl/lead/followupType'; // Replace with your API endpoint
     String token = 'Bearer $Company_Token'; // auth token for request
 
     Map<String, String> headers = {
@@ -2305,7 +2305,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                                       ),
                                                       Row(
                                                         children: [
-                                                          if (customercontactnocontroller.text == whatsappnocontroller.text) ...[
+                                                          if (customercontactnocontroller.text == whatsappnocontroller.text || whatsappnocontroller.text =="N/A") ...[
                                                             _buildDecentButton(
                                                               'Whatsapp',
                                                               FontAwesomeIcons.whatsapp,
@@ -2330,10 +2330,10 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                                   ),
                                                 ),
                                                 if (customercontactnocontroller.text != whatsappnocontroller.text &&
-                                                    whatsappnocontroller.text.isNotEmpty)
+                                                    whatsappnocontroller.text.isNotEmpty && whatsappnocontroller.text !="N/A")
                                                   SizedBox(height: 10), // Space between containers
                                                 if (customercontactnocontroller.text != whatsappnocontroller.text &&
-                                                    whatsappnocontroller.text.isNotEmpty)
+                                                    whatsappnocontroller.text.isNotEmpty && whatsappnocontroller.text !="N/A")
                                                 // Container for WhatsApp number
                                                   Container(
                                                     padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),

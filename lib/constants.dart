@@ -36,11 +36,13 @@ late int flat_id;
 late String flat_name;
 late String flatsJson ;
 late List<dynamic> flatsList;
-late String baseurl,adminurl,license_expiry;
+late String baseurl,adminurl,license_expiry,building;
+
 
 
 /// Load tokens from SharedPreferences
 Future<void> loadTokens() async {
+
 
   SharedPreferences prefs = await SharedPreferences.getInstance();
   /*Company_Token = prefs.getString("Company_Token") ?? "";*/
@@ -57,6 +59,7 @@ Future<void> loadTokens() async {
   baseurl = prefs.getString("baseurl") ?? '';
   adminurl = prefs.getString("adminurl") ?? '';
   license_expiry = prefs.getString("license_expiry") ?? '';
+  building = prefs.getString("building") ?? '';
 
   if(!is_admin)
     {
@@ -72,6 +75,7 @@ Future<void> loadTokens() async {
   print("Loaded BaseURL: $baseurl");
   print("Loaded AdminURL: $adminurl");
   print("Loaded license expiry: $license_expiry");
+  print("Loaded Building: $building");
 
 
 

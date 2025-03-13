@@ -54,9 +54,17 @@ class _CompanySelectionState extends State<CompanySelection> {
     await prefs.setInt("company_id", selectedCompany!.id);
     await prefs.setString("company_token", selectedCompany!.token);
     await prefs.setString("company_name", selectedCompany!.name);
+    await prefs.setString("baseurl", selectedCompany!.baseurl);
+    await prefs.setString("adminurl", selectedCompany!.adminurl);
+    await prefs.setString("license_expiry", selectedCompany!.license_expiry);
+
 
     print("✅ Selected Company: ${selectedCompany!.name}");
     print("🔑 Company Token: ${selectedCompany!.token}");
+    print("🔑 Base URL: ${selectedCompany!.baseurl}");
+    print("🔑 Admin URL: ${selectedCompany!.adminurl}");
+    print("🔑 Expiry: ${selectedCompany!.license_expiry}");
+    print("🔑 Company Name: ${selectedCompany!.name}");
 
     await loadTokens();
 
@@ -125,13 +133,20 @@ class _CompanySelectionState extends State<CompanySelection> {
                         });
                         SharedPreferences prefs = await SharedPreferences.getInstance();
 
+
                         await prefs.setInt("company_id", newCompany!.id);
                         await prefs.setString("company_token", newCompany!.token);
                         await prefs.setString("company_name", newCompany!.name);
+                        await prefs.setString("baseurl", newCompany!.baseurl);
+                        await prefs.setString("adminurl", newCompany!.adminurl);
+                        await prefs.setString("license_expiry", newCompany!.license_expiry);
 
                         print("✅ Selected Company: ${newCompany.name}");
                         print("🔑 Company Token: ${newCompany.token}");
                         print("🔑 Company ID: ${newCompany.id}");
+                        print("🔑 Base URL: ${newCompany.baseurl}");
+                        print("🔑 Admin URL: ${newCompany.adminurl}");
+                        print("🔑 License expiry: ${newCompany.license_expiry}");
                       }
                     },
                   ),

@@ -1704,20 +1704,13 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                     suffixIcon: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-
                         const SizedBox(width: 8),
                         Icon(FontAwesomeIcons.whatsapp,
                             color: Colors.green
                         ),
-                        SizedBox(width: 8),
-
-
-
-
-
+                        SizedBox(width: 8)
                       ],
                     ),
-
                     prefixIcon: GestureDetector(
                       onTap: () {
                         showCountryPicker(
@@ -1731,7 +1724,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                           },
                         );
                       },
-
 
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -1748,7 +1740,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                   ),
                 ),
               ),
-
 
             /*Padding(
 
@@ -1903,7 +1894,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                               mainAxisAlignment: MainAxisAlignment.start,
                                               crossAxisAlignment: CrossAxisAlignment.start,
                                               children: [
-
                                                 DropdownButtonFormField<InquiryStatus>(
                                                   value: selectedinquiry_status,  // This should be an object of FollowUpStatus
                                                   decoration: InputDecoration(

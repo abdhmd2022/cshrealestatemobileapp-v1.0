@@ -1948,8 +1948,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                 ]))]),
                                   ), // folowup status
 
-                                  /*if (selectedinquiry_status == 'In Follow-Up' || selectedinquiry_status == 'Contact Later') // Conditionally render based on status
-                                    */
+                                  /*if (selectedinquiry_status == 'In Follow-Up' || selectedinquiry_status == 'Contact Later') // Conditionally render based on status */
 
                                   if(selectedinquiry_status!=null && selectedinquiry_status!.category == 'Normal')
                                     Container(

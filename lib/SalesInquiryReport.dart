@@ -474,7 +474,7 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
         setState(() {
           print("fetched record for inquiries : ${response.body}");
           final jsonResponse = json.decode(response.body);
-          salesinquiry = parseInquiries(jsonResponse);
+          salesinquiry = parseInquiries(jsonResponse).reversed.toList();
           _expandedinquirys = List.generate(salesinquiry.length, (index) => false);
 
           filterInquiries(); // ✅ Apply default filtering after fetching

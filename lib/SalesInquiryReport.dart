@@ -451,8 +451,6 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
       isLoading = true;
     });
 
-
-
     print('Fetching inquiries...');
 
     filteredInquiries.clear();
@@ -462,7 +460,6 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
     final url = '$baseurl/lead';
     String token = 'Bearer $Company_Token'; // Auth token
     print("url of inquiry: $url");
-
 
     Map<String, String> headers = {
       'Authorization': token,
@@ -565,7 +562,6 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
       key: _scaffoldKey,
       backgroundColor: const Color(0xFFF2F4F8),
       appBar: AppBar(
-
         elevation: 0,
         bottom: PreferredSize(
           preferredSize: Size.fromHeight(70.0),

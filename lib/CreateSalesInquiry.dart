@@ -183,7 +183,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
     selectedEmiratesList.forEach((emirate) {
       areasToDisplay.addAll(areas[emirate['label']] ?? []);
     });
-
     // Reset areas not belonging to the selected emirates
     areas.forEach((emirate, areaList) {
       if (!selectedEmiratesList.any((e) => e['label'] == emirate)) {
@@ -1039,7 +1038,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
         TextEditingController searchController = TextEditingController();
          filteredAreas = List.from(areasToDisplay);
         isAllAreasSelected = filteredAreas!.every((a) => a['isSelected']);
-
 
         return StatefulBuilder(
           builder: (context, setState) {
@@ -1999,10 +1997,11 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                             child: Row(
                                               children: [
                                                 if(nextFollowUpDate != null)
-                                                  Row(children:[
+                                                  Row(
+                                                    children:[
                                                     Text(
                                                       nextFollowUpDate != null
-                                                          ? DateFormat("dd-MMM-yyyy").format(nextFollowUpDate!) // Formatting date
+                                                          ? DateFormat( "dd-MMM-yyyy").format(nextFollowUpDate!) // Formatting date
                                                           : "",
                                                       style: TextStyle(fontSize: 16, color: Colors.black87),
                                                     ),
@@ -2011,26 +2010,19 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                   ]),
                                                 Icon(FontAwesomeIcons.calendarPlus, color: Colors.black87, size: 28),
                                               ],
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
+                                            ))])),
+
                                   /*Container(
-
                                     child: Column(
-
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         Padding(padding: EdgeInsets.only(top: 15,left:20),
-
                                           child:Row(
                                             children: [
                                               Text("Next Follow-Up:",
                                                   style: TextStyle(
                                                       fontWeight: FontWeight.bold,
                                                       fontSize: 16
-
                                                   )
                                               ),
                                               */
@@ -2054,7 +2046,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                             onTap: () async {
                                               DateTime? pickedDate = await showDatePicker(
                                                 context: context,
-
                                                 initialDate: nextFollowUpDate ?? DateTime.now().add(Duration(days:1)),
                                                 firstDate: DateTime.now().add(Duration(days:1)), // Restrict past dates
                                                 lastDate: DateTime(2100),
@@ -2106,12 +2097,9 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                             ),
                                           ),
                                         ),
-
-
                                       ],
                                     ),
                                   ),*/
-
 
                                   Container(
                                     margin: EdgeInsets.only( top:15,
@@ -2120,11 +2108,11 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                         right: 20),
                                     child: Row(
                                       children: [
-                                        Text("Unit Type:",
+                                        Text(
+                                            "Unit Type:",
                                             style: TextStyle(
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 16
-
                                             )
                                         ),
                                         SizedBox(width: 2),
@@ -2133,7 +2121,8 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                           style: TextStyle(
                                             fontSize: 20,
                                             color: Colors.red, // Red color for the asterisk
-                                          ))])), // unit type
+                                          ))])
+                                  ), // unit type
 
                                   Padding(
                                     padding: EdgeInsets.only(top: 0, left: 20, right: 20, bottom: 0),
@@ -2183,21 +2172,17 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                   ),
 
                                   /*Padding(padding: EdgeInsets.only(top:0,left: 20,right: 20,bottom: 0),
-
                                     child: TextFormField(
                                       controller: unittypecontroller,
                                       validator: (value) {
                                         if (value!.isEmpty) {
                                           return 'Unit type is required';
                                         }
-
                                         return null;
                                       },
                                       decoration: InputDecoration(
                                         hintText: 'Enter Unit Type(s)',
                                         contentPadding: EdgeInsets.all(15),
-
-
                                         border: OutlineInputBorder(
                                           borderRadius: BorderRadius.circular(10), // Set the border radius
                                           borderSide: BorderSide(
@@ -2239,8 +2224,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                         });
                                       },
                                     )
-
-
                                 ),*/
 
                                   Container(
@@ -2254,7 +2237,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                   style: TextStyle(
                                                       fontWeight: FontWeight.bold,
                                                       fontSize: 16
-
                                                   )
                                               ),
                                               SizedBox(width: 2),
@@ -2310,10 +2292,8 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
                                         /*Padding(
                                         padding: EdgeInsets.only(top:0,left:20,right:20,bottom :0),
-
                                         child: DropdownButtonFormField<dynamic>(
                                           decoration: InputDecoration(
-
                                             border: OutlineInputBorder(
                                               borderSide: BorderSide(color: Colors.black),
                                               borderRadius: BorderRadius.circular(10.0),
@@ -2340,14 +2320,12 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                           onChanged: (value) async {
                                             selectedEmirate = value!;
                                           },
-
                                           onTap: ()
                                           {
                                             setState(() {
                                               _isFocused_email = false;
                                               _isFocus_name = false;
                                             });
-
                                           },
                                           validator: (value) {
                                             if (value == null || value.isEmpty) {
@@ -2357,7 +2335,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                           },
                                         ),
                                       ),*/
-
                                       ],
                                     ),
                                   ),
@@ -2373,7 +2350,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                             style: TextStyle(
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 16
-
                                             )
                                         ),
                                         SizedBox(width: 2),
@@ -2383,10 +2359,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                             fontSize: 20,
                                             color: Colors.red, // Red color for the asterisk
                                           ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
+                                        )])),
 
                                   Padding(
                                     padding: EdgeInsets.only(top: 0, left: 20, right: 20, bottom: 0),
@@ -2405,8 +2378,8 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                         child: Row(
                                           mainAxisAlignment: MainAxisAlignment.spaceBetween, // Space between text and icon
                                           children: [
-                                            // Column to display selected emirates
-                                            Expanded(
+                                             // Column to display selected emirates
+                                             Expanded(
                                               child: selectedAreasString.isNotEmpty
                                                   ? Column(
                                                 crossAxisAlignment: CrossAxisAlignment.start,

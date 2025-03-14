@@ -3000,7 +3000,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                 ),
                                               ),
                                               onPressed: () {
-
                                                 if(selectedInterestType == null)
                                                 {
                                                   ScaffoldMessenger.of(context).showSnackBar(
@@ -3012,7 +3011,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                 }
                                                 else
                                                 {
-
                                                   if(selectedPropertyType == null)
                                                     {
                                                       ScaffoldMessenger.of(context).showSnackBar(
@@ -3024,7 +3022,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                     }
                                                   else
                                                     {
-
                                                       if (_formKey.currentState != null &&
                                                           _formKey.currentState!.validate()) {
                                                         _formKey.currentState!.save();
@@ -3034,16 +3031,11 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                           _isFocus_name = false;
                                                         });
 
-
                                                         sendCreateInquiryRequest();
-
-
 
                                                       }
                                                     }
-
                                                 }
-
                                                 },
                                               child: Text('Create'),
                                             ),

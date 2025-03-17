@@ -1,52 +1,135 @@
+import 'dart:io';
+
+import 'package:cshrealestatemobile/SalesDashboard.dart';
 import 'package:cshrealestatemobile/TenantDashboard.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:uuid/uuid.dart';
 import 'constants.dart';
+import 'package:dio/dio.dart';
+import 'package:http/http.dart' as http;
+
+import 'package:http_parser/http_parser.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:path_provider/path_provider.dart';
+
+
 
 class DecentTenantKYCForm extends StatefulWidget {
   @override
   _DecentTenantKYCFormState createState() => _DecentTenantKYCFormState();
 }
 
-class _DecentTenantKYCFormState extends State<DecentTenantKYCForm> {
-  final _formKey = GlobalKey<FormState>();
-  String? emiratesIdFrontFile, emiratesIdBackFile, passportFile, visaFile;
 
-  Future<void> pickFile(String docType, {bool isFront = true}) async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles();
-    if (result != null && result.files.single.path != null) {
-      setState(() {
-        if (docType == 'Emirates ID') {
-          if (isFront) {
-            emiratesIdFrontFile = result.files.single.path;
-          } else {
-            emiratesIdBackFile = result.files.single.path;
-          }
-        } else if (docType == 'Passport') {
-          passportFile = result.files.single.path;
-        } else if (docType == 'Visa') {
-          visaFile = result.files.single.path;
-        }
-      });
-    }
+
+
+/*Future<void> sendFormData(PlatformFile? file, String docType, String expiryDate) async {
+  if (file == null) {
+    print("🚨 No file selected.");
+    return;
   }
 
-  Future<void> captureFile(String docType, {bool isFront = true}) async {
+  String url = "$baseurl/tenant/kyc/$user_id";
+  print("🔹 Uploading to: $url");
+
+  try {
+    var request = http.MultipartRequest('POST', Uri.parse(url));
+
+    // Add headers
+    request.headers.addAll({
+      "Authorization": "Bearer $Company_Token", // Add token if required
+    });
+
+    // Add form fields
+    request.fields['doc_type'] = docType;
+    request.fields['expiry_date'] = expiryDate;
+
+      // Mobile: Use File path
+      File filePath = File(file.path!);
+      var stream = http.ByteStream(filePath.openRead());
+      var length = await filePath.length();
+
+      request.files.add(http.MultipartFile(
+        'image',
+        stream,
+        length,
+        filename: file.name,
+        contentType: MediaType('image', file.extension ?? 'png'), // Correct usage
+      ));
+
+
+    // Send request
+    var response = await request.send();
+
+    // Get response data
+    var responseData = await response.stream.bytesToString();
+    print("✅ Response: ${response.statusCode}");
+    print("📦 Response Data: $responseData");
+
+    if (response.statusCode == 201) {
+      print("✔ Upload successful");
+    } else {
+      print("❌ Upload failed: ${response.statusCode}");
+    }
+  } catch (e) {
+    print("🚨 Error uploading file: $e");
+  }
+}*/
+
+class _DecentTenantKYCFormState extends State<DecentTenantKYCForm> {
+  final _formKey = GlobalKey<FormState>();
+  String? selectedDocumentType;
+  String? emiratesIdFrontFile, emiratesIdBackFile, passportFile, visaFile;
+
+  final List<String> documentTypes = ['Emirates ID', 'Passport', 'Visa'];
+
+
+  Future<void> pickFile({bool isFront = true}) async {
+    if (selectedDocumentType == null) {
+      _showSnackBar("Please select a document type first.");
+      return;
+    }
+
     final ImagePicker picker = ImagePicker();
-    final XFile? file = await picker.pickImage(source: ImageSource.camera);
+    final XFile? file = await picker.pickImage(source: ImageSource.gallery);
+
     if (file != null) {
       setState(() {
-        if (docType == 'Emirates ID') {
+        if (selectedDocumentType == 'Emirates ID') {
           if (isFront) {
             emiratesIdFrontFile = file.path;
           } else {
             emiratesIdBackFile = file.path;
           }
-        } else if (docType == 'Passport') {
+        } else if (selectedDocumentType == 'Passport') {
           passportFile = file.path;
-        } else if (docType == 'Visa') {
+        } else if (selectedDocumentType == 'Visa') {
+          visaFile = file.path;
+        }
+      });
+    }
+  }
+
+  Future<void> captureFile({bool isFront = true}) async {
+    if (selectedDocumentType == null) {
+      _showSnackBar("Please select a document type first.");
+      return;
+    }
+    final ImagePicker picker = ImagePicker();
+    final XFile? file = await picker.pickImage(source: ImageSource.camera);
+    if (file != null) {
+      setState(() {
+        if (selectedDocumentType == 'Emirates ID') {
+          if (isFront) {
+            emiratesIdFrontFile = file.path;
+          } else {
+            emiratesIdBackFile = file.path;
+          }
+        } else if (selectedDocumentType == 'Passport') {
+          passportFile = file.path;
+        } else if (selectedDocumentType == 'Visa') {
           visaFile = file.path;
         }
       });
@@ -57,11 +140,101 @@ class _DecentTenantKYCFormState extends State<DecentTenantKYCForm> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message, style: TextStyle(fontSize: 16)),
-        backgroundColor: Colors.redAccent,
+        backgroundColor: appbar_color,
         behavior: SnackBarBehavior.floating,
         margin: EdgeInsets.all(16),
+
       ),
     );
+  }
+
+
+// Function to generate a PDF from two images
+  Future<File> generatePdf(File frontImage, File backImage) async {
+    final pdf = pw.Document();
+
+    final frontImageBytes = frontImage.readAsBytesSync();
+    final backImageBytes = backImage.readAsBytesSync();
+
+    pdf.addPage(
+      pw.Page(
+        build: (pw.Context context) => pw.Center(
+          child: pw.Image(pw.MemoryImage(frontImageBytes)),
+        ),
+      ),
+    );
+
+    pdf.addPage(
+      pw.Page(
+        build: (pw.Context context) => pw.Center(
+          child: pw.Image(pw.MemoryImage(backImageBytes)),
+        ),
+      ),
+    );
+
+    final output = await getTemporaryDirectory();
+    final pdfFile = File("${output.path}/emirates_id.pdf");
+    await pdfFile.writeAsBytes(await pdf.save());
+
+    return pdfFile;
+  }
+  Future<void> sendFormData(File file, String docType, String expiryDate, {required bool isPdf}) async {
+    if (!file.existsSync()) {
+      print("🚨 No file found.");
+      return;
+    }
+
+    String url = "$baseurl/tenant/kyc/$user_id";
+    print("🔹 Uploading to: $url");
+
+    try {
+      var request = http.MultipartRequest('POST', Uri.parse(url));
+
+      // Add headers
+      request.headers.addAll({
+        "Authorization": "Bearer $Company_Token",
+      });
+
+
+      // Add form fields
+      request.fields['doc_type'] = docType;
+      request.fields['expiry_date'] = expiryDate;
+
+      // Attach the file (PDF or Image)
+      var stream = http.ByteStream(file.openRead());
+      var length = await file.length();
+
+      request.files.add(http.MultipartFile(
+        isPdf?'image' : 'image',
+        stream,
+        length,
+        filename: file.path.split('/').last,
+        contentType: isPdf ? MediaType('application', 'pdf') : MediaType('image', 'jpeg'),
+      ));
+
+      print("📦 Attached Files:");
+      for (var file in request.files) {
+        print("🔹 Filename: ${file.filename}");
+        print("📦 Field Name: ${file.field}");
+        print("📏 Content-Type: ${file.contentType}");
+      }
+      var response = await request.send();
+
+// Read response stream properly
+      var responseData = await response.stream.bytesToString();
+
+      print("✅ Response Status Code: ${response.statusCode}");
+      print("📦 Raw Response Data: $responseData");
+      print("🔹 Headers: ${response.headers}");
+
+      if (response.statusCode == 201) {
+        print("✔ Upload successful");
+      } else {
+        print("❌ Upload failed: ${response.statusCode}");
+      }
+    } catch (e) {
+      print("🚨 Error uploading file: $e");
+    }
   }
 
   @override
@@ -74,136 +247,127 @@ class _DecentTenantKYCFormState extends State<DecentTenantKYCForm> {
         iconTheme: IconThemeData(color: Colors.white),
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Navigator.pop(context),
+          onPressed: (){
+
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => TenantDashboard()),
+            );
+          }
         ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 16),
         child: Container(
+          height: MediaQuery.of(context).size.height,
           color: Colors.white,
           child: Form(
             key: _formKey,
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                DropdownButtonFormField<String>(
+                  decoration: InputDecoration(
+                    labelText: "Select Document Type",
+                    labelStyle: TextStyle(color: Colors.black), // Set label text color to blue
 
-
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child:  Container(
-                    padding: EdgeInsets.only(top:0),
-                    child:Row(
-                      children: [
-
-                        Row(mainAxisSize: MainAxisSize.min,
-
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-
-                            Container(
-                                margin: EdgeInsets.only(left: 10,right: 5, top: 0),
-                                padding: EdgeInsets.only(left:0,right:10, top: 5, bottom: 5),
-                                decoration: BoxDecoration(
-                                  color: appbar_color.withOpacity(0.1),
-
-                                  borderRadius: BorderRadius.circular(16.0),
-                                ),
-                                child:Row(
-                                  children: [
-                                    Icon(
-                                      FontAwesomeIcons.circleUser,
-                                      color: appbar_color.withOpacity(1),
-                                      size: 20,
-
-                                    ),
-                                    SizedBox(width: 8,),
-                                    Text("widget.name",
-                                        style: TextStyle(
-                                          color: appbar_color.withOpacity(1),
-                                          fontWeight: FontWeight.bold,
-
-                                        ))
-
-                                  ],
-                                )
-                            ),
-
-                            Container(
-                                margin: EdgeInsets.only(left: 0,right: 5, top: 0),
-                                padding: EdgeInsets.only(left:10,right:10, top: 5, bottom: 5),
-                                decoration: BoxDecoration(
-
-                                  color: appbar_color.withOpacity(0.1),
-                                  borderRadius: BorderRadius.circular(16.0),
-                                ),
-                                child:Row(
-                                  children: [
-                                    Icon(
-                                      FontAwesomeIcons.envelope ,
-                                      color: appbar_color.withOpacity(1),
-                                      size: 20,
-                                    ),
-                                    SizedBox(width: 8,),
-                                    Text("widget.email",
-                                        style: TextStyle(
-                                            color: appbar_color.withOpacity(1),
-                                            fontWeight: FontWeight.bold
-                                        ))
-                                  ],
-                                )
-                            ),
-                          ],),
-                      ],
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.black), // Default border color
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.black, width: 1), // Blue border when not focused
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: appbar_color, width: 1), // Thicker blue border when focused
                     ),
                   ),
+                  value: selectedDocumentType,
+                  items: documentTypes.map((String doc) {
+                    return DropdownMenuItem<String>(
+                      value: doc,
+                      child: Text(doc),
+                    );
+                  }).toList(),
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      selectedDocumentType = newValue;
+                      emiratesIdFrontFile = emiratesIdBackFile = passportFile = visaFile = null;
+                    });
+                  },
                 ),
-
-                SizedBox(height: 15,),
-
-
-                buildDocumentCard(
-                  title: 'Emirates ID Front',
-                  filePath: emiratesIdFrontFile,
-                  onPickFile: () => pickFile('Emirates ID', isFront: true),
-                  onCaptureFile: () => captureFile('Emirates ID', isFront: true),
-                ),
-                buildDocumentCard(
-                  title: 'Emirates ID Back',
-                  filePath: emiratesIdBackFile,
-                  onPickFile: () => pickFile('Emirates ID', isFront: false),
-                  onCaptureFile: () => captureFile('Emirates ID', isFront: false),
-                ),
-                buildDocumentCard(
-                  title: 'Passport',
-                  filePath: passportFile,
-                  onPickFile: () => pickFile('Passport'),
-                  onCaptureFile: () => captureFile('Passport'),
-                ),
-                buildDocumentCard(
-                  title: 'Visa',
-                  filePath: visaFile,
-                  onPickFile: () => pickFile('Visa'),
-                  onCaptureFile: () => captureFile('Visa'),
-                ),
+                SizedBox(height: 15),
+                if (selectedDocumentType != null)
+                  Column(
+                    children: [
+                      if (selectedDocumentType == 'Emirates ID') ...[
+                        buildDocumentCard(title: 'Emirates ID - Front', filePath: emiratesIdFrontFile, isFront: true),
+                        buildDocumentCard(title: 'Emirates ID - Back', filePath: emiratesIdBackFile, isFront: false),
+                      ] else
+                        buildDocumentCard(title: selectedDocumentType!, filePath: selectedDocumentType == 'Passport' ? passportFile : visaFile),
+                    ],
+                  ),
                 SizedBox(height: 30),
-
                 Center(
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(backgroundColor: appbar_color),
-                    onPressed: () {
-                      if (emiratesIdFrontFile == null || emiratesIdFrontFile!.isEmpty) {
-                        _showSnackBar("Please upload Emirates ID front side.");
-                      } else if (emiratesIdBackFile == null || emiratesIdBackFile!.isEmpty) {
-                        _showSnackBar("Please upload Emirates ID back side.");
-                      } else if (passportFile == null || passportFile!.isEmpty) {
-                        _showSnackBar("Please upload Passport.");
-                      } else if (visaFile == null || visaFile!.isEmpty) {
-                        _showSnackBar("Please upload Visa.");
-                      } else {
-                        // Proceed with submission
-                      }
+                    onPressed: () async {
+                    if (selectedDocumentType == null) {
+                    _showSnackBar("Please select a document type.");
+                    return;
+                    }
+
+                    File? fileToSend;
+                    String fileType = "";
+                    String date = "2023-10-25"; // Modify as needed
+                    bool isPdf = false;
+
+                    switch (selectedDocumentType) {
+                    case 'Emirates ID':
+                    if (emiratesIdFrontFile == null || emiratesIdBackFile == null) {
+                    _showSnackBar("Please upload both front and back of Emirates ID");
+                    return;
+                    }
+
+                    // Convert front and back images into a PDF
+                    fileToSend = await generatePdf(File(emiratesIdFrontFile!), File(emiratesIdBackFile!));
+                    if (!fileToSend.existsSync()) {
+                      print("🚨 PDF Generation Failed! File does not exist");
+                      return;
+                    }
+                    print("✅ PDF Generated: ${fileToSend.path}");
+                    print("📦 PDF Size: ${await fileToSend.length()} bytes");
+                    fileType = "Emirates_Id";
+                    isPdf = true;
+                    break;
+
+                    case 'Passport':
+                    if (passportFile == null) {
+                    _showSnackBar("Please upload the Passport");
+                    return;
+                    }
+                    fileToSend = File(passportFile!);
+                    fileType = "Passport";
+                    break;
+
+                    case 'Visa':
+                    if (visaFile == null) {
+                    _showSnackBar("Please upload the Visa");
+                    return;
+                    }
+                    fileToSend = File(visaFile!);
+                    fileType = "Visa";
+                    break;
+
+                    default:
+                    _showSnackBar("Invalid document type selected.");
+                    return;
+                    }
+
+                    if (fileToSend != null) {
+                    await sendFormData(fileToSend, fileType, date, isPdf: isPdf);
+                    } else {
+                    _showSnackBar("Error processing the file.");
+                    }
                     },
                     child: Text('Submit', style: TextStyle(color: Colors.white)),
                   ),
@@ -212,18 +376,12 @@ class _DecentTenantKYCFormState extends State<DecentTenantKYCForm> {
               ],
             ),
           ),
-        )
-
+        ),
       ),
     );
   }
 
-  Widget buildDocumentCard({
-    required String title,
-    required String? filePath,
-    required VoidCallback onPickFile,
-    required VoidCallback onCaptureFile,
-  }) {
+  Widget buildDocumentCard({required String title, required String? filePath, bool isFront = true}) {
     return Container(
       margin: EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
@@ -244,16 +402,44 @@ class _DecentTenantKYCFormState extends State<DecentTenantKYCForm> {
           children: [
             Text(title, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             SizedBox(height: 8),
-            filePath != null ? Text("Uploaded: $filePath") : Text("No file selected"),
+// Show Image Preview if filePath is available
+            filePath != null && File(filePath).existsSync()
+                ? Image.file(
+              File(filePath),
+              width: double.infinity,
+              height: 150, // Adjust the height as needed
+              fit: BoxFit.cover,
+            )
+                : Text("No file selected", style: TextStyle(color: Colors.red)),
+
             SizedBox(height: 12),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                ElevatedButton.icon(                  style: ElevatedButton.styleFrom(backgroundColor: Colors.white),
-                    onPressed: onPickFile, icon: Icon(Icons.upload,color: appbar_color,), label: Text('Upload',style: TextStyle(color: appbar_color),)),
+                ElevatedButton.icon(
+                    onPressed: () => pickFile(isFront: isFront),
+                    icon: Icon(Icons.upload, color: Colors.white),
+                    label: Text('Upload', style: TextStyle(color: Colors.white)),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: appbar_color, // Change this to your desired color
+                    elevation: 2, // Optional: Adds shadow effect
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15), // Optional: Rounded corners
+                    ),
+                  ),
+
+                ),
                 SizedBox(width: 10),
-                ElevatedButton.icon(                  style: ElevatedButton.styleFrom(backgroundColor: Colors.white),
-                    onPressed: onCaptureFile, icon: Icon(Icons.camera_alt,color: appbar_color,), label: Text('Capture',style: TextStyle(color: appbar_color))),
+                ElevatedButton.icon(onPressed: () => captureFile(isFront: isFront),
+                    icon: Icon(Icons.camera_alt, color: Colors.white),
+                    label: Text('Capture', style: TextStyle(color: Colors.white)),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: appbar_color, // Change this to your desired color
+                    elevation: 2, // Optional: Adds shadow effect
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15), // Optional: Rounded corners
+                    ),
+                  ),),
               ],
             ),
           ],

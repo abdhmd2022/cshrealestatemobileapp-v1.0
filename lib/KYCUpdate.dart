@@ -268,7 +268,7 @@ class _DecentTenantKYCFormState extends State<DecentTenantKYCForm> {
               children: [
                 DropdownButtonFormField<String>(
                   decoration: InputDecoration(
-                    labelText: "Select Document Type",
+                    labelText: "Document Type",
                     labelStyle: TextStyle(color: Colors.black), // Set label text color to blue
 
                     border: OutlineInputBorder(

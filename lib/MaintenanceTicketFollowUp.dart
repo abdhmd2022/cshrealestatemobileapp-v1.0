@@ -527,7 +527,7 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
 
     subTickets.clear();
     String url = is_admin
-        ? "$BASE_URL_config/v1/maintenance/$ticketID"
+        ? "$baseurl/maintenance/ticket/$ticketID"
         : '';
 
     /*final String url = "$BASE_URL_config/v1/maintenance"; // will change it for tenant*/
@@ -550,14 +550,11 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
           var tenantFlat = jsonData['data']['ticket']['tenent_flat'];
 
           setState(() {
-
-
             subTickets = tickets.map((ticket) {
               return {
                 "id": ticket["id"],
                 "name": ticket["type"]["name"],
                 "followps": ticket["followps"] as List
-
               };
             }).toList();
 

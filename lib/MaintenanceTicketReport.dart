@@ -535,8 +535,8 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
     });
 
     String url = is_admin
-        ? "$baseurl/maintenance"
-        : "$baseurl/maintenance"; /*"$baseurl/maintenance/?tenent_id=$user_id&flat_id=$flat_id";*/
+        ? "$baseurl/maintenance/ticket"
+        : "$baseurl/maintenance/ticket"; /*"$baseurl/maintenance/?tenent_id=$user_id&flat_id=$flat_id";*/
 
     print('Fetching tickets from URL: $url');
 
@@ -544,6 +544,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
       final Map<String, String> headers = {
         'Authorization': 'Bearer $Company_Token',
         'Content-Type': 'application/json',
+
       };
 
       final response = await http.get(Uri.parse(url), headers: headers);

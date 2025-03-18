@@ -197,7 +197,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
 
     String url = is_admin
         ? '$adminurl/tenant'
-        : '$baseurl/tenant/$user_id';
+        : '$adminurl/tenant/$user_id';
 
     String token = 'Bearer $Company_Token'; // auth token for request
 
@@ -221,7 +221,89 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
 
         setState(() {
           flats.clear();
-          List<dynamic> tenants = data['data']['tenants'];
+
+          if (is_admin) {
+            // Handle multiple tenants case
+            List<dynamic> tenants = data['data']['tenants'];
+            for (var tenant in tenants) {
+              String tenantName = tenant['name'];
+
+              if (tenant['flats'] != null) {
+                for (var flatData in tenant['flats']) {
+                  var flat = flatData['flat'];
+                  flats.add({
+                    'tenant_name': tenantName,
+                    'flat_id': flat['id'],
+                    'flat_name': flat['name'],
+                    'building_name': flat['building_name'],
+                  });
+                }
+              }
+            }
+          } else {
+            // Handle single tenant case
+            var tenant = data['data']['tenant'];
+            if (tenant != null) {
+              String tenantName = tenant['name'];
+
+              if (tenant['flats'] != null) {
+                for (var flatData in tenant['flats']) {
+                  var flat = flatData['flat'];
+                  flats.add({
+                    'tenant_name': tenantName,
+                    'flat_id': flat['id'],
+                    'flat_name': flat['name'],
+                    'building_name': flat['building_name'],
+                  });
+                }
+              }
+            }
+          }
+
+          // Select first flat if any
+          selectedFlat = flats.isNotEmpty ? flats[0] : {};
+        });
+      } else {
+        print("Error: ${response.statusCode}");
+        print("Message: ${response.body}");
+      }
+    } catch (e) {
+      print('Error fetching data: $e');
+    }
+  }
+
+  /*Future<void> fetchUnits() async {
+    flats.clear();
+
+    print('user id $user_id');
+
+    String url = is_admin
+        ? '$adminurl/tenant'
+        : '$adminurl/tenant/$user_id';
+
+    String token = 'Bearer $Company_Token'; // auth token for request
+
+    print('url $url');
+
+    Map<String, String> headers = {
+      'Authorization': token,
+      "Content-Type": "application/json"
+    };
+
+    try {
+      final response = await http.get(
+        Uri.parse(url),
+        headers: headers,
+      );
+
+      print('code ${response.statusCode}');
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = json.decode(response.body);
+        print('data: $data');
+
+        setState(() {
+          flats.clear();
+          List<dynamic> tenants = data['data']['tenant'];
 
           for (var tenant in tenants) {
             String tenantName = tenant['name']; // Get tenant name
@@ -249,7 +331,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
     } catch (e) {
       print('Error fetching data: $e');
     }
-  }
+  }*/
 
   Future<void> _pickImages({bool fromCamera = false}) async {
     List<XFile>? pickedFiles;
@@ -599,12 +681,12 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                               ),
                               buttonIcon: Icon(
                                 Icons.arrow_drop_down,
-                                color: Colors.black54,
+                                color: Colors.black,
                               ),
                               buttonText: Text(
                                 "Select Maintenance Type",
                                 style: TextStyle(
-                                  color: Colors.black54,
+                                  color: Colors.black,
                                   fontSize: 16,
                                 ),
                                 overflow: TextOverflow.ellipsis,
@@ -942,8 +1024,8 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
           try {
 
             String url = is_admin
-                ? "$BASE_URL_config/v1/tenent/maintenance"
-                : "$BASE_URL_config/v1/tenent/maintenance";
+                ? "$baseurl/maintenance/ticket"
+                : "$baseurl/maintenance/ticket";
 
             var uuid = Uuid();
             String uuidValue = uuid.v4();
@@ -953,6 +1035,9 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
               "flat_id": selectedFlat?['flat_id'], // Updated key from flat_masterid to flat_id
               "description": _descriptionController.text,
               "types": maintenance_types_list.map((type) => type.id).toList(), // Converts the list of objects to a list of IDs
+              "contract_id":1
+
+
             };
 
             final response = await http.post(

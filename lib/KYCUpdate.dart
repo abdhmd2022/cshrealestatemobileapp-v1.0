@@ -270,7 +270,6 @@ class _DecentTenantKYCFormState extends State<DecentTenantKYCForm> {
                   decoration: InputDecoration(
                     labelText: "Document Type",
                     labelStyle: TextStyle(color: Colors.black), // Set label text color to blue
-
                     border: OutlineInputBorder(
                       borderSide: BorderSide(color: Colors.black), // Default border color
                     ),

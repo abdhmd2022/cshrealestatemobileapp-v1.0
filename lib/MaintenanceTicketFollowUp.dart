@@ -150,8 +150,6 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
          _remarksController.clear();
          nextFollowupDate = null;*/
 
-
-
       }
       else {
         print('Upload failed with status code: ${response.statusCode}');
@@ -177,6 +175,7 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
     }
     return false;
   }
+
   String getMimeType(String path) {
     final mimeType = lookupMimeType(path);
     return mimeType?.split('/').last ?? 'jpeg'; // Default to JPEG
@@ -584,7 +583,6 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
     }
   }
 
-
   /*Future<void> fetchTickets(String ticketID) async {
 
     subTickets.clear();
@@ -676,7 +674,7 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
         title: Text('Ticket Follow-Up',
           style: TextStyle(
               color: Colors.white
-          ),),
+          )),
       ),
       body: SingleChildScrollView(
         child:Container(
@@ -686,7 +684,7 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
 
-              SizedBox(height: 10,),
+              SizedBox(height: 10),
 
               tenantFlatDetails != null
                 ? Card(
@@ -853,7 +851,6 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
                     setState(() {
                       selectedSubTicketId = value;
                       print("Selected SubTicket ID: $selectedSubTicketId");
-
                     });
                   },
                 ),
@@ -867,11 +864,9 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             child: Container(
             padding: EdgeInsets.only(left:20,right:20),
-
             child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-
             Builder(
               builder: (context) {
                 var followups = subTickets
@@ -910,7 +905,6 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-
                               Column(
                                 children: [
                                   Container(

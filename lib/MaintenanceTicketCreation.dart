@@ -1035,9 +1035,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
               "flat_id": selectedFlat?['flat_id'], // Updated key from flat_masterid to flat_id
               "description": _descriptionController.text,
               "types": maintenance_types_list.map((type) => type.id).toList(), // Converts the list of objects to a list of IDs
-              "contract_id":1
-
-
+              "contract_id": 1
             };
 
             final response = await http.post(
@@ -1049,6 +1047,8 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
               body: jsonEncode(requestBody),
             );
 
+            print('body: ${jsonEncode(requestBody)}');
+
             if (response.statusCode == 201) {
               print('Ticket successful');
               Map<String, dynamic> decodedResponse = jsonDecode(response.body);
@@ -1057,6 +1057,9 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
               // ✅ Call sendImageData in a separate request
               await sendImageData(ticketId);
             } else {
+
+
+              /*showSnackBar("Status Code: ${response.statusCode} and Response: ${response.body}");*/
               print('Upload failed with status code: ${response.statusCode}');
               print('Upload failed with response: ${response.body}');
             }
@@ -1072,7 +1075,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
 
   Future<void> sendImageData(int id) async {
     try {
-      final String urll = "$BASE_URL_config/v1/maintenance/uploads/$id";
+      final String urll = "$baseurl/uploads/ticket/$id";
       final url = Uri.parse(urll);
 
       final request = http.MultipartRequest('POST', url);

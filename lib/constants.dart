@@ -5,6 +5,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'main.dart';
+
 const String app_name = "Real Estate";
 
 const MaterialAccentColor appbar_color = Colors.blueAccent;
@@ -100,3 +102,4 @@ String formatDate(String dateString) {
   DateTime date = DateTime.parse(dateString);
   return DateFormat('dd-MMM-yyyy').format(date);
 }
+

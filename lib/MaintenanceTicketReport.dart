@@ -536,7 +536,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
 
     String url = is_admin
         ? "$baseurl/maintenance/ticket"
-        : "$baseurl/maintenance/ticket"; /*"$baseurl/maintenance/?tenent_id=$user_id&flat_id=$flat_id";*/
+        : "$baseurl/maintenance/ticket/?tenant_id=$user_id&flat_id=$flat_id"; /*"$baseurl/maintenance/?tenant_id=$user_id&flat_id=$flat_id";*/
 
     print('Fetching tickets from URL: $url');
 
@@ -544,7 +544,93 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
       final Map<String, String> headers = {
         'Authorization': 'Bearer $Company_Token',
         'Content-Type': 'application/json',
+      };
 
+      final response = await http.get(Uri.parse(url), headers: headers);
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> responseBody = json.decode(response.body);
+        if (responseBody['success'] == true) {
+          final List<dynamic> apiTickets = responseBody['data']['tickets'];
+
+          final List<Map<String, dynamic>> formattedTickets = apiTickets.map((apiTicket) {
+            // Extracting necessary nested data
+            final contractFlat = apiTicket['contract_flat'];
+            final flat = contractFlat['flat'];
+            final building = flat['building'];
+            final area = building['area'];
+            final state = area['state'];
+
+            return {
+              'ticketNumber': apiTicket['id'].toString(),
+              'unitNumber': flat['name'].toString(),
+              'buildingName': building['name'].toString(),
+              'emirate': state['name'] ?? 'N/A',
+              'status': 'N/A', // Assuming status is not available in the current JSON structure
+              'date': apiTicket['created_at']?.split('T')[0] ?? '',
+              'maintenanceTypes': (apiTicket['sub_tickets'] as List<dynamic>).map((subTicket) {
+                final type = subTicket['type'];
+                return {
+                  'subTicketId': subTicket['id'].toString(),
+                  'type': type['name'],
+                  'category': type['category'] ?? 'N/A', // Assuming 'category' might be missing
+                };
+              }).toList(),
+              'description': apiTicket['description'] ?? '',
+            };
+          }).toList();
+
+          setState(() {
+            tickets = formattedTickets;
+            filterTickets(); // Apply date filter after fetching tickets
+          });
+        } else {
+          print("API returned success: false");
+        }
+      } else {
+        // Display error message and error status code
+        Map<String, dynamic> data = json.decode(response.body);
+        String error = '';
+
+        if (data.containsKey('message')) {
+          setState(() {
+            error = 'Code: ${response.statusCode} , Message: ${data['message']}';
+          });
+        } else {
+          error = 'Something went wrong!!!';
+        }
+        Fluttertoast.showToast(msg: error);
+
+        print("Error fetching data: ${response.statusCode}");
+        print("Response: ${response.body}");
+      }
+    } catch (e) {
+      print("Error fetching data: $e");
+    }
+
+    setState(() {
+      isLoading = false;
+    });
+  }
+
+
+  // updated on 18 mar 2025
+  /*Future<void> fetchTickets() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    String url = is_admin
+        ? "$baseurl/maintenance/ticket"
+        : "$baseurl/maintenance/ticket"; *//*"$baseurl/maintenance/?tenent_id=$user_id&flat_id=$flat_id";*//*
+
+
+    print('Fetching tickets from URL: $url');
+
+    try {
+      final Map<String, String> headers = {
+        'Authorization': 'Bearer $Company_Token',
+        'Content-Type': 'application/json',
       };
 
       final response = await http.get(Uri.parse(url), headers: headers);
@@ -607,7 +693,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
     setState(() {
       isLoading = false;
     });
-  }
+  }*/
 
   /*Future<void> fetchTickets() async {
     setState(() {

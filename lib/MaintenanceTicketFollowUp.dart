@@ -112,8 +112,9 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
 
     try {
       String url = is_admin
-          ? "$BASE_URL_config/v1/maintenanceFollowup"
-          : "$BASE_URL_config/v1/maintenanceFollowup";
+          ? "$baseurl/maintenance/followup"
+          : "$baseurl/maintenance/followup";
+
 
       var uuid = Uuid();
       String uuidValue = uuid.v4();
@@ -493,7 +494,7 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
 
     maintenanceStatusList.clear();
 
-    final url = '$BASE_URL_config/v1/maintenanceStatus'; // Replace with your API endpoint
+    final url = '$baseurl/maintenance/status'; // Replace with your API endpoint
     String token = 'Bearer $Company_Token'; // auth token for request
 
     Map<String, String> headers = {
@@ -504,6 +505,7 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
       final response = await http.get(Uri.parse(url),
         headers: headers,);
       if (response.statusCode == 200) {
+
 
         final jsonData = json.decode(response.body);
 
@@ -524,15 +526,76 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
   }
 
   Future<void> fetchTickets(String ticketID) async {
+    subTickets.clear();
+    String url = is_admin
+        ? "$baseurl/maintenance/ticket/$ticketID"
+        : '';
+
+    try {
+      final Map<String, String> headers = {
+        'Authorization': 'Bearer $Company_Token',
+        'Content-Type': 'application/json',
+      };
+
+      final response = await http.get(Uri.parse(url), headers: headers);
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> responseBody = json.decode(response.body);
+
+        if (responseBody['success'] == true) {
+          var jsonData = responseBody['data']['ticket'];
+
+          // Extract sub_tickets
+          var tickets = jsonData['sub_tickets'] as List;
+
+          setState(() {
+            subTickets = tickets.map((ticket) {
+              return {
+                "id": ticket["id"],
+                "name": ticket["type"]["name"],
+                "followps": ticket["followps"] ?? []
+              };
+            }).toList();
+
+            // Extract contract_flat details
+            var contractFlat = jsonData['contract_flat'];
+            var flatDetails = contractFlat['flat'];
+            var building = flatDetails['building'];
+            var area = building['area'];
+            var state = area['state'];
+
+            tenantFlatDetails = {
+              "tenantName": contractFlat['contract']['tenant_id'].toString(), // Assuming tenant_id represents tenant
+              "tenantMobile": "", // Not present in new JSON
+              "flatName": flatDetails["name"],
+              "buildingName": building["name"],
+              "areaName": area["name"],
+              "stateName": state["name"]
+            };
+          });
+        } else {
+          print("API returned success: false");
+        }
+      } else {
+        print("Error fetching data: ${response.statusCode}");
+        print("Response: ${response.body}");
+      }
+    } catch (e) {
+      print("Error fetching data: $e");
+    }
+  }
+
+
+  /*Future<void> fetchTickets(String ticketID) async {
 
     subTickets.clear();
     String url = is_admin
         ? "$baseurl/maintenance/ticket/$ticketID"
         : '';
 
-    /*final String url = "$BASE_URL_config/v1/maintenance"; // will change it for tenant*/
+    *//*final String url = "$BASE_URL_config/v1/maintenance"; // will change it for tenant*//*
 
-    /*print('url $url');*/
+    *//*print('url $url');*//*
 
     try {
       final Map<String, String> headers = {
@@ -547,7 +610,8 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
 
           var jsonData = json.decode(response.body);
           var tickets = jsonData['data']['ticket']['sub_tickets'] as List;
-          var tenantFlat = jsonData['data']['ticket']['tenent_flat'];
+          var tenantFlat = jsonData['data']['ticket']['tenant_flat'];
+
 
           setState(() {
             subTickets = tickets.map((ticket) {
@@ -579,7 +643,7 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
       print("Error fetching data: $e");
     }
 
-  }
+  }*/
 
   Widget platformLoader() {
     return Platform.isIOS
@@ -650,19 +714,22 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
+                            /*Text(
                               tenantFlatDetails!["tenantName"],
                               style: GoogleFonts.poppins(
                                   fontSize: 14,
                                   fontWeight: FontWeight.bold),
-                            ),
+                            ),*/
 
-                            if(tenantFlatDetails!["tenantMobile"].toString().isNotEmpty)
-                            Text(
-                              tenantFlatDetails!["tenantMobile"],
-                              style: GoogleFonts.poppins(fontSize: 12),
-                            ),
-                            SizedBox(height: 4),
+                            if(tenantFlatDetails!["tenantMobile"].toString().isNotEmpty)...[
+                              Text(
+                                tenantFlatDetails!["tenantMobile"],
+                                style: GoogleFonts.poppins(fontSize: 12),
+                              ),
+                              SizedBox(height: 4),
+
+                            ],
+
                             Row(
                               children: [
                                 Icon(Icons.apartment,

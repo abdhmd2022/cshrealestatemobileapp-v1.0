@@ -115,7 +115,6 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
           ? "$baseurl/maintenance/followup"
           : "$baseurl/maintenance/followup";
 
-
       var uuid = Uuid();
       String uuidValue = uuid.v4();
       String todayDate = DateFormat('yyyy-MM-dd').format(DateTime.now());

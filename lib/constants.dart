@@ -23,9 +23,6 @@ const String client_id_constant = "580587447f71610db9ff0a135d897ad3aec183a7";
 
 const String client_password_constant = "internal@001";
 
-
-
-
 // Serial & Company Tokens (Loaded Dynamically)
 /*late String Company_Token;*/
 late String Company_Token;
@@ -40,8 +37,6 @@ late String flat_name;
 late String flatsJson ;
 late List<dynamic> flatsList;
 late String baseurl,adminurl,license_expiry,building;
-
-
 
 /// Load tokens from SharedPreferences
 Future<void> loadTokens() async {
@@ -64,9 +59,9 @@ Future<void> loadTokens() async {
   building = prefs.getString("building") ?? '';
 
   if(!is_admin)
-    {
+  {
       flatsList = jsonDecode(flatsJson);
-    }
+  }
 
   print("Loaded Company Token: $Company_Token");
   print("Loaded Company ID: $company_id");
@@ -78,7 +73,6 @@ Future<void> loadTokens() async {
   print("Loaded AdminURL: $adminurl");
   print("Loaded license expiry: $license_expiry");
   print("Loaded Building: $building");
-
 }
 
 // Global Font Family
@@ -102,4 +96,3 @@ String formatDate(String dateString) {
   DateTime date = DateTime.parse(dateString);
   return DateFormat('dd-MMM-yyyy').format(date);
 }
-

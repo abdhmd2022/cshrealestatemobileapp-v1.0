@@ -188,7 +188,7 @@ class _DecentTenantKYCFormState extends State<DecentTenantKYCForm> {
     print("🔹 Uploading to: $url");
 
     try {
-      var request = http.MultipartRequest('POST', Uri.parse(url));
+      var request = http.MultipartRequest('PUT', Uri.parse(url));
 
       // Add headers
       request.headers.addAll({
@@ -208,16 +208,16 @@ class _DecentTenantKYCFormState extends State<DecentTenantKYCForm> {
         isPdf?'image' : 'image',
         stream,
         length,
-        filename: file.path.split('/').last,
+        filename: "$docType/${file.path.split('/').last}",
         contentType: isPdf ? MediaType('application', 'pdf') : MediaType('image', 'jpeg'),
       ));
 
-      print("📦 Attached Files:");
+    /*  print("📦 Attached Files:");
       for (var file in request.files) {
         print("🔹 Filename: ${file.filename}");
         print("📦 Field Name: ${file.field}");
         print("📏 Content-Type: ${file.contentType}");
-      }
+      }*/
       var response = await request.send();
 
 // Read response stream properly
@@ -225,9 +225,9 @@ class _DecentTenantKYCFormState extends State<DecentTenantKYCForm> {
 
       print("✅ Response Status Code: ${response.statusCode}");
       print("📦 Raw Response Data: $responseData");
-      print("🔹 Headers: ${response.headers}");
+      /*print("🔹 Headers: ${response.headers}");*/
 
-      if (response.statusCode == 201) {
+      if (response.statusCode == 200) {
         print("✔ Upload successful");
       } else {
         print("❌ Upload failed: ${response.statusCode}");
@@ -247,8 +247,8 @@ class _DecentTenantKYCFormState extends State<DecentTenantKYCForm> {
         iconTheme: IconThemeData(color: Colors.white),
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: (){
-
+          onPressed: ()
+          {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(builder: (context) => TenantDashboard()),

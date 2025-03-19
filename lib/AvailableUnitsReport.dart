@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'Sidebar.dart';
@@ -35,6 +38,11 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
   List<Flat> allUnits = []; // Stores all units fetched from API
 
   void fetchFlats() async {
+
+    setState(() {
+      _isLoading = true;
+
+    });
     try {
       List<Flat> flats = await ApiService().fetchFlats();
       setState(() {
@@ -45,6 +53,10 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
     } catch (e) {
       print("Error fetching flats: $e");
     }
+    setState(() {
+      _isLoading = false;
+
+    });
   }
 
   Future<void> _initSharedPreferences() async {
@@ -139,134 +151,128 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
             ),
             body: RefreshIndicator(
                 onRefresh: _refresh,
-                child: Stack(children: [
-                  Visibility(
-                      visible: isVisibleNoUserFound,
-                      child: Container(
-                          padding: const EdgeInsets.only(top: 20.0),
-                          child: Center(
-                              child: Text(
-                                'No User Found',
-                                style: GoogleFonts.poppins(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 24.0,
+                child:_isLoading
+                    ? Expanded(child: Center(
+                  child: Platform.isIOS
+                      ? CupertinoActivityIndicator(
+                    radius: 15.0, // Adjust size if needed
+                  )
+                      : CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.blue), // Change color here
+                    strokeWidth: 4.0, // Adjust thickness if needed
+                  ),
+                )
+                  ,)
+                    : Container(
+                  color: Colors.white,
+                  child: ListView.builder(
+                    itemCount: filteredUnits.length,
+                    itemBuilder: (context, index) {
+                      final unit = filteredUnits[index];
+                      return Container(
+                        margin: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 20),
+                        padding: const EdgeInsets.all(16.0),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(16.0),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.2),
+                              blurRadius: 10.0,
+                              offset: const Offset(0, 5),
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                const Icon(Icons.home),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: Text(
+                                    unit.flatTypeName,
+                                    style: GoogleFonts.poppins(fontSize: 16),
+                                  ),
                                 ),
-                              )))),
-                  Container(
-                    color: Colors.white,
-                    child: ListView.builder(
-                      itemCount: filteredUnits.length,
-                      itemBuilder: (context, index) {
-                        final unit = filteredUnits[index];
-                        return Container(
-                          margin: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 20),
-                          padding: const EdgeInsets.all(16.0),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(16.0),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey.withOpacity(0.2),
-                                blurRadius: 10.0,
-                                offset: const Offset(0, 5),
-                              ),
-                            ],
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  const Icon(Icons.home),
-                                  const SizedBox(width: 10),
-                                  Expanded(
-                                    child: Text(
-                                      unit.flatTypeName,
-                                      style: GoogleFonts.poppins(fontSize: 16),
-                                    ),
+                              ],
+                            ),
+                            const SizedBox(height: 10),
+                            Row(
+                              children: [
+                                const Icon(Icons.location_city),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: Text(
+                                    unit.buildingName,
+                                    style: GoogleFonts.poppins(fontSize: 16),
                                   ),
-                                ],
-                              ),
-                              const SizedBox(height: 10),
-                              Row(
-                                children: [
-                                  const Icon(Icons.location_city),
-                                  const SizedBox(width: 10),
-                                  Expanded(
-                                    child: Text(
-                                      unit.buildingName,
-                                      style: GoogleFonts.poppins(fontSize: 16),
-                                    ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 10),
+                            Row(
+                              children: [
+                                const Icon(Icons.location_on),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: Text(
+                                    "${unit.areaName}, ${unit.stateName}",
+                                    style: GoogleFonts.poppins(fontSize: 16),
                                   ),
-                                ],
-                              ),
-                              const SizedBox(height: 10),
-                              Row(
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 10),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 0, bottom: 0),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  const Icon(Icons.location_on),
-                                  const SizedBox(width: 10),
-                                  Expanded(
-                                    child: Text(
-                                      "${unit.areaName}, ${unit.stateName}",
-                                      style: GoogleFonts.poppins(fontSize: 16),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 10),
-                              Padding(
-                                padding: const EdgeInsets.only(top: 0, bottom: 0),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    _buildDecentButton(
-                                      'View',
-                                      Icons.remove_red_eye,
-                                      Colors.orange,
-                                          () {
-                                        String unitno = unit.name.toString();
-                                        String unittype = unit.flatTypeName;
-                                        String area = unit.areaName;
-                                        String emirate = unit.stateName;
-                                        String rent = "AED N/A";
-                                        String parking = "N/A";
-                                        String balcony = "N/A";
-                                        String bathrooms = "N/A";
-                                        String building = unit.buildingName;
+                                  _buildDecentButton(
+                                    'View',
+                                    Icons.remove_red_eye,
+                                    Colors.orange,
+                                        () {
+                                      String unitno = unit.name.toString();
+                                      String unittype = unit.flatTypeName;
+                                      String area = unit.areaName;
+                                      String emirate = unit.stateName;
+                                      String rent = "AED N/A";
+                                      String parking = "N/A";
+                                      String balcony = "N/A";
+                                      String bathrooms = "N/A";
+                                      String building = unit.buildingName;
 
-                                        showDialog(
-                                          context: context,
-                                          builder: (context) => AvailableUnitsDialog(
-                                            unitno: unitno,
-                                            area: area,
-                                            emirate: emirate,
-                                            unittype: unittype,
-                                            rent: rent,
-                                            parking: parking,
-                                            balcony: balcony,
-                                            bathrooms: bathrooms,
-                                            building_name: building,
-                                          ),
-                                        );
-                                      },
-                                    ),
-                                  ],
-                                ),
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) => AvailableUnitsDialog(
+                                          unitno: unitno,
+                                          area: area,
+                                          emirate: emirate,
+                                          unittype: unittype,
+                                          rent: rent,
+                                          parking: parking,
+                                          balcony: balcony,
+                                          bathrooms: bathrooms,
+                                          building_name: building,
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
-                        );
-                      },
-                    ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
                   ),
-                  Visibility(
-                    visible: _isLoading,
-                    child: const Center(
-                      child: CircularProgressIndicator.adaptive(),
-                    ),
-                  ),
-                ]))));
+                )
+
+            )));
   }
 }
 
@@ -339,7 +345,7 @@ class AvailableUnitsDialog extends StatelessWidget {
                       Icon(Icons.home, color: Colors.white, size: 40),
                       SizedBox(height: 8),
                       Text(
-                        "Unit $unitno",
+                        "$unitno",
                         style: GoogleFonts.poppins( // ✅ Poppins Font Applied
                           fontSize: 22,
                           fontWeight: FontWeight.bold,
@@ -404,7 +410,7 @@ class AvailableUnitsDialog extends StatelessWidget {
   // ✅ Detail Tile with Poppins Font
   Widget _buildDetailTile(IconData icon, String label, String value) {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 5, horizontal: 13),
+      padding: EdgeInsets.symmetric(vertical: 5, horizontal: 15),
       color: Colors.white,
       child: Row(
         children: [

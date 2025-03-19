@@ -327,9 +327,9 @@ class AvailableUnitsDialog extends StatelessWidget {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
                     gradient: LinearGradient(
-                      colors: [Colors.blueAccent, Colors.lightBlueAccent],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
+                      colors: [appbar_color.shade200, appbar_color.shade400],
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
                     ),
                   ),
                   padding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),

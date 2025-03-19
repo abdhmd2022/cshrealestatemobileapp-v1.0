@@ -1876,7 +1876,6 @@ Future<void> _transferSubTicket(String subTicketId, String technicianId) async {
   }
 }
 
-
 Widget _buildDecentButton(String label, IconData icon, Color color,
     VoidCallback onPressed) {
   return InkWell(

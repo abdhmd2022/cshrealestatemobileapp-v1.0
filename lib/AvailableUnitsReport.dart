@@ -39,6 +39,7 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
       List<Flat> flats = await ApiService().fetchFlats();
       setState(() {
         allUnits = flats;
+        allUnits = allUnits.reversed.toList();
         filteredUnits = allUnits;
       });
     } catch (e) {

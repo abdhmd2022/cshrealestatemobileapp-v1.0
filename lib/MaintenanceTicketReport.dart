@@ -1481,7 +1481,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
             ),
           ],
         ),
-        _getStatusBadge(ticket['status']),
+        /*_getStatusBadge(ticket['status']),*/
       ],
     );
   }

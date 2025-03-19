@@ -22,7 +22,6 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
       isUserEnable = true,
       isUserVisible = true,
       isRolesEnable = true,
-      _isLoading = false,
       isVisibleNoUserFound = false;
 
   String searchQuery = "";
@@ -39,10 +38,6 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
 
   void fetchFlats() async {
 
-    setState(() {
-      _isLoading = true;
-
-    });
     try {
       List<Flat> flats = await ApiService().fetchFlats();
       setState(() {
@@ -53,10 +48,7 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
     } catch (e) {
       print("Error fetching flats: $e");
     }
-    setState(() {
-      _isLoading = false;
 
-    });
   }
 
   Future<void> _initSharedPreferences() async {
@@ -151,14 +143,13 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
             ),
             body: RefreshIndicator(
                 onRefresh: _refresh,
-                child:_isLoading
-                    ? Expanded(child: Center(
+                child:filteredUnits.isEmpty ? Expanded(child: Center(
                   child: Platform.isIOS
                       ? CupertinoActivityIndicator(
                     radius: 15.0, // Adjust size if needed
                   )
                       : CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.blue), // Change color here
+                    valueColor: AlwaysStoppedAnimation<Color>(appbar_color), // Change color here
                     strokeWidth: 4.0, // Adjust thickness if needed
                   ),
                 )

@@ -1212,7 +1212,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                 radius: 15.0, // Adjust size if needed
               )
                   : CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.blue), // Change color here
+                valueColor: AlwaysStoppedAnimation<Color>(appbar_color), // Change color here
                 strokeWidth: 4.0, // Adjust thickness if needed
               ),
             )

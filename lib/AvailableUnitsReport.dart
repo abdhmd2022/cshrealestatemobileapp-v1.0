@@ -271,14 +271,9 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
                     },
                   ),
                 )
-
             )));
   }
 }
-
-
-
-
 
 class AvailableUnitsDialog extends StatelessWidget {
   final String unitno;

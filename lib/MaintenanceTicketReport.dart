@@ -1267,12 +1267,8 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
     ),
     ),
     ),
-
-
-
     ],
         ),
-
       ),
     floatingActionButton: Container(
         decoration: BoxDecoration(
@@ -1825,7 +1821,6 @@ void _showTransferDialog(BuildContext context, String subTicketId) {
 
 
 }
-
 
 Future<void> _transferSubTicket(String subTicketId, String technicianId) async {
   String url = "$baseurl/maintenance/subticket/$subTicketId";

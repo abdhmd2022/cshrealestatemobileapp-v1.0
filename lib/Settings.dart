@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'dart:convert'; // For JSON encoding
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import 'ActivitySourceReport.dart';
 import 'Sidebar.dart';
@@ -88,7 +89,7 @@ class _SettingsScreenState extends State<SettingsScreen> with TickerProviderStat
                 Navigator.of(context).pop();
               },
               child: Text('Cancel',
-              style: TextStyle(color: appbar_color)),
+              style: GoogleFonts.poppins(color: appbar_color)),
             ),
 
 
@@ -99,7 +100,7 @@ class _SettingsScreenState extends State<SettingsScreen> with TickerProviderStat
                 Navigator.of(context).pop();
               },
               style: ElevatedButton.styleFrom(backgroundColor: appbar_color),
-              child: Text("Save",style: TextStyle(color: Colors.white)),
+              child: Text("Save",style: GoogleFonts.poppins(color: Colors.white)),
             ),
 
 
@@ -115,7 +116,7 @@ class _SettingsScreenState extends State<SettingsScreen> with TickerProviderStat
 
       appBar: AppBar(
         title: Text("Settings",
-        style: TextStyle(
+        style: GoogleFonts.poppins(
           color: Colors.white
         ),),
         backgroundColor: appbar_color.withOpacity(0.9),

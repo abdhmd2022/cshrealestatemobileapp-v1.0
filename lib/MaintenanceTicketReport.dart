@@ -69,7 +69,8 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
       builder: (context) {
         return AlertDialog(
           backgroundColor: Colors.white, // Apply appbar_color to full
-          title: Text("Feedback"),
+          title: Text("Feedback",
+          style: GoogleFonts.poppins(),),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -114,7 +115,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
             TextButton(
               onPressed: () => Navigator.pop(context),
               child: Text("Cancel",
-              style: TextStyle(
+              style: GoogleFonts.poppins(
                 color: Colors.black
               ),),
             ),
@@ -130,7 +131,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                 print("Submitted Feedback for $ticketId: Rating=$rating, Feedback=${feedbacks[ticketId]}");
                 Navigator.pop(context);
               },
-              child: Text("Submit"),
+              child: Text("Submit",style: GoogleFonts.poppins(),),
             ),
           ],
         );
@@ -255,7 +256,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                     children: [
                       Text(
                         "Comments History",
-                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+                        style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.w600),
                       ),
                       IconButton(
                         icon: Icon(Icons.close, color: Colors.grey),
@@ -268,7 +269,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                   // Comments List
                   Expanded(
                     child: filteredData.isEmpty
-                        ? Center(child: Text("No Comments Found"))
+                        ? Center(child: Text("No Comments Found",style: GoogleFonts.poppins(),))
                         : ListView.builder(
                       itemCount: filteredData.length,
                       itemBuilder: (contextt, index) {
@@ -291,13 +292,13 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                               children: [
                                 Text(
                                   username,
-                                  style: TextStyle(
+                                  style: GoogleFonts.poppins(
                                       fontSize: 16, fontWeight: FontWeight.w600),
                                 ),
                                 SizedBox(height: 6),
                                 Text(
                                   item["description"],
-                                  style: TextStyle(
+                                  style: GoogleFonts.poppins(
                                     color: Colors.grey.shade800,
                                     fontWeight: FontWeight.w500,
                                   ),
@@ -305,7 +306,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                                 SizedBox(height: 8),
                                 Text(
                                   "Date: ${formatDate(item["created_at"])}",
-                                  style: TextStyle(color: Colors.grey.shade700),
+                                  style: GoogleFonts.poppins(color: Colors.grey.shade700),
                                 ),
                               ],
                             ),
@@ -321,11 +322,11 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                   TextField(
                     controller: commentController,
                     maxLines: 2,
-                    style: TextStyle(color: Colors.black),
+                    style: GoogleFonts.poppins(color: Colors.black),
                     decoration: InputDecoration(
                       hintText: "Enter your comment...",
 
-                      hintStyle: TextStyle(color: Colors.black54),
+                      hintStyle: GoogleFonts.poppins(color: Colors.black54),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide(color: Colors.grey.shade400),
@@ -350,7 +351,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                         if (commentController.text.isEmpty) {
                           ScaffoldMessenger.of(contextt).showSnackBar(
                             SnackBar(
-                              content: Text("Please enter a comment!"),
+                              content: Text("Please enter a comment!",style: GoogleFonts.poppins(),),
                               backgroundColor: Colors.red,
                               behavior: SnackBarBehavior.floating,
                               margin: EdgeInsets.all(16),
@@ -408,13 +409,13 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                             ),
                             SizedBox(width: 10),
                             Text("Submitting...",
-                                style: TextStyle(
+                                style: GoogleFonts.poppins(
                                     fontSize: 16, fontWeight: FontWeight.w600, color: Colors.white)),
                           ],
                         )
                             : Text(
                           "Submit",
-                          style: TextStyle(
+                          style: GoogleFonts.poppins(
                               fontSize: 16, fontWeight: FontWeight.w600, color: Colors.white),
                         ),
                       ),
@@ -464,7 +465,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
 
                         Text(
                           "Feedback",
-                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+                          style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.w600),
                         ),
 
                         IconButton(
@@ -477,7 +478,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                     // Content
                     Expanded(
                         child: filteredData.isEmpty
-                            ? Center(child: Text("No Feedback Found"))
+                            ? Center(child: Text("No Feedback Found",style: GoogleFonts.poppins(),))
                             : ListView.builder(
                             itemCount: filteredData.length,
                             itemBuilder: (context, index) {
@@ -605,7 +606,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                                                   Expanded(
                                                     child: Text(
                                                       item["description"],
-                                                      style: TextStyle(
+                                                      style: GoogleFonts.poppins(
                                                         color: Colors.grey.shade900,
                                                         fontWeight: FontWeight.w500,
                                                       ),
@@ -613,13 +614,13 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                                               SizedBox(height: 8),
                                               Text(
                                                 "Date: ${formatDate(item["created_at"])}",
-                                                style: TextStyle(color: Colors.grey.shade700),
+                                                style: GoogleFonts.poppins(color: Colors.grey.shade700),
                                               ),
                                               /*if (item["remarks"] != null) ...[
                                                 SizedBox(height: 6),
                                                 Text(
                                                   "Remarks: ${item["remarks"]}",
-                                                  style: TextStyle(color: Colors.grey.shade700),
+                                                  style: GoogleFonts.poppins(color: Colors.grey.shade700),
                                                 ),
                                               ],*/
                                             ],
@@ -632,14 +633,21 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
     );
   }
 
-  Future<void> fetchTickets() async {
+  int currentPage = 1;
+  int totalPages = 1;
+  bool isFetchingMore = false;
+
+  Future<void> fetchTickets({int page = 1}) async {
+    if (isFetchingMore) return;
+
     setState(() {
-      isLoading = true;
+      isFetchingMore = true;
+      if (page == 1) isLoading = true;
     });
 
     String url = is_admin
         ? "$baseurl/maintenance/ticket"
-        : "$baseurl/maintenance/ticket/?tenant_id=$user_id&flat_id=$flat_id"; /*"$baseurl/maintenance/?tenant_id=$user_id&flat_id=$flat_id";*/
+        : "$baseurl/maintenance/ticket/?tenant_id=$user_id&flat_id=$flat_id";
 
     print('Fetching tickets from URL: $url');
 
@@ -656,8 +664,11 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
         if (responseBody['success'] == true) {
           final List<dynamic> apiTickets = responseBody['data']['tickets'];
 
+          if (responseBody.containsKey('meta')) {
+            totalPages = (responseBody['meta']['totalCount'] / responseBody['meta']['size']).ceil();
+          }
+
           final List<Map<String, dynamic>> formattedTickets = apiTickets.map((apiTicket) {
-            // Extracting necessary nested data
             final contractFlat = apiTicket['contract_flat'];
             final flat = contractFlat['flat'];
             final building = flat['building'];
@@ -665,18 +676,22 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
             final state = area['state'];
 
             return {
-              'ticketNumber': apiTicket['id'].toString(),
+              'ticketNumber': "${apiTicket['id'].toString()}",
               'unitNumber': flat['name'].toString(),
               'buildingName': building['name'].toString(),
               'emirate': state['name'] ?? 'N/A',
-              'status': 'N/A', // Assuming status is not available in the current JSON structure
+              'status': apiTicket['sub_tickets'].isNotEmpty
+                  ? apiTicket['sub_tickets'][0]['followps'].isNotEmpty
+                  ? apiTicket['sub_tickets'][0]['followps'][0]['status']['name']
+                  : 'N/A'
+                  : 'N/A',
               'date': apiTicket['created_at']?.split('T')[0] ?? '',
               'maintenanceTypes': (apiTicket['sub_tickets'] as List<dynamic>).map((subTicket) {
                 final type = subTicket['type'];
                 return {
                   'subTicketId': subTicket['id'].toString(),
                   'type': type['name'],
-                  'category': type['category'] ?? 'N/A', // Assuming 'category' might be missing
+                  'category': type['category'] ?? 'N/A',
                 };
               }).toList(),
               'description': apiTicket['description'] ?? '',
@@ -684,26 +699,23 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
           }).toList();
 
           setState(() {
-            tickets = formattedTickets;
-            filterTickets(); // Apply date filter after fetching tickets
+            if (page == 1) {
+              tickets = formattedTickets;
+            } else {
+              tickets.addAll(formattedTickets);
+            }
+            filterTickets();
           });
         } else {
           print("API returned success: false");
         }
       } else {
-        // Display error message and error status code
         Map<String, dynamic> data = json.decode(response.body);
-        String error = '';
+        String error = data.containsKey('message')
+            ? 'Code: ${response.statusCode} , Message: ${data['message']}'
+            : 'Something went wrong!!!';
 
-        if (data.containsKey('message')) {
-          setState(() {
-            error = 'Code: ${response.statusCode} , Message: ${data['message']}';
-          });
-        } else {
-          error = 'Something went wrong!!!';
-        }
         Fluttertoast.showToast(msg: error);
-
         print("Error fetching data: ${response.statusCode}");
         print("Response: ${response.body}");
       }
@@ -712,6 +724,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
     }
 
     setState(() {
+      isFetchingMore = false;
       isLoading = false;
     });
   }
@@ -1023,7 +1036,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
             ticket['emirate'].toLowerCase().contains(searchQuery.toLowerCase()) ||
             ticket['status'].toLowerCase().contains(searchQuery.toLowerCase()) ||
             hasMatchingSubTicket; // ✅ Uses the correct `any()` check
-      }).toList();
+      }).toList().reversed.toList();
 
       _expandedTickets = List<bool>.filled(filteredTickets.length, false);
     });
@@ -1069,7 +1082,9 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
               onChanged: _updateSearchQuery,
               decoration: InputDecoration(
                 hintText: 'Search Ticket',
+                labelStyle: GoogleFonts.poppins(),
                 prefixIcon: Icon(Icons.search),
+
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12.0),
                   borderSide: BorderSide.none,
@@ -1094,7 +1109,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
         centerTitle: true,
         title: Text(
           'Maintenance Tickets',
-          style: TextStyle(
+          style: GoogleFonts.poppins(
             fontWeight: FontWeight.normal,
             fontSize: 20.0,
             color: Colors.white,
@@ -1176,7 +1191,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                               children: [
                                 Text(
                                   "${DateFormat('dd-MMM-yyyy').format(startDate)} - ${DateFormat('dd-MMM-yyyy').format(endDate)}",
-                                  style: TextStyle(fontSize: 14, color: Colors.black87),
+                                  style: GoogleFonts.poppins(fontSize: 14, color: Colors.black87),
                                 ),
                               ],
                             ),
@@ -1207,24 +1222,55 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
               child:  Center(
                 child: Text(
                   "No data available",
-                  style: TextStyle(
+                  style: GoogleFonts.poppins(
                     fontSize: 18,
                     color: Colors.grey,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
               )
-            )
-              : Expanded(
-              child: ListView.builder(
-              itemCount: filteredTickets.length,
-              itemBuilder: (context, index) {
-                final ticket = filteredTickets[index];
-                return _buildTicketCard(ticket, index);
-              },
-            ),
-            )
-          ],
+            ) :
+
+    Expanded(
+        child: NotificationListener<ScrollNotification>(
+        onNotification: (ScrollNotification scrollInfo) {
+      if (!isFetchingMore &&
+          scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent &&
+          currentPage < totalPages) {
+        currentPage++;
+        fetchTickets(page: currentPage);
+      }
+      return false;
+    },
+    child: ListView.builder(
+    itemCount: filteredTickets.length + 1, // Extra item for loader
+    itemBuilder: (context, index) {
+    if (index == filteredTickets.length) {
+    return isFetchingMore
+    ? Padding(
+    padding: EdgeInsets.all(12.0),
+    child: Center(
+    child: Platform.isAndroid
+    ? CircularProgressIndicator(
+    valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+    ) // Android: Blue color
+        : CupertinoActivityIndicator(
+    radius: 15, // Explicit size for visibility on iOS
+    ), // iOS: Large Cupertino loader
+    ),
+    )
+        : SizedBox.shrink();
+    }
+    final ticket = filteredTickets[index];
+    return _buildTicketCard(ticket, index);
+    },
+    ),
+    ),
+    ),
+
+
+
+    ],
         ),
 
       ),
@@ -1242,7 +1288,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
           },
           label: Text(
             'New Ticket',
-            style: TextStyle(
+            style: GoogleFonts.poppins(
               color: Colors.white,
               fontWeight: FontWeight.bold,
             ),
@@ -1352,9 +1398,9 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
       borderRadius: BorderRadius.circular(16),
       boxShadow: [
       BoxShadow(
-      color: Colors.black.withOpacity(0.05),
-      blurRadius: 10,
-      spreadRadius: 2,
+      color: Colors.black.withOpacity(0.07),
+      blurRadius: 5,
+      spreadRadius: 4,
       offset: Offset(0, 4),
       ),
       ],
@@ -1368,7 +1414,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
       children: [
       Text(
       subTicket['type'],
-      style: TextStyle(
+      style: GoogleFonts.poppins(
       fontSize: 16,
       fontWeight: FontWeight.w600,
       color: Colors.black87,
@@ -1386,38 +1432,47 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
       onTap: () {
       _showTransferDialog(context, subTicket['subTicketId']);
       },
-      child: Container(
-      padding: EdgeInsets.symmetric(vertical: 10, horizontal: 14),
-      decoration: BoxDecoration(
-      gradient: LinearGradient(
-      colors: [appbar_color.shade700, appbar_color.shade400],
-      begin: Alignment.topLeft,
-      end: Alignment.bottomRight,
+      child:
+
+      Container(
+        margin: EdgeInsets.only(top: 0.0),
+        padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 5.0),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(30.0),
+          color: Colors.white,
+          border: Border.all(
+            color: Colors.redAccent.withOpacity(0.3),
+            width: 1.5,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.redAccent.withOpacity(0.1),
+              blurRadius: 8.0,
+              offset: Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Icon(Icons.swap_horiz, color: Colors.redAccent),
+            /*SizedBox(width: 8.0),
+            Text(
+              label,
+              style: GoogleFonts.poppins(
+                color: color,
+                fontWeight: FontWeight.w600,
+              ),
+            ),*/
+          ],
+        ),
       ),
-      borderRadius: BorderRadius.circular(12),
-      boxShadow: [
-      BoxShadow(
-      color: Colors.purple.withOpacity(0.3),
-      blurRadius: 6,
-      offset: Offset(0, 4),
-      ),
-      ],
-      ),
-      child: Row(
-      children: [
-      Icon(Icons.swap_horiz, color: Colors.white, size: 20),
-      SizedBox(width: 6),
-      Text(
-      "Transfer",
-      style: TextStyle(
-      fontSize: 14,
-      fontWeight: FontWeight.w500,
-      color: Colors.white,
-      ),
-      ),
-      ],
-      ),
-      ),
+
+
+
+
+
+
+
       ),
       ],
       ),
@@ -1442,7 +1497,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                   children: [
                     Text(
                       _expandedTickets[index] ? "View Less" : "View More",
-                      style: TextStyle(
+                      style: GoogleFonts.poppins(
                         color: Colors.black26,
                         fontWeight: FontWeight.bold,
                         fontSize: 12.0,
@@ -1473,8 +1528,8 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
             Icon(Icons.confirmation_number, color: Colors.teal, size: 24.0),
             SizedBox(width: 8.0),
             Text(
-              ticket['ticketNumber'],
-              style: TextStyle(
+              "MT-${ticket['ticketNumber']}",
+              style: GoogleFonts.poppins(
                 fontSize: 18.0,
                 fontWeight: FontWeight.bold,
               ),
@@ -1511,7 +1566,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
         children: [
           Text(
             label,
-            style: TextStyle(
+            style: GoogleFonts.poppins(
               fontWeight: FontWeight.bold,
               color: Colors.grey[700],
             ),
@@ -1522,7 +1577,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
               scrollDirection: Axis.horizontal,
               child: Text(
                 value,
-                style: TextStyle(
+                style: GoogleFonts.poppins(
                   color: Colors.black87,
                 ),
               ),
@@ -1540,7 +1595,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
         children: [
           Text(
             label,
-            style: TextStyle(
+            style: GoogleFonts.poppins(
               fontWeight: FontWeight.bold,
               color: Colors.grey[700],
             ),
@@ -1551,7 +1606,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
               scrollDirection: Axis.horizontal,
               child: Text(
                 value ?? 'N/A', // Ensure a fallback for null values
-                style: TextStyle(
+                style: GoogleFonts.poppins(
                   color: Colors.black87,
                 ),
               ),
@@ -1583,7 +1638,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
       ),
       child: Text(
         status,
-        style: TextStyle(
+        style: GoogleFonts.poppins(
           color: color,
           fontWeight: FontWeight.bold,
         ),
@@ -1646,86 +1701,74 @@ void _showTransferDialog(BuildContext context, String subTicketId) {
   // Show Dialog after fetching technicians
   showDialog(
     context: context,
-
     builder: (BuildContext context) {
       return StatefulBuilder(
         builder: (context, setState) {
           return AlertDialog(
-            backgroundColor: Colors.white,
+            backgroundColor: Colors.white, // Ensuring white background
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12.0), // Soft rounded corners
+            ),
             title: Text(
               "Transfer Job",
-              style: TextStyle(fontWeight: FontWeight.normal),
+              style: GoogleFonts.poppins(
+                fontWeight: FontWeight.w500,
+                color: Colors.black,
+              ),
             ),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // Fetch and Display Technician List
                 FutureBuilder(
                   future: fetchTechnicians(),
                   builder: (context, snapshot) {
                     if (isLoading) {
                       return Center(
                         child: Platform.isIOS
-                            ? CupertinoActivityIndicator( // iOS-style spinner
-                          radius: 15, // Size of the loader
-                        )
-                            : CircularProgressIndicator( // Android-style loader
-                          strokeWidth: 3, // Smooth thickness
-                          valueColor: AlwaysStoppedAnimation<Color>(appbar_color), // Custom color
-
+                            ? CupertinoActivityIndicator(radius: 15)
+                            : CircularProgressIndicator(
+                          strokeWidth: 3,
+                          valueColor: AlwaysStoppedAnimation<Color>(appbar_color),
                         ),
                       );
                     }
                     if (technicians.isEmpty) {
-                      return Text("No technicians available.");
+                      return Text(
+                        "No technicians available.",
+                        style: GoogleFonts.poppins(color: Colors.black87),
+                      );
                     }
                     return DropdownButtonFormField<String>(
                       value: selectedTechnicianId,
                       isExpanded: true,
                       decoration: InputDecoration(
                         labelText: "Select Person",
-                        labelStyle: TextStyle(
-                          color: Colors.grey, // Use your base color
-                          fontWeight: FontWeight.normal,
-                        ),
+                        labelStyle: GoogleFonts.poppins(color: Colors.grey),
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12), // Smooth rounded corners
-                          borderSide: BorderSide(
-                            color: Colors.grey.shade400, // Default border color
-                            width: 1,
-                          ),
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Colors.grey.shade400, width: 1),
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(
-                            color: Colors.grey.shade400, // Normal state border
-                            width: 1,
-                          ),
+                          borderSide: BorderSide(color: Colors.grey.shade400, width: 1),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(
-                            color: Colors.grey.shade400, // Highlighted border color (your base color)
-                            width: 1,
-                          ),
+                          borderSide: BorderSide(color: appbar_color, width: 1.5),
                         ),
                         filled: true,
-                        fillColor: Colors.white, // Background color
+                        fillColor: Colors.white, // White background for dropdown
                         contentPadding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                       ),
-                      dropdownColor: Colors.white, // Dropdown background color
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.black87, // Text color
-                        fontWeight: FontWeight.normal,
-                      ),
-                      icon: Icon(Icons.keyboard_arrow_down, color: Colors.black), // Dropdown arrow color
+                      dropdownColor: Colors.white, // Dropdown menu background
+                      style: GoogleFonts.poppins(fontSize: 16, color: Colors.black87),
+                      icon: Icon(Icons.keyboard_arrow_down, color: Colors.black),
                       items: technicians.map((tech) {
                         return DropdownMenuItem(
                           value: tech['id'].toString(),
                           child: Text(
                             tech['name'],
-                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                            style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w500),
                           ),
                         );
                       }).toList(),
@@ -1735,11 +1778,9 @@ void _showTransferDialog(BuildContext context, String subTicketId) {
                         });
                       },
                     );
-
-
                   },
                 ),
-                SizedBox(height: 5),
+                SizedBox(height: 10),
               ],
             ),
             actions: [
@@ -1747,7 +1788,10 @@ void _showTransferDialog(BuildContext context, String subTicketId) {
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
-                child: Text("Cancel", style: TextStyle(color: Colors.red)),
+                child: Text(
+                  "Cancel",
+                  style: GoogleFonts.poppins(color: Colors.red, fontWeight: FontWeight.w500),
+                ),
               ),
               ElevatedButton(
                 onPressed: () {
@@ -1769,7 +1813,7 @@ void _showTransferDialog(BuildContext context, String subTicketId) {
                 ),
                 child: Text(
                   "Submit",
-                  style: TextStyle( fontWeight: FontWeight.normal),
+                  style: GoogleFonts.poppins(fontWeight: FontWeight.w500),
                 ),
               ),
             ],
@@ -1778,6 +1822,8 @@ void _showTransferDialog(BuildContext context, String subTicketId) {
       );
     },
   );
+
+
 }
 
 
@@ -1867,7 +1913,7 @@ Widget _buildDecentButton(String label, IconData icon, Color color,
           /*SizedBox(width: 8.0),
             Text(
               label,
-              style: TextStyle(
+              style: GoogleFonts.poppins(
                 color: color,
                 fontWeight: FontWeight.w600,
               ),
@@ -1909,7 +1955,7 @@ Widget _buildDecentButtonWithLabel(String label, IconData icon, Color color,
           SizedBox(width: 8.0),
             Text(
               label,
-              style: TextStyle(
+              style: GoogleFonts.poppins(
                 color: color,
                 fontWeight: FontWeight.w600,
               ),

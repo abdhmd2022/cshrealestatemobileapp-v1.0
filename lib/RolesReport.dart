@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'Sidebar.dart';
 import 'constants.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class RoleModel {
   final String role_name;
@@ -113,7 +114,7 @@ class _RolesReportPageState extends State<RolesReport> with TickerProviderStateM
                     TextButton(
                       child: Text(
                         'No',
-                        style: TextStyle(
+                        style: GoogleFonts.poppins(
                           color: Color(0xFF30D5C8), // Change the text color here
                         ),
                       ),
@@ -125,7 +126,7 @@ class _RolesReportPageState extends State<RolesReport> with TickerProviderStateM
                     TextButton(
                         child: Text(
                           'Yes',
-                          style: TextStyle(
+                          style: GoogleFonts.poppins(
                             color: Color(0xFF30D5C8), // Change the text color here
                           ),
                         ),
@@ -301,7 +302,7 @@ class _RolesReportPageState extends State<RolesReport> with TickerProviderStateM
               title: Flexible(
                 child: Text(
                   'Roles',
-                  style: TextStyle(
+                  style: GoogleFonts.poppins(
                       color: Colors.white
                   ),
                   overflow: TextOverflow.ellipsis, // Truncate text if it overflows
@@ -337,7 +338,7 @@ class _RolesReportPageState extends State<RolesReport> with TickerProviderStateM
                               child: Center(
                                   child: Text(
                                       'No Roles Found',
-                                      style: TextStyle(
+                                      style: GoogleFonts.poppins(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 24.0,
                                       ))))),
@@ -408,7 +409,7 @@ class _RolesReportPageState extends State<RolesReport> with TickerProviderStateM
                                                                 icon: Icon(Icons.edit, color: Colors.black),
                                                                 label: Text(
                                                                   'Edit',
-                                                                  style: TextStyle(color: Colors.black),
+                                                                  style: GoogleFonts.poppins(color: Colors.black),
                                                                 ),
                                                                 style: ElevatedButton.styleFrom(
                                                                   backgroundColor: Colors.white, // Button background color
@@ -427,7 +428,7 @@ class _RolesReportPageState extends State<RolesReport> with TickerProviderStateM
                                                                   icon: Icon(Icons.delete, color: Colors.red),
                                                                   label: Text(
                                                                     'Delete',
-                                                                    style: TextStyle(color: Colors.red),
+                                                                    style: GoogleFonts.poppins(color: Colors.red),
                                                                   ),
                                                                   style: ElevatedButton.styleFrom(
                                                                       backgroundColor: Colors.white, // Button background color

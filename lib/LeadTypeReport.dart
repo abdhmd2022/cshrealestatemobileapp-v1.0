@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:uuid/uuid.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class LeadFollowupTypeReport extends StatefulWidget {
   @override
@@ -171,7 +172,7 @@ class _LeadFollowupTypeReportState extends State<LeadFollowupTypeReport> {
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           title: Text(
             "Lead Follow-up",
-            style: TextStyle(color: appbar_color[900]),
+            style: GoogleFonts.poppins(color: appbar_color[900]),
           ),
           content: Form(
             key: _formKey,
@@ -191,7 +192,7 @@ class _LeadFollowupTypeReportState extends State<LeadFollowupTypeReport> {
                   },
                   decoration: InputDecoration(
                     labelText: "Lead Follow-up Name",
-                    labelStyle: TextStyle(color: Colors.black54),
+                    labelStyle: GoogleFonts.poppins(color: Colors.black54),
                     focusedBorder: OutlineInputBorder(
                       borderSide: BorderSide(color: appbar_color),
                     ),
@@ -209,7 +210,7 @@ class _LeadFollowupTypeReportState extends State<LeadFollowupTypeReport> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: Text("Cancel", style: TextStyle(color: appbar_color)),
+              child: Text("Cancel", style: GoogleFonts.poppins(color: appbar_color)),
             ),
             ElevatedButton(
               onPressed: () {
@@ -224,7 +225,7 @@ class _LeadFollowupTypeReportState extends State<LeadFollowupTypeReport> {
 
               },
               style: ElevatedButton.styleFrom(backgroundColor: appbar_color),
-              child: Text("Submit",style: TextStyle(color: Colors.white)),
+              child: Text("Submit",style: GoogleFonts.poppins(color: Colors.white)),
             ),
           ],
         );
@@ -249,7 +250,7 @@ class _LeadFollowupTypeReportState extends State<LeadFollowupTypeReport> {
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           title: Text(
             "Edit Lead Follow-up",
-            style: TextStyle(color: appbar_color[900],
+            style: GoogleFonts.poppins(color: appbar_color[900],
             ),
           ),
           content: Form(
@@ -270,7 +271,7 @@ class _LeadFollowupTypeReportState extends State<LeadFollowupTypeReport> {
                   },
                   decoration: InputDecoration(
                     labelText: "Lead Follow-up Name",
-                    labelStyle: TextStyle(color: Colors.black54),
+                    labelStyle: GoogleFonts.poppins(color: Colors.black54),
                     focusedBorder: OutlineInputBorder(
                       borderSide: BorderSide(color: appbar_color),
                     ),
@@ -288,7 +289,7 @@ class _LeadFollowupTypeReportState extends State<LeadFollowupTypeReport> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: Text("Cancel", style: TextStyle(color: appbar_color)),
+              child: Text("Cancel", style: GoogleFonts.poppins(color: appbar_color)),
             ),
             ElevatedButton(
               onPressed: () {
@@ -303,7 +304,7 @@ class _LeadFollowupTypeReportState extends State<LeadFollowupTypeReport> {
 
               },
               style: ElevatedButton.styleFrom(backgroundColor: appbar_color),
-              child: Text("Submit",style: TextStyle(color: Colors.white)),
+              child: Text("Submit",style: GoogleFonts.poppins(color: Colors.white)),
             ),
           ],
         );
@@ -402,7 +403,7 @@ class _LeadFollowupTypeReportState extends State<LeadFollowupTypeReport> {
             color: Colors.white,
           ),),
         title: Text('Lead Follow-up',
-          style: TextStyle(
+          style: GoogleFonts.poppins(
               color: Colors.white
           ),),
         backgroundColor: appbar_color.withOpacity(0.9),
@@ -418,7 +419,7 @@ class _LeadFollowupTypeReportState extends State<LeadFollowupTypeReport> {
           ? Center(
         child: Text(
           'No data available',
-          style: TextStyle(color: appbar_color.withOpacity(0.9), fontSize: 18),
+          style: GoogleFonts.poppins(color: appbar_color.withOpacity(0.9), fontSize: 18),
         ),
       )
           : ListView.builder(
@@ -451,7 +452,7 @@ class _LeadFollowupTypeReportState extends State<LeadFollowupTypeReport> {
                         SizedBox(width: 5,),
                         Text(
                           lead['name'] ?? 'Unnamed',
-                          style: TextStyle(
+                          style: GoogleFonts.poppins(
                             fontWeight: FontWeight.normal,
                             color: appbar_color[800],
                           ),
@@ -540,7 +541,7 @@ Widget _buildDecentButton(
           SizedBox(width: 8.0),
           Text(
             label,
-            style: TextStyle(
+            style: GoogleFonts.poppins(
               color: color,
               fontWeight: FontWeight.w600,
             ),

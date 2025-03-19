@@ -2,39 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'Sidebar.dart';
 import 'constants.dart';
-
-class AvailableUnits {
-  final String unitno;
-  final String unittype;
-  final String building_name;
-  final String area;
-  final String emirate;
-
-  AvailableUnits({
-    required this.unitno,
-    required this.unittype,
-    required this.building_name,
-    required this.area,
-    required this.emirate
-  });
-
-  factory AvailableUnits.fromJson(Map<String, dynamic> json)
-  {
-    return AvailableUnits
-      (
-      unitno: json['unitno'],
-        unittype: json['unittype'],
-        building_name: json['building_name'],
-        area: json['area'],
-        emirate: json['emirate'],
-    );}
-}
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:google_fonts/google_fonts.dart';
 
 class AvailableUnitsReport extends StatefulWidget {
   const AvailableUnitsReport({Key? key}) : super(key: key);
   @override
   _AvailableUnitsReportPageState createState() => _AvailableUnitsReportPageState();
 }
+
 
 class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with TickerProviderStateMixin {
   bool isDashEnable = true,
@@ -45,130 +22,85 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
       _isLoading = false,
       isVisibleNoUserFound = false;
 
-  final List<AvailableUnits> units = [
-    AvailableUnits(
-      unitno: "101",
-      unittype: '1BHK',
-      building_name: 'Al Khaleej Center',
-      area: 'Bur Dubai',
-      emirate: 'Dubai'
-    ),
-    AvailableUnits(
-        unitno: "402",
-        unittype: '2BHK',
-        building_name: 'Musalla Tower',
-        area: 'Bur Dubai',
-        emirate: 'Dubai'
-    ),
-  ];
-
-  List<AvailableUnits> filteredUnits = [];
-
   String searchQuery = "";
-
-  String name = "",email = "";
+  String name = "", email = "";
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-
   late GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey;
-
   late SharedPreferences prefs;
 
-  String? hostname = "", company = "",company_lowercase = "",serial_no= "",username= "",HttpURL= "",SecuritybtnAcessHolder= "";
+  String? hostname = "", company = "", company_lowercase = "", serial_no = "", username = "", HttpURL = "", SecuritybtnAcessHolder = "";
+  late Future<List<Flat>> futureFlats;
+  List<Flat> filteredUnits = []; // List to store API data
+  List<Flat> allUnits = []; // Stores all units fetched from API
+
+  void fetchFlats() async {
+    try {
+      List<Flat> flats = await ApiService().fetchFlats();
+      setState(() {
+        allUnits = flats;
+        filteredUnits = allUnits;
+      });
+    } catch (e) {
+      print("Error fetching flats: $e");
+    }
+  }
 
   Future<void> _initSharedPreferences() async {
     prefs = await SharedPreferences.getInstance();
-
     setState(() {
-      filteredUnits = units; // Initially, show all units
+      fetchFlats();
     });
-    /*setState(()
-    {
-      hostname = prefs.getString('hostname');
-      company  = prefs.getString('company_name');
-      company_lowercase = company!.replaceAll(' ', '').toLowerCase();
-      serial_no = prefs.getString('serial_no');
-      username = prefs.getString('username');
-
-      SecuritybtnAcessHolder = prefs.getString('secbtnaccess');
-
-      String? email_nav = prefs.getString('email_nav');
-      String? name_nav = prefs.getString('name_nav');
-
-      if (email_nav!=null && name_nav!= null)
-      {
-        name = name_nav;
-        email = email_nav;
-      }
-      if(SecuritybtnAcessHolder == "True")
-      {
-        isRolesVisible = true;
-        isUserVisible = true;
-      }
-      else
-      {
-        isRolesVisible = false;
-        isUserVisible = false;
-      }
-    });*/
-    /*fetchUsers(serial_no!);*/
   }
 
   void _updateSearchQuery(String query) {
     setState(() {
       searchQuery = query;
-      filteredUnits = units
-          .where((unit) =>
-      unit.unittype.toLowerCase().contains(query.toLowerCase()) ||
-          unit.building_name.toLowerCase().contains(query.toLowerCase()) ||
-          unit.area.toLowerCase().contains(query.toLowerCase()) ||
-          unit.emirate.toLowerCase().contains(query.toLowerCase()))
-          .toList();
+      filteredUnits = allUnits.where((unit) =>
+      unit.flatTypeName.toLowerCase().contains(query.toLowerCase()) ||
+          unit.buildingName.toLowerCase().contains(query.toLowerCase()) ||
+          unit.name.toLowerCase().contains(query.toLowerCase()) ||
+          unit.areaName.toLowerCase().contains(query.toLowerCase()) ||
+          unit.stateName.toLowerCase().contains(query.toLowerCase())).toList();
     });
   }
 
   @override
-  void initState()
-  {
+  void initState() {
     super.initState();
     _scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
     _initSharedPreferences();
   }
 
-  Future<void> _refresh() async
-  {
+  Future<void> _refresh() async {
     setState(() {
-      /*fetchUsers(serial_no!);*/
+      fetchFlats();
     });
-  }
-
-  int compareDataObjects(AvailableUnits a, AvailableUnits b) {
-    return a.area.compareTo(b.area);
   }
 
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
         onWillPop: () async {
-          /*Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => Dashboard()),
-          );*/
           return true;
         },
-        child:Scaffold(
+        child: Scaffold(
             key: _scaffoldKey,
             backgroundColor: const Color(0xFFF2F4F8),
             appBar: AppBar(
               bottom: PreferredSize(
-                preferredSize: Size.fromHeight(60.0),
+                preferredSize: const Size.fromHeight(60.0),
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: TextField(
                     onChanged: _updateSearchQuery,
                     decoration: InputDecoration(
                       hintText: 'Search Units',
-                      prefixIcon: Icon(Icons.search),
+                      hintStyle: GoogleFonts.poppins(
+                        fontSize: 14,
+                        color: Colors.grey,
+                      ),
+                      prefixIcon: const Icon(Icons.search),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12.0),
                         borderSide: BorderSide.none,
@@ -179,187 +111,167 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
                   ),
                 ),
               ),
-                title: Text(
-                  'Available Units',
-                  style: TextStyle(
-                      color: Colors.white
-                  ),
-                  overflow: TextOverflow.ellipsis, // Truncate text if it overflows
-                  maxLines: 2, // Display only one line of text
+              title: Text(
+                'Available Units',
+                style: GoogleFonts.poppins(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
                 ),
-                backgroundColor: appbar_color.withOpacity(0.9),
-                automaticallyImplyLeading: false,
-                centerTitle: true,
-                leading: IconButton(
-                  icon: Icon(Icons.menu, color: Colors.white),
-                  onPressed: () {
-                    _scaffoldKey.currentState!.openDrawer();
-                  },
-                ),),
-            drawer: Sidebar
-              (
-                isDashEnable: isDashEnable,
-                isRolesVisible: isRolesVisible,
-                isRolesEnable: isRolesEnable,
-                isUserEnable: isUserEnable,
-                isUserVisible: isUserVisible,
-                
+              ),
+              backgroundColor: appbar_color.withOpacity(0.9),
+              automaticallyImplyLeading: false,
+              centerTitle: true,
+              leading: IconButton(
+                icon: const Icon(Icons.menu, color: Colors.white),
+                onPressed: () {
+                  _scaffoldKey.currentState!.openDrawer();
+                },
+              ),
+            ),
+            drawer: Sidebar(
+              isDashEnable: isDashEnable,
+              isRolesVisible: isRolesVisible,
+              isRolesEnable: isRolesEnable,
+              isUserEnable: isUserEnable,
+              isUserVisible: isUserVisible,
             ),
             body: RefreshIndicator(
                 onRefresh: _refresh,
-                child:Stack(
-                    children: [
-                      Visibility(
-                          visible: isVisibleNoUserFound,
-                          child:  Container(
-                              padding: EdgeInsets.only(top: 20.0),
-                              child: Center(
-                                  child: Text(
-                                      'No User Found',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 24.0,
-                                      ))))),
-
-                      Container(
-                        color:Colors.white,
-                          child: ListView.builder(
-                            itemCount: filteredUnits.length,
-                            itemBuilder: (context, index) {
-                              final unit = filteredUnits[index];
-                              return Container(
-                                margin: const EdgeInsets.only(top: 15.0, bottom: 0),
-                                padding: const EdgeInsets.all(16.0),
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(16.0),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.grey.withOpacity(0.2),
-                                      blurRadius: 10.0,
-                                      offset: Offset(0, 5),
-                                    ),
-                                  ],
+                child: Stack(children: [
+                  Visibility(
+                      visible: isVisibleNoUserFound,
+                      child: Container(
+                          padding: const EdgeInsets.only(top: 20.0),
+                          child: Center(
+                              child: Text(
+                                'No User Found',
+                                style: GoogleFonts.poppins(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 24.0,
                                 ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                              )))),
+                  Container(
+                    color: Colors.white,
+                    child: ListView.builder(
+                      itemCount: filteredUnits.length,
+                      itemBuilder: (context, index) {
+                        final unit = filteredUnits[index];
+                        return Container(
+                          margin: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 20),
+                          padding: const EdgeInsets.all(16.0),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(16.0),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.2),
+                                blurRadius: 10.0,
+                                offset: const Offset(0, 5),
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  const Icon(Icons.home),
+                                  const SizedBox(width: 10),
+                                  Expanded(
+                                    child: Text(
+                                      unit.flatTypeName,
+                                      style: GoogleFonts.poppins(fontSize: 16),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 10),
+                              Row(
+                                children: [
+                                  const Icon(Icons.location_city),
+                                  const SizedBox(width: 10),
+                                  Expanded(
+                                    child: Text(
+                                      unit.buildingName,
+                                      style: GoogleFonts.poppins(fontSize: 16),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 10),
+                              Row(
+                                children: [
+                                  const Icon(Icons.location_on),
+                                  const SizedBox(width: 10),
+                                  Expanded(
+                                    child: Text(
+                                      "${unit.areaName}, ${unit.stateName}",
+                                      style: GoogleFonts.poppins(fontSize: 16),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 10),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 0, bottom: 0),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
-                                    Row(
-                                      children: [
-                                        Icon(Icons.home),
-                                        SizedBox(width: 10),
-                                        Expanded(
-                                          child: Text(unit.unittype, style: TextStyle(fontSize: 16)),
-                                        ),
-                                      ],
-                                    ),
-                                    SizedBox(height: 10),
-                                    Row(
-                                      children: [
-                                        Icon(Icons.location_city),
-                                        SizedBox(width: 10),
-                                        Expanded(
-                                          child: Text(unit.building_name, style: TextStyle(fontSize: 16)),
-                                        ),
-                                      ],
-                                    ),
-                                    SizedBox(height: 10),
-                                    Row(
-                                      children: [
-                                        Icon(Icons.location_on),
-                                        SizedBox(width: 10),
-                                        Expanded(
-                                          child: Text(unit.area, style: TextStyle(fontSize: 16)),
-                                        ),
-                                      ],
-                                    ),
-                                    SizedBox(height: 10),
-                                    Row(
-                                      children: [
-                                        Icon(Icons.public),
-                                        SizedBox(width: 10),
-                                        Expanded(
-                                          child: Text(unit.emirate, style: TextStyle(fontSize: 16)),
-                                        ),
-                                      ],
-                                    ),
-                                    SizedBox(height: 10),
-                                    Padding(
-                                      padding: EdgeInsets.only(top: 0, bottom: 0),
-                                      child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        crossAxisAlignment: CrossAxisAlignment.center,
-                                        children: [
+                                    _buildDecentButton(
+                                      'View',
+                                      Icons.remove_red_eye,
+                                      Colors.orange,
+                                          () {
+                                        String unitno = unit.name.toString();
+                                        String unittype = unit.flatTypeName;
+                                        String area = unit.areaName;
+                                        String emirate = unit.stateName;
+                                        String rent = "AED N/A";
+                                        String parking = "N/A";
+                                        String balcony = "N/A";
+                                        String bathrooms = "N/A";
+                                        String building = unit.buildingName;
 
-                                          _buildDecentButton(
-                                            'View',
-                                            Icons.remove_red_eye,
-                                            Colors.orange,
-                                                () {
-                                              String unitno = unit.unitno;
-                                              String unittype = unit.unittype;
-                                              String area = unit.area;
-                                              String emirate = unit.emirate;
-                                              String rent = "AED 50,000";
-                                              String parking = "1 included";
-                                              String balcony = "Yes";
-                                              String bathooms = "2";
-                                              String building = unit.building_name;
-
-                                              showDialog(
-                                                  context: context,
-                                                  builder: (context) => AvailableUnitsDialog(unitno: unitno, area: area, emirate: emirate, unittype: unittype, rent: rent, parking: parking, balcony: balcony, bathrooms: bathooms,building_name: building,));
-                                            },
+                                        showDialog(
+                                          context: context,
+                                          builder: (context) => AvailableUnitsDialog(
+                                            unitno: unitno,
+                                            area: area,
+                                            emirate: emirate,
+                                            unittype: unittype,
+                                            rent: rent,
+                                            parking: parking,
+                                            balcony: balcony,
+                                            bathrooms: bathrooms,
+                                            building_name: building,
                                           ),
-
-                                        ],
-                                      ),
+                                        );
+                                      },
                                     ),
                                   ],
                                 ),
-                              );
-                            },
+                              ),
+                            ],
                           ),
+                        );
+                      },
+                    ),
+                  ),
+                  Visibility(
+                    visible: _isLoading,
+                    child: const Center(
+                      child: CircularProgressIndicator.adaptive(),
+                    ),
+                  ),
+                ]))));
+  }
+}
 
 
 
 
-
-
-
-
-                      ),
-                      Visibility(
-                        visible: _isLoading,
-                        child: Center(
-                          child: CircularProgressIndicator.adaptive(),
-                        ),
-                      ),
-                      /*Positioned(
-                        bottom: 40,
-                        right: 30,
-                        child: ElevatedButton(
-                          onPressed: () {
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(builder: (context) => AddUser()),
-                            );
-                          },
-                          style: ElevatedButton.styleFrom(
-                            shape: CircleBorder(), // Makes the button circular
-                            padding: EdgeInsets.all(16), // Adjust padding to control button size
-                            backgroundColor: appbar_color, // Button background color
-                            shadowColor: Colors.black.withOpacity(1.0), // Shadow color
-                            elevation: 6, // Shadow intensity
-                          ),
-                          child: Icon(
-                            Icons.add,
-                            color: Colors.white, // Icon color
-                            size: 35, // Icon size
-                          ),
-                        ),
-                      ),*/
-                    ]))));}}
 
 class AvailableUnitsDialog extends StatelessWidget {
   final String unitno;
@@ -372,7 +284,8 @@ class AvailableUnitsDialog extends StatelessWidget {
   final String balcony;
   final String bathrooms;
 
-  const AvailableUnitsDialog({Key? key,
+  const AvailableUnitsDialog({
+    Key? key,
     required this.unitno,
     required this.area,
     required this.building_name,
@@ -381,162 +294,153 @@ class AvailableUnitsDialog extends StatelessWidget {
     required this.rent,
     required this.parking,
     required this.balcony,
-    required this.bathrooms
+    required this.bathrooms,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
+    double screenHeight = MediaQuery.of(context).size.height;
+    double maxDialogHeight = screenHeight * 0.8; // Prevents full-screen expansion
+
+    return Dialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+      ),
       backgroundColor: Colors.white,
-      elevation: 8,
-      title:Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Row(
-            children: [
-
-              /*Icon(
-                Icons.home
-              ),
-              SizedBox(width: 5,),*/
-              Text("${unitno}",
-                style: TextStyle(
-                    fontSize: 20,
-                  fontWeight: FontWeight.bold
-                ),
-              ),
-            ],
-          )
-        ],
-      ),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-              children : [
-
-                Icon(
-                    Icons.home
-                ),
-                SizedBox(width: 10),
-                Flexible(child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Text(unittype),
-                ))]),
-
-          Padding(padding: EdgeInsets.only(top: 10),
-              child: Row(
-                  children : [
-                    Icon(
-
-                        Icons.business
-                    ),
-                    SizedBox(width: 10),
-                    Flexible(child: SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Text(building_name),
-                    ))])),
-
-          Padding(padding: EdgeInsets.only(top: 10),
-              child: Row(
-                  children : [
-                    Icon(
-
-                        Icons.location_on
-                    ),
-                    SizedBox(width: 10),
-                    Flexible(child: SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Text(area),
-                    ))])),
-
-          Padding(padding: EdgeInsets.only(top: 10),
-              child: Row(
-                  children : [
-                    Icon(
-
-                        Icons.public
-                    ),
-                    SizedBox(width: 10),
-                    Flexible(child: SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Text(emirate),
-                    ))])),
-
-          Padding(padding: EdgeInsets.only(top: 10),
-              child: Row(
-                  children : [
-                    Icon(
-
-                        Icons.payment
-                    ),
-                    SizedBox(width: 10),
-                    Flexible(child: SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Text(rent),
-                    ))])),
-
-          Padding(padding: EdgeInsets.only(top:10),
-              child: Row(
-                  children : [
-                    Icon(
-
-                        Icons.local_parking
-
-                    ),
-                    SizedBox(width: 10),
-                    Flexible(child: SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Text(parking),
-                    ),)
-                  ])),
-
-          Padding(padding: EdgeInsets.only(top:10),
-              child: Row(
-                  children : [
-                    Icon(
-
-                        Icons.deck
-
-                    ),
-                    SizedBox(width: 10),
-                    Flexible(child: SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Text('Balcony: $balcony'),
-                    ),)
-                  ])),
-
-          Padding(padding: EdgeInsets.only(top:10),
-              child: Row(
-                  children : [
-                    Icon(
-
-                        Icons.bathtub
-
-                    ),
-                    SizedBox(width: 10),
-                    Flexible(child: SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Text('Bathrooms: $bathrooms'),
-                    ),)
-                  ])),
-        ],
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: Text("Close",
-            style: TextStyle(
-                color: appbar_color.withOpacity(0.9)
-            ),),
+      elevation: 10,
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white, // ✅ Light background for contrast
+          borderRadius: BorderRadius.circular(20), // ✅ Round corners for container
         ),
-      ],
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            maxHeight: maxDialogHeight, // Adaptive height, not exceeding 80% of screen
+          ),
+          child: IntrinsicHeight( // Makes dialog fit content when possible
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Header with unit number & background
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                    gradient: LinearGradient(
+                      colors: [Colors.blueAccent, Colors.lightBlueAccent],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                  ),
+                  padding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+                  width: double.infinity,
+                  child: Column(
+                    children: [
+                      Icon(Icons.home, color: Colors.white, size: 40),
+                      SizedBox(height: 8),
+                      Text(
+                        "Unit $unitno",
+                        style: GoogleFonts.poppins( // ✅ Poppins Font Applied
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                SizedBox(height: 10),
+
+                // Scrollable Details Section
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        _buildDetailTile(Icons.apartment, "Unit Type", unittype),
+                        _buildDetailTile(Icons.business, "Building", building_name),
+                        _buildDetailTile(Icons.location_on, "Location", "$area, $emirate"),
+                        _buildDetailTile(Icons.attach_money, "Rent", rent),
+                        _buildDetailTile(Icons.local_parking, "Parking", parking),
+                        _buildDetailTile(Icons.balcony, "Balcony", balcony),
+                        _buildDetailTile(Icons.bathtub, "Bathrooms", bathrooms),
+                      ],
+                    ),
+                  ),
+                ),
+
+                SizedBox(height: 10),
+
+                // Close Button
+                Padding(
+                  padding: EdgeInsets.only(bottom: 10),
+                  child: ElevatedButton(
+                    onPressed: () => Navigator.pop(context),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: appbar_color.shade200,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                    ),
+                    child: Text(
+                      "Close",
+                      style: GoogleFonts.poppins( // ✅ Poppins Font Applied
+                        color: Colors.white,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 
+  // ✅ Detail Tile with Poppins Font
+  Widget _buildDetailTile(IconData icon, String label, String value) {
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 5, horizontal: 13),
+      color: Colors.white,
+      child: Row(
+        children: [
+          Icon(icon, color: appbar_color.shade200),
+          SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: GoogleFonts.poppins( // ✅ Applied Poppins
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                SizedBox(height: 2),
+                Text(
+                  value,
+                  style: GoogleFonts.poppins( // ✅ Applied Poppins
+                    fontSize: 16,
+                    fontWeight: FontWeight.normal,
+                    color: Colors.black87,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                  softWrap: true,
+                  maxLines: 2, // Prevents UI breaking with long text
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
+
 Widget _buildDecentButton(
     String label, IconData icon, Color color, VoidCallback onPressed) {
   return InkWell(
@@ -568,7 +472,7 @@ Widget _buildDecentButton(
           SizedBox(width: 8.0),
           Text(
             label,
-            style: TextStyle(
+            style: GoogleFonts.poppins(
               color: color,
               fontWeight: FontWeight.w600,
             ),
@@ -579,3 +483,65 @@ Widget _buildDecentButton(
   );
 }
 
+class ApiService {
+
+  Future<List<Flat>> fetchFlats() async {
+    final response = await http.get(
+      Uri.parse("$baseurl/reports/flat/available/date?date=2025-02-01"), // Update endpoint if necessary
+      headers: {
+        "Authorization": "Bearer $Company_Token",
+        "Content-Type": "application/json",
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      List<dynamic> flatsJson = data["data"];
+      return flatsJson.map((json) => Flat.fromJson(json)).toList();
+    } else {
+      throw Exception("Failed to fetch data. Status Code: ${response.statusCode}");
+    }
+  }
+}
+
+// Model Class
+class Flat {
+  final int id;
+  final String name;
+  final String? grossArea;
+  final String buildingName;
+  final String floorName;
+  final String flatTypeName;
+  final String areaName;
+  final String stateName;
+  final String countryName;
+  final String createdAt;
+
+  Flat({
+    required this.id,
+    required this.name,
+    this.grossArea,
+    required this.buildingName,
+    required this.floorName,
+    required this.flatTypeName,
+    required this.areaName,
+    required this.stateName,
+    required this.countryName,
+    required this.createdAt,
+  });
+
+  factory Flat.fromJson(Map<String, dynamic> json) {
+    return Flat(
+      id: json["id"],
+      name: json["name"],
+      grossArea: json["gross_area_in_sqft"],
+      buildingName: json["building"]["name"],
+      floorName: json["floors"]["name"],
+      flatTypeName: json["flat_type"]["name"],
+      areaName: json["building"]["area"]["name"],
+      stateName: json["building"]["area"]["state"]["name"],
+      countryName: json["building"]["area"]["state"]["country"]["name"],
+      createdAt: json["created_at"],
+    );
+  }
+}

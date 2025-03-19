@@ -12,6 +12,7 @@ import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'SalesDashboard.dart';
 import 'Sidebar.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class SalesInquiryReport extends StatefulWidget {
   @override
@@ -317,7 +318,7 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
                 children: [
                   Text(
                     "Lead Follow-ups",
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+                    style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.w600),
                   ),
                   IconButton(
                     icon: Icon(Icons.close, color: Colors.grey),
@@ -363,7 +364,7 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
                             children: [
                               Text(
                                 item["created_user"]["name"],
-                                style: TextStyle(
+                                style: GoogleFonts.poppins(
                                     fontSize: 16, fontWeight: FontWeight.w600),
                               ),
                               SizedBox(height: 6),
@@ -373,7 +374,7 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
                                   SizedBox(width: 6),
                                   Text(
                                     item["status"]["name"],
-                                    style: TextStyle(
+                                    style: GoogleFonts.poppins(
                                       color: statusColor,
                                       fontWeight: FontWeight.w500,
                                     ),
@@ -383,13 +384,13 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
                               SizedBox(height: 8),
                               Text(
                                 "Date: ${formatDate(item["date"])}",
-                                style: TextStyle(color: Colors.grey.shade700),
+                                style: GoogleFonts.poppins(color: Colors.grey.shade700),
                               ),
                               if (item["remarks"] != null) ...[
                                 SizedBox(height: 6),
                                 Text(
                                   "Remarks: ${item["remarks"]}",
-                                  style: TextStyle(color: Colors.grey.shade700),
+                                  style: GoogleFonts.poppins(color: Colors.grey.shade700),
                                 ),
                               ],
                               if (nextFollowUpDate != null) ...[
@@ -398,14 +399,14 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
                                   children: [
                                     Text(
                                       "Next Follow-up: ",
-                                      style: TextStyle(
+                                      style: GoogleFonts.poppins(
                                         color: Colors.grey.shade600,
                                         fontWeight: FontWeight.w500,
                                       ),
                                     ),
                                     Text(
                                       "${formatDate(nextFollowUpDate)}",
-                                      style: TextStyle(
+                                      style: GoogleFonts.poppins(
                                         color: followUpDateColor,
                                         fontWeight: FontWeight.w500,
                                       ),
@@ -590,7 +591,7 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
                     padding: const EdgeInsets.only(top: 8.0, left: 12.0),
                     child: Text(
                       validationMessage,
-                      style: TextStyle(color: Colors.white, fontSize: 14),
+                      style: GoogleFonts.poppins(color: Colors.white, fontSize: 14),
                     ),
                   ),
               ],
@@ -613,7 +614,7 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
         centerTitle: true,
         title: Text(
           'Inquiries',
-          style: TextStyle(
+          style: GoogleFonts.poppins(
             fontWeight: FontWeight.normal,
             fontSize: 20.0,
             color: Colors.white,
@@ -703,7 +704,7 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
                                         children: [
                                           Text(
                                             "${DateFormat('dd-MMM-yyyy').format(startDate)} - ${DateFormat('dd-MMM-yyyy').format(endDate)}",
-                                            style: TextStyle(fontSize: 14, color: Colors.black87),
+                                            style: GoogleFonts.poppins(fontSize: 14, color: Colors.black87),
                                           ),
                                         ],
                                       ),
@@ -753,7 +754,7 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
                                 child: ChoiceChip(
                                   label: Text(
                                     status.name,
-                                    style: TextStyle(
+                                    style: GoogleFonts.poppins(
                                       color: selectedStatus == status.name ? Colors.white : Colors.black,
                                     ),
                                   ),
@@ -801,7 +802,7 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
                         ? Center(
                       child: Text(
                         "No data available",
-                        style: TextStyle(
+                        style: GoogleFonts.poppins(
                           fontSize: 18,
                           color: Colors.grey,
                           fontWeight: FontWeight.bold,
@@ -835,7 +836,7 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
           },
           label: Text(
             'New Inquiry',
-            style: TextStyle(
+            style: GoogleFonts.poppins(
               color: Colors.white,
               fontWeight: FontWeight.bold,
             ),
@@ -1002,7 +1003,7 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
                     children: [
                       Text(
                         _expandedinquirys[index] ? "View Less" : "View More",
-                        style: TextStyle(
+                        style: GoogleFonts.poppins(
                           color: Colors.black26,
                           fontWeight: FontWeight.bold,
                           fontSize: 12.0,
@@ -1036,7 +1037,7 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
             SizedBox(width: 8.0),
             Text(
               inquiry.customerName.toString(),
-              style: TextStyle(
+              style: GoogleFonts.poppins(
                 fontSize: 18.0,
                 fontWeight: FontWeight.bold,
               ),
@@ -1089,7 +1090,7 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
                 scrollDirection: Axis.horizontal,
                 child: Text(
                   value,
-                  style: TextStyle(
+                  style: GoogleFonts.poppins(
                     color: Colors.black87,
                   ),
                 )))]));
@@ -1102,7 +1103,7 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
         children: [
           Text(
             label,
-            style: TextStyle(
+            style: GoogleFonts.poppins(
               fontWeight: FontWeight.bold,
               color: Colors.grey[700],
             ),
@@ -1113,7 +1114,7 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
                 scrollDirection: Axis.horizontal,
                 child: Text(
                   value,
-                  style: TextStyle(
+                  style: GoogleFonts.poppins(
                     color: Colors.black87,
                   ),
 
@@ -1159,7 +1160,7 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
       ),
       child: Text(
         status,
-        style: TextStyle(
+        style: GoogleFonts.poppins(
           color: color,
           fontWeight: FontWeight.bold,
         ),
@@ -1214,7 +1215,7 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
             /*SizedBox(width: 8.0),
             Text(
               label,
-              style: TextStyle(
+              style: GoogleFonts.poppins(
                 color: color,
                 fontWeight: FontWeight.w600,
               ),

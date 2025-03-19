@@ -10,6 +10,8 @@ import 'package:uuid/uuid.dart';
 import 'constants.dart';
 import 'package:dio/dio.dart';
 import 'package:http/http.dart' as http;
+import 'package:google_fonts/google_fonts.dart';
+
 
 import 'package:http_parser/http_parser.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -139,7 +141,7 @@ class _DecentTenantKYCFormState extends State<DecentTenantKYCForm> {
   void _showSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message, style: TextStyle(fontSize: 16)),
+        content: Text(message, style: GoogleFonts.poppins(fontSize: 16)),
         backgroundColor: appbar_color,
         behavior: SnackBarBehavior.floating,
         margin: EdgeInsets.all(16),
@@ -241,7 +243,7 @@ class _DecentTenantKYCFormState extends State<DecentTenantKYCForm> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('KYC Update', style: TextStyle(color: Colors.white)),
+        title: Text('KYC Update', style: GoogleFonts.poppins(color: Colors.white)),
         centerTitle: true,
         backgroundColor: appbar_color.withOpacity(0.9),
         iconTheme: IconThemeData(color: Colors.white),
@@ -269,7 +271,7 @@ class _DecentTenantKYCFormState extends State<DecentTenantKYCForm> {
                 DropdownButtonFormField<String>(
                   decoration: InputDecoration(
                     labelText: "Document Type",
-                    labelStyle: TextStyle(color: Colors.black), // Set label text color to blue
+                    labelStyle: GoogleFonts.poppins(color: Colors.black), // Set label text color to blue
                     border: OutlineInputBorder(
                       borderSide: BorderSide(color: Colors.black), // Default border color
                     ),
@@ -368,7 +370,7 @@ class _DecentTenantKYCFormState extends State<DecentTenantKYCForm> {
                     _showSnackBar("Error processing the file.");
                     }
                     },
-                    child: Text('Submit', style: TextStyle(color: Colors.white)),
+                    child: Text('Submit', style: GoogleFonts.poppins(color: Colors.white)),
                   ),
                 )
 
@@ -399,7 +401,7 @@ class _DecentTenantKYCFormState extends State<DecentTenantKYCForm> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(title, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            Text(title, style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold)),
             SizedBox(height: 8),
 // Show Image Preview if filePath is available
             filePath != null && File(filePath).existsSync()
@@ -409,7 +411,7 @@ class _DecentTenantKYCFormState extends State<DecentTenantKYCForm> {
               height: 150, // Adjust the height as needed
               fit: BoxFit.cover,
             )
-                : Text("No file selected", style: TextStyle(color: Colors.red)),
+                : Text("No file selected", style: GoogleFonts.poppins(color: Colors.red)),
 
             SizedBox(height: 12),
             Row(
@@ -418,7 +420,7 @@ class _DecentTenantKYCFormState extends State<DecentTenantKYCForm> {
                 ElevatedButton.icon(
                     onPressed: () => pickFile(isFront: isFront),
                     icon: Icon(Icons.upload, color: Colors.white),
-                    label: Text('Upload', style: TextStyle(color: Colors.white)),
+                    label: Text('Upload', style: GoogleFonts.poppins(color: Colors.white)),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: appbar_color, // Change this to your desired color
                     elevation: 2, // Optional: Adds shadow effect
@@ -431,7 +433,7 @@ class _DecentTenantKYCFormState extends State<DecentTenantKYCForm> {
                 SizedBox(width: 10),
                 ElevatedButton.icon(onPressed: () => captureFile(isFront: isFront),
                     icon: Icon(Icons.camera_alt, color: Colors.white),
-                    label: Text('Capture', style: TextStyle(color: Colors.white)),
+                    label: Text('Capture', style: GoogleFonts.poppins(color: Colors.white)),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: appbar_color, // Change this to your desired color
                     elevation: 2, // Optional: Adds shadow effect

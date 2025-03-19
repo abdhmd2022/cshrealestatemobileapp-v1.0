@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'FlatSelection.dart';
 import 'SerialSelect.dart';
 import 'constants.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key, required this.title});
@@ -542,7 +543,7 @@ class _LoginPageState extends State<Login> {
           automaticallyImplyLeading:false,
           title: Text(widget.title,
 
-          style: TextStyle(
+          style: GoogleFonts.poppins(
             color: Colors.white
           ),),
         ),
@@ -637,14 +638,14 @@ class _LoginPageState extends State<Login> {
                                               ),
                                             ),
                                             fillColor: Colors.white,
-                                            labelStyle: TextStyle(
+                                            labelStyle: GoogleFonts.poppins(
                                               color: Colors.black54, // Set the label text color to black
                                             ),
                                             focusedBorder: UnderlineInputBorder(
                                               borderSide: BorderSide(color: Colors.black),
                                             ),
                                           ),
-                                          style: TextStyle(
+                                          style: GoogleFonts.poppins(
                                             color: Colors.black,
                                           ),
 
@@ -689,7 +690,7 @@ class _LoginPageState extends State<Login> {
                                           labelText: 'Password',
                                           filled: true,
                                           fillColor: Colors.white,
-                                          labelStyle: TextStyle(
+                                          labelStyle: GoogleFonts.poppins(
                                             color: Colors.black54, // Set the label text color to black
                                           ),
 
@@ -730,7 +731,7 @@ class _LoginPageState extends State<Login> {
                                             },
                                             child: Text(
                                               'Forgot Password?',
-                                              style: TextStyle(
+                                              style: GoogleFonts.poppins(
                                                 color: Colors.black54,
                                                 decoration: TextDecoration.underline,
                                               ),
@@ -756,7 +757,7 @@ class _LoginPageState extends State<Login> {
 
                                             Text(
                                               'Remember Me',
-                                              style: TextStyle(fontSize: 16,color: Colors.black54),
+                                              style: GoogleFonts.poppins(fontSize: 16,color: Colors.black54),
                                             ),
                                           ]))
                                         ],
@@ -788,7 +789,7 @@ class _LoginPageState extends State<Login> {
                                           }
                                           },
                                           child: Text('Login',
-                                              style: TextStyle(
+                                              style: GoogleFonts.poppins(
                                                   color: Colors.white
                                               )),
                                         ),
@@ -806,10 +807,10 @@ class _LoginPageState extends State<Login> {
                                                 mainAxisAlignment: MainAxisAlignment.center,
                                                 children:[
                                                   Text('Not Registered?',
-                                                      style: TextStyle(color: Colors.black54)),
+                                                      style: GoogleFonts.poppins(color: Colors.black54)),
 
                                                   Text('Click here for instructions',
-                                                      style: TextStyle(color: Colors.black54,
+                                                      style: GoogleFonts.poppins(color: Colors.black54,
                                                           fontWeight: FontWeight.bold,
                                                           decoration: TextDecoration.underline))
                                                 ])))*/
@@ -858,14 +859,14 @@ class _LoginPageState extends State<Login> {
                                             ),
                                           ),
                                           fillColor: Colors.white,
-                                          labelStyle: TextStyle(
+                                          labelStyle: GoogleFonts.poppins(
                                             color: Colors.black54, // Set the label text color to black
                                           ),
                                           focusedBorder: UnderlineInputBorder(
                                             borderSide: BorderSide(color: Color(int.parse('0xFF30D5C8'))),
                                           ),
                                         ),
-                                        style: TextStyle(
+                                        style: GoogleFonts.poppins(
                                           color: Colors.black,
                                         ),
 
@@ -918,7 +919,7 @@ class _LoginPageState extends State<Login> {
                                           }
                                         },
                                         child: Text('Reset Password',
-                                            style: TextStyle(
+                                            style: GoogleFonts.poppins(
                                                 color: Colors.white
                                             )),
                                       ),
@@ -942,7 +943,7 @@ class _LoginPageState extends State<Login> {
                                               });
                                             },
                                             child: Text('Cancel',
-                                                style: TextStyle(
+                                                style: GoogleFonts.poppins(
                                                     color: Colors.white
                                                 ))))]))))),
                   Visibility(
@@ -976,7 +977,7 @@ class _LoginPageState extends State<Login> {
                                     SizedBox(height: 20),
                                     Text(
                                       'Enter Verification Code',
-                                      style: TextStyle(fontWeight: FontWeight.bold,
+                                      style: GoogleFonts.poppins(fontWeight: FontWeight.bold,
                                           fontSize: 18),
                                       textAlign: TextAlign.center,
                                     ),
@@ -986,12 +987,12 @@ class _LoginPageState extends State<Login> {
                                         children: [
                                           TextSpan(
                                             text: "We've sent you an OTP on ",
-                                            style: TextStyle(color: Colors.black54),
+                                            style: GoogleFonts.poppins(color: Colors.black54),
 
                                           ),
                                           TextSpan(
                                             text: maskedEmail, // The masked email value
-                                            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black54), // Bold style
+                                            style: GoogleFonts.poppins(fontWeight: FontWeight.bold, color: Colors.black54), // Bold style
                                           ),
 
                                         ],
@@ -1000,7 +1001,7 @@ class _LoginPageState extends State<Login> {
 
                                     Text(
                                         ". Please enter that code below to continue."
-                                        ,style: TextStyle(color: Colors.black54),
+                                        ,style: GoogleFonts.poppins(color: Colors.black54),
                                         textAlign: TextAlign.center// Regular text style
                                     ),
 
@@ -1008,7 +1009,7 @@ class _LoginPageState extends State<Login> {
                                       padding: EdgeInsets.only(left: 5,right: 5,top: 16),
                                       child: PinCodeTextField(
                                         appContext: context,
-                                        pastedTextStyle: TextStyle(
+                                        pastedGoogleFonts.poppins: GoogleFonts.poppins(
                                           color: Colors.green.shade600,
                                           fontWeight: FontWeight.normal,
                                         ),
@@ -1043,7 +1044,7 @@ class _LoginPageState extends State<Login> {
                                         Text(
                                           "Resend OTP in: $_formattedTime", // Display remaining time
                                           textAlign: TextAlign.center,
-                                          style: TextStyle(fontSize: 16, color: Colors.black54),
+                                          style: GoogleFonts.poppins(fontSize: 16, color: Colors.black54),
                                         ),
                                         SizedBox(height: 20),
 
@@ -1066,7 +1067,7 @@ class _LoginPageState extends State<Login> {
                                         }, // Disable button if not enabled
                                         child: Text(
                                           'Resend OTP',
-                                          style: TextStyle(color: Colors.white),
+                                          style: GoogleFonts.poppins(color: Colors.white),
                                         ),
                                       ),),
 
@@ -1106,7 +1107,7 @@ class _LoginPageState extends State<Login> {
                                         }
                                       },
                                       child: Text('Verify',
-                                          style: TextStyle(
+                                          style: GoogleFonts.poppins(
                                               color: Colors.white
                                           )),
                                     )

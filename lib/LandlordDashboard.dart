@@ -6,6 +6,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'LandlordBuildingScreen.dart';
 import 'Sidebar.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class LandlordDashboard extends StatelessWidget {
   @override
@@ -72,7 +73,7 @@ class _LandlordDashboardScreenState extends State<LandlordDashboardScreen> with 
       appBar: AppBar(
         backgroundColor: appbar_color.withOpacity(0.9),
         title: Text('Landlord Dashboard',
-            style: TextStyle(color: Colors.white)),
+            style: GoogleFonts.poppins(color: Colors.white)),
         centerTitle: true,
         leading: IconButton(
           icon: Icon(Icons.menu, color: Colors.white),
@@ -99,7 +100,7 @@ class _LandlordDashboardScreenState extends State<LandlordDashboardScreen> with 
             children: [
               Text(
                 'Units Overview',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 16),
 
@@ -153,7 +154,7 @@ class _LandlordDashboardScreenState extends State<LandlordDashboardScreen> with 
               SizedBox(height: 16,),
               Text(
                 'Building(s)',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 8),
               Expanded(
@@ -182,7 +183,7 @@ class _LandlordDashboardScreenState extends State<LandlordDashboardScreen> with 
                             child: ListTile(
                               title: Text(
                                 buildingNames[index],
-                                style: TextStyle(fontWeight: FontWeight.bold,
+                                style: GoogleFonts.poppins(fontWeight: FontWeight.bold,
                                 color: Colors.white),
                               ),
                               trailing: Icon(Icons.arrow_forward,color: Colors.white,),
@@ -279,7 +280,7 @@ class BarGraph extends StatelessWidget {
                       axisSide: meta.axisSide,
                       child: Text(
                         buildingNames[value.toInt()],
-                        style: TextStyle(fontSize: 10), // Adjust font size
+                        style: GoogleFonts.poppins(fontSize: 10), // Adjust font size
                       ),
                     );
                   },

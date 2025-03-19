@@ -13,6 +13,8 @@ import 'package:flutter/widgets.dart';
 import 'dart:ui' as ui;
 import 'MaintenanceTicketReport.dart';
 import 'Sidebar.dart';
+import 'package:google_fonts/google_fonts.dart';
+
 
 class Invoice {
   final String invoiceId;
@@ -191,7 +193,7 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
     double maxWidth = 0.0;
     for (var apartment in apartments) {
       String text = "${apartment['apartment']} (${apartment['building']})";
-      double textWidth = _getTextWidth(text, TextStyle(fontSize: 18.0));
+      double textWidth = _getTextWidth(text, GoogleFonts.poppins(fontSize: 18.0));
       if (textWidth > maxWidth) {
         maxWidth = textWidth;
       }
@@ -249,7 +251,7 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
           ),
         ],
         title: Text('Tenant Dashboard',
-            style: TextStyle(color: Colors.white)),
+            style: GoogleFonts.poppins(color: Colors.white)),
         centerTitle: true,
         leading: IconButton(
           icon: Icon(Icons.menu, color: Colors.white),
@@ -283,7 +285,7 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
 
                           Text(
                             'Cheque(s)',
-                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                            style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold),
                           )
                           ,
                           Row(
@@ -307,7 +309,7 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
                                       .map((apartment) => Center(
                                     child: Text(
                                       "${apartment['apartment']} (${apartment['building']})",
-                                      style: TextStyle(fontSize: 18.0,),
+                                      style: GoogleFonts.poppins(fontSize: 18.0,),
                                     ),
                                   ))
                                       .toList(),
@@ -329,7 +331,7 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
                                             Expanded(
                                               child: Text(
                                                 'Scroll up/down to change unit',
-                                                style: TextStyle(color: Colors.white),
+                                                style: GoogleFonts.poppins(color: Colors.white),
                                               ),
                                             ),
                                           ],
@@ -374,7 +376,7 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
                         ),                        value: data["Cleared"]!.toDouble(),
                         title: 'Cleared\n${data["Cleared"]}',
                         radius: 140,
-                        titleStyle: TextStyle(fontSize: 15.0, fontWeight: FontWeight.bold,
+                        titleStyle: GoogleFonts.poppins(fontSize: 15.0, fontWeight: FontWeight.bold,
                             color: Colors.white),
                       ),
                       PieChartSectionData(
@@ -386,7 +388,7 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
                         value: data["Pending"]!.toDouble(),
                         title: 'Pending\n${data["Pending"]}',
                         radius: 140,
-                        titleStyle: TextStyle(fontSize: 15.0, fontWeight: FontWeight.bold,
+                        titleStyle: GoogleFonts.poppins(fontSize: 15.0, fontWeight: FontWeight.bold,
                             color: Colors.white),
                       ),
                     ],
@@ -402,7 +404,7 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
                   children: [
                     Text(
                       "Pending Invoices",
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                     SizedBox(height: 10),
 
@@ -467,7 +469,7 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
                               SizedBox(height: 5,),
                               Text(
                                 'Maintenance',
-                                style: TextStyle(fontSize: 16,
+                                style: GoogleFonts.poppins(fontSize: 16,
                                     color: Colors.white),
                               ),
                             ],
@@ -538,7 +540,7 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
                                                         Text(
                                                             'Move In/Out Request',
                                                             textAlign: TextAlign.center,
-                                                            style: TextStyle(
+                                                            style: GoogleFonts.poppins(
                                                               fontWeight: FontWeight.w600,
                                                               color: Colors.white,
                                                               letterSpacing: 0.8,
@@ -587,7 +589,7 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
                                                         Text(
                                                             'Access Card Replacement Request',
                                                             textAlign: TextAlign.center,
-                                                            style: TextStyle(
+                                                            style: GoogleFonts.poppins(
                                                               fontWeight: FontWeight.w600,
                                                               color: Colors.white,
                                                               letterSpacing: 0.8,
@@ -637,7 +639,7 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
                                                     Text(
                                                         'Available Units',
                                                         textAlign: TextAlign.center,
-                                                        style: TextStyle(
+                                                        style: GoogleFonts.poppins(
                                                           fontWeight: FontWeight.w600,
                                                           color: Colors.white,
                                                           letterSpacing: 0.8,
@@ -688,7 +690,7 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
                                           SizedBox(height: 10,),
                                           Text(
                                             'KYC Update',
-                                            style: TextStyle(fontSize: 16,
+                                            style: GoogleFonts.poppins(fontSize: 16,
                                                 color: Colors.white),
                                           ),
                                         ],
@@ -737,7 +739,7 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
                                                 SizedBox(height: 10,),
                                                 Text(
                                                   'Complaints/Suggestions',
-                                                  style: TextStyle(fontSize: 16,
+                                                  style: GoogleFonts.poppins(fontSize: 16,
                                                       color: Colors.white),
                                                 )
                                               ]
@@ -760,7 +762,7 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
                 children: [
                   Text(
                     'Monthly Sales',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold),
                   )
                   ,
                   Row(
@@ -782,7 +784,7 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
                             });
                           },
                           children: years
-                              .map((year) => Center(child: Text(year, style: TextStyle(fontSize: 16))))
+                              .map((year) => Center(child: Text(year, style: GoogleFonts.poppins(fontSize: 16))))
                               .toList(),
                         ),
                       ),
@@ -802,7 +804,7 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
                                     Expanded(
                                       child: Text(
                                         'Scroll up/down to change year',
-                                        style: TextStyle(color: Colors.white),
+                                        style: GoogleFonts.poppins(color: Colors.white),
                                       ),
                                     ),
                                   ],
@@ -854,7 +856,7 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
         elevation: 1,
         title: Text(
           'Dashboard',
-          style: TextStyle(
+          style: GoogleFonts.poppins(
             color: Colors.white,
             fontWeight: FontWeight.w600,
           ),
@@ -952,7 +954,7 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
                                   .map((apartment) => Center(
                                 child: Text(
                                   "${apartment['apartment']} (${apartment['building']})",
-                                  style: TextStyle(fontSize: 18.0,),
+                                  style: GoogleFonts.poppins(fontSize: 18.0,),
                                 ),
                               ))
                                   .toList(),
@@ -974,7 +976,7 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
                                         Expanded(
                                           child: Text(
                                             'Scroll up/down to change unit',
-                                            style: TextStyle(color: Colors.white),
+                                            style: GoogleFonts.poppins(color: Colors.white),
                                           ),
                                         ),
                                       ],
@@ -1023,7 +1025,7 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
                 children: [
                   Text(
                     'Cheque(s)',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(height: 10),
                   Expanded(
@@ -1040,7 +1042,7 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
                             ),                        value: data["Cleared"]!.toDouble(),
                             title: 'Cleared\n${data["Cleared"]}',
                             radius: 110,
-                            titleStyle: TextStyle(fontSize: 15.0, fontWeight: FontWeight.bold,
+                            titleStyle: GoogleFonts.poppins(fontSize: 15.0, fontWeight: FontWeight.bold,
                                 color: Colors.white),
                           ),
                           PieChartSectionData(
@@ -1052,7 +1054,7 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
                             value: data["Pending"]!.toDouble(),
                             title: 'Pending\n${data["Pending"]}',
                             radius: 110,
-                            titleStyle: TextStyle(fontSize: 15.0, fontWeight: FontWeight.bold,
+                            titleStyle: GoogleFonts.poppins(fontSize: 15.0, fontWeight: FontWeight.bold,
                                 color: Colors.white),
                           ),
                         ],
@@ -1085,7 +1087,7 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
                 children: [
                   Text(
                     'Pending Invoices',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(height: 20),
                   Expanded(
@@ -1198,7 +1200,7 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
               Text(
                 label,
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w600),
               ),
             ],
           ),
@@ -1263,7 +1265,7 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
                       axisSide: meta.axisSide,
                       child: Text(
                         _getFormattedMonth(value.toInt(), selectedYear), // Use formatted month names from data
-                        style: TextStyle(fontSize: 10),
+                        style: GoogleFonts.poppins(fontSize: 10),
                       ),
                     );
                   },
@@ -1283,7 +1285,7 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
                       axisSide: meta.axisSide,
                       child: Text(
                         formattedValue,
-                        style: TextStyle(fontSize: 12),
+                        style: GoogleFonts.poppins(fontSize: 12),
                       ),
                     );
                   },
@@ -1323,7 +1325,7 @@ double _getReservedSize(List<int> salesValues) {
 }
 double _getTextHeight(String text) {
   final textPainter = TextPainter(
-    text: TextSpan(text: text, style: TextStyle(fontSize: 12)),
+    text: TextSpan(text: text, style: GoogleFonts.poppins(fontSize: 12)),
     textDirection:  ui.TextDirection.ltr
     , // This should work now
   );
@@ -1386,7 +1388,7 @@ class ApartmentBarChart extends StatelessWidget {
                         axisSide: meta.axisSide,
                         child: Text(
                           months[value.toInt()],
-                          style: const TextStyle(fontSize: 10),
+                          style:  GoogleFonts.poppins(fontSize: 10),
                         ),
                       );
                     }
@@ -1406,7 +1408,7 @@ class ApartmentBarChart extends StatelessWidget {
                       axisSide: meta.axisSide,
                       child: Text(
                         formattedValue,
-                        style: const TextStyle(fontSize: 12),
+                        style:  GoogleFonts.poppins(fontSize: 12),
                       ),
                     );
                   },

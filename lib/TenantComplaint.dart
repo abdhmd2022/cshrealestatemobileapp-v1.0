@@ -10,6 +10,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:multi_select_flutter/multi_select_flutter.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import 'Sidebar.dart';
 
@@ -77,7 +78,7 @@ class _TenantComplaintPageState extends State<TenantComplaint> with TickerProvid
             ),),
 
           title: Text('Complaint/Suggestions',
-            style: TextStyle(
+            style: GoogleFonts.poppins(
                 color: Colors.white
             ),),
         ),
@@ -139,7 +140,7 @@ class _TenantComplaintPageState extends State<TenantComplaint> with TickerProvid
                                                   SizedBox(height: 2), // Add space between icon and text
                                                   Text(
                                                     'Saadan',
-                                                    style: TextStyle(fontSize: 16,
+                                                    style: GoogleFonts.poppins(fontSize: 16,
                                                         color: appbar_color),
                                                   )])])),
 
@@ -160,7 +161,7 @@ class _TenantComplaintPageState extends State<TenantComplaint> with TickerProvid
                                                   SizedBox(height: 2), // Add space between icon and text
                                                   Text(
                                                     '+971 500000000',
-                                                    style: TextStyle(fontSize: 16,
+                                                    style: GoogleFonts.poppins(fontSize: 16,
                                                         color: appbar_color),
                                                   )])]))]),
 
@@ -176,7 +177,7 @@ class _TenantComplaintPageState extends State<TenantComplaint> with TickerProvid
                                         SizedBox(height: 2), // Add space between icon and text
                                         Text(
                                           'saadan@ca-eim.com',
-                                          style: TextStyle(fontSize: 16,
+                                          style: GoogleFonts.poppins(fontSize: 16,
                                               color: appbar_color),
                                         )])]))),
 
@@ -193,7 +194,7 @@ class _TenantComplaintPageState extends State<TenantComplaint> with TickerProvid
                                 child: Row(
                                   children: [
                                     Text("Type:",
-                                        style: TextStyle(
+                                        style: GoogleFonts.poppins(
                                             fontWeight: FontWeight.bold,
                                             fontSize: 16
                                         )
@@ -201,7 +202,7 @@ class _TenantComplaintPageState extends State<TenantComplaint> with TickerProvid
                                     SizedBox(width: 2),
                                     Text(
                                       '*', // Red asterisk for required field
-                                      style: TextStyle(
+                                      style: GoogleFonts.poppins(
                                         fontSize: 20,
                                         color: Colors.red, // Red color for the asterisk
                                       ),
@@ -298,7 +299,7 @@ class _TenantComplaintPageState extends State<TenantComplaint> with TickerProvid
                                 child: Row(
                                   children: [
                                     Text("Description:",
-                                        style: TextStyle(
+                                        style: GoogleFonts.poppins(
                                             fontWeight: FontWeight.bold,
                                             fontSize: 16
 
@@ -307,7 +308,7 @@ class _TenantComplaintPageState extends State<TenantComplaint> with TickerProvid
                                     SizedBox(width: 2),
                                     Text(
                                       '*', // Red asterisk for required field
-                                      style: TextStyle(
+                                      style: GoogleFonts.poppins(
                                         fontSize: 20,
                                         color: Colors.red, // Red color for the asterisk
                                       ),
@@ -352,7 +353,7 @@ class _TenantComplaintPageState extends State<TenantComplaint> with TickerProvid
                                           ),
                                         ),
                                       ),
-                                      style: TextStyle(
+                                      style: GoogleFonts.poppins(
                                         color: Colors.black,
                                         fontSize: 15,
                                       ))),
@@ -375,7 +376,7 @@ class _TenantComplaintPageState extends State<TenantComplaint> with TickerProvid
                                 right: 20
                             ),
                             child: Text("Total Amount:",
-                                style: TextStyle(
+                                style: GoogleFonts.poppins(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 16
                                 )
@@ -408,7 +409,7 @@ class _TenantComplaintPageState extends State<TenantComplaint> with TickerProvid
                                       ),
                                     ),
                                   ),
-                                  style: TextStyle(
+                                  style: GoogleFonts.poppins(
                                     color: Colors.black,
                                     fontSize: 15,
                                   ))),
@@ -435,7 +436,7 @@ class _TenantComplaintPageState extends State<TenantComplaint> with TickerProvid
                               }
                             },
                             child: Text('Submit',
-                                style: TextStyle(
+                                style: GoogleFonts.poppins(
                                     color: Colors.white
                                 )),
                           ),)

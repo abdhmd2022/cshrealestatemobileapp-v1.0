@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:cshrealestatemobile/AddUser.dart';
 import 'package:cshrealestatemobile/ModifyUser.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'Sidebar.dart';
 import 'constants.dart';
@@ -136,7 +137,7 @@ class _UserReportPageState extends State<UsersReport> with TickerProviderStateMi
               TextButton(
                 child: Text(
                   'No',
-                  style: TextStyle(
+                  style: GoogleFonts.poppins(
                     color: Color(0xFF30D5C8), // Change the text color here
                   ),
                 ),
@@ -148,7 +149,7 @@ class _UserReportPageState extends State<UsersReport> with TickerProviderStateMi
               TextButton(
                 child: Text(
                   'Yes',
-                  style: TextStyle(
+                  style: GoogleFonts.poppins(
                     color: Color(0xFF30D5C8), // Change the text color here
                   ),
                 ),
@@ -326,7 +327,7 @@ class _UserReportPageState extends State<UsersReport> with TickerProviderStateMi
                 title: Flexible(
                   child: Text(
                     'Users',
-                    style: TextStyle(
+                    style: GoogleFonts.poppins(
                         color: Colors.white
                     ),
                     overflow: TextOverflow.ellipsis, // Truncate text if it overflows
@@ -361,7 +362,7 @@ class _UserReportPageState extends State<UsersReport> with TickerProviderStateMi
                               child: Center(
                                   child: Text(
                                       'No User Found',
-                                      style: TextStyle(
+                                      style: GoogleFonts.poppins(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 24.0,
                                       ))))),
@@ -441,7 +442,7 @@ class _UserReportPageState extends State<UsersReport> with TickerProviderStateMi
                                                 icon: Icon(Icons.edit, color: Colors.black),
                                                 label: Text(
                                                   'Edit',
-                                                  style: TextStyle(color: Colors.black),
+                                                  style: GoogleFonts.poppins(color: Colors.black),
                                                 ),
                                                 style: ElevatedButton.styleFrom(
                                                   backgroundColor: Colors.white, // Button background color
@@ -461,7 +462,7 @@ class _UserReportPageState extends State<UsersReport> with TickerProviderStateMi
                                                 icon: Icon(Icons.delete, color: Colors.red),
                                                 label: Text(
                                                   'Delete',
-                                                  style: TextStyle(color: Colors.red),
+                                                  style: GoogleFonts.poppins(color: Colors.red),
                                                 ),
                                                 style: ElevatedButton.styleFrom(
                                                   backgroundColor: Colors.white, // Button background color

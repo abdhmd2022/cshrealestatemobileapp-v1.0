@@ -7,6 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:multi_select_flutter/dialog/multi_select_dialog_field.dart';
 import 'package:multi_select_flutter/util/multi_select_item.dart';
@@ -17,6 +18,8 @@ import 'package:mime/mime.dart'; // For MIME type checking
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart';
 import 'package:http_parser/http_parser.dart';
+import 'package:google_fonts/google_fonts.dart';
+
 
 class MaintanceType {
   final int id;
@@ -48,7 +51,7 @@ class MaintenanceTicketCreation extends StatefulWidget
 
 class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreation> with TickerProviderStateMixin {
 
-  MaintanceType? selectedMaintenanceType;
+  List<MaintanceType>? selectedMaintenanceType = [];
 
   List<MaintanceType> maintenance_types_list = [];
   List<int> selectedMaintenanceTypeIds = []; // Store selected maintenance type IDs
@@ -105,13 +108,13 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                 children: [
                   Text(
                     'Unit(s)',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: appbar_color),
+                    style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold, color: appbar_color),
                   ),
                   GestureDetector(
                     onTap: () => Navigator.pop(context),
                     child: Text(
                       'Done',
-                      style: TextStyle(fontSize: 16, color: appbar_color, fontWeight: FontWeight.bold),
+                      style: GoogleFonts.poppins(fontSize: 16, color: appbar_color, fontWeight: FontWeight.bold),
                     ),
                   ),
                 ],
@@ -139,7 +142,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                   return Center(
                     child: Text(
                       '${flat['tenant_name']} | ${flat['flat_name']?? "Unknown"} | $buildingName',
-                      style: TextStyle(fontSize: 16),
+                      style: GoogleFonts.poppins(fontSize: 16),
                     ),
                   );
                 }).toList(),
@@ -533,7 +536,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
             ),),
 
           title: Text('Maintenance Ticket',
-            style: TextStyle(
+            style: GoogleFonts.poppins(
                 color: Colors.white
             ),),
         ),
@@ -569,7 +572,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                     /*Container(
                       margin: EdgeInsets.only(left: 20,right: 20,bottom: 3,top: 20),
                       child: Text("Ticket Creation",
-                      style: TextStyle(
+                      style: GoogleFonts.poppins(
                         fontWeight: FontWeight.bold,
                         fontSize: 28
                       ),)
@@ -578,7 +581,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                     Container(
                       margin: EdgeInsets.only(left: 20,right: 20,bottom: 30),
                       child: Text("Create your maintenance ticket",
-                      style: TextStyle(
+                      style: GoogleFonts.poppins(
                         fontSize: 18,
                         color: Colors.black54
                       ),),
@@ -611,7 +614,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                                       '${selectedFlat!['flat_name'] ?? "Unknown Flat"} | '
                                       '${selectedFlat!['building_name'] ?? "Unknown Building"}'
                                       : "Select Flat",
-                                  style: TextStyle(
+                                  style: GoogleFonts.poppins(
                                     color: appbar_color.shade700,
                                     fontSize: 16,
                                     fontWeight: FontWeight.w500,
@@ -643,7 +646,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                           child: Row(
                             children: [
                               Text("Maintenance Type:",
-                                  style: TextStyle(
+                                  style: GoogleFonts.poppins(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 16
 
@@ -652,7 +655,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                               SizedBox(width: 2),
                               Text(
                                 '*', // Red asterisk for required field
-                                style: TextStyle(
+                                style: GoogleFonts.poppins(
                                   fontSize: 20,
                                   color: Colors.red, // Red color for the asterisk
                                 ),
@@ -685,15 +688,20 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                               ),
                               buttonText: Text(
                                 "Select Maintenance Type",
-                                style: TextStyle(
+                                style: GoogleFonts.poppins(
                                   color: Colors.black,
                                   fontSize: 16,
                                 ),
                                 overflow: TextOverflow.ellipsis,
                               ),
-                              onConfirm: (List<MaintanceType> values) {
+                                initialValue: selectedMaintenanceType!, // ✅ Keeps selected values
+
+                                onConfirm: (List<MaintanceType> values) {
                                 setState(() {
-                                  selectedMaintenanceTypeIds = values.map((type) => type.id).toList();
+                                  selectedMaintenanceType = values; // ✅ Stores selected values
+
+
+                                selectedMaintenanceTypeIds = values.map((type) => type.id).toList();
                                 });
                               }))
                         /* Container(
@@ -739,14 +747,14 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                             child: Row(
                               children: [
                                 Text("Description:",
-                                    style: TextStyle(
+                                    style: GoogleFonts.poppins(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 16
                                     )),
                                 SizedBox(width: 2),
                                 Text(
                                   '*', // Red asterisk for required field
-                                  style: TextStyle(
+                                  style: GoogleFonts.poppins(
                                     fontSize: 20,
                                     color: Colors.red, // Red color for the asterisk
                                   ))])),*/
@@ -766,7 +774,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                                   decoration: InputDecoration(
                                     hintText: 'Enter Description',
                                     labelText: 'Description',
-                                    floatingLabelStyle: TextStyle(
+                                    floatingLabelStyle: GoogleFonts.poppins(
                                       color: appbar_color, // Change label color when focused
                                       fontWeight: FontWeight.normal,
                                     ),
@@ -786,7 +794,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                                       ),
                                     ),
                                   ),
-                                  style: TextStyle(
+                                  style: GoogleFonts.poppins(
                                     color: Colors.black,
                                     fontSize: 15,
                                   ))),
@@ -797,13 +805,13 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                               children: [
                                 Text(
                                   'Attachments',
-                                  style: TextStyle(fontSize: 16,
+                                  style: GoogleFonts.poppins(fontSize: 16,
                                     fontWeight: FontWeight.bold,),
                                 ),
                                 SizedBox(width: 2),
                                 Text(
                                   '*', // Red asterisk for required field
-                                  style: TextStyle(
+                                  style: GoogleFonts.poppins(
                                     fontSize: 20,
                                     color: Colors.red, // Red color for the asterisk
                                   ),
@@ -939,7 +947,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                                 right: 20
                             ),
                             child: Text("Total Amount:",
-                                style: TextStyle(
+                                style: GoogleFonts.poppins(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 16
                                 )
@@ -972,7 +980,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                                       ),
                                     ),
                                   ),
-                                  style: TextStyle(
+                                  style: GoogleFonts.poppins(
                                     color: Colors.black,
                                     fontSize: 15,
                                   ))),
@@ -989,11 +997,50 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                       ),
                       onPressed: () {
                         {
-                          sendFormData();
+                          if(maintenance_types_list.isEmpty)
+                            {
+                              String message = 'Select atleast 1 maintenance type';
+                              Fluttertoast.showToast(
+                                msg: message,
+                                toastLength: Toast.LENGTH_SHORT,
+                                gravity: ToastGravity.BOTTOM, // Change to CENTER or TOP if needed
+                                backgroundColor: Colors.black,
+                                textColor: Colors.white,
+                                fontSize: 16.0,
+                              );
+                            }
+                          else if(_descriptionController.text.isEmpty)
+                            {
+                              String message = 'Enter description';
+                              Fluttertoast.showToast(
+                                msg: message,
+                                toastLength: Toast.LENGTH_SHORT,
+                                gravity: ToastGravity.BOTTOM, // Change to CENTER or TOP if needed
+                                backgroundColor: Colors.black,
+                                textColor: Colors.white,
+                                fontSize: 16.0,
+                              );
+                            }
+                          else if(_attachment.isEmpty)
+                            {
+                              String message = 'Attachment is missing';
+                              Fluttertoast.showToast(
+                                msg: message,
+                                toastLength: Toast.LENGTH_SHORT,
+                                gravity: ToastGravity.BOTTOM, // Change to CENTER or TOP if needed
+                                backgroundColor: Colors.black,
+                                textColor: Colors.white,
+                                fontSize: 16.0,
+                              );
+                            }
+                          else
+                            {
+                              sendFormData();
+                            }
                         }
                       },
                       child: Text('Submit',
-                          style: TextStyle(
+                          style: GoogleFonts.poppins(
                               color: Colors.white
                           )),
                     ))
@@ -1117,6 +1164,14 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
 
       if (response.statusCode == 201) {
         print('Image upload successful');
+
+        setState(() {
+          selectedMaintenanceType = [];
+          selectedMaintenanceTypeIds = [];
+          _descriptionController.clear();
+          selectedFlat = flats[0];
+          _attachment.clear();
+        });
       } else {
         print('Upload failed with status code: ${response.statusCode}');
         print('Response body: ${response.body}');

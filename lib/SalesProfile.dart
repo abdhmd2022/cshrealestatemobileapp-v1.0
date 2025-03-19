@@ -1,7 +1,7 @@
 import 'package:cshrealestatemobile/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'constants.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import 'SalesDashboard.dart';
 
@@ -26,8 +26,8 @@ class SalesProfileScreen extends StatelessWidget {
               color: Colors.white,
             )),
 
-        title: const Text('Profile',
-        style: TextStyle(
+        title:  Text('Profile',
+        style: GoogleFonts.poppins(
 
           color: Colors.white
         ),),
@@ -64,7 +64,7 @@ class SalesProfileScreen extends StatelessWidget {
                   const SizedBox(height: 10),
                    Text(
                     user_name,
-                    style: TextStyle(
+                    style: GoogleFonts.poppins(
                       color: Colors.white,
 
                       fontSize: 22,
@@ -74,15 +74,15 @@ class SalesProfileScreen extends StatelessWidget {
                    SizedBox(height: 5),
                    Text(
                     user_email,
-                    style: TextStyle(
+                    style: GoogleFonts.poppins(
                       color: Colors.white,
                       fontSize: 16,
                     ),
                   ),
                   const SizedBox(height: 5),
-                  const Text(
+                   Text(
                     '+971 500000000',
-                    style: TextStyle(
+                    style: GoogleFonts.poppins(
                       color: Colors.white,
                       fontSize: 16,
                     ),
@@ -183,7 +183,7 @@ class SalesProfileScreen extends StatelessWidget {
             children: [
               Text(
                 value,
-                style: TextStyle(
+                style: GoogleFonts.poppins(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
                   color: color,
@@ -192,7 +192,7 @@ class SalesProfileScreen extends StatelessWidget {
               const SizedBox(height: 5),
               Text(
                 title,
-                style: const TextStyle(
+                style:  GoogleFonts.poppins(
                   fontSize: 16,
                   color: Colors.black54,
                   fontWeight: FontWeight.normal
@@ -211,14 +211,14 @@ class SalesProfileScreen extends StatelessWidget {
       children: [
         Text(
           label,
-          style: const TextStyle(
+          style:  GoogleFonts.poppins(
             fontSize: 16,
             fontWeight: FontWeight.bold,
           ),
         ),
         Text(
           value,
-          style: const TextStyle(
+          style:  GoogleFonts.poppins(
             fontSize: 16,
             color: Colors.black54,
 

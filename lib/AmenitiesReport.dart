@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:uuid/uuid.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class AmentiesReport extends StatefulWidget {
   @override
@@ -171,7 +172,7 @@ class _AmentiesReportState extends State<AmentiesReport> {
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           title: Text(
             "Amenities",
-            style: TextStyle(color: appbar_color[900]),
+            style: GoogleFonts.poppins(color: appbar_color[900]),
           ),
           content: Form(
             key: _formKey,
@@ -181,7 +182,7 @@ class _AmentiesReportState extends State<AmentiesReport> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text("Preference", style: TextStyle(color: appbar_color[900])),
+                    Text("Preference", style: GoogleFonts.poppins(color: appbar_color[900])),
                     Switch(
                       value: isSpecial,
                       onChanged: (value) {
@@ -210,7 +211,7 @@ class _AmentiesReportState extends State<AmentiesReport> {
                   decoration: InputDecoration(
                     labelText: "Amenity Name",
 
-                    labelStyle: TextStyle(color: Colors.black54),
+                    labelStyle: GoogleFonts.poppins(color: Colors.black54),
                     focusedBorder: OutlineInputBorder(
                       borderSide: BorderSide(color: appbar_color),
                     ),
@@ -228,7 +229,7 @@ class _AmentiesReportState extends State<AmentiesReport> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: Text("Cancel", style: TextStyle(color: appbar_color)),
+              child: Text("Cancel", style: GoogleFonts.poppins(color: appbar_color)),
             ),
             ElevatedButton(
               onPressed: () {
@@ -244,7 +245,7 @@ class _AmentiesReportState extends State<AmentiesReport> {
               },
               style: ElevatedButton.styleFrom(backgroundColor: appbar_color),
 
-              child: Text("Submit",style: TextStyle(color: Colors.white)),
+              child: Text("Submit",style: GoogleFonts.poppins(color: Colors.white)),
             ),
           ],
         );
@@ -274,7 +275,7 @@ class _AmentiesReportState extends State<AmentiesReport> {
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           title: Text(
             "Edit Amenity",
-            style: TextStyle(color: appbar_color[900],
+            style: GoogleFonts.poppins(color: appbar_color[900],
             ),
           ),
           content: Form(
@@ -285,7 +286,7 @@ class _AmentiesReportState extends State<AmentiesReport> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text("Preference", style: TextStyle(color: appbar_color[900])),
+                    Text("Preference", style: GoogleFonts.poppins(color: appbar_color[900])),
                     Switch(
                       value: isSpecial,
                       onChanged: (value) {
@@ -321,7 +322,7 @@ class _AmentiesReportState extends State<AmentiesReport> {
                   },
                   decoration: InputDecoration(
                     labelText: "Amenity Name",
-                    labelStyle: TextStyle(color: Colors.black54),
+                    labelStyle: GoogleFonts.poppins(color: Colors.black54),
                     focusedBorder: OutlineInputBorder(
                       borderSide: BorderSide(color: appbar_color),
                     ),
@@ -338,7 +339,7 @@ class _AmentiesReportState extends State<AmentiesReport> {
             TextButton(
               onPressed: () => Navigator.pop(context),
 
-              child: Text("Cancel", style: TextStyle(color: appbar_color)),
+              child: Text("Cancel", style: GoogleFonts.poppins(color: appbar_color)),
             ),
             ElevatedButton(
               onPressed: () {
@@ -353,7 +354,7 @@ class _AmentiesReportState extends State<AmentiesReport> {
 
               },
               style: ElevatedButton.styleFrom(backgroundColor: appbar_color),
-              child: Text("Submit",style: TextStyle(color: Colors.white)),
+              child: Text("Submit",style: GoogleFonts.poppins(color: Colors.white)),
 
             ),
           ],
@@ -453,7 +454,7 @@ class _AmentiesReportState extends State<AmentiesReport> {
             color: Colors.white,
           ),),
         title: Text('Amenities',
-          style: TextStyle(
+          style: GoogleFonts.poppins(
               color: Colors.white
           ),),
         backgroundColor: appbar_color.withOpacity(0.9),
@@ -469,7 +470,7 @@ class _AmentiesReportState extends State<AmentiesReport> {
           ? Center(
         child: Text(
           'No data available',
-          style: TextStyle(color: appbar_color.withOpacity(0.9), fontSize: 18),
+          style: GoogleFonts.poppins(color: appbar_color.withOpacity(0.9), fontSize: 18),
         ),
       )
           : ListView.builder(
@@ -502,7 +503,7 @@ class _AmentiesReportState extends State<AmentiesReport> {
                         SizedBox(width: 5,),
                         Text(
                           amenity['name'] ?? 'Unnamed',
-                          style: TextStyle(
+                          style: GoogleFonts.poppins(
                             fontWeight: FontWeight.normal,
                             color: appbar_color[800],
                           ),
@@ -515,14 +516,14 @@ class _AmentiesReportState extends State<AmentiesReport> {
                     Row(
                       children: [
                         Text('Preference: ',
-                        style: TextStyle(
+                        style: GoogleFonts.poppins(
                           fontWeight: FontWeight.bold
                         ),),
 
                         if(amenity['is_special'] == 'true')
                           Text(
                             'Yes',
-                            style: TextStyle(
+                            style: GoogleFonts.poppins(
                               fontWeight: FontWeight.normal,
                               color: appbar_color[800],
                             ),
@@ -531,7 +532,7 @@ class _AmentiesReportState extends State<AmentiesReport> {
                         if(amenity['is_special'] == 'false')
                           Text(
                             'No',
-                            style: TextStyle(
+                            style: GoogleFonts.poppins(
                               fontWeight: FontWeight.normal,
                               color: appbar_color[800],
                             ),
@@ -623,7 +624,7 @@ Widget _buildDecentButton(
           SizedBox(width: 8.0),
           Text(
             label,
-            style: TextStyle(
+            style: GoogleFonts.poppins(
               color: color,
               fontWeight: FontWeight.w600,
             ),

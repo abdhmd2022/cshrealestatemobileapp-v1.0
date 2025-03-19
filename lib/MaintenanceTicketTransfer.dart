@@ -10,6 +10,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'Sidebar.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class User {
   final String email;
@@ -229,7 +230,7 @@ class _MaintenanceTicketTransferPageState extends State<MaintenanceTicketTransfe
             ),),
 
           title: Text('Ticket Transfer',
-            style: TextStyle(
+            style: GoogleFonts.poppins(
                 color: Colors.white
             ),),
         ),
@@ -291,8 +292,8 @@ class _MaintenanceTicketTransferPageState extends State<MaintenanceTicketTransfe
                                           child: Column(
                                             crossAxisAlignment: CrossAxisAlignment.start,
                                             children: [
-                                              Text(followUp["role"]!, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
-                                              Text(followUp["description"]!, style: TextStyle(fontSize: 14, color: Colors.grey[600])),
+                                              Text(followUp["role"]!, style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w600)),
+                                              Text(followUp["description"]!, style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey[600])),
                                               SizedBox(height: 0),
                                             ],
                                           ),
@@ -315,7 +316,7 @@ class _MaintenanceTicketTransferPageState extends State<MaintenanceTicketTransfe
                                       child: Row(
                                         children: [
                                           Text("Transfer To:",
-                                              style: TextStyle(
+                                              style: GoogleFonts.poppins(
                                                   fontWeight: FontWeight.bold,
                                                   fontSize: 16
                                               )
@@ -323,7 +324,7 @@ class _MaintenanceTicketTransferPageState extends State<MaintenanceTicketTransfe
                                           SizedBox(width: 2),
                                           Text(
                                             '*', // Red asterisk for required field
-                                            style: TextStyle(
+                                            style: GoogleFonts.poppins(
                                               fontSize: 20,
                                               color: Colors.red, // Red color for the asterisk
                                             ),
@@ -386,7 +387,7 @@ class _MaintenanceTicketTransferPageState extends State<MaintenanceTicketTransfe
                                       child: Row(
                                         children: [
                                           Text("Remarks:",
-                                              style: TextStyle(
+                                              style: GoogleFonts.poppins(
                                                   fontWeight: FontWeight.bold,
                                                   fontSize: 16
                                               )
@@ -394,7 +395,7 @@ class _MaintenanceTicketTransferPageState extends State<MaintenanceTicketTransfe
                                           SizedBox(width: 2),
                                           Text(
                                             '*', // Red asterisk for required field
-                                            style: TextStyle(
+                                            style: GoogleFonts.poppins(
                                               fontSize: 20,
                                               color: Colors.red, // Red color for the asterisk
                                             ),
@@ -421,7 +422,7 @@ class _MaintenanceTicketTransferPageState extends State<MaintenanceTicketTransfe
                                             decoration: InputDecoration(
                                               labelText: "Remarks",
                                               hintText: 'Enter Remarks*',
-                                              floatingLabelStyle: TextStyle(
+                                              floatingLabelStyle: GoogleFonts.poppins(
                                                 color: appbar_color, // Change label color when focused
                                                 fontWeight: FontWeight.normal,
                                               ),
@@ -438,11 +439,11 @@ class _MaintenanceTicketTransferPageState extends State<MaintenanceTicketTransfe
                                                   color:  appbar_color, // Set the focused border color
                                                 ),
                                               ),
-                                              labelStyle: TextStyle(
+                                              labelStyle: GoogleFonts.poppins(
                                                 color: Colors.black,
                                               ),
                                             ),
-                                            style: TextStyle(
+                                            style: GoogleFonts.poppins(
                                               color: Colors.black,
                                               fontSize: 15,
                                             ))),
@@ -461,7 +462,7 @@ class _MaintenanceTicketTransferPageState extends State<MaintenanceTicketTransfe
                                 right: 20
                             ),
                             child: Text("Total Amount:",
-                                style: TextStyle(
+                                style: GoogleFonts.poppins(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 16
                                 )
@@ -494,7 +495,7 @@ class _MaintenanceTicketTransferPageState extends State<MaintenanceTicketTransfe
                                       ),
                                     ),
                                   ),
-                                  style: TextStyle(
+                                  style: GoogleFonts.poppins(
                                     color: Colors.black,
                                     fontSize: 15,
                                   ))),
@@ -519,7 +520,7 @@ class _MaintenanceTicketTransferPageState extends State<MaintenanceTicketTransfe
 
                                     }},
                                   child: Text('Transfer',
-                                      style: TextStyle(
+                                      style: GoogleFonts.poppins(
                                           color: Colors.white
                                       )),
                                 ),)
@@ -562,7 +563,7 @@ Widget _buildDecentButton(
           SizedBox(width: 8.0),
           Text(
             label,
-            style: TextStyle(
+            style: GoogleFonts.poppins(
               color: color,
               fontWeight: FontWeight.w600,
             ),

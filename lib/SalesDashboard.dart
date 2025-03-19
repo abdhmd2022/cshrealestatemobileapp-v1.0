@@ -9,6 +9,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'SalesInquiryReport.dart';
 import 'Sidebar.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class SalesDashboard extends StatelessWidget {
   @override
@@ -120,7 +121,7 @@ class _SalesDashboardScreenState extends State<SalesDashboardScreen> with Ticker
         elevation: 1,
         title: Text(
           'Dashboard',
-          style: TextStyle(
+          style: GoogleFonts.poppins(
             color: Colors.white,
             fontWeight: FontWeight.w600,
           ),
@@ -213,7 +214,7 @@ class _SalesDashboardScreenState extends State<SalesDashboardScreen> with Ticker
                                 });
                               },
                               children: years
-                                  .map((year) => Center(child: Text(year, style: TextStyle(fontSize: 16))))
+                                  .map((year) => Center(child: Text(year, style: GoogleFonts.poppins(fontSize: 16))))
                                   .toList(),
                             ),
                           ),
@@ -231,7 +232,7 @@ class _SalesDashboardScreenState extends State<SalesDashboardScreen> with Ticker
                                         Expanded(
                                           child: Text(
                                             'Scroll up/down to change year',
-                                            style: TextStyle(color: Colors.white),
+                                            style: GoogleFonts.poppins(color: Colors.white),
                                           ),
                                         ),
                                       ],
@@ -284,7 +285,7 @@ class _SalesDashboardScreenState extends State<SalesDashboardScreen> with Ticker
                   children: [
                     Text(
                       'Monthly Sales',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                     SizedBox(height: 20),
                     Expanded(
@@ -391,7 +392,7 @@ class _SalesDashboardScreenState extends State<SalesDashboardScreen> with Ticker
         ),
       ],
       title: Text('Sales Dashboard',
-          style: TextStyle(color: Colors.white)),
+          style: GoogleFonts.poppins(color: Colors.white)),
       centerTitle: true,
       leading: IconButton(
         icon: Icon(Icons.menu, color: Colors.white),
@@ -421,7 +422,7 @@ class _SalesDashboardScreenState extends State<SalesDashboardScreen> with Ticker
                     children: [
                       Text(
                         'Monthly Sales',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold),
                       )
                       ,
                       Row(
@@ -443,7 +444,7 @@ class _SalesDashboardScreenState extends State<SalesDashboardScreen> with Ticker
                                 });
                               },
                               children: years
-                                  .map((year) => Center(child: Text(year, style: TextStyle(fontSize: 16))))
+                                  .map((year) => Center(child: Text(year, style: GoogleFonts.poppins(fontSize: 16))))
                                   .toList(),
                             ),
                           ),
@@ -463,7 +464,7 @@ class _SalesDashboardScreenState extends State<SalesDashboardScreen> with Ticker
                                         Expanded(
                                           child: Text(
                                             'Scroll up/down to change year',
-                                            style: TextStyle(color: Colors.white),
+                                            style: GoogleFonts.poppins(color: Colors.white),
                                           ),
                                         ),
                                       ],
@@ -534,13 +535,13 @@ class _SalesDashboardScreenState extends State<SalesDashboardScreen> with Ticker
                                 children: [
                                   Text(
                                     'In Progress',
-                                    style: TextStyle(fontSize: 16,
+                                    style: GoogleFonts.poppins(fontSize: 16,
                                         color: Colors.white),
                                   ),
                                   SizedBox(height: 2,),
                                   Text(
                                     '12', // Example count
-                                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold,
+                                    style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.bold,
                                         color: Colors.white),
                                   ),
                                 ],
@@ -580,13 +581,13 @@ class _SalesDashboardScreenState extends State<SalesDashboardScreen> with Ticker
                                 children: [
                                   Text(
                                     'Closed',
-                                    style: TextStyle(fontSize: 16,
+                                    style: GoogleFonts.poppins(fontSize: 16,
                                         color: Colors.white),
                                   ),
                                   SizedBox(height: 2,),
                                   Text(
                                     '8', // Example count
-                                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold,
+                                    style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.bold,
                                         color: Colors.white),
                                   ),
                                 ],
@@ -660,7 +661,7 @@ class _SalesDashboardScreenState extends State<SalesDashboardScreen> with Ticker
                                           Text(
                                             'Inquiries',
                                             textAlign: TextAlign.center,
-                                            style: TextStyle(
+                                            style: GoogleFonts.poppins(
                                               fontWeight: FontWeight.w600,
                                               color: Colors.white,
                                               letterSpacing: 0.8,
@@ -712,7 +713,7 @@ class _SalesDashboardScreenState extends State<SalesDashboardScreen> with Ticker
                                           Text(
                                             'Outstanding',
                                             textAlign: TextAlign.center,
-                                            style: TextStyle(
+                                            style: GoogleFonts.poppins(
                                               fontWeight: FontWeight.w600,
                                               color: Colors.white,
                                               letterSpacing: 0.8,
@@ -775,7 +776,7 @@ class _SalesDashboardScreenState extends State<SalesDashboardScreen> with Ticker
                                         Text(
                                           'Available Units',
                                           textAlign: TextAlign.center,
-                                          style: TextStyle(
+                                          style: GoogleFonts.poppins(
                                             fontWeight: FontWeight.w600,
                                             color: Colors.white,
                                             letterSpacing: 0.8,
@@ -825,7 +826,7 @@ class _SalesDashboardScreenState extends State<SalesDashboardScreen> with Ticker
               SizedBox(height: 5),
               Text(
                 label,
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w600),
               ),
               if (count.isNotEmpty)
                 Column(
@@ -833,7 +834,7 @@ class _SalesDashboardScreenState extends State<SalesDashboardScreen> with Ticker
                     SizedBox(height: 3,),
                     Text(
                       count,
-                      style: TextStyle(
+                      style: GoogleFonts.poppins(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                         color: color,
@@ -905,7 +906,7 @@ class SalesBarChart extends StatelessWidget {
                       axisSide: meta.axisSide,
                       child: Text(
                         _getFormattedMonth(value.toInt(), selectedYear), // Use formatted month names from data
-                        style: TextStyle(fontSize: 10),
+                        style: GoogleFonts.poppins(fontSize: 10),
                       ),
                     );
                   },
@@ -925,7 +926,7 @@ class SalesBarChart extends StatelessWidget {
                       axisSide: meta.axisSide,
                       child: Text(
                         formattedValue,
-                        style: TextStyle(fontSize: 12),
+                        style: GoogleFonts.poppins(fontSize: 12),
                       ),
                     );
                   },

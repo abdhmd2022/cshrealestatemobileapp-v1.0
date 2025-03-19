@@ -80,7 +80,7 @@ class _CompanySelectionState extends State<CompanySelection> {
       backgroundColor: Color(0xFFF5F7FA), // Light modern background
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: Text("Select Company", style: TextStyle(
+        title: Text("Select Company", style: GoogleFonts.poppins(
             fontSize: 16,
             fontWeight: FontWeight.w600,
             color: Colors.white
@@ -113,7 +113,7 @@ class _CompanySelectionState extends State<CompanySelection> {
                 children: [
                   Text(
                     "Choose Company",
-                    style: TextStyle(
+                    style: GoogleFonts.poppins(
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
                       color: Colors.black,

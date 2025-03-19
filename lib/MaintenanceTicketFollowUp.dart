@@ -10,6 +10,7 @@ import 'package:path/path.dart';
 import 'package:signature/signature.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
+
 import 'dart:io';
 import 'package:flutter/foundation.dart'; // For kIsWeb check
 import 'package:pdf/pdf.dart'; // For kIsWeb check
@@ -672,7 +673,7 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
           ),),
 
         title: Text('Ticket Follow-Up',
-          style: TextStyle(
+          style: GoogleFonts.poppins(
               color: Colors.white
           )),
       ),
@@ -788,8 +789,8 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(followUp["role"]!, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
-                              Text(followUp["description"]!, style: TextStyle(fontSize: 14, color: Colors.grey[600])),
+                              Text(followUp["role"]!, style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w600)),
+                              Text(followUp["description"]!, style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey[600])),
                               SizedBox(height: 0),
                             ],
                           ),
@@ -807,13 +808,13 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
                   children: [
                     Text(
                       'Maintenance Type',
-                      style: TextStyle(fontSize: 16,
+                      style: GoogleFonts.poppins(fontSize: 16,
                         fontWeight: FontWeight.bold,),
                     ),
                     SizedBox(width: 2),
                     Text(
                       '*', // Red asterisk for required field
-                      style: TextStyle(
+                      style: GoogleFonts.poppins(
                         fontSize: 20,
                         color: Colors.red, // Red color for the asterisk
                       ),
@@ -845,7 +846,7 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
                   icon: Icon(Icons.arrow_drop_down, color: Colors.black54),
                   hint: Text(
                     "Select Maintenance Type",
-                    style: TextStyle(color: Colors.black54, fontSize: 16),
+                    style: GoogleFonts.poppins(color: Colors.black54, fontSize: 16),
                   ),
                   onChanged: (value) {
                     setState(() {
@@ -879,7 +880,7 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
                     padding: EdgeInsets.symmetric(vertical: 12),
                     child: Text(
                       "No follow-ups available",
-                      style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                      style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey[600]),
                     ),
                   );
                 }
@@ -899,7 +900,7 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
                         children: [
                           Text(
                             "Follow-ups",
-                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                            style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold),
                           ),
                           SizedBox(height: 6),
                           Row(
@@ -921,9 +922,9 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(followup["created_user"]["name"],
-                                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                                        style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w600)),
                                     Text(followup["description"],
-                                        style: TextStyle(fontSize: 14, color: Colors.grey[600])),
+                                        style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey[600])),
                                   ]
                                 )
                               )])]));});})]))),
@@ -934,13 +935,13 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
                   children: [
                     Text(
                       'Maintenance Status',
-                      style: TextStyle(fontSize: 16,
+                      style: GoogleFonts.poppins(fontSize: 16,
                         fontWeight: FontWeight.bold,),
                     ),
                     SizedBox(width: 2),
                     Text(
                       '*', // Red asterisk for required field
-                      style: TextStyle(
+                      style: GoogleFonts.poppins(
                         fontSize: 20,
                         color: Colors.red, // Red color for the asterisk
                       ),
@@ -972,7 +973,7 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
     icon: Icon(Icons.arrow_drop_down, color: Colors.black54),
     hint: Text(
     "Select Maintenance Status",
-    style: TextStyle(color: Colors.black54, fontSize: 16),
+    style: GoogleFonts.poppins(color: Colors.black54, fontSize: 16),
     ),
     onChanged: (value) {
     setState(() {
@@ -1003,7 +1004,7 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
                     nextFollowupDate == null
                         ? "Select Next Follow-up Date"
                         : "Next Follow-up Date: ${DateFormat('dd-MMM-yyyy').format(nextFollowupDate!)}",
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
+                    style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.normal),
                   ),
                 ),
               ),
@@ -1043,7 +1044,7 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
                     prefixText: "AED ",
                     contentPadding: EdgeInsets.all(15),
 
-                    floatingLabelStyle: TextStyle(
+                    floatingLabelStyle: GoogleFonts.poppins(
                       color: appbar_color, // Change label color when focused
                       fontWeight: FontWeight.normal,
                     ),
@@ -1077,7 +1078,7 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
                 decoration: InputDecoration(
                   hintText: 'Enter Remarks*',
                   labelText: "Remarks",
-                  floatingLabelStyle: TextStyle(
+                  floatingLabelStyle: GoogleFonts.poppins(
                     color: appbar_color, // Change label color when focused
                     fontWeight: FontWeight.normal,
                   ),
@@ -1095,7 +1096,7 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
                       width: 1,
                     ),
                   ),
-                  labelStyle: TextStyle(
+                  labelStyle: GoogleFonts.poppins(
                     color: Colors.black,
                   ),
                 ),
@@ -1111,13 +1112,13 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
                         children: [
                           Text(
                             'Tenant Signature',
-                            style: TextStyle(fontSize: 16,
+                            style: GoogleFonts.poppins(fontSize: 16,
                               fontWeight: FontWeight.bold,),
                           ),
                           SizedBox(width: 2),
                           Text(
                             '*', // Red asterisk for required field
-                            style: TextStyle(
+                            style: GoogleFonts.poppins(
                               fontSize: 20,
                               color: Colors.red, // Red color for the asterisk
                             ),
@@ -1207,13 +1208,13 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
                   children: [
                     Text(
                       'Attachments',
-                      style: TextStyle(fontSize: 16,
+                      style: GoogleFonts.poppins(fontSize: 16,
                         fontWeight: FontWeight.bold,),
                     ),
                     /*SizedBox(width: 2),
                     Text(
                       '*', // Red asterisk for required field
-                      style: TextStyle(
+                      style: GoogleFonts.poppins(
                         fontSize: 20,
                         color: Colors.red, // Red color for the asterisk
                       ),

@@ -8,6 +8,9 @@ import 'TenantDashboard.dart';
 import 'LandlordDashboard.dart';
 import 'SerialSelect.dart';
 import 'Settings.dart';
+import 'package:google_fonts/google_fonts.dart';
+
+
 class Sidebar extends StatefulWidget {
   final bool isDashEnable, isRolesVisible, isUserEnable, isRolesEnable, isUserVisible;
 
@@ -117,7 +120,7 @@ class _SidebarState extends State<Sidebar> {
                         children: [
                           Text(
                             userName,
-                            style: TextStyle(
+                            style: GoogleFonts.poppins(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
                               color: Colors.white,
@@ -128,14 +131,14 @@ class _SidebarState extends State<Sidebar> {
                           SizedBox(height: 2),
                           Text(
                             userEmail,
-                            style: TextStyle(fontSize: 14, color: Colors.white),
+                            style: GoogleFonts.poppins(fontSize: 14, color: Colors.white),
                             overflow: TextOverflow.ellipsis,
                             maxLines: 1,
                           ),
                           SizedBox(height: 2),
                           Text(
                             'ID: $userID (for testing purpose)',
-                            style: TextStyle(fontSize: 14, color: Colors.white),
+                            style: GoogleFonts.poppins(fontSize: 14, color: Colors.white),
                             softWrap: true, // Allows text to wrap instead of overflowing
                           ),
 
@@ -143,13 +146,13 @@ class _SidebarState extends State<Sidebar> {
                           if(is_admin)
                           Text(
                             'Admin (for testing purpose)',
-                            style: TextStyle(fontSize: 14, color: Colors.white),
+                            style: GoogleFonts.poppins(fontSize: 14, color: Colors.white),
                             softWrap: true, // Allows text to wrap instead of overflowing
                           ),
                           if(!is_admin)
                             Text(
                               'Tenant (for testing purpose)',
-                              style: TextStyle(fontSize: 14, color: Colors.white),
+                              style: GoogleFonts.poppins(fontSize: 14, color: Colors.white),
                               softWrap: true, // Allows text to wrap instead of overflowing
                             ),
 
@@ -178,7 +181,7 @@ class _SidebarState extends State<Sidebar> {
                   children: [
                     /*Text(
                       '$serialNo (ID: $serialID (for testing purpose only)',
-                      style: TextStyle(
+                      style: GoogleFonts.poppins(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
@@ -188,7 +191,7 @@ class _SidebarState extends State<Sidebar> {
 
                     Text(
                       '$companyName (ID: $companyID (for testing purpose only)',
-                      style: TextStyle(
+                      style: GoogleFonts.poppins(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
@@ -248,7 +251,7 @@ class _SidebarState extends State<Sidebar> {
                 alignment: Alignment.bottomCenter,
                 child: Text(
                   "v1.0",
-                  style: TextStyle(fontSize: 14, color: Colors.grey, fontWeight: FontWeight.bold),
+                  style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey, fontWeight: FontWeight.bold),
                 ),
               ),
             ),
@@ -263,7 +266,7 @@ class _SidebarState extends State<Sidebar> {
   Widget _buildDrawerItem(IconData icon, String title, bool enabled, VoidCallback onTap) {
     return ListTile(
       leading: Icon(icon, color: enabled ? Colors.black : Colors.grey),
-      title: Text(title, style: TextStyle(color: enabled ? Colors.black : Colors.grey)),
+      title: Text(title, style: GoogleFonts.poppins(color: enabled ? Colors.black : Colors.grey)),
       enabled: enabled,
       onTap: enabled ? onTap : null,
     );
@@ -285,11 +288,11 @@ class _SidebarState extends State<Sidebar> {
           content: Text("Do you really want to logout?"),
           actions: [
             TextButton(
-              child: Text("No", style: TextStyle(color: appbar_color)),
+              child: Text("No", style: GoogleFonts.poppins(color: appbar_color)),
               onPressed: () => Navigator.of(context).pop(),
             ),
             TextButton(
-              child: Text("Yes", style: TextStyle(color: appbar_color)),
+              child: Text("Yes", style: GoogleFonts.poppins(color: appbar_color)),
               onPressed: () async {
                 final prefs = await SharedPreferences.getInstance();
                 await prefs.clear();

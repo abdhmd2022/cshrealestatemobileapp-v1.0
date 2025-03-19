@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:uuid/uuid.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class MaintenanceTypeMastersReport extends StatefulWidget {
   @override
@@ -186,7 +187,7 @@ class _MaintenanceTypeMastersReportState extends State<MaintenanceTypeMastersRep
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           title: Text(
             "Maintenance Types",
-            style: TextStyle(color: appbar_color[900]),
+            style: GoogleFonts.poppins(color: appbar_color[900]),
           ),
           content: Form(
             key: _formKey,
@@ -199,7 +200,7 @@ class _MaintenanceTypeMastersReportState extends State<MaintenanceTypeMastersRep
                   children: [
                     Text(
                       "Category:",
-                      style: TextStyle(
+                      style: GoogleFonts.poppins(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
                         color: Colors.black.withOpacity(0.8),
@@ -228,7 +229,7 @@ class _MaintenanceTypeMastersReportState extends State<MaintenanceTypeMastersRep
                           value: selectedCategory,
                           hint: Text(
                             "Select a category",
-                            style: TextStyle(
+                            style: GoogleFonts.poppins(
                               fontSize: 14,
                               color: Colors.black54,
                             ),
@@ -243,7 +244,7 @@ class _MaintenanceTypeMastersReportState extends State<MaintenanceTypeMastersRep
                               value: category,
                               child: Text(
                                 category,
-                                style: TextStyle(
+                                style: GoogleFonts.poppins(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w500,
                                 ),
@@ -277,7 +278,7 @@ class _MaintenanceTypeMastersReportState extends State<MaintenanceTypeMastersRep
                   },
                   decoration: InputDecoration(
                     labelText: "Maintenace Type Name",
-                    labelStyle: TextStyle(color: Colors.black54),
+                    labelStyle: GoogleFonts.poppins(color: Colors.black54),
                     focusedBorder: OutlineInputBorder(
                       borderSide: BorderSide(color: appbar_color),
                     ),
@@ -295,7 +296,7 @@ class _MaintenanceTypeMastersReportState extends State<MaintenanceTypeMastersRep
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: Text("Cancel", style: TextStyle(color: appbar_color)),
+              child: Text("Cancel", style: GoogleFonts.poppins(color: appbar_color)),
             ),
             ElevatedButton(
               onPressed: () {
@@ -310,7 +311,7 @@ class _MaintenanceTypeMastersReportState extends State<MaintenanceTypeMastersRep
 
               },
               style: ElevatedButton.styleFrom(backgroundColor: appbar_color),
-              child: Text("Submit",style: TextStyle(color: Colors.white)),
+              child: Text("Submit",style: GoogleFonts.poppins(color: Colors.white)),
             ),
           ],
         );
@@ -334,7 +335,7 @@ class _MaintenanceTypeMastersReportState extends State<MaintenanceTypeMastersRep
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           title: Text(
             "Edit Maintenance Type",
-            style: TextStyle(color: appbar_color[900],
+            style: GoogleFonts.poppins(color: appbar_color[900],
             ),
           ),
           content: Form(
@@ -349,7 +350,7 @@ class _MaintenanceTypeMastersReportState extends State<MaintenanceTypeMastersRep
                   children: [
                     Text(
                       "Category:",
-                      style: TextStyle(
+                      style: GoogleFonts.poppins(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
                         color: Colors.black.withOpacity(0.8),
@@ -378,7 +379,7 @@ class _MaintenanceTypeMastersReportState extends State<MaintenanceTypeMastersRep
                           value: selectedCategory,
                           hint: Text(
                             "Select a category",
-                            style: TextStyle(
+                            style: GoogleFonts.poppins(
                               fontSize: 14,
                               color: Colors.black54,
                             ),
@@ -393,7 +394,7 @@ class _MaintenanceTypeMastersReportState extends State<MaintenanceTypeMastersRep
                               value: category,
                               child: Text(
                                 category,
-                                style: TextStyle(
+                                style: GoogleFonts.poppins(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w500,
                                 ),
@@ -430,7 +431,7 @@ class _MaintenanceTypeMastersReportState extends State<MaintenanceTypeMastersRep
                     fillColor: Colors.white70, // Background color set to white
                     filled: true, // Ensures the fill color is applied
 
-                    labelStyle: TextStyle(color: Colors.black54),
+                    labelStyle: GoogleFonts.poppins(color: Colors.black54),
                     focusedBorder: OutlineInputBorder(
                       borderSide: BorderSide(color: appbar_color),
                     ),
@@ -448,7 +449,7 @@ class _MaintenanceTypeMastersReportState extends State<MaintenanceTypeMastersRep
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: Text("Cancel", style: TextStyle(color: appbar_color)),
+              child: Text("Cancel", style: GoogleFonts.poppins(color: appbar_color)),
             ),
             ElevatedButton(
               onPressed: () {
@@ -463,7 +464,7 @@ class _MaintenanceTypeMastersReportState extends State<MaintenanceTypeMastersRep
 
               },
               style: ElevatedButton.styleFrom(backgroundColor: appbar_color),
-              child: Text("Submit",style: TextStyle(color: Colors.white)),
+              child: Text("Submit",style: GoogleFonts.poppins(color: Colors.white)),
             ),
           ],
         );
@@ -562,7 +563,7 @@ class _MaintenanceTypeMastersReportState extends State<MaintenanceTypeMastersRep
             color: Colors.white,
           ),),
         title: Text('Maintenance Types',
-          style: TextStyle(
+          style: GoogleFonts.poppins(
               color: Colors.white
           ),),
         backgroundColor: appbar_color.withOpacity(0.9),
@@ -578,7 +579,7 @@ class _MaintenanceTypeMastersReportState extends State<MaintenanceTypeMastersRep
           ? Center(
         child: Text(
           'No data available',
-          style: TextStyle(color: appbar_color.withOpacity(0.9), fontSize: 18),
+          style: GoogleFonts.poppins(color: appbar_color.withOpacity(0.9), fontSize: 18),
         ),
       )
           : ListView.builder(
@@ -611,7 +612,7 @@ class _MaintenanceTypeMastersReportState extends State<MaintenanceTypeMastersRep
                         SizedBox(width: 5,),
                         Text(
                           type['name'] ?? 'Unnamed',
-                          style: TextStyle(
+                          style: GoogleFonts.poppins(
                             fontWeight: FontWeight.normal,
                             color: appbar_color[800],
                           ),
@@ -625,7 +626,7 @@ class _MaintenanceTypeMastersReportState extends State<MaintenanceTypeMastersRep
                       children: [
                         Text(
                           'Category:',
-                          style: TextStyle(
+                          style: GoogleFonts.poppins(
                             fontWeight: FontWeight.bold,
                             color: appbar_color[800],
                           ),
@@ -634,7 +635,7 @@ class _MaintenanceTypeMastersReportState extends State<MaintenanceTypeMastersRep
                         SizedBox(width: 5,),
                         Text(
                           type['category'] ?? 'Unnamed',
-                          style: TextStyle(
+                          style: GoogleFonts.poppins(
                             fontWeight: FontWeight.normal,
                             color: appbar_color[800],
                           ),
@@ -724,7 +725,7 @@ Widget _buildDecentButton(
           SizedBox(width: 8.0),
           Text(
             label,
-            style: TextStyle(
+            style: GoogleFonts.poppins(
               color: color,
               fontWeight: FontWeight.w600,
             ),

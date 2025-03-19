@@ -5,7 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:url_launcher/url_launcher.dart';
-
+import 'package:google_fonts/google_fonts.dart';
 import 'constants.dart';
 
 class BuildingReportScreen extends StatelessWidget {
@@ -56,7 +56,7 @@ class BuildingReportScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: appbar_color.withOpacity(0.9),
         title: Text(buildingName,
-            style: TextStyle(color: Colors.white)),
+            style: GoogleFonts.poppins(color: Colors.white)),
         centerTitle: true,
         leading: GestureDetector(
 
@@ -85,7 +85,7 @@ class BuildingReportScreen extends StatelessWidget {
                 children: [
                   Text(
                     '$buildingName Units Overview',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
 
                   SizedBox(height: 1),
@@ -212,7 +212,7 @@ class PieChartGraph extends StatelessWidget {
                     end: Alignment.bottomCenter,
                   ),
                   title: "${totalOccupied.toString()} Unit(s)",
-                  titleStyle: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
+                  titleStyle: GoogleFonts.poppins(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
                   radius: 120,
                 ),
                 PieChartSectionData(
@@ -223,7 +223,7 @@ class PieChartGraph extends StatelessWidget {
                     end: Alignment.bottomCenter,
                   ),
                   title: '${totalAvailable.toString()} Unit(s)',
-                  titleStyle: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
+                  titleStyle: GoogleFonts.poppins(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
                   radius: 120,
                 ),
               ],
@@ -257,7 +257,7 @@ class Indicator extends StatelessWidget {
           ),
         ),
         SizedBox(width: 4),
-        Text(text, style: TextStyle(fontSize: 12)),
+        Text(text, style: GoogleFonts.poppins(fontSize: 12)),
       ],
     );
   }
@@ -333,7 +333,7 @@ class Indicator extends StatelessWidget {
                       axisSide: meta.axisSide,
                       child: Text(
                         buildingName, // Single building label
-                        style: TextStyle(fontSize: 10), // Adjust font size
+                        style: GoogleFonts.poppins(fontSize: 10), // Adjust font size
                       ),
                     );
                   },

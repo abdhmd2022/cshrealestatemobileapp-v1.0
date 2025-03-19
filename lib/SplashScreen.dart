@@ -63,7 +63,7 @@ class _SplashScreenState extends State<SplashScreen> {
               child: Center(
                   child: Text(
                       "© 2024 Chaturvedi Software House LLC. All Rights Reserved.",
-                      style: TextStyle(
+                      style: GoogleFonts.poppins(
                         color: Colors.black54, // You can adjust the color here
                         fontSize: 12, // You can adjust the font size here
                       ))))]));}}*/

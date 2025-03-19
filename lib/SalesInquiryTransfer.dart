@@ -10,6 +10,7 @@ import 'package:flutter/widgets.dart';
 import 'package:uuid/uuid.dart';
 import 'SalesInquiryReport.dart';
 import 'Sidebar.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class User {
   final String email;
@@ -212,7 +213,7 @@ class _SalesInquiryTransferPageState extends State<SalesInquiryTransfer> with Ti
             ),),
 
           title: Text('Inquiry Transfer',
-            style: TextStyle(
+            style: GoogleFonts.poppins(
                 color: Colors.white
             ),),
         ),
@@ -278,7 +279,7 @@ class _SalesInquiryTransferPageState extends State<SalesInquiryTransfer> with Ti
                                                 ),
                                                 SizedBox(width: 8,),
                                                 Text(widget.name,
-                                                    style: TextStyle(
+                                                    style: GoogleFonts.poppins(
                                                         color: appbar_color.withOpacity(1),
                                                         fontWeight: FontWeight.bold,
 
@@ -305,7 +306,7 @@ class _SalesInquiryTransferPageState extends State<SalesInquiryTransfer> with Ti
                                                 ),
                                                 SizedBox(width: 8,),
                                                 Text(widget.email,
-                                                    style: TextStyle(
+                                                    style: GoogleFonts.poppins(
                                                         color: appbar_color.withOpacity(1),
                                                         fontWeight: FontWeight.bold
                                                     ))
@@ -331,7 +332,7 @@ class _SalesInquiryTransferPageState extends State<SalesInquiryTransfer> with Ti
                                     child: Row(
                                       children: [
                                         Text("Transfer To:",
-                                            style: TextStyle(
+                                            style: GoogleFonts.poppins(
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 16
                                             )
@@ -339,7 +340,7 @@ class _SalesInquiryTransferPageState extends State<SalesInquiryTransfer> with Ti
                                         SizedBox(width: 2),
                                         Text(
                                           '*', // Red asterisk for required field
-                                          style: TextStyle(
+                                          style: GoogleFonts.poppins(
                                             fontSize: 20,
                                             color: Colors.red, // Red color for the asterisk
                                           ),
@@ -402,7 +403,7 @@ class _SalesInquiryTransferPageState extends State<SalesInquiryTransfer> with Ti
                                     child: Row(
                                       children: [
                                         Text("Remarks:",
-                                            style: TextStyle(
+                                            style: GoogleFonts.poppins(
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 16
 
@@ -411,7 +412,7 @@ class _SalesInquiryTransferPageState extends State<SalesInquiryTransfer> with Ti
                                         SizedBox(width: 2),
                                         Text(
                                           '*', // Red asterisk for required field
-                                          style: TextStyle(
+                                          style: GoogleFonts.poppins(
                                             fontSize: 20,
                                             color: Colors.red, // Red color for the asterisk
                                           ),
@@ -434,7 +435,7 @@ class _SalesInquiryTransferPageState extends State<SalesInquiryTransfer> with Ti
                                           maxLength: 500, // Limit input to 500 characters
                                           maxLines: 3, // A
                                           decoration: InputDecoration(
-                                            floatingLabelStyle: TextStyle(
+                                            floatingLabelStyle: GoogleFonts.poppins(
                                               color: appbar_color, // Change label color when focused
                                               fontWeight: FontWeight.normal,
                                             ),
@@ -453,11 +454,11 @@ class _SalesInquiryTransferPageState extends State<SalesInquiryTransfer> with Ti
                                                 color:  appbar_color, // Set the focused border color
                                               ),
                                             ),
-                                            labelStyle: TextStyle(
+                                            labelStyle: GoogleFonts.poppins(
                                               color: Colors.black,
                                             ),
                                           ),
-                                          style: TextStyle(
+                                          style: GoogleFonts.poppins(
                                             color: Colors.black,
                                             fontSize: 15,
                                           ))),
@@ -478,7 +479,7 @@ class _SalesInquiryTransferPageState extends State<SalesInquiryTransfer> with Ti
                                 right: 20
                             ),
                             child: Text("Total Amount:",
-                                style: TextStyle(
+                                style: GoogleFonts.poppins(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 16
 
@@ -512,7 +513,7 @@ class _SalesInquiryTransferPageState extends State<SalesInquiryTransfer> with Ti
                                       ),
                                     ),
                                   ),
-                                  style: TextStyle(
+                                  style: GoogleFonts.poppins(
                                     color: Colors.black,
                                     fontSize: 15,
                                   ))),
@@ -537,7 +538,7 @@ class _SalesInquiryTransferPageState extends State<SalesInquiryTransfer> with Ti
 
                                   }},
                                 child: Text('Transfer',
-                                    style: TextStyle(
+                                    style: GoogleFonts.poppins(
                                         color: Colors.white
                                     )),
                               ),)
@@ -580,7 +581,7 @@ Widget _buildDecentButton(
           SizedBox(width: 8.0),
           Text(
             label,
-            style: TextStyle(
+            style: GoogleFonts.poppins(
               color: color,
               fontWeight: FontWeight.w600,
             ),

@@ -13,6 +13,7 @@ import 'SalesInquiryReport.dart';
 import 'constants.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_switch/flutter_switch.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class InquiryStatus {
   final int id;
@@ -741,7 +742,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                 SizedBox(height: 10),
                 Text(
                   "Unit Type(s)",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -759,7 +760,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                     },
                     decoration: InputDecoration(
                       labelText: 'Search Unit Types',
-                      labelStyle: TextStyle(color: Colors.black54),
+                      labelStyle: GoogleFonts.poppins(color: Colors.black54),
                       prefixIcon: Icon(Icons.search),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
@@ -782,7 +783,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                       alignment: Alignment.topRight,
                       child: CheckboxListTile(
                         title: Text("Select All",
-                          style: TextStyle(color: Colors.black),
+                          style: GoogleFonts.poppins(color: Colors.black),
                         ),
                         activeColor: appbar_color,
 
@@ -896,7 +897,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                 SizedBox(height: 10),
                 Text(
                   "Emirate(s)",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -913,7 +914,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                     },
                     decoration: InputDecoration(
                       labelText: 'Search Emirate(s)',
-                      labelStyle: TextStyle(color: Colors.black54),
+                      labelStyle: GoogleFonts.poppins(color: Colors.black54),
                       prefixIcon: Icon(Icons.search, color: Colors.black54),
 
                       border: OutlineInputBorder(
@@ -1046,7 +1047,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                 SizedBox(height: 10),
                 Text(
                   "Select Area(s)",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -1063,7 +1064,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                     },
                     decoration: InputDecoration(
                       labelText: 'Search Areas',
-                      labelStyle: TextStyle(color: Colors.black54),
+                      labelStyle: GoogleFonts.poppins(color: Colors.black54),
 
                       prefixIcon: Icon(Icons.search, color: Colors.black54),
                       border: OutlineInputBorder(
@@ -1222,7 +1223,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
               color: Colors.white,
             ),),
           title: Text('Create Inquiry',
-            style: TextStyle(
+            style: GoogleFonts.poppins(
                 color: Colors.white
             )),
         ),
@@ -1256,7 +1257,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                             Text(
                               'Create Inquiry',
                               textAlign: TextAlign.start,
-                              style: TextStyle(
+                              style: GoogleFonts.poppins(
                                 color: Colors.black,
                                 fontSize: 30,
                                 fontWeight: FontWeight.bold,
@@ -1267,7 +1268,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                             Text(
                               'Create your sales inquiry',
                               textAlign: TextAlign.start,
-                              style: TextStyle(
+                              style: GoogleFonts.poppins(
                                 color: Colors.black,
                                 fontSize: 15,
                                 fontWeight: FontWeight.normal,
@@ -1307,7 +1308,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                             Row(
                                               children: [
                                                 Text("Interest Type:",
-                                                    style: TextStyle(
+                                                    style: GoogleFonts.poppins(
                                                         fontWeight: FontWeight.bold,
                                                         fontSize: 16
 
@@ -1316,7 +1317,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                 SizedBox(width: 2),
                                                 Text(
                                                   '*', // Red asterisk for required field
-                                                  style: TextStyle(
+                                                  style: GoogleFonts.poppins(
                                                     fontSize: 20,
                                                     color: Colors.red, // Red color for the asterisk
                                                   ),
@@ -1329,7 +1330,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                               children: [
                                                 Text(
                                                   "Rent",
-                                                  style: TextStyle(
+                                                  style: GoogleFonts.poppins(
                                                     color: selectedInterestType == 0 ? appbar_color : Colors.grey,
                                                     fontWeight: FontWeight.bold,
                                                   ),
@@ -1352,7 +1353,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                 SizedBox(width: 10),
                                                 Text(
                                                   "Buy",
-                                                  style: TextStyle(
+                                                  style: GoogleFonts.poppins(
                                                     color: selectedInterestType == 1 ? appbar_color : Colors.grey,
                                                     fontWeight: FontWeight.bold,
                                                   ),
@@ -1368,7 +1369,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                               Row(
                                                 children: [
                                                   Text("Property Type:",
-                                                      style: TextStyle(
+                                                      style: GoogleFonts.poppins(
                                                           fontWeight: FontWeight.bold,
                                                           fontSize: 16
 
@@ -1377,7 +1378,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                   SizedBox(width: 2),
                                                   Text(
                                                     '*', // Red asterisk for required field
-                                                    style: TextStyle(
+                                                    style: GoogleFonts.poppins(
                                                       fontSize: 20,
                                                       color: Colors.red, // Red color for the asterisk
                                                     ),
@@ -1408,7 +1409,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                           SizedBox(height: 5),
                                                           Text(
                                                             amenity,
-                                                            style: TextStyle(
+                                                            style: GoogleFonts.poppins(
                                                               color: isSelected ? Colors.white : Colors.black,
                                                             ),
                                                           ),
@@ -1446,7 +1447,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                       hintText: 'Select Activity Source ',
                                                       label: Text(
                                                         'Activity Source',
-                                                        style: TextStyle(
+                                                        style: GoogleFonts.poppins(
                                                           fontWeight: FontWeight.normal,
                                                           color: Colors.black,
                                                         ),
@@ -1478,7 +1479,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                         value: status,
                                                         child: Text(
                                                           status.name,  // Display the 'name'
-                                                          style: TextStyle(color: Colors.black87),
+                                                          style: GoogleFonts.poppins(color: Colors.black87),
                                                         ),
                                                       );
                                                     }).toList(),
@@ -1508,7 +1509,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                 return null;
                                               },
                                               decoration: InputDecoration(
-                                                floatingLabelStyle: TextStyle(
+                                                floatingLabelStyle: GoogleFonts.poppins(
                                                   color: appbar_color, // Change label color when focused
                                                   fontWeight: FontWeight.normal,
                                                 ),
@@ -1574,14 +1575,14 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                       return null;
                     },
                     decoration: InputDecoration(
-                      floatingLabelStyle: TextStyle(
+                      floatingLabelStyle: GoogleFonts.poppins(
                         color: appbar_color, // Change label color when focused
                         fontWeight: FontWeight.normal,
                       ),
                       hintText: _hintText,
                       contentPadding: EdgeInsets.all(15),
                       label: Text('Contact No',
-                          style: TextStyle(fontWeight: FontWeight.normal)),
+                          style: GoogleFonts.poppins(fontWeight: FontWeight.normal)),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                         borderSide: const BorderSide(color: Colors.black),
@@ -1608,9 +1609,9 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Text(_selectedCountryFlag, style: const TextStyle(fontSize: 18)),
+                              Text(_selectedCountryFlag, style:  GoogleFonts.poppins(fontSize: 18)),
                               const SizedBox(width: 5),
-                              Text('$_selectedCountryCode', style: const TextStyle(fontSize: 16)),
+                              Text('$_selectedCountryCode', style:  GoogleFonts.poppins(fontSize: 16)),
                             ],
                           ),
                         ),
@@ -1681,14 +1682,14 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                   controller: whatsappnocontroller,
                   keyboardType: TextInputType.phone,
                   decoration: InputDecoration(
-                    floatingLabelStyle: TextStyle(
+                    floatingLabelStyle: GoogleFonts.poppins(
                       color: appbar_color, // Change label color when focused
                       fontWeight: FontWeight.normal,
                     ),
                     hintText: _hintTextWhatsapp,
                     contentPadding: EdgeInsets.all(15),
                     label: Text('WhatsApp No',
-                        style: TextStyle(fontWeight: FontWeight.normal,
+                        style: GoogleFonts.poppins(fontWeight: FontWeight.normal,
                             )),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
@@ -1728,9 +1729,9 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Text(_selectedCountryFlagWhatsapp, style: const TextStyle(fontSize: 18)),
+                            Text(_selectedCountryFlagWhatsapp, style:  GoogleFonts.poppins(fontSize: 18)),
                             const SizedBox(width: 5),
-                            Text('$_selectedCountryCodeWhatsapp', style: const TextStyle(fontSize: 16)),
+                            Text('$_selectedCountryCodeWhatsapp', style:  GoogleFonts.poppins(fontSize: 16)),
                           ],
                         ),
                       ),
@@ -1754,7 +1755,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                               decoration: InputDecoration(
                                                 hintText: 'Enter Contact No',
                                                 label: Text('Contact No.',
-                                                  style: TextStyle(
+                                                  style: GoogleFonts.poppins(
                                                       fontWeight: FontWeight.normal,
                                                       color: Colors.black
                                                   ),),
@@ -1822,12 +1823,12 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                               },
                                               decoration: InputDecoration(
                                                 hintText: 'Enter Email Address',
-                                                floatingLabelStyle: TextStyle(
+                                                floatingLabelStyle: GoogleFonts.poppins(
                                                   color: appbar_color, // Change label color when focused
                                                   fontWeight: FontWeight.normal,
                                                 ),
                                                 label: Text('Email Address',
-                                                  style: TextStyle(
+                                                  style: GoogleFonts.poppins(
                                                       fontWeight: FontWeight.normal,
 
                                                   ),),
@@ -1893,7 +1894,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                     hintText: 'Select Inquiry Status (required)',
                                                     label: Text(
                                                       'Inquiry Status',
-                                                      style: TextStyle(
+                                                      style: GoogleFonts.poppins(
                                                         fontWeight: FontWeight.normal,
                                                         color: Colors.black,
                                                       ),
@@ -1925,7 +1926,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                       value: status,
                                                       child: Text(
                                                         status.name,  // Display the 'name'
-                                                        style: TextStyle(color: Colors.black87),
+                                                        style: GoogleFonts.poppins(color: Colors.black87),
                                                       ),
                                                     );
                                                   }).toList(),
@@ -1954,7 +1955,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                         children: [
                                           Text(
                                             "Next Follow-Up:",
-                                            style: TextStyle(
+                                            style: GoogleFonts.poppins(
                                               fontWeight: FontWeight.bold,
                                               fontSize: 16,
                                             ),
@@ -2001,7 +2002,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                       nextFollowUpDate != null
                                                           ? DateFormat( "dd-MMM-yyyy").format(nextFollowUpDate!) // Formatting date
                                                           : "",
-                                                      style: TextStyle(fontSize: 16, color: Colors.black87),
+                                                      style: GoogleFonts.poppins(fontSize: 16, color: Colors.black87),
                                                     ),
                                                     SizedBox(width: 10),
 
@@ -2018,7 +2019,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                           child:Row(
                                             children: [
                                               Text("Next Follow-Up:",
-                                                  style: TextStyle(
+                                                  style: GoogleFonts.poppins(
                                                       fontWeight: FontWeight.bold,
                                                       fontSize: 16
                                                   )
@@ -2027,7 +2028,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                   /*SizedBox(width: 2),
                                               Text(
                                                 '*', // Red asterisk for required field
-                                                style: TextStyle(
+                                                style: GoogleFonts.poppins(
                                                   fontSize: 20,
                                                   color: Colors.red, // Red color for the asterisk
                                                 ),
@@ -2087,7 +2088,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                     nextFollowUpDate != null
                                                         ? "${nextFollowUpDate!.day}-${nextFollowUpDate!.month}-${nextFollowUpDate!.year}"
                                                         : "Select Next Follow-Up Date",
-                                                    style: TextStyle(fontSize: 16, color: Colors.black54),
+                                                    style: GoogleFonts.poppins(fontSize: 16, color: Colors.black54),
                                                   ),
 
                                                 ],
@@ -2108,7 +2109,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                       children: [
                                         Text(
                                             "Unit Type:",
-                                            style: TextStyle(
+                                            style: GoogleFonts.poppins(
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 16
                                             )
@@ -2116,7 +2117,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                         SizedBox(width: 2),
                                         Text(
                                           '*', // Red asterisk for required field
-                                          style: TextStyle(
+                                          style: GoogleFonts.poppins(
                                             fontSize: 20,
                                             color: Colors.red, // Red color for the asterisk
                                           ))])
@@ -2129,7 +2130,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                       child: TextFormField(
                                         controller: TextEditingController(text: selectedUnitType),
                                         decoration: InputDecoration(
-                                          floatingLabelStyle: TextStyle(
+                                          floatingLabelStyle: GoogleFonts.poppins(
                                             color: appbar_color, // Change label color when focused
                                             fontWeight: FontWeight.normal,
                                           ),
@@ -2153,8 +2154,8 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                             borderRadius: BorderRadius.circular(10),
                                             borderSide: BorderSide(color:appbar_color), // Black focused border
                                           ),
-                                          labelStyle: TextStyle(color: Colors.black),
-                                          hintStyle: TextStyle(color: Colors.black), // Hint text color (white for better contrast)
+                                          labelStyle: GoogleFonts.poppins(color: Colors.black),
+                                          hintStyle: GoogleFonts.poppins(color: Colors.black), // Hint text color (white for better contrast)
                                         ),
                                         enabled: false, //// Disable direct editing
                                         validator: (value) {
@@ -2193,7 +2194,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                             color:  Colors.black, // Set the focused border color
                                           ),
                                         ),
-                                        labelStyle: TextStyle(
+                                        labelStyle: GoogleFonts.poppins(
                                           color: Colors.black,
                                         ),
                                       ),
@@ -2232,7 +2233,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                           child:Row(
                                             children: [
                                               Text("Select Emirate:",
-                                                  style: TextStyle(
+                                                  style: GoogleFonts.poppins(
                                                       fontWeight: FontWeight.bold,
                                                       fontSize: 16
                                                   )
@@ -2240,7 +2241,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                               SizedBox(width: 2),
                                               Text(
                                                 '*', // Red asterisk for required field
-                                                style: TextStyle(
+                                                style: GoogleFonts.poppins(
                                                   fontSize: 20,
                                                   color: Colors.red, // Red color for the asterisk
                                                 ))])),
@@ -2268,13 +2269,13 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                       children: selectedEmiratesString.split(', ').map((emirate) {
                                                         return Text(
                                                           emirate, // Display each emirate on a new line
-                                                          style: TextStyle(fontSize: 16, color: Colors.grey),
+                                                          style: GoogleFonts.poppins(fontSize: 16, color: Colors.grey),
                                                         );
                                                       }).toList(),
                                                     )
                                                         : Text(
                                                       'Select Emirate', // Placeholder text when no emirates are selected
-                                                      style: TextStyle(fontSize: 16, color: Colors.grey),
+                                                      style: GoogleFonts.poppins(fontSize: 16, color: Colors.grey),
                                                     ),
                                                   ),
                                                   // Down arrow icon
@@ -2345,7 +2346,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                     child: Row(
                                       children: [
                                         Text("Area:",
-                                            style: TextStyle(
+                                            style: GoogleFonts.poppins(
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 16
                                             )
@@ -2353,7 +2354,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                         SizedBox(width: 2),
                                         Text(
                                           '*', // Red asterisk for required field
-                                          style: TextStyle(
+                                          style: GoogleFonts.poppins(
                                             fontSize: 20,
                                             color: Colors.red, // Red color for the asterisk
                                           ),
@@ -2384,13 +2385,13 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                 children: selectedAreasString.split(', ').map((emirate) {
                                                   return Text(
                                                     emirate, // Display each emirate on a new line
-                                                    style: TextStyle(fontSize: 16, color: Colors.grey),
+                                                    style: GoogleFonts.poppins(fontSize: 16, color: Colors.grey),
                                                   );
                                                 }).toList(),
                                               )
                                                   : Text(
                                                 'Select Area(s)', // Placeholder text when no emirates are selected
-                                                style: TextStyle(fontSize: 16, color: Colors.grey),
+                                                style: GoogleFonts.poppins(fontSize: 16, color: Colors.grey),
                                               ),
                                             ),
                                             // Down arrow icon
@@ -2412,7 +2413,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                         Row(
                                           children: [
                                             Text("Amenities:",
-                                                style: TextStyle(
+                                                style: GoogleFonts.poppins(
                                                     fontWeight: FontWeight.bold,
                                                     fontSize: 16
 
@@ -2421,7 +2422,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                             SizedBox(width: 2),
                                             Text(
                                               '*', // Red asterisk for required field
-                                              style: TextStyle(
+                                              style: GoogleFonts.poppins(
                                                 fontSize: 20,
                                                 color: Colors.red, // Red color for the asterisk
                                               ),
@@ -2453,16 +2454,16 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                             confirmText: Text(
                                               "Confirm",
 
-                                              style: TextStyle(color: appbar_color), // Custom confirm button
+                                              style: GoogleFonts.poppins(color: appbar_color), // Custom confirm button
                                             ),
                                             cancelText: Text(
                                               "Cancel",
-                                              style: TextStyle(color: appbar_color), // Custom cancel button
+                                              style: GoogleFonts.poppins(color: appbar_color), // Custom cancel button
                                             ),
                                             buttonIcon: Icon(Icons.arrow_drop_down, color: Colors.black54),
                                             buttonText: Text(
                                               "Select Amenities",
-                                              style: TextStyle(color: Colors.black54, fontSize: 16),
+                                              style: GoogleFonts.poppins(color: Colors.black54, fontSize: 16),
                                             ),
                                             onConfirm: (values) {
                                               setState(() {
@@ -2495,7 +2496,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                         Row(
                                           children: [
                                             Text("Preferences:",
-                                                style: TextStyle(
+                                                style: GoogleFonts.poppins(
                                                     fontWeight: FontWeight.bold,
                                                     fontSize: 16
                                                 )
@@ -2503,7 +2504,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                             SizedBox(width: 2),
                                             Text(
                                               '*', // Red asterisk for required field
-                                              style: TextStyle(
+                                              style: GoogleFonts.poppins(
                                                 fontSize: 20,
                                                 color: Colors.red, // Red color for the asterisk
                                               ),
@@ -2532,16 +2533,16 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                         checkColor: Colors.white,
                                         confirmText: Text(
                                           "Confirm",
-                                          style: TextStyle(color: appbar_color),
+                                          style: GoogleFonts.poppins(color: appbar_color),
                                         ),
                                         cancelText: Text(
                                           "Cancel",
-                                          style: TextStyle(color: appbar_color),
+                                          style: GoogleFonts.poppins(color: appbar_color),
                                         ),
                                         buttonIcon: Icon(Icons.arrow_drop_down, color: Colors.black54),
                                         buttonText: Text(
                                           "Select Preferences",
-                                          style: TextStyle(color: Colors.black54, fontSize: 16),
+                                          style: GoogleFonts.poppins(color: Colors.black54, fontSize: 16),
                                         ),
                                         onConfirm: (values) {
                                           setState(() {
@@ -2574,7 +2575,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                         Row(
                                           children: [
                                             Text("Price Range:",
-                                                style: TextStyle(
+                                                style: GoogleFonts.poppins(
                                                     fontWeight: FontWeight.bold,
                                                     fontSize: 16
                                                 )
@@ -2582,7 +2583,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                             SizedBox(width: 2),
                                             Text(
                                               '*', // Red asterisk for required field
-                                              style: TextStyle(
+                                              style: GoogleFonts.poppins(
                                                 fontSize: 20,
                                                 color: Colors.red, // Red color for the asterisk
                                               ),
@@ -2606,7 +2607,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                 keyboardType: TextInputType.number,
                                                 decoration: InputDecoration(
                                                   label: Text('From'),
-                                                  floatingLabelStyle: TextStyle(
+                                                  floatingLabelStyle: GoogleFonts.poppins(
                                                     color: Colors.black, // Change label color when focused
                                                     fontWeight: FontWeight.normal,
                                                   ),
@@ -2644,7 +2645,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                 keyboardType: TextInputType.number,
                                                 decoration: InputDecoration(
                                                   label: Text('To'),
-                                                  floatingLabelStyle: TextStyle(
+                                                  floatingLabelStyle: GoogleFonts.poppins(
                                                     color: Colors.black, // Change label color when focused
                                                     fontWeight: FontWeight.normal,
                                                   ),
@@ -2712,7 +2713,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                             color:  Colors.black, // Set the focused border color
                                           ),
                                         ),
-                                        labelStyle: TextStyle(
+                                        labelStyle: GoogleFonts.poppins(
                                           color: Colors.black,
                                         ),
                                       ),
@@ -2753,7 +2754,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                           child:Row(
                                             children: [
                                               Text("Assigned To:",
-                                                  style: TextStyle(
+                                                  style: GoogleFonts.poppins(
                                                       fontWeight: FontWeight.bold,
                                                       fontSize: 16
                                                   )
@@ -2761,7 +2762,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                               SizedBox(width: 2),
                                               Text(
                                                 '*', // Red asterisk for required field
-                                                style: TextStyle(
+                                                style: GoogleFonts.poppins(
                                                   fontSize: 20,
                                                   color: Colors.red, // Red color for the asterisk
                                                 ),
@@ -2829,7 +2830,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                     child: Row(
                                       children: [
                                         Text("Description:",
-                                            style: TextStyle(
+                                            style: GoogleFonts.poppins(
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 16
                                             )
@@ -2837,7 +2838,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                         SizedBox(width: 2),
                                         Text(
                                           '*', // Red asterisk for required field
-                                          style: TextStyle(
+                                          style: GoogleFonts.poppins(
                                             fontSize: 20,
                                             color: Colors.red, // Red color for the asterisk
                                           ),
@@ -2861,7 +2862,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                         decoration: InputDecoration(
                                           hintText: 'Enter Description',
                                           labelText: 'Description',
-                                          floatingLabelStyle: TextStyle(
+                                          floatingLabelStyle: GoogleFonts.poppins(
                                             color: appbar_color, // Change label color when focused
                                             fontWeight: FontWeight.normal,
                                           ),
@@ -2878,7 +2879,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                               color:  appbar_color, // Set the focused border color
                                             ),
                                           ),
-                                          labelStyle: TextStyle(
+                                          labelStyle: GoogleFonts.poppins(
                                             color: Colors.black,
                                           ),
                                         ),

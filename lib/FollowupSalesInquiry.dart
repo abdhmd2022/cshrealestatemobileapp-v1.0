@@ -11,6 +11,7 @@ import 'SalesInquiryReport.dart';
 import 'constants.dart';
 import 'package:http/http.dart' as http;
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class FollowUpStatus {
   final int id;
@@ -335,7 +336,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: Text("OK", style: TextStyle(color: appbar_color)),
+              child: Text("OK", style: GoogleFonts.poppins(color: appbar_color)),
             )
           ],
         ),
@@ -374,7 +375,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
               backgroundColor: Colors.white,
               title: Text(
                 "Send Email",
-                style: TextStyle(color: Colors.black),
+                style: GoogleFonts.poppins(color: Colors.black),
               ),
               content: SingleChildScrollView(
                   child: Column(
@@ -384,10 +385,10 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                       TextField(
                         controller: subjectController,
                         enabled: false,
-                        style: TextStyle(color: Colors.black54),
+                        style: GoogleFonts.poppins(color: Colors.black54),
                         decoration: InputDecoration(
                           labelText: "Subject",
-                          labelStyle: TextStyle(color: Colors.black54),
+                          labelStyle: GoogleFonts.poppins(color: Colors.black54),
                           border: OutlineInputBorder(
                             borderSide: BorderSide(color: isSubjectEmpty ? Colors.red : Colors.black),
                             borderRadius: BorderRadius.circular(8),
@@ -411,10 +412,10 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                       TextField(
                         controller: bodyController,
                         maxLines: 3,
-                        style: TextStyle(color: Colors.black),
+                        style: GoogleFonts.poppins(color: Colors.black),
                         decoration: InputDecoration(
                           labelText: "Message Body",
-                          labelStyle: TextStyle(color: Colors.black54),
+                          labelStyle: GoogleFonts.poppins(color: Colors.black54),
                           border: OutlineInputBorder(
                             borderSide: BorderSide(color: isBodyEmpty ? Colors.red : Colors.black),
                             borderRadius: BorderRadius.circular(8),
@@ -437,10 +438,10 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                       TextField(
                         controller: ccController,
                         enabled: true,
-                        style: TextStyle(color: Colors.black54),
+                        style: GoogleFonts.poppins(color: Colors.black54),
                         decoration: InputDecoration(
                           labelText: "CC Emails (comma-separated)",
-                          labelStyle: TextStyle(color: Colors.black54),
+                          labelStyle: GoogleFonts.poppins(color: Colors.black54),
                           hintText: "example1@mail.com, example2@mail.com",
                           border: OutlineInputBorder(
                             borderSide: BorderSide(color:  Colors.black),
@@ -460,7 +461,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                         value: selectedfollowup_type,
                         decoration: InputDecoration(
                           labelText: 'Follow-up Type*',
-                          labelStyle: TextStyle(color: Colors.black),
+                          labelStyle: GoogleFonts.poppins(color: Colors.black),
                           border: OutlineInputBorder(
                             borderSide: BorderSide(color: isFollowUpTypeEmpty ? Colors.red : Colors.black54),
                             borderRadius: BorderRadius.circular(8),
@@ -476,7 +477,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                         items: followuptype_list.map((FollowUpType status) {
                           return DropdownMenuItem<FollowUpType>(
                             value: status,
-                            child: Text(status.name, style: TextStyle(color: Colors.black87)),
+                            child: Text(status.name, style: GoogleFonts.poppins(color: Colors.black87)),
                           );
                         }).toList(),
                         onChanged: (FollowUpType? value) {
@@ -495,7 +496,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                         value: selectedfollowup_status,
                         decoration: InputDecoration(
                           labelText: 'Follow-up Status*',
-                          labelStyle: TextStyle(color: Colors.black),
+                          labelStyle: GoogleFonts.poppins(color: Colors.black),
                           border: OutlineInputBorder(
                             borderSide: BorderSide(color: isFollowUpStatusEmpty ? Colors.red : Colors.black54),
                             borderRadius: BorderRadius.circular(8),
@@ -511,7 +512,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                         items: followupstatus_list.map((FollowUpStatus status) {
                           return DropdownMenuItem<FollowUpStatus>(
                             value: status,
-                            child: Text(status.name, style: TextStyle(color: Colors.black87)),
+                            child: Text(status.name, style: GoogleFonts.poppins(color: Colors.black87)),
                           );
                         }).toList(),
                         onChanged: (FollowUpStatus? value) {
@@ -579,7 +580,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                             if (isFollowUpDateEmpty)
                               Padding(
                                 padding: EdgeInsets.only(top: 5),
-                                child: Text("Follow-up Date is required", style: TextStyle(color: Colors.red, fontSize: 12)),
+                                child: Text("Follow-up Date is required", style: GoogleFonts.poppins(color: Colors.red, fontSize: 12)),
                               ),
 
                           ],
@@ -590,10 +591,10 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                       TextField(
                         controller: remarksController,
                         maxLines: 3,
-                        style: TextStyle(color: Colors.black),
+                        style: GoogleFonts.poppins(color: Colors.black),
                         decoration: InputDecoration(
                           labelText: "Remarks",
-                          labelStyle: TextStyle(color: Colors.black54),
+                          labelStyle: GoogleFonts.poppins(color: Colors.black54),
                           border: OutlineInputBorder(
                             borderSide: BorderSide(color: isRemarksEmpty ? Colors.red : Colors.black),
                             borderRadius: BorderRadius.circular(8),
@@ -621,7 +622,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
-                  child: Text("Cancel", style: TextStyle(color: appbar_color)),
+                  child: Text("Cancel", style: GoogleFonts.poppins(color: appbar_color)),
                 ),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
@@ -749,7 +750,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
               backgroundColor: Colors.white, // Apply appbar_color to full
               title: Text(
                 "WhatsApp",
-                style: TextStyle(color: Colors.black),
+                style: GoogleFonts.poppins(color: Colors.black),
               ),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -760,11 +761,11 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                   TextField(
                     controller: messageController,
                     maxLines: 3,
-                    style: TextStyle(color: Colors.black),
+                    style: GoogleFonts.poppins(color: Colors.black),
                     decoration: InputDecoration(
                       labelText: "Message",
                       hintText: 'Enter your message',
-                      labelStyle: TextStyle(color: Colors.black54),
+                      labelStyle: GoogleFonts.poppins(color: Colors.black54),
                       border: OutlineInputBorder(
                         borderSide: BorderSide(color: isMessageEmpty ? Colors.red : Colors.black),
                         borderRadius: BorderRadius.circular(8),
@@ -793,7 +794,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                     value: selectedfollowup_type,
                     decoration: InputDecoration(
                       labelText: 'Follow-up Type*',
-                      labelStyle: TextStyle(color: Colors.black),
+                      labelStyle: GoogleFonts.poppins(color: Colors.black),
                       border: OutlineInputBorder(
                         borderSide: BorderSide(color: isFollowUpTypeEmpty ? Colors.red : Colors.black54),
                         borderRadius: BorderRadius.circular(8),
@@ -809,7 +810,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                     items: followuptype_list.map((FollowUpType status) {
                       return DropdownMenuItem<FollowUpType>(
                         value: status,
-                        child: Text(status.name, style: TextStyle(color: Colors.black87)),
+                        child: Text(status.name, style: GoogleFonts.poppins(color: Colors.black87)),
                       );
                     }).toList(),
                     onChanged: (FollowUpType? value) {
@@ -828,7 +829,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                     value: selectedfollowup_status,
                     decoration: InputDecoration(
                       labelText: 'Follow-up Status*',
-                      labelStyle: TextStyle(color: Colors.black),
+                      labelStyle: GoogleFonts.poppins(color: Colors.black),
                       border: OutlineInputBorder(
                         borderSide: BorderSide(color: isFollowUpStatusEmpty ? Colors.red : Colors.black54),
                         borderRadius: BorderRadius.circular(8),
@@ -844,7 +845,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                     items: followupstatus_list.map((FollowUpStatus status) {
                       return DropdownMenuItem<FollowUpStatus>(
                         value: status,
-                        child: Text(status.name, style: TextStyle(color: Colors.black87)),
+                        child: Text(status.name, style: GoogleFonts.poppins(color: Colors.black87)),
                       );
                     }).toList(),
                     onChanged: (FollowUpStatus? value) {
@@ -910,7 +911,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                         if (isFollowUpDateEmpty)
                           Padding(
                             padding: EdgeInsets.only(top: 5),
-                            child: Text("Follow-up Date is required", style: TextStyle(color: Colors.red, fontSize: 12)),
+                            child: Text("Follow-up Date is required", style: GoogleFonts.poppins(color: Colors.red, fontSize: 12)),
                           ),
                       ],
                     ),
@@ -919,10 +920,10 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                   TextField(
                     controller: remarksController,
                     maxLines: 3,
-                    style: TextStyle(color: Colors.black),
+                    style: GoogleFonts.poppins(color: Colors.black),
                     decoration: InputDecoration(
                       labelText: "Remarks",
-                      labelStyle: TextStyle(color: Colors.black54),
+                      labelStyle: GoogleFonts.poppins(color: Colors.black54),
                       border: OutlineInputBorder(
                         borderSide: BorderSide(color: isRemarksEmpty ? Colors.red : Colors.black),
                         borderRadius: BorderRadius.circular(8),
@@ -946,7 +947,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                   onPressed: () {
                     Navigator.of(context).pop(); // Close the dialog
                   },
-                  child: Text("Cancel", style: TextStyle(color: appbar_color)),
+                  child: Text("Cancel", style: GoogleFonts.poppins(color: appbar_color)),
                 ),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
@@ -1603,7 +1604,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                 SizedBox(height: 10),
                 Text(
                   "Unit Type(s)",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -1641,7 +1642,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                       alignment: Alignment.topRight,
                       child: CheckboxListTile(
                         title: Text("Select All",
-                          style: TextStyle(color: Colors.black),
+                          style: GoogleFonts.poppins(color: Colors.black),
                         ),
                         activeColor: appbar_color,
 
@@ -1758,7 +1759,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                 SizedBox(height: 10),
                 Text(
                   "Emirate(s)",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -1776,7 +1777,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                     decoration: InputDecoration(
                       labelText: 'Search Emirate(s)',
                       prefixIcon: Icon(Icons.search, color: appbar_color),
-                      labelStyle: TextStyle(color: appbar_color),
+                      labelStyle: GoogleFonts.poppins(color: appbar_color),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
                         borderSide: BorderSide(color: appbar_color),
@@ -1906,7 +1907,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                 SizedBox(height: 10),
                 Text(
                   "Select Area(s)",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -1924,7 +1925,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                     decoration: InputDecoration(
                       labelText: 'Search Areas',
                       prefixIcon: Icon(Icons.search, color: appbar_color),
-                      labelStyle: TextStyle(color: appbar_color),
+                      labelStyle: GoogleFonts.poppins(color: appbar_color),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
                         borderSide: BorderSide(color: appbar_color),
@@ -2086,7 +2087,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
             color: Colors.white,
           ),),
         title: Text('Follow-Up Inquiry',
-            style: TextStyle(
+            style: GoogleFonts.poppins(
                 color: Colors.white
             )),
       ),
@@ -2121,7 +2122,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                           Text(
                             'Follow Up Inquiry',
                             textAlign: TextAlign.start,
-                            style: TextStyle(
+                            style: GoogleFonts.poppins(
                               color: Colors.black,
                               fontSize: 25,
                               fontWeight: FontWeight.bold,
@@ -2132,7 +2133,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                           Text(
                             'Follow up your sales inquiry',
                             textAlign: TextAlign.start,
-                            style: TextStyle(
+                            style: GoogleFonts.poppins(
                               color: Colors.black,
                               fontSize: 15,
                               fontWeight: FontWeight.normal,
@@ -2185,7 +2186,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
 
                                                     Text(
                                                       customernamecontroller.text.isNotEmpty ? customernamecontroller.text : '',
-                                                      style: TextStyle(
+                                                      style: GoogleFonts.poppins(
                                                           fontSize: 16,
                                                           color: appbar_color.withOpacity(1),
                                                           fontWeight: FontWeight.w500
@@ -2229,7 +2230,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                                     SizedBox(width: 8,),*//*
                                                     Text(
                                                         customercontactnocontroller.text.isNotEmpty ? customercontactnocontroller.text : _hintText,
-                                                        style: TextStyle(
+                                                        style: GoogleFonts.poppins(
                                                             fontSize: 16,
                                                             color: appbar_color.withOpacity(1),
                                                             fontWeight: FontWeight.w500
@@ -2297,7 +2298,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                                         customercontactnocontroller.text.isNotEmpty
                                                             ? customercontactnocontroller.text
                                                             : _hintText,
-                                                        style: TextStyle(
+                                                        style: GoogleFonts.poppins(
                                                           fontSize: 16,
                                                           color: appbar_color.withOpacity(1),
                                                           fontWeight: FontWeight.w500,
@@ -2354,7 +2355,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                                       children: [
                                                         Text(
                                                           whatsappnocontroller.text,
-                                                          style: TextStyle(
+                                                          style: GoogleFonts.poppins(
                                                             fontSize: 16,
                                                             color: appbar_color.withOpacity(1),
                                                             fontWeight: FontWeight.w500,
@@ -2409,7 +2410,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                                     SizedBox(width: 8,),*/
                                                     Text(
                                                         emailcontroller.text.isNotEmpty ? emailcontroller.text : '',
-                                                        style: TextStyle(
+                                                        style: GoogleFonts.poppins(
                                                             fontSize: 16,
                                                             color: appbar_color.withOpacity(1),
                                                             fontWeight: FontWeight.w500
@@ -2446,7 +2447,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                     children: [
                                       Text(
                                         customernamecontroller.text.isNotEmpty ? customernamecontroller.text : '',
-                                        style: TextStyle(
+                                        style: GoogleFonts.poppins(
                                           fontSize: 16,
                                           fontWeight: FontWeight.w200,
                                           color: Colors.black87,
@@ -2458,7 +2459,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                           Expanded(
                                             child: Text(
                                               customercontactnocontroller.text.isNotEmpty ? customercontactnocontroller.text : _hintText,
-                                              style: TextStyle(
+                                              style: GoogleFonts.poppins(
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w200,
                                                 color: Colors.black87,
@@ -2487,7 +2488,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                           Expanded(
                                             child: Text(
                                               emailcontroller.text.isNotEmpty ? emailcontroller.text : '',
-                                              style: TextStyle(
+                                              style: GoogleFonts.poppins(
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w200,
                                                 color: Colors.black87,
@@ -2526,7 +2527,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                                           hintText: 'Select Follow-up Type*',
                                                           label: Text(
                                                             'Follow-up Type*',
-                                                            style: TextStyle(
+                                                            style: GoogleFonts.poppins(
                                                               fontWeight: FontWeight.normal,
                                                               color: Colors.black,
                                                             ),
@@ -2558,7 +2559,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                                             value: status,
                                                             child: Text(
                                                               status.name,  // Display the 'name'
-                                                              style: TextStyle(color: Colors.black87),
+                                                              style: GoogleFonts.poppins(color: Colors.black87),
                                                             ),
                                                           );
                                                         }).toList(),
@@ -2584,7 +2585,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                                           hintText: 'Select Follow-up Status*',
                                                           label: Text(
                                                             'Follow-up Status*',
-                                                            style: TextStyle(
+                                                            style: GoogleFonts.poppins(
                                                               fontWeight: FontWeight.normal,
                                                               color: Colors.black,
                                                             ),
@@ -2616,7 +2617,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                                             value: status,
                                                             child: Text(
                                                               status.name,  // Display the 'name'
-                                                              style: TextStyle(color: Colors.black87),
+                                                              style: GoogleFonts.poppins(color: Colors.black87),
                                                             ),
                                                           );
                                                         }).toList(),
@@ -2638,7 +2639,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                       children: [
                                         Text(
                                           "Next Follow-Up:",
-                                          style: TextStyle(
+                                          style: GoogleFonts.poppins(
                                             fontWeight: FontWeight.bold,
                                             fontSize: 16,
                                           ),
@@ -2684,7 +2685,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                                     nextFollowUpDate != null
                                                         ? DateFormat("dd-MMM-yyyy").format(nextFollowUpDate!) // Formatting date
                                                         : "",
-                                                    style: TextStyle(fontSize: 16, color: Colors.black87),
+                                                    style: GoogleFonts.poppins(fontSize: 16, color: Colors.black87),
                                                   ),
                                                   SizedBox(width: 10),
 
@@ -2716,7 +2717,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                                     /*SizedBox(width: 8.0),
                                                   Text(
                                                     label,
-                                                    style: TextStyle(
+                                                    style: GoogleFonts.poppins(
                                                       color: color,
                                                       fontWeight: FontWeight.w600,
                                                     ),
@@ -2738,7 +2739,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                     children: [
                                       Text(
                                         "Property Type:",
-                                        style: TextStyle(
+                                        style: GoogleFonts.poppins(
                                           fontSize: 16,
                                           fontWeight: FontWeight.bold,
                                           color: Colors.black,
@@ -2768,7 +2769,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                                   SizedBox(height: 5),
                                                   Text(
                                                     amenity,
-                                                    style: TextStyle(
+                                                    style: GoogleFonts.poppins(
                                                       color: isSelected ? Colors.white : Colors.black,
                                                     ),
                                                   ),
@@ -2800,7 +2801,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                   child: Row(
                                     children: [
                                       Text("Unit Type:",
-                                          style: TextStyle(
+                                          style: GoogleFonts.poppins(
                                               fontWeight: FontWeight.bold,
                                               fontSize: 16
 
@@ -2809,7 +2810,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                       SizedBox(width: 2),
                                       Text(
                                         '*', // Red asterisk for required field
-                                        style: TextStyle(
+                                        style: GoogleFonts.poppins(
                                           fontSize: 20,
                                           color: Colors.red, // Red color for the asterisk
                                         ),
@@ -2845,8 +2846,8 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                           borderRadius: BorderRadius.circular(10),
                                           borderSide: BorderSide(color: Colors.black54), // Black focused border
                                         ),
-                                        labelStyle: TextStyle(color: Colors.black54),
-                                        hintStyle: TextStyle(color: Colors.black54), // Hint text color (white for better contrast)
+                                        labelStyle: GoogleFonts.poppins(color: Colors.black54),
+                                        hintStyle: GoogleFonts.poppins(color: Colors.black54), // Hint text color (white for better contrast)
                                       ),
                                       enabled: false, //// Disable direct editing
                                       validator: (value) {
@@ -2889,7 +2890,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                             color:  Colors.black, // Set the focused border color
                                           ),
                                         ),
-                                        labelStyle: TextStyle(
+                                        labelStyle: GoogleFonts.poppins(
                                           color: Colors.black,
                                         ),
                                       ),
@@ -2931,7 +2932,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                         child:Row(
                                           children: [
                                             Text("Select Emirate:",
-                                                style: TextStyle(
+                                                style: GoogleFonts.poppins(
                                                     fontWeight: FontWeight.bold,
                                                     fontSize: 16
 
@@ -2940,7 +2941,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                             SizedBox(width: 2),
                                             Text(
                                               '*', // Red asterisk for required field
-                                              style: TextStyle(
+                                              style: GoogleFonts.poppins(
                                                 fontSize: 20,
                                                 color: Colors.red, // Red color for the asterisk
                                               ),
@@ -2972,13 +2973,13 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                                     children: selectedEmiratesString.split(', ').map((emirate) {
                                                       return Text(
                                                         emirate, // Display each emirate on a new line
-                                                        style: TextStyle(fontSize: 16, color: Colors.grey),
+                                                        style: GoogleFonts.poppins(fontSize: 16, color: Colors.grey),
                                                       );
                                                     }).toList(),
                                                   )
                                                       : Text(
                                                     'Select Emirate', // Placeholder text when no emirates are selected
-                                                    style: TextStyle(fontSize: 16, color: Colors.grey),
+                                                    style: GoogleFonts.poppins(fontSize: 16, color: Colors.grey),
                                                   ),
                                                 ),
                                                 // Down arrow icon
@@ -3057,7 +3058,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                   child: Row(
                                     children: [
                                       Text("Area:",
-                                          style: TextStyle(
+                                          style: GoogleFonts.poppins(
                                               fontWeight: FontWeight.bold,
                                               fontSize: 16
 
@@ -3066,7 +3067,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                       SizedBox(width: 2),
                                       Text(
                                         '*', // Red asterisk for required field
-                                        style: TextStyle(
+                                        style: GoogleFonts.poppins(
                                           fontSize: 20,
                                           color: Colors.red, // Red color for the asterisk
                                         ),
@@ -3100,13 +3101,13 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                               children: selectedAreasString.split(', ').map((emirate) {
                                                 return Text(
                                                   emirate, // Display each emirate on a new line
-                                                  style: TextStyle(fontSize: 16, color: Colors.grey),
+                                                  style: GoogleFonts.poppins(fontSize: 16, color: Colors.grey),
                                                 );
                                               }).toList(),
                                             )
                                                 : Text(
                                               'Select Area(s)', // Placeholder text when no emirates are selected
-                                              style: TextStyle(fontSize: 16, color: Colors.grey),
+                                              style: GoogleFonts.poppins(fontSize: 16, color: Colors.grey),
                                             ),
                                           ),
                                           // Down arrow icon
@@ -3127,7 +3128,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                     children: [
                                       Text(
                                         "Amenities:",
-                                        style: TextStyle(
+                                        style: GoogleFonts.poppins(
                                           fontSize: 16,
                                           fontWeight: FontWeight.bold,
                                           color: Colors.black,
@@ -3157,16 +3158,16 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                           checkColor: Colors.white,
                                           confirmText: Text(
                                             "Confirm",
-                                            style: TextStyle(color: appbar_color), // Custom confirm button
+                                            style: GoogleFonts.poppins(color: appbar_color), // Custom confirm button
                                           ),
                                           cancelText: Text(
                                             "Cancel",
-                                            style: TextStyle(color: appbar_color), // Custom cancel button
+                                            style: GoogleFonts.poppins(color: appbar_color), // Custom cancel button
                                           ),
                                           buttonIcon: Icon(Icons.arrow_drop_down, color: Colors.black54),
                                           buttonText: Text(
                                             "Select Amenities",
-                                            style: TextStyle(color: Colors.black54, fontSize: 16),
+                                            style: GoogleFonts.poppins(color: Colors.black54, fontSize: 16),
                                           ),
                                           onConfirm: (values) {
                                             setState(() {
@@ -3174,7 +3175,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                             });
                                           },
                                           chipDisplay: MultiSelectChipDisplay(
-                                            textStyle: TextStyle(color: Colors.white), // Selected value text color
+                                            GoogleFonts.poppins: GoogleFonts.poppins(color: Colors.white), // Selected value text color
                                             chipColor: appbar_color,
                                             items: selectedAmenities
                                                 .map((id) => MultiSelectItem<int>(
@@ -3206,7 +3207,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                     children: [
                                       Text(
                                         "Special Features:",
-                                        style: TextStyle(
+                                        style: GoogleFonts.poppins(
                                           fontSize: 16,
                                           fontWeight: FontWeight.bold,
                                           color: Colors.black,
@@ -3236,16 +3237,16 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                           checkColor: Colors.white,
                                           confirmText: Text(
                                             "Confirm",
-                                            style: TextStyle(color: appbar_color),
+                                            style: GoogleFonts.poppins(color: appbar_color),
                                           ),
                                           cancelText: Text(
                                             "Cancel",
-                                            style: TextStyle(color: appbar_color),
+                                            style: GoogleFonts.poppins(color: appbar_color),
                                           ),
                                           buttonIcon: Icon(Icons.arrow_drop_down, color: Colors.black54),
                                           buttonText: Text(
                                             "Select Special Features",
-                                            style: TextStyle(color: Colors.black54, fontSize: 16),
+                                            style: GoogleFonts.poppins(color: Colors.black54, fontSize: 16),
                                           ),
                                           onConfirm: (values) {
                                             setState(() {
@@ -3253,7 +3254,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                             });
                                           },
                                           chipDisplay: MultiSelectChipDisplay(
-                                            textStyle: TextStyle(color: Colors.white),
+                                            GoogleFonts.poppins: GoogleFonts.poppins(color: Colors.white),
                                             chipColor: appbar_color,
                                             items: selectedSpecialFeatures
                                                 .map((id) => MultiSelectItem<int>(
@@ -3306,7 +3307,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                             color:  Colors.black, // Set the focused border color
                                           ),
                                         ),
-                                        labelStyle: TextStyle(
+                                        labelStyle: GoogleFonts.poppins(
                                           color: Colors.black,
                                         ),
                                       ),
@@ -3349,7 +3350,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                       child:Row(
                                         children: [
                                           Text("Assigned To:",
-                                              style: TextStyle(
+                                              style: GoogleFonts.poppins(
                                                   fontWeight: FontWeight.bold,
                                                   fontSize: 16
 
@@ -3358,7 +3359,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                           SizedBox(width: 2),
                                           Text(
                                             '*', // Red asterisk for required field
-                                            style: TextStyle(
+                                            style: GoogleFonts.poppins(
                                               fontSize: 20,
                                               color: Colors.red, // Red color for the asterisk
                                             ),
@@ -3432,7 +3433,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                   child: Row(
                                     children: [
                                       Text("Follow-Up Remarks:",
-                                          style: TextStyle(
+                                          style: GoogleFonts.poppins(
                                               fontWeight: FontWeight.bold,
                                               fontSize: 16
 
@@ -3441,7 +3442,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                       SizedBox(width: 2),
                                       Text(
                                         '*', // Red asterisk for required field
-                                        style: TextStyle(
+                                        style: GoogleFonts.poppins(
                                           fontSize: 20,
                                           color: Colors.red, // Red color for the asterisk
                                         ),
@@ -3464,7 +3465,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                         return null;
                                       },
                                       decoration: InputDecoration(
-                                        floatingLabelStyle: TextStyle(
+                                        floatingLabelStyle: GoogleFonts.poppins(
                                           color: appbar_color, // Change label color when focused
                                           fontWeight: FontWeight.normal,
                                         ),
@@ -3483,7 +3484,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                             color:  appbar_color, // Set the focused border color
                                           ),
                                         ),
-                                        labelStyle: TextStyle(
+                                        labelStyle: GoogleFonts.poppins(
                                           color: Colors.black,
                                         ),
                                       ),
@@ -3624,7 +3625,7 @@ Widget _buildDecentButton(
           /*SizedBox(width: 8.0),
           Text(
             label,
-            style: TextStyle(
+            style: GoogleFonts.poppins(
               color: color,
               fontWeight: FontWeight.w600,
             ),
@@ -3671,7 +3672,7 @@ Widget _buildDecentButtonwithLabel(
           SizedBox(width: 8.0),
           Text(
             label,
-            style: TextStyle(
+            style: GoogleFonts.poppins(
               color: color,
               fontWeight: FontWeight.w600,
             ),

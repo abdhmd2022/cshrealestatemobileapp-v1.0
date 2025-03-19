@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'Sidebar.dart';
 import 'constants.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class ModifyUser extends StatefulWidget
 {
@@ -417,7 +418,7 @@ class _ModifyUserPageState extends State<ModifyUser> with TickerProviderStateMix
                 Navigator.pop(context, null); // Cancel
               },
               child: const Text('Cancel',
-                style: TextStyle(
+                style: GoogleFonts.poppins(
                     color: Colors.black
                 ),),
 
@@ -427,7 +428,7 @@ class _ModifyUserPageState extends State<ModifyUser> with TickerProviderStateMix
                 Navigator.pop(context, _selectedCompanies); // Confirm
               },
               child: const Text('OK',
-                  style: TextStyle(
+                  style: GoogleFonts.poppins(
                       color: Colors.black
                   )
               ),
@@ -502,7 +503,7 @@ class _ModifyUserPageState extends State<ModifyUser> with TickerProviderStateMix
                   Flexible(
                     child: Text(
                       'Modify Users',
-                      style: TextStyle(
+                      style: GoogleFonts.poppins(
                           color: Colors.white
                       ),
                       overflow: TextOverflow.ellipsis, // Truncate text if it overflows
@@ -557,7 +558,7 @@ class _ModifyUserPageState extends State<ModifyUser> with TickerProviderStateMix
                         children: [Text(
                           'User Modification',
                           textAlign: TextAlign.start,
-                          style: TextStyle(
+                          style: GoogleFonts.poppins(
                             color: Colors.black,
                             fontSize: 30,
                             fontWeight: FontWeight.bold,
@@ -568,7 +569,7 @@ class _ModifyUserPageState extends State<ModifyUser> with TickerProviderStateMix
                           Text(
                             'Modify your users for the app',
                             textAlign: TextAlign.start,
-                            style: TextStyle(
+                            style: GoogleFonts.poppins(
                               color: Colors.black,
                               fontSize: 15,
                               fontWeight: FontWeight.normal,
@@ -593,7 +594,7 @@ class _ModifyUserPageState extends State<ModifyUser> with TickerProviderStateMix
                                   child: Row(
                                     children: [
                                       Text("Name:",
-                                          style: TextStyle(
+                                          style: GoogleFonts.poppins(
                                               fontWeight: FontWeight.bold,
                                               fontSize: 16
 
@@ -602,7 +603,7 @@ class _ModifyUserPageState extends State<ModifyUser> with TickerProviderStateMix
                                       SizedBox(width: 2),
                                       Text(
                                         '*', // Red asterisk for required field
-                                        style: TextStyle(
+                                        style: GoogleFonts.poppins(
                                           fontSize: 20,
                                           color: Colors.red, // Red color for the asterisk
                                         ),
@@ -682,7 +683,7 @@ class _ModifyUserPageState extends State<ModifyUser> with TickerProviderStateMix
                                   child: Row(
                                     children: [
                                       Text("Email Address:",
-                                          style: TextStyle(
+                                          style: GoogleFonts.poppins(
                                               fontWeight: FontWeight.bold,
                                               fontSize: 16
 
@@ -691,7 +692,7 @@ class _ModifyUserPageState extends State<ModifyUser> with TickerProviderStateMix
                                       SizedBox(width: 2),
                                       Text(
                                         '*', // Red asterisk for required field
-                                        style: TextStyle(
+                                        style: GoogleFonts.poppins(
                                           fontSize: 20,
                                           color: Colors.red, // Red color for the asterisk
                                         ),
@@ -773,7 +774,7 @@ class _ModifyUserPageState extends State<ModifyUser> with TickerProviderStateMix
                                   child: Row(
                                     children: [
                                       Text("Password:",
-                                          style: TextStyle(
+                                          style: GoogleFonts.poppins(
                                               fontWeight: FontWeight.bold,
                                               fontSize: 16
 
@@ -782,7 +783,7 @@ class _ModifyUserPageState extends State<ModifyUser> with TickerProviderStateMix
                                       SizedBox(width: 2),
                                       Text(
                                         '*', // Red asterisk for required field
-                                        style: TextStyle(
+                                        style: GoogleFonts.poppins(
                                           fontSize: 20,
                                           color: Colors.red, // Red color for the asterisk
                                         ),
@@ -832,7 +833,7 @@ class _ModifyUserPageState extends State<ModifyUser> with TickerProviderStateMix
                                             color:  Colors.black, // Set the focused border color
                                           ),
                                         ),
-                                        labelStyle: TextStyle(
+                                        labelStyle: GoogleFonts.poppins(
                                           color: _isFocused_password ? appbar_color : Colors.black,
                                         ),
                                       ),
@@ -879,7 +880,7 @@ class _ModifyUserPageState extends State<ModifyUser> with TickerProviderStateMix
                                         child:Row(
                                           children: [
                                             Text("Select Role:",
-                                                style: TextStyle(
+                                                style: GoogleFonts.poppins(
                                                     fontWeight: FontWeight.bold,
                                                     fontSize: 16
 
@@ -888,7 +889,7 @@ class _ModifyUserPageState extends State<ModifyUser> with TickerProviderStateMix
                                             SizedBox(width: 2),
                                             Text(
                                               '*', // Red asterisk for required field
-                                              style: TextStyle(
+                                              style: GoogleFonts.poppins(
                                                 fontSize: 20,
                                                 color: Colors.red, // Red color for the asterisk
                                               ),
@@ -947,7 +948,7 @@ class _ModifyUserPageState extends State<ModifyUser> with TickerProviderStateMix
 
                           child:Text(
                             'Allowed Companies',
-                            style: TextStyle(
+                            style: GoogleFonts.poppins(
 
                                 fontWeight: FontWeight.bold
                             ),)
@@ -972,7 +973,7 @@ class _ModifyUserPageState extends State<ModifyUser> with TickerProviderStateMix
                                     _selectedCompanies.isNotEmpty
                                         ? _selectedCompanies.map((e) => e).join('\n')
                                         : 'Tap to select companies',
-                                    style: const TextStyle(color: Colors.black),
+                                    style: const GoogleFonts.poppins(color: Colors.black),
                                   ),
                                 ),
                               ),

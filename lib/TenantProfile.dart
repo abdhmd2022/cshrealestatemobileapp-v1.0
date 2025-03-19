@@ -7,6 +7,7 @@ import 'package:cshrealestatemobile/SalesDashboard.dart';
 import 'package:cshrealestatemobile/TenantDashboard.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:google_fonts/google_fonts.dart';
 
 import 'constants.dart';
 
@@ -68,8 +69,8 @@ class _TenantProfileState extends State<TenantProfile> with TickerProviderStateM
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Profile',
-        style: (TextStyle(
+        title:  Text('Profile',
+        style: (GoogleFonts.poppins(
 
           color: Colors.white
         )),),
@@ -120,7 +121,7 @@ class _TenantProfileState extends State<TenantProfile> with TickerProviderStateM
                   const SizedBox(height: 10),
                    Text(
                     user_name,
-                    style: TextStyle(
+                    style: GoogleFonts.poppins(
                       color: Colors.white,
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
@@ -129,15 +130,15 @@ class _TenantProfileState extends State<TenantProfile> with TickerProviderStateM
                   const SizedBox(height: 5),
                    Text(
                     user_email,
-                    style: TextStyle(
+                    style: GoogleFonts.poppins(
                       color: Colors.white,
                       fontSize: 16,
                     ),
                   ),
                   const SizedBox(height: 5),
-                  const Text(
+                   Text(
                     '+971 500000000',
-                    style: TextStyle(
+                    style: GoogleFonts.poppins(
                       color: Colors.white,
                       fontSize: 16,
                     ),
@@ -175,7 +176,7 @@ class _TenantProfileState extends State<TenantProfile> with TickerProviderStateM
                             children: [
                               Text(
                                 flatsList.length.toString(),
-                                style: TextStyle(
+                                style: GoogleFonts.poppins(
                                   fontSize: 24,
                                   fontWeight: FontWeight.bold,
                                   color: appbar_color,
@@ -184,7 +185,7 @@ class _TenantProfileState extends State<TenantProfile> with TickerProviderStateM
                               const SizedBox(height: 5),
                               Text(
                                 'Apartments',
-                                style: const TextStyle(
+                                style:  GoogleFonts.poppins(
                                   fontSize: 16,
                                   color: Colors.black54,
                                 ),
@@ -219,7 +220,7 @@ class _TenantProfileState extends State<TenantProfile> with TickerProviderStateM
                             children: [
                               Text(
                                 ticketCount.toString(),
-                                style: TextStyle(
+                                style: GoogleFonts.poppins(
                                   fontSize: 24,
                                   fontWeight: FontWeight.bold,
                                   color: Colors.orange,
@@ -228,7 +229,7 @@ class _TenantProfileState extends State<TenantProfile> with TickerProviderStateM
                               const SizedBox(height: 5),
                               Text(
                                 'Total Tickets',
-                                style: const TextStyle(
+                                style: const GoogleFonts.poppins(
                                   fontSize: 16,
                                   color: Colors.black54,
                                 ),
@@ -320,7 +321,7 @@ class _TenantProfileState extends State<TenantProfile> with TickerProviderStateM
             children: [
               Text(
                 value,
-                style: TextStyle(
+                style: GoogleFonts.poppins(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
                   color: color,
@@ -329,7 +330,7 @@ class _TenantProfileState extends State<TenantProfile> with TickerProviderStateM
               const SizedBox(height: 5),
               Text(
                 title,
-                style: const TextStyle(
+                style:  GoogleFonts.poppins(
                   fontSize: 16,
                   color: Colors.black54,
                 ),
@@ -347,14 +348,14 @@ class _TenantProfileState extends State<TenantProfile> with TickerProviderStateM
       children: [
         Text(
           label,
-          style: const TextStyle(
+          style:  GoogleFonts.poppins(
             fontSize: 16,
             fontWeight: FontWeight.bold,
           ),
         ),
         Text(
           value,
-          style: const TextStyle(
+          style:  GoogleFonts.poppins(
             fontSize: 16,
             color: Colors.black54,
           ),

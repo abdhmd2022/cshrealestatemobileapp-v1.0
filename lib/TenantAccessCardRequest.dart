@@ -8,6 +8,8 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'SalesInquiryReport.dart';
 import 'Sidebar.dart';
+import 'package:google_fonts/google_fonts.dart';
+
 
 class TenantAccessCardRequest extends StatefulWidget
 {
@@ -241,7 +243,7 @@ class _TenantAccessCardRequestPageState extends State<TenantAccessCardRequest> w
             ),),
 
           title: Text('Access Card Request',
-            style: TextStyle(
+            style: GoogleFonts.poppins(
                 color: Colors.white
             ),),
         ),
@@ -310,7 +312,7 @@ class _TenantAccessCardRequestPageState extends State<TenantAccessCardRequest> w
                                                     SizedBox(height: 2), // Space between icon and text
                                                     Text(
                                                       "Saadan",
-                                                      style: TextStyle(fontSize: 16, color: appbar_color),
+                                                      style: GoogleFonts.poppins(fontSize: 16, color: appbar_color),
                                                     ),
                                                   ],
                                                 ),
@@ -328,7 +330,7 @@ class _TenantAccessCardRequestPageState extends State<TenantAccessCardRequest> w
                                                     SizedBox(height: 2), // Space between icon and text
                                                     Text(
                                                       "Al Khaleej Center",
-                                                      style: TextStyle(fontSize: 16, color: appbar_color),
+                                                      style: GoogleFonts.poppins(fontSize: 16, color: appbar_color),
                                                     )])])),
                                           SizedBox(width: MediaQuery.of(context).size.width / 5),
                                           Container(
@@ -351,7 +353,7 @@ class _TenantAccessCardRequestPageState extends State<TenantAccessCardRequest> w
                                                     SizedBox(height: 2), // Space between icon and text
                                                     Text(
                                                       '101',
-                                                      style: TextStyle(fontSize: 16, color: appbar_color),
+                                                      style: GoogleFonts.poppins(fontSize: 16, color: appbar_color),
                                                     ),
                                                   ],
                                                 ),
@@ -370,7 +372,7 @@ class _TenantAccessCardRequestPageState extends State<TenantAccessCardRequest> w
                                                     SizedBox(height: 2), // Space between icon and text
                                                     Text(
                                                       "Dubai",
-                                                      style: TextStyle(fontSize: 16, color: appbar_color),
+                                                      style: GoogleFonts.poppins(fontSize: 16, color: appbar_color),
                                                     ),
                                                   ],
                                                 ),
@@ -408,7 +410,7 @@ class _TenantAccessCardRequestPageState extends State<TenantAccessCardRequest> w
                                       child: Row(
                                         children: [
                                           Text("Request Type:",
-                                              style: TextStyle(
+                                              style: GoogleFonts.poppins(
                                                   fontWeight: FontWeight.bold,
                                                   fontSize: 16
 
@@ -417,7 +419,7 @@ class _TenantAccessCardRequestPageState extends State<TenantAccessCardRequest> w
                                           SizedBox(width: 2),
                                           Text(
                                             '*', // Red asterisk for required field
-                                            style: TextStyle(
+                                            style: GoogleFonts.poppins(
                                               fontSize: 20,
                                               color: Colors.red, // Red color for the asterisk
                                             ))])),
@@ -475,7 +477,7 @@ class _TenantAccessCardRequestPageState extends State<TenantAccessCardRequest> w
                                       child: Row(
                                         children: [
                                           Text("Remarks:",
-                                              style: TextStyle(
+                                              style: GoogleFonts.poppins(
                                                   fontWeight: FontWeight.bold,
                                                   fontSize: 16
 
@@ -484,7 +486,7 @@ class _TenantAccessCardRequestPageState extends State<TenantAccessCardRequest> w
                                           SizedBox(width: 2),
                                           Text(
                                             '*', // Red asterisk for required field
-                                            style: TextStyle(
+                                            style: GoogleFonts.poppins(
                                               fontSize: 20,
                                               color: Colors.red, // Red color for the asterisk
                                             ),
@@ -526,7 +528,7 @@ class _TenantAccessCardRequestPageState extends State<TenantAccessCardRequest> w
                                                 ),
                                               ),
                                             ),
-                                            style: TextStyle(
+                                            style: GoogleFonts.poppins(
                                               color: Colors.black,
                                               fontSize: 15,
                                             ))),
@@ -550,7 +552,7 @@ class _TenantAccessCardRequestPageState extends State<TenantAccessCardRequest> w
                                 right: 20
                             ),
                             child: Text("Total Amount:",
-                                style: TextStyle(
+                                style: GoogleFonts.poppins(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 16
 
@@ -584,7 +586,7 @@ class _TenantAccessCardRequestPageState extends State<TenantAccessCardRequest> w
                                       ),
                                     ),
                                   ),
-                                  style: TextStyle(
+                                  style: GoogleFonts.poppins(
                                     color: Colors.black,
                                     fontSize: 15,
                                   ))),
@@ -609,7 +611,7 @@ class _TenantAccessCardRequestPageState extends State<TenantAccessCardRequest> w
 
                                     }},
                                   child: Text('Submit',
-                                      style: TextStyle(
+                                      style: GoogleFonts.poppins(
                                           color: Colors.white
                                       )),
                                 ),)

@@ -98,7 +98,7 @@ class _FlatSelectionState extends State<FlatSelection> {
       backgroundColor: Color(0xFFF5F7FA),
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: Text("Select Flat", style: TextStyle(
+        title: Text("Select Flat", style: GoogleFonts.poppins(
             fontSize: 16,
             fontWeight: FontWeight.w600,
             color: Colors.white
@@ -127,7 +127,7 @@ class _FlatSelectionState extends State<FlatSelection> {
                 children: [
                   Text(
                     "Choose Flat",
-                    style: TextStyle(
+                    style: GoogleFonts.poppins(
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
                       color: Colors.black,

@@ -52,6 +52,11 @@ class User {
 
 class MaintenanceTicketTransfer extends StatefulWidget
 {
+
+  final String subTicketId; // Accept subTicketId
+
+  const MaintenanceTicketTransfer({Key? key, required this.subTicketId}) : super(key: key);
+
   /*final String name;
   final String id;
   final String email;
@@ -74,6 +79,9 @@ class _MaintenanceTicketTransferPageState extends State<MaintenanceTicketTransfe
   List<User> transfer_to_list = [
 
   ];
+
+
+
 
   TextEditingController _remarksController = TextEditingController();
 

@@ -142,10 +142,9 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
 
     commentHistoryList.clear();
 
-    String url = is_admin
-        ? '$BASE_URL_config/v1/maintenanceComments/?ticket_id=$id'
-        : '$BASE_URL_config/v1/tenent/maintenanceComments/?ticket_id=$id';
+    String url = '$baseurl/maintenance/comment/?ticket_id=$id';
 
+    print('url comment $url');
     String token = 'Bearer $Company_Token'; // Auth token
 
     Map<String, String> headers = {
@@ -159,34 +158,20 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
     if (response.statusCode == 200) {
 
       commentHistoryList = jsonData["data"]["comments"];
-      // Filter only where lead_id == 6
 
-      return commentHistoryList;
-    } else {
-      String message = 'Code: ${response.statusCode}\nMessage: ${jsonData['message']}';
-      Fluttertoast.showToast(
-        msg: message,
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM, // Change to CENTER or TOP if needed
-        backgroundColor: Colors.black,
-        textColor: Colors.white,
-        fontSize: 16.0,
-      );
-      print('Upload failed with status code: ${response.statusCode}');
-      print('Upload failed with response: ${response.body}');
-      return commentHistoryList;
     }
+    return commentHistoryList;
+
   }
 
   Future<List<dynamic>> fetchFeedbackHistory(String id) async {
 
     feedbackHistoryList.clear();
 
-    List<dynamic> filteredFeedbacks = [];
 
-    String url = is_admin
-        ? '$BASE_URL_config/v1/maintenanceFeedback/?ticket_id=$id'
-        : '$BASE_URL_config/v1/tenent/maintenanceFeedback/?ticket_id=$id';;
+    print('ticket id for feedback : $id');
+
+    String url = '$baseurl/maintenance/feedback/?ticket_id=$id';
 
     String token = 'Bearer $Company_Token'; // Auth token
 
@@ -202,14 +187,25 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
 
       feedbackHistoryList = jsonData["data"]["feedbacks"];
 
-      filteredFeedbacks = feedbackHistoryList
-          .where((feedback) => feedback["ticket_id"] == int.parse(id))
-          .toList();
-      // Filter only where lead_id == 6
+      print('feeback length = ${feedbackHistoryList.length}');
 
-      return filteredFeedbacks;
+      if(feedbackHistoryList.isEmpty)
+        {
+          Fluttertoast.showToast(
+            msg: "No Feedback Found",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.BOTTOM, // Change to CENTER or TOP if needed
+            backgroundColor: Colors.black,
+            textColor: Colors.white,
+            fontSize: 16.0,
+          );
+        }
+
+
+
+      return feedbackHistoryList;
     } else {
-      String message = 'Code: ${response.statusCode}\nMessage: ${jsonData['message']}';
+      String message = '${jsonData['message']}';
       Fluttertoast.showToast(
         msg: message,
         toastLength: Toast.LENGTH_SHORT,
@@ -220,14 +216,16 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
       );
       print('Upload failed with status code: ${response.statusCode}');
       print('Upload failed with response: ${response.body}');
-      return filteredFeedbacks;
+      return feedbackHistoryList;
     }
   }
 
 
 
-  void _showViewCommentPopup(BuildContext context,String id) async {
+  void _showViewCommentPopup(BuildContext contextt, String id) async {
     List<dynamic> filteredData = [];
+    TextEditingController commentController = TextEditingController();
+    bool isSubmitting = false;
 
     try {
       filteredData = await fetchCommentHistory(id);
@@ -236,96 +234,201 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
     }
 
     showModalBottomSheet(
-        context: context,
-        isScrollControlled: true,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-        ),
-        builder: (context) {
-          return Container(
+      context: contextt,
+      isScrollControlled: true,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (contextt) {
+        return StatefulBuilder(
+          builder: (contextt, setState) {
+            return Container(
               padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-              height: MediaQuery.of(context).size.height * 0.6,
+              height: MediaQuery.of(contextt).size.height * 0.7,
               color: Colors.white,
               child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Header
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          "Comments History",
-                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
-                        ),
-                        IconButton(
-                          icon: Icon(Icons.close, color: Colors.grey),
-                          onPressed: () => Navigator.pop(context),
-                        ),
-                      ],
-                    ),
-                    Divider(),
-                    // Content
-                    Expanded(
-                        child: filteredData.isEmpty
-                            ? Center(child: Text("No Comments Found"))
-                            : ListView.builder(
-                            itemCount: filteredData.length,
-                            itemBuilder: (context, index) {
-                              var item = filteredData.reversed.toList()[index];
-                              var username = item["created_user"]?["name"] ?? item["tenent"]["name"];
-                              return Container(
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(12), // Rounded corners
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Header
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "Comments History",
+                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.close, color: Colors.grey),
+                        onPressed: () => Navigator.pop(contextt),
+                      ),
+                    ],
+                  ),
+                  Divider(),
 
+                  // Comments List
+                  Expanded(
+                    child: filteredData.isEmpty
+                        ? Center(child: Text("No Comments Found"))
+                        : ListView.builder(
+                      itemCount: filteredData.length,
+                      itemBuilder: (contextt, index) {
+                        var item = filteredData.reversed.toList()[index];
+                        var username = item["created_user"]?["name"] ?? item["tenant"]["name"];
+                        return Card(
+                          margin: EdgeInsets.symmetric(vertical: 8),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          elevation: 5,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            padding: EdgeInsets.all(16),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  username,
+                                  style: TextStyle(
+                                      fontSize: 16, fontWeight: FontWeight.w600),
+                                ),
+                                SizedBox(height: 6),
+                                Text(
+                                  item["description"],
+                                  style: TextStyle(
+                                    color: Colors.grey.shade800,
+                                    fontWeight: FontWeight.w500,
                                   ),
+                                ),
+                                SizedBox(height: 8),
+                                Text(
+                                  "Date: ${formatDate(item["created_at"])}",
+                                  style: TextStyle(color: Colors.grey.shade700),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
 
-                                  child: Card(
-                                      margin: EdgeInsets.symmetric(vertical: 8),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                      elevation: 5,
-                                      child: Container(
-                                          decoration: BoxDecoration(
-                                            color: Colors.white,
-                                            borderRadius: BorderRadius.circular(12), // Rounded corners
-                                          ),
-                                          padding: EdgeInsets.all(16),
-                                          child: Column(
-                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                              children: [
+                  SizedBox(height: 15),
 
-                                                Text(
-                                                  username,
-                                                  style: TextStyle(
-                                                      fontSize: 16, fontWeight: FontWeight.w600),
-                                                ),
-                                                SizedBox(height: 6),
-                                                Row(
-                                                  children: [
-                                                    Text(
-                                                      item["description"],
-                                                      style: TextStyle(
-                                                        color: Colors.grey.shade800,
-                                                        fontWeight: FontWeight.w500,
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                                SizedBox(height: 8),
-                                                Text(
-                                                  "Date: ${formatDate(item["created_at"])}",
-                                                  style: TextStyle(color: Colors.grey.shade700),
-                                                ),
-                                                if (item["remarks"] != null) ...[
-                                                  SizedBox(height: 6),
-                                                  Text(
-                                                    "Description: ${item["description"]}",
-                                                    style: TextStyle(color: Colors.grey.shade700),
-                                                  ),
-                                                ],
-                                                ]))));}))]));}
+                  // Add New Comment Input
+                  TextField(
+                    controller: commentController,
+                    maxLines: 2,
+                    style: TextStyle(color: Colors.black),
+                    decoration: InputDecoration(
+                      hintText: "Enter your comment...",
+
+                      hintStyle: TextStyle(color: Colors.black54),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: Colors.grey.shade400),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: appbar_color),
+                      ),
+                      filled: true,
+                      fillColor: Colors.white,
+                    ),
+                  ),
+                  SizedBox(height: 15),
+
+                  // Submit Button
+                  Center(
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(14),
+                      onTap: isSubmitting
+                          ? null
+                          : () async {
+                        if (commentController.text.isEmpty) {
+                          ScaffoldMessenger.of(contextt).showSnackBar(
+                            SnackBar(
+                              content: Text("Please enter a comment!"),
+                              backgroundColor: Colors.red,
+                              behavior: SnackBarBehavior.floating,
+                              margin: EdgeInsets.all(16),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                          );
+                          return;
+                        }
+
+                        setState(() {
+                          isSubmitting = true;
+                        });
+
+                        bool success = await saveComment(id, commentController.text); // ✅ Now properly waiting
+
+
+                        setState(() {
+                          isSubmitting = false;
+                        });
+
+                        if (success == true) {
+                          Navigator.pop(contextt);
+
+                                               }
+
+                      },
+                      child: Container(
+                        padding: EdgeInsets.symmetric(vertical: 14, horizontal: 40), // Better touch area
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(14),
+                          gradient: LinearGradient(
+                            colors: [appbar_color.withOpacity(0.9), appbar_color], // Soft gradient effect
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: appbar_color.withOpacity(0.3), // Soft shadow
+                              blurRadius: 8,
+                              offset: Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: isSubmitting
+                            ? Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Platform.isIOS
+                                ? CupertinoActivityIndicator(radius: 12, color: Colors.white)
+                                : CircularProgressIndicator(
+                              strokeWidth: 3,
+                              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                            ),
+                            SizedBox(width: 10),
+                            Text("Submitting...",
+                                style: TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.w600, color: Colors.white)),
+                          ],
+                        )
+                            : Text(
+                          "Submit",
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.w600, color: Colors.white),
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 15),
+
+
+                ],
+              ),
+            );
+          },
+        );
+      },
     );
   }
 
@@ -339,7 +442,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
     } catch (e) {
       print('Error fetching data: $e');
     }
-
+    if(filteredData.isNotEmpty)
     showModalBottomSheet(
         context: context,
         isScrollControlled: true,
@@ -389,7 +492,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                                   child: Column(
                                     children: [
 
-                                      Card(
+                                      /*Card(
                                         elevation: 3,
                                         color: Colors.white,
                                         shape: RoundedRectangleBorder(
@@ -418,14 +521,14 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                                                 child: Column(
                                                   crossAxisAlignment: CrossAxisAlignment.start,
                                                   children: [
-                                                    Text(
+                                                   *//* Text(
                                                       item['ticket']["tenent_flat"]['tenent']['name'],
                                                       style: GoogleFonts.poppins(
                                                           fontSize: 14,
                                                           fontWeight: FontWeight.bold),
-                                                    ),
+                                                    ),*//*
 
-                                                    if(item!['ticket']["tenent_flat"]['tenent']['mobile'].toString() =='!null' && item!['ticket']["tenent_flat"]['tenent']['mobile'].toString().isNotEmpty)
+                                                    *//*if(item!['ticket']["tenent_flat"]['tenent']['mobile'].toString() =='!null' && item!['ticket']["tenent_flat"]['tenent']['mobile'].toString().isNotEmpty)
 
                                                       Column(
 
@@ -441,7 +544,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                                                                 onTap: ()
                                                                 {
                                                                   openCaller(item!['ticket']["tenent_flat"]['tenent']['mobile']);
-                                                                  /*openCaller("+971588313352");*/
+                                                                  *//**//*openCaller("+971588313352");*//**//*
                                                                 },
                                                                 child: Row(
                                                                   children: [
@@ -466,10 +569,10 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                                                             "${item!['ticket']["tenent_flat"]['tenent']['email']}",
                                                             style: GoogleFonts.poppins(fontSize: 12),
                                                           ),
-                                                         ]),
+                                                         ]),*//*
                                                    ]))])
                                         )
-                                      ),
+                                      ),*/
 
                                       Card(
                                         margin: EdgeInsets.symmetric(vertical: 8),
@@ -763,7 +866,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
   Future<void> saveFeedback(int ticketId, String description, num rating) async {
 
     try {
-      final String url = "$BASE_URL_config/v1/tenent/maintenanceFeedback";
+      final String url = "$baseurl/maintenance/feedback";
 
       var uuid = Uuid();
       String uuidValue = uuid.v4();
@@ -819,19 +922,16 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
     }
   }
 
-  Future<void> saveComment(int ticketId, String description) async {
-
+  Future<bool> saveComment(String ticketId, String description) async {
     try {
-      String url = is_admin
-          ? "$BASE_URL_config/v1/maintenanceComments"
-          : "$BASE_URL_config/v1/tenent/maintenanceComments";
+      String url = "$baseurl/maintenance/comment";
 
       var uuid = Uuid();
       String uuidValue = uuid.v4();
 
       final Map<String, dynamic> requestBody = {
         "uuid": uuidValue,
-        "ticket_id": ticketId, // Updated key from flat_masterid to flat_id
+        "ticket_id": ticketId,
         "description": description,
       };
 
@@ -845,6 +945,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
         },
         body: jsonEncode(requestBody),
       );
+
       Map<String, dynamic> responseData = jsonDecode(response.body);
 
       if (response.statusCode == 201) {
@@ -852,27 +953,29 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
         Fluttertoast.showToast(
           msg: message,
           toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM, // Change to CENTER or TOP if needed
+          gravity: ToastGravity.BOTTOM,
           backgroundColor: Colors.black,
           textColor: Colors.white,
           fontSize: 16.0,
         );
-      }
-      else {
+        return true; // ✅ Return true on success
+      } else {
         String message = 'Code: ${response.statusCode}\nMessage: ${responseData['message']}';
         Fluttertoast.showToast(
           msg: message,
           toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM, // Change to CENTER or TOP if needed
+          gravity: ToastGravity.BOTTOM,
           backgroundColor: Colors.black,
           textColor: Colors.white,
           fontSize: 16.0,
         );
         print('Upload failed with status code: ${response.statusCode}');
         print('Upload failed with response: ${response.body}');
+        return false; // ✅ Return false on failure
       }
     } catch (e) {
       print('Error during upload: $e');
+      return false; // ✅ Return false if there's an error
     }
   }
 
@@ -1179,188 +1282,153 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
             _buildTicketHeader(ticket),
             Divider(color: Colors.grey[300]),
             _buildTicketDetails(ticket),
-            Container(
-                width: MediaQuery
-                    .of(context)
-                    .size
-                    .width,
-                child: Center(
-                    child: SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                            Row(children: [
+            // List subtickets with transfer button
+            Column(
+              children: [
+                // Other buttons (Follow-up, Comment, Feedback)
 
-                              if(is_admin)
-                              _buildDecentButton(
-                                'Follow Up',
-                                Icons.schedule,
-                                Colors.orange,
-                                    () {
-                                      print('ticket : $ticket');
-                                      Navigator.pushReplacement(
-                                        context,
-                                        MaterialPageRoute(builder: (context) => MaintenanceFollowUpScreen(ticketid: ticket['ticketNumber'],)),
-                                      );
-                                    }
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    if (is_admin)
+                      _buildDecentButton(
+                        'Follow Up',
+                        Icons.schedule,
+                        Colors.orange,
+                            () {
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => MaintenanceFollowUpScreen(
+                                ticketid: ticket['ticketNumber'],
                               ),
-                              SizedBox(width: 5),
-                              if(is_admin)
-                              _buildDecentButton(
-                                'Transfer',
-                                Icons.swap_horiz,
-                                Colors.purple,
-                                    () {
-                                      Navigator.pushReplacement(
-                                        context,
-                                        MaterialPageRoute(builder: (context) => MaintenanceTicketTransfer(/*name: ticket., id: id, email: email*/)),
-                                      );
-                                },
-                              ),
-                              SizedBox(width: 5),
-
-                              _buildDecentButton(
-                                'Comment',
-                                Icons.comment,
-                                Colors.green,
-                                    () {
-                                      commentController.clear();
-                                      showDialog(
-                                        context: context,
-                                        builder: (BuildContext context) {
-                                          return StatefulBuilder(
-                                            builder: (context, setState) {
-                                              return AlertDialog(
-                                                backgroundColor: Colors.white, // Apply appbar_color to full
-                                                title: Row(
-                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                  children: [
-
-                                                    Text(
-                                                      "Comment",
-                                                      style: TextStyle(color: Colors.black),
-                                                    ),
-
-
-                                                    GestureDetector(
-                                                      onTap: ()
-                                                      {
-                                                        _showViewCommentPopup(context,ticket['ticketNumber']);
-
-                                                      },
-                                                      child: Container(
-                                                        decoration: BoxDecoration(
-                                                          border: Border.all(color: appbar_color, width: 1), // Border color and width
-                                                          borderRadius: BorderRadius.circular(20),
-                                                        ),
-                                                        padding: EdgeInsets.all(8), // Padding for spacing inside the border
-                                                        child: Icon(
-                                                          Icons.remove_red_eye,
-                                                          color: appbar_color,
-                                                        ),
-                                                      )
-                                                    )
-
-                                                  ],
-                                                ),
-                                                content: Column(
-                                                  mainAxisSize: MainAxisSize.min,
-                                                  children: [
-                                                    // Input field for the message
-                                                    TextField(
-                                                      controller: commentController,
-                                                      maxLines: 3,
-                                                      style: TextStyle(color: Colors.black),
-                                                      decoration: InputDecoration(
-                                                        hintText: "Enter your comment",
-                                                        hintStyle: TextStyle(color: Colors.black54),
-                                                        border: OutlineInputBorder(
-                                                          borderSide: BorderSide(color: Colors.black),
-                                                        ),
-                                                        focusedBorder: OutlineInputBorder(
-                                                          borderSide: BorderSide(color: appbar_color),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                                actions: [
-                                                  TextButton(
-                                                    onPressed: () {
-                                                      commentController.clear();
-                                                      Navigator.of(context).pop(); // Close the dialog
-                                                    },
-                                                    child: Text("Cancel", style: TextStyle(color: appbar_color)),
-                                                  ),
-                                                  ElevatedButton(
-                                                    style: ElevatedButton.styleFrom(
-                                                      backgroundColor: appbar_color,
-                                                      foregroundColor: Colors.white,
-                                                    ),
-                                                    onPressed: () {
-                                                      String comment = commentController.text;
-                                                      if (comment.isNotEmpty) {
-
-                                                        Navigator.of(context).pop(); // Close the dialog
-
-                                                        saveComment(int.parse(ticket['ticketNumber']),comment);
-
-                                                      } else {
-                                                        Fluttertoast.showToast(
-                                                          msg: 'Enter Comment',
-                                                          toastLength: Toast.LENGTH_SHORT, // or Toast.LENGTH_LONG
-                                                          gravity: ToastGravity.BOTTOM, // Can be TOP, CENTER, or BOTTOM
-                                                          backgroundColor: Colors.black,
-                                                          textColor: Colors.white,
-                                                          fontSize: 16.0,
-                                                        );
-                                                      }
-                                                    },
-                                                    child: Text("Submit"),
-                                                  ),
-                                                ]);});});}
-                              ),
-                              SizedBox(width: 5),
-
-                              if(!is_admin)
-                              _buildDecentButton(
-                                'Feedback',
-                                Icons.feedback,
-                                Colors.blue,
-                                    () {
-                                      _showFeedbackDialog(int.parse(ticket['ticketNumber']));
-                                    }
-                              ),
-                              if(is_admin)
-                              _buildDecentButton(
-                                  'Feedback',
-                                  Icons.feedback,
-                                  Colors.blue,
-                                      () {
-                                    _showViewFeedbackPopup(context,ticket['ticketNumber']);
-                                  }
-                              ),
-                            ],),
-
-                          /*_buildDecentButton(
-                          'Delete',
-                          Icons.delete,
-                          Colors.red,
-                              () {
-                            // Delete action
-                            // Add your delete functionality here
-                          },
-                        ),*/
-                        ],
+                            ),
+                          );
+                        },
                       ),
-                    )
-                )
+                    SizedBox(width: 5),
+
+                    _buildDecentButton(
+                      'Comment',
+                      Icons.comment,
+                      Colors.green,
+                          () {
+                        commentController.clear();
+                        _showViewCommentPopup(context, ticket['ticketNumber']); // Existing Comment Section
+                      },
+                    ),
+                    SizedBox(width: 5),
+
+                    if (!is_admin)
+                      _buildDecentButton(
+                        'Feedback',
+                        Icons.feedback,
+                        Colors.blue,
+                            () {
+                          _showFeedbackDialog(int.parse(ticket['ticketNumber'])); // Existing Feedback Section
+                        },
+                      ),
+                    if (is_admin)
+                      _buildDecentButton(
+                        'Feedback',
+                        Icons.feedback,
+                        Colors.blue,
+                            () {
+                          _showViewFeedbackPopup(context, ticket['ticketNumber']); // Admin View Feedback
+                        },
+                      ),
+                  ],
+                ),
+                SizedBox(height: 10,),
+                // Subtickets list (Each with only "Transfer" button)
+            if(is_admin)
+            Column(
+            children: ticket['maintenanceTypes'].map<Widget>((subTicket) {
+      return Container(
+      margin: EdgeInsets.symmetric(vertical: 3, horizontal: 0),
+      padding: EdgeInsets.symmetric(vertical: 14, horizontal: 18),
+      decoration: BoxDecoration(
+      color: Colors.white.withOpacity(0.95),
+      borderRadius: BorderRadius.circular(16),
+      boxShadow: [
+      BoxShadow(
+      color: Colors.black.withOpacity(0.05),
+      blurRadius: 10,
+      spreadRadius: 2,
+      offset: Offset(0, 4),
+      ),
+      ],
+      ),
+      child: Row(
+      children: [
+      // Left Side: Subticket Info
+      Expanded(
+      child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+      Text(
+      subTicket['type'],
+      style: TextStyle(
+      fontSize: 16,
+      fontWeight: FontWeight.w600,
+      color: Colors.black87,
+      ),
+      overflow: TextOverflow.ellipsis,
+      ),
+
+      ],
+      ),
+      ),
+
+      // Transfer Button with Gradient Effect
+      InkWell(
+      borderRadius: BorderRadius.circular(12),
+      onTap: () {
+      _showTransferDialog(context, subTicket['subTicketId']);
+      },
+      child: Container(
+      padding: EdgeInsets.symmetric(vertical: 10, horizontal: 14),
+      decoration: BoxDecoration(
+      gradient: LinearGradient(
+      colors: [appbar_color.shade700, appbar_color.shade400],
+      begin: Alignment.topLeft,
+      end: Alignment.bottomRight,
+      ),
+      borderRadius: BorderRadius.circular(12),
+      boxShadow: [
+      BoxShadow(
+      color: Colors.purple.withOpacity(0.3),
+      blurRadius: 6,
+      offset: Offset(0, 4),
+      ),
+      ],
+      ),
+      child: Row(
+      children: [
+      Icon(Icons.swap_horiz, color: Colors.white, size: 20),
+      SizedBox(width: 6),
+      Text(
+      "Transfer",
+      style: TextStyle(
+      fontSize: 14,
+      fontWeight: FontWeight.w500,
+      color: Colors.white,
+      ),
+      ),
+      ],
+      ),
+      ),
+      ),
+      ],
+      ),
+      );
+      }).toList(),
+    ),
+              ],
             ),
 
             if (_expandedTickets[index]) _buildExpandedTicketView(ticket),
-            SizedBox(height: 10), // Top space before the toggle
+            SizedBox(height: 10),
             Align(
               alignment: Alignment.center,
               child: GestureDetector(
@@ -1369,27 +1437,31 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                     _expandedTickets[index] = !_expandedTickets[index];
                   });
                 },
-                child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 0.0, horizontal: 20.0),
-                  decoration: BoxDecoration(color: Colors.transparent),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        _expandedTickets[index] ? "View Less" : "View More",
-                        style: TextStyle(
-                          color: Colors.black26,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 12.0,
-                        ),
-                      ),
-                      SizedBox(width: 10),
-                      Icon(
-                        _expandedTickets[index] ? Icons.expand_less : Icons.expand_more,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      _expandedTickets[index] ? "View Less" : "View More",
+                      style: TextStyle(
                         color: Colors.black26,
-                        size: 16,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12.0,
                       ),
-                    ]))))])));
+                    ),
+                    SizedBox(width: 10),
+                    Icon(
+                      _expandedTickets[index] ? Icons.expand_less : Icons.expand_more,
+                      color: Colors.black26,
+                      size: 16,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget _buildTicketHeader(Map<String, dynamic> ticket) {
@@ -1531,6 +1603,238 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
     );
   }
 }
+
+void _showTransferDialog(BuildContext context, String subTicketId) {
+  String? selectedTechnicianId;
+  List<Map<String, dynamic>> technicians = []; // List to store fetched technicians
+  bool isLoading = true;
+
+  // Fetch Technician List
+  Future<void> fetchTechnicians() async {
+    try {
+      final response = await http.get(
+        Uri.parse("$baseurl/user"), // Change API endpoint if needed
+        headers: {
+          'Authorization': 'Bearer $Company_Token',
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['success'] == true) {
+          final List<dynamic> usersJson = data['data']['users'];
+
+          // Exclude the logged-in user from the list
+          technicians = usersJson
+              .where((user) => user['id'].toString() != user_id) // Filter out current user
+              .map((userJson) {
+            return {
+              'id': userJson['id'].toString(),  // Ensure ID is a string
+              'name': userJson['name'],         // Extract user name
+            };
+          }).toList();
+        }
+      }
+    } catch (e) {
+      print("Error fetching technicians: $e");
+    } finally {
+      isLoading = false;
+    }
+  }
+
+  // Show Dialog after fetching technicians
+  showDialog(
+    context: context,
+
+    builder: (BuildContext context) {
+      return StatefulBuilder(
+        builder: (context, setState) {
+          return AlertDialog(
+            backgroundColor: Colors.white,
+            title: Text(
+              "Transfer Job",
+              style: TextStyle(fontWeight: FontWeight.normal),
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Fetch and Display Technician List
+                FutureBuilder(
+                  future: fetchTechnicians(),
+                  builder: (context, snapshot) {
+                    if (isLoading) {
+                      return Center(
+                        child: Platform.isIOS
+                            ? CupertinoActivityIndicator( // iOS-style spinner
+                          radius: 15, // Size of the loader
+                        )
+                            : CircularProgressIndicator( // Android-style loader
+                          strokeWidth: 3, // Smooth thickness
+                          valueColor: AlwaysStoppedAnimation<Color>(appbar_color), // Custom color
+
+                        ),
+                      );
+                    }
+                    if (technicians.isEmpty) {
+                      return Text("No technicians available.");
+                    }
+                    return DropdownButtonFormField<String>(
+                      value: selectedTechnicianId,
+                      isExpanded: true,
+                      decoration: InputDecoration(
+                        labelText: "Select Person",
+                        labelStyle: TextStyle(
+                          color: Colors.grey, // Use your base color
+                          fontWeight: FontWeight.normal,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12), // Smooth rounded corners
+                          borderSide: BorderSide(
+                            color: Colors.grey.shade400, // Default border color
+                            width: 1,
+                          ),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(
+                            color: Colors.grey.shade400, // Normal state border
+                            width: 1,
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(
+                            color: Colors.grey.shade400, // Highlighted border color (your base color)
+                            width: 1,
+                          ),
+                        ),
+                        filled: true,
+                        fillColor: Colors.white, // Background color
+                        contentPadding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                      ),
+                      dropdownColor: Colors.white, // Dropdown background color
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.black87, // Text color
+                        fontWeight: FontWeight.normal,
+                      ),
+                      icon: Icon(Icons.keyboard_arrow_down, color: Colors.black), // Dropdown arrow color
+                      items: technicians.map((tech) {
+                        return DropdownMenuItem(
+                          value: tech['id'].toString(),
+                          child: Text(
+                            tech['name'],
+                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                          ),
+                        );
+                      }).toList(),
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          selectedTechnicianId = newValue;
+                        });
+                      },
+                    );
+
+
+                  },
+                ),
+                SizedBox(height: 5),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text("Cancel", style: TextStyle(color: Colors.red)),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  if (selectedTechnicianId == null) {
+                    Fluttertoast.showToast(msg: "Please select!");
+                    return;
+                  }
+                  _transferSubTicket(subTicketId, selectedTechnicianId!);
+                  Navigator.of(context).pop(); // Close dialog
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: appbar_color,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                  elevation: 3,
+                ),
+                child: Text(
+                  "Submit",
+                  style: TextStyle( fontWeight: FontWeight.normal),
+                ),
+              ),
+            ],
+          );
+        },
+      );
+    },
+  );
+}
+
+
+Future<void> _transferSubTicket(String subTicketId, String technicianId) async {
+  String url = "$baseurl/maintenance/subticket/$subTicketId";
+
+  try {
+    final response = await http.patch(
+      Uri.parse(url),
+      headers: {
+        'Authorization': 'Bearer $Company_Token',
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({
+        'assigned_to': technicianId, // Selected technician ID
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+
+      if (data['success'] == true) {
+        String successMessage = data['message'] ?? "Transfer successful!"; // Extract message
+
+        // Show toast with the response message
+        Fluttertoast.showToast(
+          msg: successMessage,
+          toastLength: Toast.LENGTH_LONG,
+          gravity: ToastGravity.BOTTOM,
+          backgroundColor: appbar_color,
+          textColor: Colors.white,
+        );
+      }
+    } else {
+      final data = json.decode(response.body);
+      String errorMessage = data['message'] ?? "Something went wrong!";
+      Fluttertoast.showToast(
+        msg: "Error: $errorMessage",
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
+    }
+  } catch (e) {
+    Fluttertoast.showToast(
+      msg: "Error: $e",
+      toastLength: Toast.LENGTH_LONG,
+      gravity: ToastGravity.BOTTOM,
+      backgroundColor: Colors.red,
+      textColor: Colors.white,
+      fontSize: 16.0,
+    );
+  }
+}
+
 
 Widget _buildDecentButton(String label, IconData icon, Color color,
     VoidCallback onPressed) {

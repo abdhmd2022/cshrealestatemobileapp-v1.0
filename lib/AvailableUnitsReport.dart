@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -588,7 +589,6 @@ class Flat {
   }
 }
 
-
 class ExpandableFab extends StatefulWidget {
   final Color appbarColor;
 
@@ -624,115 +624,81 @@ class _ExpandableFabState extends State<ExpandableFab> with SingleTickerProvider
 
   @override
   Widget build(BuildContext context) {
+    double radius = _isExpanded ? 100 : 0; // Distance from main button when expanded
+    List<Widget> fabButtons = [];
+
+    // Define the buttons with angles for circular expansion
+    List<Map<String, dynamic>> actions = [
+      {"icon": FontAwesomeIcons.whatsapp, "color": [Color(0xFF6FE7A7), Color(0xFF3ECF8E)], "action": "https://wa.me/971588313352"},
+
+      {"icon": Icons.phone, "color": [Color(0xFF6FA3EF), Color(0xFF007AFF)], "action": "tel:+971588313352"},
+      {"icon": Icons.email, "color": [Color(0xFFFFA726), Color(0xFFFF7043)], "action": "mailto:saadan@ca-eim.com"},
+
+    ];
+
+    for (int i = 0; i < actions.length; i++) {
+      double angle = (pi / 4) * i; // Adjust the angle for circular positioning
+      double dx = radius * cos(angle);
+      double dy = radius * sin(angle);
+
+      fabButtons.add(
+        AnimatedPositioned(
+          duration: const Duration(milliseconds: 300),
+          right: 20 + dx,
+          bottom: 20 + dy,
+          child: Visibility(
+            visible: _isExpanded,
+            child: SizedBox(
+              width: 65,
+              height: 65,
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: actions[i]["color"],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.2),
+                      blurRadius: 8,
+                      spreadRadius: 2,
+                    ),
+                  ],
+                ),
+                child: FloatingActionButton(
+                  heroTag: "fab_${actions[i]["icon"]}",
+                  backgroundColor: Colors.transparent,
+                  elevation: 10,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(50),
+                  ),
+                  child: Icon(actions[i]["icon"], color: Colors.white, size: 30),
+                  onPressed: () async {
+                    String actionUrl = actions[i]["action"];
+                    if (await canLaunchUrl(Uri.parse(actionUrl))) {
+                      await launchUrl(Uri.parse(actionUrl), mode: LaunchMode.externalApplication);
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text("Could not open ${actions[i]["action"]}")),
+                      );
+                    }
+                  },
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
     return Stack(
       alignment: Alignment.bottomRight,
       children: [
-        // Call Button (Same as WhatsApp button)
-        AnimatedPositioned(
-          bottom: _isExpanded ? 140 : 80, // Moves up when expanded
-          right: 20,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeOut,
-          child: Visibility(
-            visible: _isExpanded,
-            child: SizedBox(
-              width: 65,
-              height: 65,
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFF6FA3EF), Color(0xFF007AFF)], // Light Blue Gradient
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.2),
-                      blurRadius: 8,
-                      spreadRadius: 2,
-                    ),
-                  ],
-                ),
-                child: FloatingActionButton(
-                  heroTag: "phone_button",
-                  backgroundColor: Colors.transparent,
-                  elevation: 10,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(50),
-                  ),
-                  child: const Icon(Icons.phone, color: Colors.white, size: 30),
-                  onPressed: () async {
-                    const String phoneNumber = "tel:+971XXXXXXXXX"; // Replace with actual number
-                    if (await canLaunchUrl(Uri.parse(phoneNumber))) {
-                      await launchUrl(Uri.parse(phoneNumber), mode: LaunchMode.externalApplication);
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text("Could not make a call")),
-                      );
-                    }
-                  },
-                ),
-              ),
-            ),
-          ),
-        ),
+        ...fabButtons, // Adding all floating buttons dynamically in a curve
 
-        // WhatsApp Button (Same as before)
-        AnimatedPositioned(
-          bottom: _isExpanded ? 80 : 80, // Moves slightly up when expanded
-          right: _isExpanded ? 90 : 20, // Moves left when expanded
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeOut,
-          child: Visibility(
-            visible: _isExpanded,
-            child: SizedBox(
-              width: 65,
-              height: 65,
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFF6FE7A7), Color(0xFF3ECF8E)], // WhatsApp Green Shades
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.2),
-                      blurRadius: 8,
-                      spreadRadius: 2,
-                    ),
-                  ],
-                ),
-                child: FloatingActionButton(
-                  heroTag: "whatsapp_button",
-                  backgroundColor: Colors.transparent,
-                  elevation: 10,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(50),
-                  ),
-                  child: const Icon(FontAwesomeIcons.whatsapp, color: Colors.white, size: 34),
-                  onPressed: () async {
-                    const String phoneNumber = "971XXXXXXXXX"; // Replace with actual number
-                    final String whatsappUrl = "https://wa.me/$phoneNumber";
-                    if (await canLaunchUrl(Uri.parse(whatsappUrl))) {
-                      await launchUrl(Uri.parse(whatsappUrl), mode: LaunchMode.externalApplication);
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text("Could not open WhatsApp")),
-                      );
-                    }
-                  },
-                ),
-              ),
-            ),
-          ),
-        ),
-
-        // Main Floating Button (Now Improved)
-// Main Floating Button (Modern, Neon Glow, Glassmorphism)
-// Main Floating Button (Modern, Beautiful, User-Friendly)
+        // Main Floating Button
         Positioned(
           bottom: 20,
           right: 20,
@@ -740,15 +706,13 @@ class _ExpandableFabState extends State<ExpandableFab> with SingleTickerProvider
             onTap: _toggleFab,
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 300),
-              width: _isExpanded ? 70 : 62, // Slight expansion effect
+              width: _isExpanded ? 70 : 62,
               height: _isExpanded ? 70 : 62,
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: _isExpanded
-                      ?[Color(0xFF2193B0), Color(0xFF6DD5ED)]
-
-
-                      :[appbar_color, appbar_color],
+                      ? [Color(0xFF2193B0), Color(0xFF6DD5ED)]
+                      : [widget.appbarColor, widget.appbarColor],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
@@ -756,9 +720,9 @@ class _ExpandableFabState extends State<ExpandableFab> with SingleTickerProvider
                 boxShadow: [
                   BoxShadow(
                     color: _isExpanded
-                        ? Colors.tealAccent.withOpacity(0.5) // Glow effect when expanded
-                        : appbar_color.withOpacity(0.4), // Glow when collapsed
-                    blurRadius: _isExpanded ? 25 : 15, // Dynamic blur effect
+                        ? Colors.tealAccent.withOpacity(0.5)
+                        : widget.appbarColor.withOpacity(0.4),
+                    blurRadius: _isExpanded ? 25 : 15,
                     spreadRadius: _isExpanded ? 4 : 2,
                   ),
                   BoxShadow(
@@ -768,13 +732,13 @@ class _ExpandableFabState extends State<ExpandableFab> with SingleTickerProvider
                   ),
                 ],
                 border: Border.all(
-                  color: Colors.white.withOpacity(0.3), // Glass-like effect
+                  color: Colors.white.withOpacity(0.3),
                   width: 1.5,
                 ),
               ),
               child: FloatingActionButton(
                 heroTag: "main_button",
-                backgroundColor: Colors.transparent, // Fully transparent to show gradient
+                backgroundColor: Colors.transparent,
                 elevation: 16,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(50),
@@ -782,19 +746,20 @@ class _ExpandableFabState extends State<ExpandableFab> with SingleTickerProvider
                 child: AnimatedSwitcher(
                   duration: const Duration(milliseconds: 300),
                   child: _isExpanded
-                      ? const Icon(Icons.close, color: Colors.white, size: 30) // Close icon when expanded
-                      : const Icon(Icons.more_vert, color: Colors.white, size: 34), // Three dots icon when collapsed
+                      ? const Icon(Icons.close, color: Colors.white, size: 30)
+                      : const Icon(Icons.more_vert, color: Colors.white, size: 34),
                 ),
                 onPressed: _toggleFab,
               ),
             ),
           ),
         ),
-
       ],
     );
   }
 }
+
+
 
 
 

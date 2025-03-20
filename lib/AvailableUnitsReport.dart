@@ -712,7 +712,7 @@ class _ExpandableFabState extends State<ExpandableFab> with SingleTickerProvider
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(50),
                   ),
-                  child: const Icon(FontAwesomeIcons.whatsapp, color: Colors.white, size: 30),
+                  child: const Icon(FontAwesomeIcons.whatsapp, color: Colors.white, size: 34),
                   onPressed: () async {
                     const String phoneNumber = "971XXXXXXXXX"; // Replace with actual number
                     final String whatsappUrl = "https://wa.me/$phoneNumber";
@@ -740,13 +740,15 @@ class _ExpandableFabState extends State<ExpandableFab> with SingleTickerProvider
             onTap: _toggleFab,
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 300),
-              width: _isExpanded ? 65 : 57, // Slight expansion effect
-              height: _isExpanded ? 65 : 57,
+              width: _isExpanded ? 70 : 62, // Slight expansion effect
+              height: _isExpanded ? 70 : 62,
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: _isExpanded
-                      ? [Color(0xFF4CAF50), Color(0xFF2E7D32)] // Green tones when expanded
-                      :[Color(0xFF00B09B), Color(0xFF96C93D)],
+                      ?[Color(0xFF2193B0), Color(0xFF6DD5ED)]
+
+
+                      :[appbar_color, appbar_color],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
@@ -754,10 +756,10 @@ class _ExpandableFabState extends State<ExpandableFab> with SingleTickerProvider
                 boxShadow: [
                   BoxShadow(
                     color: _isExpanded
-                        ? Colors.greenAccent.withOpacity(0.4)
-                        : Colors.blueAccent.withOpacity(0.3), // Soft glow based on state
-                    blurRadius: 20,
-                    spreadRadius: 3,
+                        ? Colors.tealAccent.withOpacity(0.5) // Glow effect when expanded
+                        : appbar_color.withOpacity(0.4), // Glow when collapsed
+                    blurRadius: _isExpanded ? 25 : 15, // Dynamic blur effect
+                    spreadRadius: _isExpanded ? 4 : 2,
                   ),
                   BoxShadow(
                     color: Colors.white.withOpacity(0.2),
@@ -781,7 +783,7 @@ class _ExpandableFabState extends State<ExpandableFab> with SingleTickerProvider
                   duration: const Duration(milliseconds: 300),
                   child: _isExpanded
                       ? const Icon(Icons.close, color: Colors.white, size: 30) // Close icon when expanded
-                      : const Icon(Icons.more_vert, color: Colors.white, size: 30), // Three dots icon when collapsed
+                      : const Icon(Icons.more_vert, color: Colors.white, size: 34), // Three dots icon when collapsed
                 ),
                 onPressed: _toggleFab,
               ),

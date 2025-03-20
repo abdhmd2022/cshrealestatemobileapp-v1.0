@@ -132,16 +132,18 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                 onSelectedItemChanged: (index) {
                   setState(() {
                     selectedFlat = flats[index];
-                    print('Selected flat ID: ${flats[index]['flat_id']}');
+                    print('Selected Flat ID: ${flats[index]['flat_id']}');
+                    print('Selected Contract ID: ${flats[index]['contract_id']}');
                   });
                 },
                 children: flats.map((flat) {
-                  // Extract building and state names
-                  String buildingName = flat['building_name'] ?? "Unknown";
+                  // Extract building name if available
+                  String buildingName = flat['building_id'].toString() ?? "Unknown";
 
                   return Center(
                     child: Text(
-                      '${flat['tenant_name']} | ${flat['flat_name']?? "Unknown"} | $buildingName',
+                      '${flat['tenant_name']} | ${flat['flat_name'] ?? "Unknown"} | '
+                          'Building: $buildingName',
                       style: GoogleFonts.poppins(fontSize: 16),
                     ),
                   );
@@ -194,6 +196,105 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
   }
 
   Future<void> fetchUnits() async {
+    flats.clear();
+
+    print('user id $user_id');
+
+    String url = is_admin
+        ? '$baseurl/tenant'
+        : '$baseurl/tenant/$user_id';
+
+    String token = 'Bearer $Company_Token'; // Auth token for request
+
+    print('url $url');
+
+    Map<String, String> headers = {
+      'Authorization': token,
+      "Content-Type": "application/json"
+    };
+
+    try {
+      final response = await http.get(
+        Uri.parse(url),
+        headers: headers,
+      );
+
+      print('code ${response.statusCode}');
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = json.decode(response.body);
+        print('data: $data');
+
+        setState(() {
+          flats.clear();
+
+          if (is_admin) {
+            // Case when is_admin = true
+            List<dynamic> tenants = data['data']['tenants'];
+
+            for (var tenant in tenants) {
+              String tenantName = tenant['name'];
+
+              if (tenant['contracts'] != null && tenant['contracts'].isNotEmpty) {
+                for (var contract in tenant['contracts']) {
+                  int contractId = contract['id']; // Extract contract ID
+
+                  if (contract['flats'] != null) {
+                    for (var flatData in contract['flats']) {
+                      var flat = flatData['flat'];
+                      flats.add({
+                        'tenant_name': tenantName,
+                        'flat_id': flat['id'],
+                        'flat_name': flat['name'],
+                        'building_id': flat['building_id'], // Store building ID
+                        'contract_id': contractId, // Include contract ID
+                      });
+                    }
+                  }
+                }
+              }
+            }
+          } else {
+            // Case when is_admin = false
+            var tenant = data['data']['tenant'];
+
+            if (tenant != null) {
+              String tenantName = tenant['name'];
+
+              if (tenant['contracts'] != null) {
+                for (var contract in tenant['contracts']) {
+                  int contractId = contract['id']; // Extract contract ID
+
+                  if (contract['flats'] != null) {
+                    for (var flatData in contract['flats']) {
+                      var flat = flatData['flat'];
+                      flats.add({
+                        'tenant_name': tenantName,
+                        'flat_id': flat['id'],
+                        'flat_name': flat['name'],
+                        'building_id': flat['building_id'], // Store building ID
+                        'contract_id': contractId, // Include contract ID
+                      });
+                    }
+                  }
+                }
+              }
+            }
+          }
+
+          // Select first flat if available
+          selectedFlat = flats.isNotEmpty ? flats[0] : {};
+        });
+      } else {
+        print("Error: ${response.statusCode}");
+        print("Message: ${response.body}");
+      }
+    } catch (e) {
+      print('Error fetching data: $e');
+    }
+  }
+
+
+  Future<void> fetchContracts() async {
     flats.clear();
 
     print('user id $user_id');
@@ -274,6 +375,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
       print('Error fetching data: $e');
     }
   }
+
 
   /*Future<void> fetchUnits() async {
     flats.clear();
@@ -612,7 +714,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                                   selectedFlat != null
                                       ? '${selectedFlat!['tenant_name'] ?? "Unknown Tenant"} | '
                                       '${selectedFlat!['flat_name'] ?? "Unknown Flat"} | '
-                                      '${selectedFlat!['building_name'] ?? "Unknown Building"}'
+                                      'Building: ${selectedFlat!['building_id'].toString() ?? "Unknown Building"}'
                                       : "Select Flat",
                                   style: GoogleFonts.poppins(
                                     color: appbar_color.shade700,
@@ -624,14 +726,14 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                                   softWrap: false, // Prevents text from wrapping to a new line
                                 ),
                               ),
-
-
                               Icon(Icons.arrow_drop_down, color: appbar_color),
                             ],
                           ),
                         ),
                       ),
                     ),
+
+
 
                     Container(
                       margin: EdgeInsets.only(left: 20,right: 20,top: 0),
@@ -1077,12 +1179,15 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
             var uuid = Uuid();
             String uuidValue = uuid.v4();
 
+            print('type list ${selectedMaintenanceTypeIds}');
+
             final Map<String, dynamic> requestBody = {
               "uuid": uuidValue,
               "flat_id": selectedFlat?['flat_id'], // Updated key from flat_masterid to flat_id
               "description": _descriptionController.text,
-              "types": maintenance_types_list.map((type) => type.id).toList(), // Converts the list of objects to a list of IDs
-              "contract_id": 1
+              "types": selectedMaintenanceTypeIds, // Converts the list of objects to a list of IDs
+              "contract_id": selectedFlat?['contract_id']
+
             };
 
             final response = await http.post(

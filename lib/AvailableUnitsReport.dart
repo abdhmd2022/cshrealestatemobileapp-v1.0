@@ -345,7 +345,7 @@ class AvailableUnitsDialog extends StatelessWidget {
                         _buildDetailTile(Icons.apartment, "Unit Type", unittype),
                         _buildDetailTile(Icons.business, "Building", building_name),
                         _buildDetailTile(Icons.location_on, "Location", "$area, $emirate"),
-                        _buildDetailTile(Icons.attach_money, "Rent", rent),
+                        _buildDetailTile(Icons.attach_money, "Price", rent),
                         _buildDetailTile(Icons.local_parking, "Parking", parking),
                         _buildDetailTile(Icons.balcony, "Balcony", balcony),
                         _buildDetailTile(Icons.bathtub, "Bathrooms", bathrooms),

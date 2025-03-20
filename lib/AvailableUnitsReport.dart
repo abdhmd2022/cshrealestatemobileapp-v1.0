@@ -143,7 +143,7 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
             ),
             body: RefreshIndicator(
                 onRefresh: _refresh,
-                child:filteredUnits.isEmpty ? Expanded(child: Center(
+                child:filteredUnits.isEmpty ? Center(
                   child: Platform.isIOS
                       ? CupertinoActivityIndicator(
                     radius: 15.0, // Adjust size if needed
@@ -153,7 +153,6 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
                     strokeWidth: 4.0, // Adjust thickness if needed
                   ),
                 )
-                  ,)
                     : Container(
                   color: Colors.white,
                   child: ListView.builder(

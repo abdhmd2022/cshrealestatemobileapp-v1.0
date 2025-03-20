@@ -148,12 +148,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                     ),
                   );
                 }).toList(),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+              ))])));
   }
 
   Future<void> fetchMaintenanceTypes() async {

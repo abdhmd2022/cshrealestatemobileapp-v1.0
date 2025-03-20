@@ -2,12 +2,15 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'Sidebar.dart';
 import 'constants.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:google_fonts/google_fonts.dart';
+
 
 class AvailableUnitsReport extends StatefulWidget {
   const AvailableUnitsReport({Key? key}) : super(key: key);
@@ -86,182 +89,233 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-        onWillPop: () async {
-          return true;
-        },
-        child: Scaffold(
-            key: _scaffoldKey,
-            backgroundColor: const Color(0xFFF2F4F8),
-            appBar: AppBar(
-              bottom: PreferredSize(
-                preferredSize: const Size.fromHeight(60.0),
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: TextField(
-                    onChanged: _updateSearchQuery,
-                    decoration: InputDecoration(
-                      hintText: 'Search Units',
-                      hintStyle: GoogleFonts.poppins(
-                        fontSize: 14,
-                        color: Colors.grey,
-                      ),
-                      prefixIcon: const Icon(Icons.search),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12.0),
-                        borderSide: BorderSide.none,
-                      ),
-                      filled: true,
-                      fillColor: Colors.white,
-                    ),
+      onWillPop: () async {
+        return true;
+      },
+      child: Scaffold(
+        key: _scaffoldKey,
+        backgroundColor: const Color(0xFFF2F4F8),
+        appBar: AppBar(
+          bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(60.0),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextField(
+                onChanged: _updateSearchQuery,
+                decoration: InputDecoration(
+                  hintText: 'Search Units',
+                  hintStyle: GoogleFonts.poppins(
+                    fontSize: 14,
+                    color: Colors.grey,
                   ),
+                  prefixIcon: const Icon(Icons.search),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12.0),
+                    borderSide: BorderSide.none,
+                  ),
+                  filled: true,
+                  fillColor: Colors.white,
                 ),
               ),
-              title: Text(
-                'Available Units',
-                style: GoogleFonts.poppins(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
+            ),
+          ),
+          title: Text(
+            'Available Units',
+            style: GoogleFonts.poppins(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+            ),
+          ),
+          backgroundColor: appbar_color.withOpacity(0.9),
+          automaticallyImplyLeading: false,
+          centerTitle: true,
+          leading: IconButton(
+            icon: const Icon(Icons.menu, color: Colors.white),
+            onPressed: () {
+              _scaffoldKey.currentState!.openDrawer();
+            },
+          ),
+        ),
+        drawer: Sidebar(
+          isDashEnable: isDashEnable,
+          isRolesVisible: isRolesVisible,
+          isRolesEnable: isRolesEnable,
+          isUserEnable: isUserEnable,
+          isUserVisible: isUserVisible,
+        ),
+        body: RefreshIndicator(
+          onRefresh: _refresh,
+          child: filteredUnits.isEmpty
+              ? Center(
+            child: Platform.isIOS
+                ? const CupertinoActivityIndicator(radius: 15.0)
+                : CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(appbar_color),
+              strokeWidth: 4.0,
+            ),
+          )
+              : Container(
+            color: Colors.white,
+            child: ListView.builder(
+              itemCount: filteredUnits.length,
+              itemBuilder: (context, index) {
+                final unit = filteredUnits[index];
+                return Container(
+                  margin: const EdgeInsets.symmetric(
+                      vertical: 15.0, horizontal: 20),
+                  padding: const EdgeInsets.all(16.0),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16.0),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.2),
+                        blurRadius: 10.0,
+                        offset: const Offset(0, 5),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          const Icon(Icons.home),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              unit.flatTypeName,
+                              style: GoogleFonts.poppins(fontSize: 16),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      Row(
+                        children: [
+                          const Icon(Icons.location_city),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              unit.buildingName,
+                              style: GoogleFonts.poppins(fontSize: 16),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      Row(
+                        children: [
+                          const Icon(Icons.location_on),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              "${unit.areaName}, ${unit.stateName}",
+                              style: GoogleFonts.poppins(fontSize: 16),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 0, bottom: 0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            _buildDecentButton(
+                              'View',
+                              Icons.remove_red_eye,
+                              Colors.orange,
+                                  () {
+                                String unitno = unit.name.toString();
+                                String unittype = unit.flatTypeName;
+                                String area = unit.areaName;
+                                String emirate = unit.stateName;
+                                String rent = "AED N/A";
+                                String parking = "N/A";
+                                String balcony = "N/A";
+                                String bathrooms = "N/A";
+                                String building = unit.buildingName;
+
+                                showDialog(
+                                  context: context,
+                                  builder: (context) => AvailableUnitsDialog(
+                                    unitno: unitno,
+                                    area: area,
+                                    emirate: emirate,
+                                    unittype: unittype,
+                                    rent: rent,
+                                    parking: parking,
+                                    balcony: balcony,
+                                    bathrooms: bathrooms,
+                                    building_name: building,
+                                  ),
+                                );
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
+        ),
+
+        floatingActionButton: ExpandableFab(appbarColor: appbar_color,),
+
+
+        /*floatingActionButton: Transform.rotate(
+          angle: 0, // Slight tilt
+          child: SizedBox(
+            width: 65, // Increased button size
+            height: 65,
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [Color(0xFF71EFA3), Color(0xFF38C985)], // Softer, fresh green shades
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
                 ),
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.25),
+                    blurRadius: 10,
+                    spreadRadius: 2,
+                  ),
+                ],
               ),
-              backgroundColor: appbar_color.withOpacity(0.9),
-              automaticallyImplyLeading: false,
-              centerTitle: true,
-              leading: IconButton(
-                icon: const Icon(Icons.menu, color: Colors.white),
-                onPressed: () {
-                  _scaffoldKey.currentState!.openDrawer();
+              child: FloatingActionButton(
+                backgroundColor: Colors.transparent, // Transparent to show gradient
+                elevation: 12,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(50),
+                ),
+                child: const Icon(FontAwesomeIcons.whatsapp, color: Colors.white, size: 35), // Slightly larger icon
+                onPressed: () async {
+                  const String phoneNumber = "971XXXXXXXXX"; // Replace with actual number
+                  final String whatsappUrl = "https://wa.me/$phoneNumber";
+                  if (await canLaunchUrl(Uri.parse(whatsappUrl))) {
+                    await launchUrl(Uri.parse(whatsappUrl), mode: LaunchMode.externalApplication);
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text("Could not open WhatsApp")),
+                    );
+                  }
                 },
               ),
             ),
-            drawer: Sidebar(
-              isDashEnable: isDashEnable,
-              isRolesVisible: isRolesVisible,
-              isRolesEnable: isRolesEnable,
-              isUserEnable: isUserEnable,
-              isUserVisible: isUserVisible,
-            ),
-            body: RefreshIndicator(
-                onRefresh: _refresh,
-                child:filteredUnits.isEmpty ? Center(
-                  child: Platform.isIOS
-                      ? CupertinoActivityIndicator(
-                    radius: 15.0, // Adjust size if needed
-                  )
-                      : CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(appbar_color), // Change color here
-                    strokeWidth: 4.0, // Adjust thickness if needed
-                  ),
-                )
-                    : Container(
-                  color: Colors.white,
-                  child: ListView.builder(
-                    itemCount: filteredUnits.length,
-                    itemBuilder: (context, index) {
-                      final unit = filteredUnits[index];
-                      return Container(
-                        margin: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 20),
-                        padding: const EdgeInsets.all(16.0),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(16.0),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.withOpacity(0.2),
-                              blurRadius: 10.0,
-                              offset: const Offset(0, 5),
-                            ),
-                          ],
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                const Icon(Icons.home),
-                                const SizedBox(width: 10),
-                                Expanded(
-                                  child: Text(
-                                    unit.flatTypeName,
-                                    style: GoogleFonts.poppins(fontSize: 16),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 10),
-                            Row(
-                              children: [
-                                const Icon(Icons.location_city),
-                                const SizedBox(width: 10),
-                                Expanded(
-                                  child: Text(
-                                    unit.buildingName,
-                                    style: GoogleFonts.poppins(fontSize: 16),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 10),
-                            Row(
-                              children: [
-                                const Icon(Icons.location_on),
-                                const SizedBox(width: 10),
-                                Expanded(
-                                  child: Text(
-                                    "${unit.areaName}, ${unit.stateName}",
-                                    style: GoogleFonts.poppins(fontSize: 16),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 10),
-                            Padding(
-                              padding: const EdgeInsets.only(top: 0, bottom: 0),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  _buildDecentButton(
-                                    'View',
-                                    Icons.remove_red_eye,
-                                    Colors.orange,
-                                        () {
-                                      String unitno = unit.name.toString();
-                                      String unittype = unit.flatTypeName;
-                                      String area = unit.areaName;
-                                      String emirate = unit.stateName;
-                                      String rent = "AED N/A";
-                                      String parking = "N/A";
-                                      String balcony = "N/A";
-                                      String bathrooms = "N/A";
-                                      String building = unit.buildingName;
+          ),
+        ),*/
 
-                                      showDialog(
-                                        context: context,
-                                        builder: (context) => AvailableUnitsDialog(
-                                          unitno: unitno,
-                                          area: area,
-                                          emirate: emirate,
-                                          unittype: unittype,
-                                          rent: rent,
-                                          parking: parking,
-                                          balcony: balcony,
-                                          bathrooms: bathrooms,
-                                          building_name: building,
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                  ),
-                )
-            )));
+
+      ),
+    );
   }
 }
 
@@ -335,11 +389,7 @@ class AvailableUnitsDialog extends StatelessWidget {
                           fontSize: 22,
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                        ))])),
 
                 SizedBox(height: 10),
 
@@ -537,3 +587,212 @@ class Flat {
     );
   }
 }
+
+
+class ExpandableFab extends StatefulWidget {
+  final Color appbarColor;
+
+  const ExpandableFab({Key? key, required this.appbarColor}) : super(key: key);
+
+  @override
+  _ExpandableFabState createState() => _ExpandableFabState();
+}
+
+class _ExpandableFabState extends State<ExpandableFab> with SingleTickerProviderStateMixin {
+  bool _isExpanded = false;
+  late AnimationController _animationController;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
+  }
+
+  void _toggleFab() {
+    setState(() {
+      _isExpanded = !_isExpanded;
+      if (_isExpanded) {
+        _animationController.forward();
+      } else {
+        _animationController.reverse();
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      alignment: Alignment.bottomRight,
+      children: [
+        // Call Button (Same as WhatsApp button)
+        AnimatedPositioned(
+          bottom: _isExpanded ? 140 : 80, // Moves up when expanded
+          right: 20,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+          child: Visibility(
+            visible: _isExpanded,
+            child: SizedBox(
+              width: 65,
+              height: 65,
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFF6FA3EF), Color(0xFF007AFF)], // Light Blue Gradient
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.2),
+                      blurRadius: 8,
+                      spreadRadius: 2,
+                    ),
+                  ],
+                ),
+                child: FloatingActionButton(
+                  heroTag: "phone_button",
+                  backgroundColor: Colors.transparent,
+                  elevation: 10,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(50),
+                  ),
+                  child: const Icon(Icons.phone, color: Colors.white, size: 30),
+                  onPressed: () async {
+                    const String phoneNumber = "tel:+971XXXXXXXXX"; // Replace with actual number
+                    if (await canLaunchUrl(Uri.parse(phoneNumber))) {
+                      await launchUrl(Uri.parse(phoneNumber), mode: LaunchMode.externalApplication);
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text("Could not make a call")),
+                      );
+                    }
+                  },
+                ),
+              ),
+            ),
+          ),
+        ),
+
+        // WhatsApp Button (Same as before)
+        AnimatedPositioned(
+          bottom: _isExpanded ? 80 : 80, // Moves slightly up when expanded
+          right: _isExpanded ? 90 : 20, // Moves left when expanded
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+          child: Visibility(
+            visible: _isExpanded,
+            child: SizedBox(
+              width: 65,
+              height: 65,
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFF6FE7A7), Color(0xFF3ECF8E)], // WhatsApp Green Shades
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.2),
+                      blurRadius: 8,
+                      spreadRadius: 2,
+                    ),
+                  ],
+                ),
+                child: FloatingActionButton(
+                  heroTag: "whatsapp_button",
+                  backgroundColor: Colors.transparent,
+                  elevation: 10,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(50),
+                  ),
+                  child: const Icon(FontAwesomeIcons.whatsapp, color: Colors.white, size: 30),
+                  onPressed: () async {
+                    const String phoneNumber = "971XXXXXXXXX"; // Replace with actual number
+                    final String whatsappUrl = "https://wa.me/$phoneNumber";
+                    if (await canLaunchUrl(Uri.parse(whatsappUrl))) {
+                      await launchUrl(Uri.parse(whatsappUrl), mode: LaunchMode.externalApplication);
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text("Could not open WhatsApp")),
+                      );
+                    }
+                  },
+                ),
+              ),
+            ),
+          ),
+        ),
+
+        // Main Floating Button (Now Improved)
+// Main Floating Button (Modern, Neon Glow, Glassmorphism)
+// Main Floating Button (Modern, Beautiful, User-Friendly)
+        Positioned(
+          bottom: 20,
+          right: 20,
+          child: GestureDetector(
+            onTap: _toggleFab,
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              width: _isExpanded ? 65 : 57, // Slight expansion effect
+              height: _isExpanded ? 65 : 57,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: _isExpanded
+                      ? [Color(0xFF4CAF50), Color(0xFF2E7D32)] // Green tones when expanded
+                      :[Color(0xFF00B09B), Color(0xFF96C93D)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: _isExpanded
+                        ? Colors.greenAccent.withOpacity(0.4)
+                        : Colors.blueAccent.withOpacity(0.3), // Soft glow based on state
+                    blurRadius: 20,
+                    spreadRadius: 3,
+                  ),
+                  BoxShadow(
+                    color: Colors.white.withOpacity(0.2),
+                    blurRadius: 10,
+                    spreadRadius: 1,
+                  ),
+                ],
+                border: Border.all(
+                  color: Colors.white.withOpacity(0.3), // Glass-like effect
+                  width: 1.5,
+                ),
+              ),
+              child: FloatingActionButton(
+                heroTag: "main_button",
+                backgroundColor: Colors.transparent, // Fully transparent to show gradient
+                elevation: 16,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(50),
+                ),
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 300),
+                  child: _isExpanded
+                      ? const Icon(Icons.close, color: Colors.white, size: 30) // Close icon when expanded
+                      : const Icon(Icons.more_vert, color: Colors.white, size: 30), // Three dots icon when collapsed
+                ),
+                onPressed: _toggleFab,
+              ),
+            ),
+          ),
+        ),
+
+      ],
+    );
+  }
+}
+
+
+

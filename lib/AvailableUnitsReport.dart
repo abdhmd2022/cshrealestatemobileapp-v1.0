@@ -156,7 +156,7 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
               strokeWidth: 4.0,
             ),
           )
-              : Container(
+          : Container(
             color: Colors.white,
             child: ListView.builder(
               itemCount: filteredUnits.length,
@@ -164,7 +164,7 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
                 final unit = filteredUnits[index];
                 return Container(
                   margin: const EdgeInsets.symmetric(
-                      vertical: 15.0, horizontal: 20),
+                  vertical: 5.0, horizontal: 20),
                   padding: const EdgeInsets.all(16.0),
                   decoration: BoxDecoration(
                     color: Colors.white,
@@ -180,7 +180,7 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
+                     Row(
                         children: [
                           const Icon(Icons.home),
                           const SizedBox(width: 10),
@@ -254,67 +254,9 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
                                     building_name: building,
                                   ),
                                 );
-                              },
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              },
-            ),
-          ),
-        ),
+                              })]))]));}))),
 
         floatingActionButton: ExpandableFab(appbarColor: appbar_color,),
-
-
-        /*floatingActionButton: Transform.rotate(
-          angle: 0, // Slight tilt
-          child: SizedBox(
-            width: 65, // Increased button size
-            height: 65,
-            child: Container(
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [Color(0xFF71EFA3), Color(0xFF38C985)], // Softer, fresh green shades
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.25),
-                    blurRadius: 10,
-                    spreadRadius: 2,
-                  ),
-                ],
-              ),
-              child: FloatingActionButton(
-                backgroundColor: Colors.transparent, // Transparent to show gradient
-                elevation: 12,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(50),
-                ),
-                child: const Icon(FontAwesomeIcons.whatsapp, color: Colors.white, size: 35), // Slightly larger icon
-                onPressed: () async {
-                  const String phoneNumber = "971XXXXXXXXX"; // Replace with actual number
-                  final String whatsappUrl = "https://wa.me/$phoneNumber";
-                  if (await canLaunchUrl(Uri.parse(whatsappUrl))) {
-                    await launchUrl(Uri.parse(whatsappUrl), mode: LaunchMode.externalApplication);
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text("Could not open WhatsApp")),
-                    );
-                  }
-                },
-              ),
-            ),
-          ),
-        ),*/
-
-
       ),
     );
   }
@@ -629,10 +571,9 @@ class _ExpandableFabState extends State<ExpandableFab> with SingleTickerProvider
 
     // Define the buttons with angles for circular expansion
     List<Map<String, dynamic>> actions = [
-      {"icon": FontAwesomeIcons.whatsapp, "color": [Color(0xFF6FE7A7), Color(0xFF3ECF8E)], "action": "https://wa.me/971588313352"},
-
-      {"icon": Icons.phone, "color": [Color(0xFF6FA3EF), Color(0xFF007AFF)], "action": "tel:+971588313352"},
-      {"icon": Icons.email, "color": [Color(0xFFFFA726), Color(0xFFFF7043)], "action": "mailto:saadan@ca-eim.com"},
+      {"icon": FontAwesomeIcons.whatsapp, "color": [Color(0xFF11998E), Color(0xFF38EF7D)], "action": "https://wa.me/971588313352"},
+      {"icon": Icons.phone, "color": [Color(0xFF0575E6), Color(0xFF021B79)], "action": "tel:+971588313352"},
+      {"icon": Icons.email, "color": [Color(0xFF0575E6), Color(0xFF26D0CE)], "action": "mailto:saadan@ca-eim.com"},
 
     ];
 
@@ -711,8 +652,8 @@ class _ExpandableFabState extends State<ExpandableFab> with SingleTickerProvider
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: _isExpanded
-                      ? [Color(0xFF2193B0), Color(0xFF6DD5ED)]
-                      : [widget.appbarColor, widget.appbarColor],
+                      ? [Color(0xFF232526), Color(0xFF414345)]
+                      : [Color(0xFF0575E6), appbar_color],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
@@ -720,7 +661,7 @@ class _ExpandableFabState extends State<ExpandableFab> with SingleTickerProvider
                 boxShadow: [
                   BoxShadow(
                     color: _isExpanded
-                        ? Colors.tealAccent.withOpacity(0.5)
+                        ? Colors.black26.withOpacity(0.5)
                         : widget.appbarColor.withOpacity(0.4),
                     blurRadius: _isExpanded ? 25 : 15,
                     spreadRadius: _isExpanded ? 4 : 2,

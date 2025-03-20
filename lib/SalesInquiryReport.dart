@@ -13,6 +13,8 @@ import 'package:intl/intl.dart';
 import 'SalesDashboard.dart';
 import 'Sidebar.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+
 
 class SalesInquiryReport extends StatefulWidget {
   @override
@@ -165,6 +167,212 @@ class InquiryModel {
     } catch (e) {
       return rawDate; // Return the raw date if parsing fails
     }
+  }
+}
+
+void _showTransferDialog(BuildContext context, String inquiryId) {
+  String? selectedUserId;
+  List<Map<String, dynamic>> users = [];
+  bool isLoading = true;
+
+  // Fetch User List
+  Future<void> fetchUsers() async {
+    try {
+      final response = await http.get(
+        Uri.parse("$baseurl/user"),
+        headers: {
+          'Authorization': 'Bearer $Company_Token',
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['success'] == true) {
+          final List<dynamic> usersJson = data['data']['users'];
+
+          users = usersJson.map((userJson) {
+            return {
+              'id': userJson['id'].toString(),
+              'name': userJson['name'],
+            };
+          }).toList();
+        }
+      }
+    } catch (e) {
+      print("Error fetching users: $e");
+    } finally {
+      isLoading = false;
+    }
+  }
+
+  // Show Dialog after fetching users
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return StatefulBuilder(
+        builder: (context, setState) {
+          return AlertDialog(
+            backgroundColor: Colors.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12.0),
+            ),
+            title: Text(
+              "Transfer Inquiry",
+              style: GoogleFonts.poppins(
+                fontWeight: FontWeight.w500,
+                color: Colors.black,
+              ),
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                FutureBuilder(
+                  future: fetchUsers(),
+                  builder: (context, snapshot) {
+                    if (isLoading) {
+                      return Center(
+                        child: Platform.isIOS
+                            ? CupertinoActivityIndicator(radius: 15)
+                            : CircularProgressIndicator(
+                          strokeWidth: 3,
+                          valueColor: AlwaysStoppedAnimation<Color>(appbar_color),
+                        )
+                      );
+                    }
+                    if (users.isEmpty) {
+                      return Text(
+                        "No users available.",
+                        style: GoogleFonts.poppins(color: Colors.black87),
+                      );
+                    }
+                    return DropdownButtonFormField<String>(
+                      value: selectedUserId,
+                      isExpanded: true,
+                      decoration: InputDecoration(
+                        labelText: "Select User",
+                        labelStyle: GoogleFonts.poppins(color: Colors.grey),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Colors.grey.shade400, width: 1),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Colors.grey.shade400, width: 1),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: appbar_color, width: 1),
+                        ),
+                        filled: true,
+                        fillColor: Colors.white,
+                        contentPadding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                      ),
+                      dropdownColor: Colors.white,
+                      style: GoogleFonts.poppins(fontSize: 16, color: Colors.black87),
+                      icon: Icon(Icons.keyboard_arrow_down, color: Colors.black),
+                      items: users.map((user) {
+                        return DropdownMenuItem(
+                          value: user['id'].toString(),
+                          child: Text(
+                            user['name'],
+                            style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w500),
+                          ),
+                        );
+                      }).toList(),
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          selectedUserId = newValue;
+                        });
+                      },
+                    );
+                  },
+                ),
+
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text(
+                  "Cancel",
+                  style: GoogleFonts.poppins(color: Colors.red, fontWeight: FontWeight.w500),
+                ),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  if (selectedUserId == null) {
+                    Fluttertoast.showToast(msg: "Please select user!");
+                    return;
+                  }
+                  _submitTransfer(inquiryId, selectedUserId!);
+                  Navigator.of(context).pop();
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: appbar_color,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                  elevation: 3,
+                ),
+                child: Text(
+                  "Submit",
+                  style: GoogleFonts.poppins(fontWeight: FontWeight.w500),
+                ),
+              ),
+            ],
+          );
+        },
+      );
+    },
+  );
+}
+
+Future<void> _submitTransfer(String inquiryId, String userId) async {
+  try {
+    final response = await http.patch(
+      Uri.parse("$baseurl/lead/$inquiryId"),
+      headers: {
+        'Authorization': 'Bearer $Company_Token',
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({
+        'assigned_to': userId,
+      }),
+    );
+    final data = json.decode(response.body);
+    if (response.statusCode == 200) {
+
+
+      String successMessage = data['message'] ?? "Transfer successful!"; // Extract message
+
+      // Show toast with the response message
+      Fluttertoast.showToast(
+        msg: successMessage,
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: appbar_color,
+        textColor: Colors.white,
+      );
+
+    } else {
+      String successMessage = data['message'] ?? "Transfer successful!"; // Extract message
+
+      // Show toast with the response message
+      Fluttertoast.showToast(
+        msg: successMessage,
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: appbar_color,
+        textColor: Colors.white,
+      );
+    }
+  } catch (e) {
+    Fluttertoast.showToast(msg: "Error: $e");
   }
 }
 
@@ -935,7 +1143,7 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
                               SizedBox(width: 5),
 
                               // hide for sometime
-                              /*_buildDecentButton(
+                              _buildDecentButton(
                                 'Transfer',
                                 Icons.swap_horiz,
                                 Colors.orange,
@@ -943,16 +1151,11 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
                                   String name = inquiry.customerName;
                                   String id = inquiry.inquiryNo;
                                   String email = inquiry.email;
+                                  _showTransferDialog(context, id);
 
-                                  Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(builder: (context) =>
-                                          SalesInquiryTransfer(name: name,
-                                            email: email,
-                                            id: id,)));
                                 },
-                              ),*/
-                              /*SizedBox(width: 5)*/
+                              ),
+                              SizedBox(width: 5)
                             ],),
 
                           _buildDecentButton(

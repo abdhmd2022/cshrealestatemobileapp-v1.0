@@ -151,6 +151,8 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
          _remarksController.clear();
          nextFollowupDate = null;*/
 
+        sendImageData(followupId);
+
       }
       else {
         print('Upload failed with status code: ${response.statusCode}');
@@ -184,7 +186,7 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
 
   Future<void> sendImageData(int id) async {
     try {
-      final String urll = "$BASE_URL_config/v1/maintenanceFollowup/uploads/$id";
+      final String urll = "$baseurl/uploads/followup/$id";
       final url = Uri.parse(urll);
 
       final request = http.MultipartRequest('POST', url);

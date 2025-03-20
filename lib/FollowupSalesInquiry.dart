@@ -190,7 +190,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
 
   Future<Map<String, dynamic>> fetchSmtpDetails() async {
 
-    final url = '$BASE_URL_config/v1/company'; // Replace with your API endpoint
+    final url = '$baseurl/company/smtp/$company_id'; // Replace with your API endpoint
     String token = 'Bearer $Company_Token'; // auth token for request
 
     Map<String, String> headers = {
@@ -199,10 +199,13 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
     };
     final response = await http.get(Uri.parse(url),
       headers: headers,);
+
+    print('code: ${response.body}');
+
     if (response.statusCode == 200) {
       final jsonData = jsonDecode(response.body);
 
-      print('smtp details: $jsonData');
+
 
       if (jsonData['success'] == true) {
         return jsonData['data']['company']['smtp_detail'];
@@ -323,8 +326,8 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
       builder: (context) => Center(child: CircularProgressIndicator()),
     );*/
 
-    Map<String, dynamic> smtpDetails;
-    try {
+    Map<String, dynamic> smtpDetails = {};
+    /*try {
       smtpDetails = await fetchSmtpDetails();
     } catch (error) {
       // Handle the error by showing an alert or a snackbar
@@ -342,7 +345,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
         ),
       );
       return;
-    }
+    }*/
 
     TextEditingController subjectController = TextEditingController();
     TextEditingController ccController = TextEditingController();

@@ -29,6 +29,9 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
       isRolesEnable = true,
       isVisibleNoUserFound = false;
 
+  bool isLoading = true;
+
+
   String searchQuery = "";
   String name = "", email = "";
 
@@ -43,22 +46,33 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
 
   bool isPriceRangeModified = false;
 
+  String? selectedSortLabel; // e.g. "Price: Low → High"
+
+
+
   double rangeMin = 0;
   double rangeMax = 2000000;
 
   String selectedSort = "none"; // Options: "low_to_high", "high_to_low"
 
   void fetchFlats() async {
-
+    setState(() {
+      isLoading = true;
+    });
     try {
       List<Flat> flats = await ApiService().fetchFlats();
       setState(() {
         allUnits = flats;
         allUnits = allUnits.reversed.toList();
         filteredUnits = allUnits;
+        isLoading = false;
+
       });
     } catch (e) {
       print("Error fetching flats: $e");
+      setState(() {
+        isLoading = false;
+      });
     }
 
   }
@@ -82,7 +96,7 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
       final flatTypes = await ApiService().fetchFlatTypes();
       final amenities = await ApiService().fetchAmenities();
       setState(() {
-        availableFlatTypes = ['All', ...flatTypes];
+        availableFlatTypes = flatTypes;
         availableAmenities = amenities;
       });
     } catch (e) {
@@ -93,15 +107,9 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
   void _updateSearchQuery(String query) {
     setState(() {
       searchQuery = query;
-      filteredUnits = allUnits.where((unit) =>
-      unit.flatTypeName.toLowerCase().contains(query.toLowerCase()) ||
-          unit.buildingName.toLowerCase().contains(query.toLowerCase()) ||
-          unit.name.toLowerCase().contains(query.toLowerCase()) ||
-          unit.areaName.toLowerCase().contains(query.toLowerCase()) ||
-          unit.stateName.toLowerCase().contains(query.toLowerCase())).toList();
+      applyFilters(); // 🔁 call combined filter
     });
   }
-
   @override
   void initState() {
     super.initState();
@@ -109,15 +117,17 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
     _initSharedPreferences();
   }
 
+
   Future<void> _refresh() async {
     setState(() {
+
       fetchFlats();
     });
   }
 
   void _showFiltersDialog(BuildContext context) {
 
-    String tempFlatType = selectedFlatType;
+    List<String> tempFlatTypes = List.from(selectedFlatTypes);
     List<String> tempAmenities = [...selectedAmenities];
     RangeValues tempPriceRange = selectedPriceRange;
     bool tempIsPriceModified = isPriceRangeModified;
@@ -138,53 +148,65 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text("Filter", style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold)),
+                  Text("Filters", style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold)),
 
                   SizedBox(height: 20),
 
                   // Flat Type
-                  DropdownButtonFormField<String>(
-                    value: tempFlatType,
-                    items: flatTypes
-                        .map((type) => DropdownMenuItem(
-                      value: type,
-                      child: Text(
-                        type,
-                        style: GoogleFonts.poppins(
-                          fontSize: 14,
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Flat Types",
+                          style: GoogleFonts.poppins(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
                         ),
-                      ),
-                    ))
-                        .toList(),
-                    onChanged: (value) {
-                      setModalState(() => tempFlatType = value!);
-                    },
-                    decoration: InputDecoration(
-                      labelText: "Flat Type",
-                      labelStyle: GoogleFonts.poppins(fontSize: 14, color: Colors.grey[700]),
-                      filled: true,
-                      fillColor: Colors.grey[100],
-                      contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide(color: Colors.black87, width: 1),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide(color: Colors.black87, width: 1),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide(color: Colors.black, width: 1),
-                      ),
-                    ),
-                    dropdownColor: Colors.white,
-                    icon: Icon(Icons.keyboard_arrow_down),
-                    style: GoogleFonts.poppins(
-                      fontSize: 14,
-                      color: Colors.black87,
+                        const SizedBox(height: 8),
+                        Wrap(
+                          spacing: 8.0,
+                          runSpacing: 8.0,
+                          children: flatTypes.map((type) {
+                            final isSelected = tempFlatTypes.contains(type);
+
+                            return FilterChip(
+                              label: Text(
+                                type,
+                                style: GoogleFonts.poppins(
+                                  fontSize: 13,
+                                  color: isSelected ? Colors.white : Colors.black87,
+                                ),
+                              ),
+                              selected: isSelected,
+                              selectedColor: appbar_color,
+                              backgroundColor: Colors.grey.shade200,
+                              checkmarkColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              onSelected: (selected) {
+                                setModalState(() {
+                                  if (selected) {
+                                      tempFlatTypes.add(type);
+
+                                  } else {
+                                    tempFlatTypes.remove(type);
+                                  }
+                                });
+                              },
+                            );
+                          }).toList(),
+                        ),
+                      ],
                     ),
                   ),
+
+
+
+
 
 
                   SizedBox(height: 20),
@@ -233,14 +255,9 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
 
                   Align(
                     alignment: Alignment.centerLeft,
-                    child: Text(
-                      "Amenities",
-                      style: GoogleFonts.poppins(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                        color: Colors.black87,
-                      ),
-                    ),
+                    child:
+                    Text("Amenities", style: GoogleFonts.poppins(fontWeight: FontWeight.w500)),
+
                   ),
                   const SizedBox(height: 8),
                   Align(
@@ -287,10 +304,12 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
                       OutlinedButton.icon(
                         onPressed: () {
                           setModalState(() {
-                            tempFlatType = 'All';
+                            tempFlatTypes.clear();
                             tempAmenities.clear();
                             tempPriceRange = RangeValues(rangeMin, rangeMax); // shared prefs wala
                             tempIsPriceModified = false;
+                            searchQuery = '';
+
                           });
                         },
                         icon: Icon(Icons.refresh, color: Colors.black87),
@@ -314,7 +333,7 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
                       ElevatedButton.icon(
                         onPressed: () {
                           setState(() {
-                            selectedFlatType = tempFlatType;
+                            selectedFlatTypes = List.from(tempFlatTypes);
                             selectedAmenities = [...tempAmenities];
                             selectedPriceRange = tempPriceRange;
                             isPriceRangeModified = tempIsPriceModified;
@@ -355,37 +374,52 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
     }
 
     print("🔥 APPLYING FILTERS 🔥");
-    print("Selected flat type: $selectedFlatType");
+    print("Selected flat types: $selectedFlatTypes");
     print("Selected price range: ${selectedPriceRange.start} - ${selectedPriceRange.end}");
     print("Is price range modified: $isPriceRangeModified");
     print("Selected amenities: $selectedAmenities");
 
+    List<Flat> filtered = allUnits.where((unit) {
+      final rent = unit.basicRent;
+
+      // ✅ Flat type match
+      final flatTypeMatch = selectedFlatTypes.isEmpty ||
+          selectedFlatTypes.contains(unit.flatTypeName);
+
+
+      // ✅ Price range match (only if user changed it)
+      final priceMatch = !isPriceRangeModified ||
+          (rent != null &&
+              rent >= selectedPriceRange.start &&
+              rent <= selectedPriceRange.end);
+
+      // ✅ Amenities match (if selected)
+      final amenitiesMatch = selectedAmenities.every((a) => unit.amenities.contains(a));
+
+      final finalMatch = flatTypeMatch && priceMatch && amenitiesMatch;
+
+      print("🔎 ${unit.name} → flatTypeMatch: $flatTypeMatch | priceMatch: $priceMatch | rent: $rent | amenitiesMatch: $amenitiesMatch | Final Match: $finalMatch");
+
+      return finalMatch;
+    }).toList();
+
+    print("✅ Filtered units before search: ${filtered.length}");
+
+    // 🔍 Apply search on top of filtered list
+    if (searchQuery.trim().isNotEmpty) {
+      filtered = filtered.where((unit) =>
+      unit.flatTypeName.toLowerCase().contains(searchQuery.toLowerCase()) ||
+          unit.buildingName.toLowerCase().contains(searchQuery.toLowerCase()) ||
+          unit.name.toLowerCase().contains(searchQuery.toLowerCase()) ||
+          unit.areaName.toLowerCase().contains(searchQuery.toLowerCase()) ||
+          unit.stateName.toLowerCase().contains(searchQuery.toLowerCase())).toList();
+
+      print("🔎 Applied search '$searchQuery' → Final count: ${filtered.length}");
+    }
+
     setState(() {
-      filteredUnits = allUnits.where((unit) {
-        final rent = unit.basicRent;
-
-        // ✅ Flat type match
-        final flatTypeMatch = selectedFlatType == 'All' ||
-            unit.flatTypeName.toLowerCase().trim() == selectedFlatType.toLowerCase().trim();
-
-        // ✅ Price range match (only if user changed it)
-        final priceMatch = !isPriceRangeModified ||
-            (rent != null &&
-                rent >= selectedPriceRange.start &&
-                rent <= selectedPriceRange.end);
-
-        // ✅ Amenities match (if selected)
-        final amenitiesMatch = selectedAmenities.every((a) => unit.amenities.contains(a));
-
-        final finalMatch = flatTypeMatch && priceMatch && amenitiesMatch;
-
-        print("🔎 ${unit.name} → flatTypeMatch: $flatTypeMatch | priceMatch: $priceMatch | rent: $rent | amenitiesMatch: $amenitiesMatch | Final Match: $finalMatch");
-
-        return finalMatch;
-      }).toList();
+      filteredUnits = filtered;
     });
-
-    print("✅ Filtered units count: ${filteredUnits.length}");
   }
 
   void _showSortOptions(BuildContext context) {
@@ -486,15 +520,17 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
       });
 
       selectedSort = ascending ? "low_to_high" : "high_to_low";
+      selectedSortLabel = ascending ? "Price: Low → High" : "Price: High → Low";
+
     });
   }
 
 
 
 
-  List<String> availableFlatTypes = ['All'];
+  List<String> availableFlatTypes = [];
   List<String> availableAmenities = [];
-  String selectedFlatType = 'All';
+  List<String> selectedFlatTypes = [];
   RangeValues selectedPriceRange = const RangeValues(0, 2000000);
   List<String> selectedAmenities = [];
   @override
@@ -561,7 +597,7 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
         ),
         body: RefreshIndicator(
           onRefresh: _refresh,
-          child: filteredUnits.isEmpty
+          child: isLoading
               ? Center(
             child: Platform.isIOS
                 ? const CupertinoActivityIndicator(radius: 15.0)
@@ -577,7 +613,7 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
                 Padding(
                   padding: const EdgeInsets.fromLTRB(10, 8, 10, 4),
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(20),
@@ -594,61 +630,151 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
                         width: 1.2,
                       ),
                     ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // 🔘 Filters Button
-                        Expanded(
-                          child: TextButton.icon(
-                            onPressed: () => _showFiltersDialog(context),
-                            icon: Icon(Icons.filter_list, color: appbar_color),
-                            label: Text(
-                              "Filters",
-                              style: GoogleFonts.poppins(
-                                color: appbar_color,
-                                fontWeight: FontWeight.w600,
-                                fontSize: 14,
+
+                        // 🔘 FILTER SECTION
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Filter Button
+                            TextButton.icon(
+                              onPressed: () => _showFiltersDialog(context),
+                              icon: Icon(Icons.filter_list, color: appbar_color),
+                              label: Text(
+                                "Filters",
+                                style: GoogleFonts.poppins(
+                                  color: appbar_color,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 14,
+                                ),
+                              ),
+                              style: TextButton.styleFrom(
+                                foregroundColor: appbar_color,
+                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(14),
+                                ),
+                                backgroundColor: Colors.grey.shade100,
                               ),
                             ),
-                            style: TextButton.styleFrom(
-                              foregroundColor: appbar_color,
-                              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(14),
+
+                            const SizedBox(width: 10),
+
+                            // Filter Badges Row (wrap inside expanded for flexibility)
+                            // 🔘 FILTER BADGES (right of Filter button)
+                            Expanded(
+                              child: SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: Row(
+                                  children: (
+                                      selectedFlatTypes.isEmpty &&
+                                          selectedAmenities.isEmpty &&
+                                          !isPriceRangeModified
+                                          ? [
+                                        _buildBadgeChip(Icons.info_outline, "No filters selected"),
+                                      ]
+                                          : [
+                                        ...selectedFlatTypes.map((type) =>
+                                            _buildBadgeChip(Icons.apartment, type, onTap: () => _showFiltersDialog(context))),
+                                        ...selectedAmenities.map((a) =>
+                                            _buildBadgeChip(Icons.check_circle_outline, a, onTap: () => _showFiltersDialog(context))),
+
+                                        if (isPriceRangeModified)
+                                          _buildBadgeChip(
+                                            Icons.price_change,
+                                            "AED ${selectedPriceRange.start.round()} - ${selectedPriceRange.end.round()}",
+                                            onTap: () => _showFiltersDialog(context),
+                                          ),
+                                      ]
+                                  ).map((chip) => Padding(
+                                    padding: const EdgeInsets.only(left: 6),
+                                    child: chip,
+                                  )).toList(),
+                                ),
                               ),
-                              backgroundColor: Colors.grey.shade100,
                             ),
-                          ),
+
+
+
+                          ],
                         ),
-                        SizedBox(width: 12),
-                        // 🔘 Sort Button
-                        Expanded(
-                          child: TextButton.icon(
-                            onPressed: () => _showSortOptions(context),
-                            icon: Icon(Icons.sort, color: appbar_color),
-                            label: Text(
-                              "Sort",
-                              style: GoogleFonts.poppins(
-                                color: appbar_color,
-                                fontWeight: FontWeight.w600,
-                                fontSize: 14,
+
+
+
+                        const SizedBox(height: 8),
+
+                        // 🔘 SORT SECTION
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Sort Button
+                            TextButton.icon(
+                              onPressed: () => _showSortOptions(context),
+                              icon: Icon(Icons.sort, color: appbar_color),
+                              label: Text(
+                                "Sort",
+                                style: GoogleFonts.poppins(
+                                  color: appbar_color,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 14,
+                                ),
+                              ),
+                              style: TextButton.styleFrom(
+                                foregroundColor: appbar_color,
+                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(14),
+                                ),
+                                backgroundColor: Colors.grey.shade100,
                               ),
                             ),
-                            style: TextButton.styleFrom(
-                              foregroundColor: appbar_color,
-                              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(14),
-                              ),
-                              backgroundColor: Colors.grey.shade100,
+
+                            const SizedBox(width: 10),
+
+                            // Always show a sort badge — with default fallback
+                            _buildBadgeChip(
+                              Icons.sort,
+                              selectedSortLabel != null && selectedSortLabel!.isNotEmpty
+                                  ? selectedSortLabel!
+                                  : "Default (Latest)",
+                              onTap: () => _showSortOptions(context),
                             ),
-                          ),
+
+
+                          ],
                         ),
                       ],
                     ),
                   ),
                 ),
 
+
+
+                filteredUnits.isEmpty ?
+                Expanded(
+                  child:  Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min, // center inside column
+
+                      children: [
+                        Icon(Icons.search_off, size: 48, color: Colors.grey),
+                        SizedBox(height: 10),
+                        Text(
+                          "No units found",
+                          style: GoogleFonts.poppins(
+                            fontSize: 16,
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ],
+                    ),
+
+                  )
+                )
+
+                :
                 Expanded(
                     child: ListView.builder(
                         itemCount: filteredUnits.length,
@@ -1364,6 +1490,24 @@ class _ExpandableFabState extends State<ExpandableFab> with SingleTickerProvider
   }
 }
 
+Widget _buildBadgeChip(IconData icon, String label, {VoidCallback? onTap}) {
+  return GestureDetector(
+    onTap: onTap,
+    child: Chip(
+      avatar: Icon(icon, size: 16, color: appbar_color),
+      label: Text(
+        label,
+        style: GoogleFonts.poppins(fontSize: 13, fontWeight: FontWeight.w500),
+      ),
+      backgroundColor: Colors.grey.shade100,
+      side: BorderSide(color: Colors.grey.shade300),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+    ),
+  );
+}
 
 
 

@@ -45,6 +45,9 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
 
   double rangeMin = 0;
   double rangeMax = 2000000;
+
+  String selectedSort = "none"; // Options: "low_to_high", "high_to_low"
+
   void fetchFlats() async {
 
     try {
@@ -336,8 +339,6 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
                       ),
                     ],
                   ),
-
-
                 ],
               ),
             );
@@ -346,6 +347,7 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
       },
     );
   }
+
   void applyFilters() {
     if (allUnits.isEmpty) {
       print("⚠️ allUnits is empty. Skipping filters.");
@@ -389,35 +391,92 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
   void _showSortOptions(BuildContext context) {
     showModalBottomSheet(
       context: context,
+      backgroundColor: Colors.white,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (context) {
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: Icon(Icons.arrow_upward),
-              title: Text("Price: Low to High"),
-              onTap: () {
-                Navigator.pop(context);
-                _sortUnitsByPrice(ascending: true);
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.arrow_downward),
-              title: Text("Price: High to Low"),
-              onTap: () {
-                Navigator.pop(context);
-                _sortUnitsByPrice(ascending: false);
-              },
-            ),
-          ],
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 50),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 5,
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade300,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                "Sort By",
+                style: GoogleFonts.poppins(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black87,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Divider(height: 1, color: Colors.grey.shade300),
+
+              // ✅ Option 1
+              ListTile(
+                leading: Icon(
+                  Icons.arrow_upward,
+                  color: selectedSort == "low_to_high" ? appbar_color : Colors.grey,
+                ),
+                title: Text(
+                  "Price: Low to High",
+                  style: GoogleFonts.poppins(
+                    fontSize: 15,
+                    fontWeight: selectedSort == "low_to_high" ? FontWeight.bold : FontWeight.normal,
+                    color: selectedSort == "low_to_high" ? appbar_color : Colors.black87,
+                  ),
+                ),
+                trailing: selectedSort == "low_to_high"
+                    ? Icon(Icons.check, color: appbar_color)
+                    : null,
+                onTap: () {
+                  Navigator.pop(context);
+                  _sortUnitsByPrice(ascending: true);
+                },
+              ),
+              Divider(height: 1, color: Colors.grey.shade200),
+
+              // ✅ Option 2
+              ListTile(
+                leading: Icon(
+                  Icons.arrow_downward,
+                  color: selectedSort == "high_to_low" ? appbar_color : Colors.grey,
+                ),
+                title: Text(
+                  "Price: High to Low",
+                  style: GoogleFonts.poppins(
+                    fontSize: 15,
+                    fontWeight: selectedSort == "high_to_low" ? FontWeight.bold : FontWeight.normal,
+                    color: selectedSort == "high_to_low" ? appbar_color : Colors.black87,
+                  ),
+                ),
+                trailing: selectedSort == "high_to_low"
+                    ? Icon(Icons.check, color: appbar_color)
+                    : null,
+                onTap: () {
+                  Navigator.pop(context);
+                  _sortUnitsByPrice(ascending: false);
+                },
+              ),
+            ],
+          ),
         );
       },
     );
-
   }
+
   void _sortUnitsByPrice({required bool ascending}) {
     setState(() {
       filteredUnits.sort((a, b) {
@@ -425,8 +484,11 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
         int priceB = b.basicRent ?? 0;
         return ascending ? priceA.compareTo(priceB) : priceB.compareTo(priceA);
       });
+
+      selectedSort = ascending ? "low_to_high" : "high_to_low";
     });
   }
+
 
 
 
@@ -512,7 +574,6 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
             color: Colors.white,
             child: Column(
               children: [
-
                 Padding(
                   padding: const EdgeInsets.fromLTRB(10, 8, 10, 4),
                   child: Container(
@@ -687,7 +748,6 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
               ],
             ),
           ),
-
             ),
 
         floatingActionButton: Stack(

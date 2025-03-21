@@ -176,7 +176,7 @@ void _showTransferDialog(BuildContext context, String inquiryId) {
   bool isLoading = true;
 
   // Fetch User List
-  Future<void> fetchUsers() async {
+  Future<void> fetchUsers(StateSetter setState) async {
     try {
       final response = await http.get(
         Uri.parse("$baseurl/user"),
@@ -191,7 +191,9 @@ void _showTransferDialog(BuildContext context, String inquiryId) {
         if (data['success'] == true) {
           final List<dynamic> usersJson = data['data']['users'];
 
-          users = usersJson.map((userJson) {
+          users = usersJson
+              .where((user) => user['id'] != user_id) // 👈 Exclude current user
+              .map((userJson) {
             return {
               'id': userJson['id'].toString(),
               'name': userJson['name'],
@@ -202,16 +204,23 @@ void _showTransferDialog(BuildContext context, String inquiryId) {
     } catch (e) {
       print("Error fetching users: $e");
     } finally {
-      isLoading = false;
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 
-  // Show Dialog after fetching users
+  // Show Dialog
   showDialog(
     context: context,
     builder: (BuildContext context) {
       return StatefulBuilder(
         builder: (context, setState) {
+          // Fetch only once after first build
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (isLoading) fetchUsers(setState);
+          });
+
           return AlertDialog(
             backgroundColor: Colors.white,
             shape: RoundedRectangleBorder(
@@ -227,68 +236,68 @@ void _showTransferDialog(BuildContext context, String inquiryId) {
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                FutureBuilder(
-                  future: fetchUsers(),
-                  builder: (context, snapshot) {
-                    if (isLoading) {
-                      return Center(
-                        child: Platform.isIOS
-                            ? CupertinoActivityIndicator(radius: 15)
-                            : CircularProgressIndicator(
-                          strokeWidth: 3,
-                          valueColor: AlwaysStoppedAnimation<Color>(appbar_color),
-                        )
-                      );
-                    }
-                    if (users.isEmpty) {
-                      return Text(
-                        "No users available.",
-                        style: GoogleFonts.poppins(color: Colors.black87),
-                      );
-                    }
-                    return DropdownButtonFormField<String>(
-                      value: selectedUserId,
-                      isExpanded: true,
-                      decoration: InputDecoration(
-                        labelText: "Select User",
-                        labelStyle: GoogleFonts.poppins(color: Colors.grey),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: Colors.grey.shade400, width: 1),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: Colors.grey.shade400, width: 1),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: appbar_color, width: 1),
-                        ),
-                        filled: true,
-                        fillColor: Colors.white,
-                        contentPadding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                if (isLoading)
+                  Center(
+                    child: Platform.isIOS
+                        ? CupertinoActivityIndicator(radius: 15)
+                        : CircularProgressIndicator(
+                      strokeWidth: 3,
+                      valueColor:
+                      AlwaysStoppedAnimation<Color>(appbar_color),
+                    ),
+                  )
+                else if (users.isEmpty)
+                  Text(
+                    "No users available.",
+                    style: GoogleFonts.poppins(color: Colors.black87),
+                  )
+                else
+                  DropdownButtonFormField<String>(
+                    value: selectedUserId,
+                    isExpanded: true,
+                    decoration: InputDecoration(
+                      labelText: "Select User",
+                      labelStyle: GoogleFonts.poppins(color: Colors.grey),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide:
+                        BorderSide(color: Colors.grey.shade400, width: 1),
                       ),
-                      dropdownColor: Colors.white,
-                      style: GoogleFonts.poppins(fontSize: 16, color: Colors.black87),
-                      icon: Icon(Icons.keyboard_arrow_down, color: Colors.black),
-                      items: users.map((user) {
-                        return DropdownMenuItem(
-                          value: user['id'].toString(),
-                          child: Text(
-                            user['name'],
-                            style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w500),
-                          ),
-                        );
-                      }).toList(),
-                      onChanged: (String? newValue) {
-                        setState(() {
-                          selectedUserId = newValue;
-                        });
-                      },
-                    );
-                  },
-                ),
-
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide:
+                        BorderSide(color: Colors.grey.shade400, width: 1),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide:
+                        BorderSide(color: appbar_color, width: 1),
+                      ),
+                      filled: true,
+                      fillColor: Colors.white,
+                      contentPadding:
+                      EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                    ),
+                    dropdownColor: Colors.white,
+                    style: GoogleFonts.poppins(
+                        fontSize: 16, color: Colors.black87),
+                    icon: Icon(Icons.keyboard_arrow_down, color: Colors.black),
+                    items: users.map<DropdownMenuItem<String>>((user) {
+                      return DropdownMenuItem<String>(
+                        value: user['id'].toString(),
+                        child: Text(
+                          user['name'],
+                          style: GoogleFonts.poppins(
+                              fontSize: 16, fontWeight: FontWeight.w500),
+                        ),
+                      );
+                    }).toList(),
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        selectedUserId = newValue;
+                      });
+                    },
+                  ),
               ],
             ),
             actions: [
@@ -298,7 +307,8 @@ void _showTransferDialog(BuildContext context, String inquiryId) {
                 },
                 child: Text(
                   "Cancel",
-                  style: GoogleFonts.poppins(color: Colors.red, fontWeight: FontWeight.w500),
+                  style: GoogleFonts.poppins(
+                      color: Colors.red, fontWeight: FontWeight.w500),
                 ),
               ),
               ElevatedButton(
@@ -316,7 +326,8 @@ void _showTransferDialog(BuildContext context, String inquiryId) {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                  padding:
+                  EdgeInsets.symmetric(vertical: 10, horizontal: 15),
                   elevation: 3,
                 ),
                 child: Text(

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:cshrealestatemobile/SalesDashboard.dart';
@@ -190,7 +191,7 @@ class _DecentTenantKYCFormState extends State<DecentTenantKYCForm> {
     print("🔹 Uploading to: $url");
 
     try {
-      var request = http.MultipartRequest('PUT', Uri.parse(url));
+      var request = http.MultipartRequest('POST', Uri.parse(url));
 
       // Add headers
       request.headers.addAll({
@@ -224,14 +225,63 @@ class _DecentTenantKYCFormState extends State<DecentTenantKYCForm> {
 
 // Read response stream properly
       var responseData = await response.stream.bytesToString();
+      final decoded = json.decode(responseData);
 
       print("✅ Response Status Code: ${response.statusCode}");
       print("📦 Raw Response Data: $responseData");
       /*print("🔹 Headers: ${response.headers}");*/
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 201) {
+
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(decoded['message']),
+            backgroundColor: Colors.green,
+            behavior: SnackBarBehavior.floating, // 👈 Floating style
+            margin: EdgeInsets.only(
+              bottom: 20,
+              left: 16,
+              right: 16,
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+        );
+
+        setState(() {
+          if (selectedDocumentType == 'Emirates ID') {
+              emiratesIdFrontFile = null;
+              emiratesIdBackFile = null;
+
+          } else if (selectedDocumentType == 'Passport') {
+            passportFile =  null;
+          } else if (selectedDocumentType == 'Visa') {
+            visaFile =  null;
+          }
+
+          selectedDocumentType = null;
+        });
+
         print("✔ Upload successful");
       } else {
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(decoded['message']),
+            backgroundColor: Colors.red,
+            behavior: SnackBarBehavior.floating, // 👈 Floating style
+            margin: EdgeInsets.only(
+              bottom: 20,
+              left: 16,
+              right: 16,
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+        );
         print("❌ Upload failed: ${response.statusCode}");
       }
     } catch (e) {
@@ -271,6 +321,7 @@ class _DecentTenantKYCFormState extends State<DecentTenantKYCForm> {
                 DropdownButtonFormField<String>(
                   decoration: InputDecoration(
                     labelText: "Document Type",
+                    hintText: "Select Document Type",
                     labelStyle: GoogleFonts.poppins(color: Colors.black), // Set label text color to blue
                     border: OutlineInputBorder(
                       borderSide: BorderSide(color: Colors.black), // Default border color

@@ -41,6 +41,10 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
   List<Flat> filteredUnits = []; // List to store API data
   List<Flat> allUnits = []; // Stores all units fetched from API
 
+  bool isPriceRangeModified = false;
+
+  double rangeMin = 0;
+  double rangeMax = 2000000;
   void fetchFlats() async {
 
     try {
@@ -58,9 +62,29 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
 
   Future<void> _initSharedPreferences() async {
     prefs = await SharedPreferences.getInstance();
+
+    rangeMin = prefs.getDouble('range_min') ?? 0;
+    rangeMax = prefs.getDouble('range_max') ?? 2000000;
+
+    selectedPriceRange = RangeValues(rangeMin, rangeMax); // default full range
     setState(() {
-      fetchFlats();
+       fetchFiltersData(); // 👈 Add this
+
+       fetchFlats();
     });
+  }
+
+  Future<void> fetchFiltersData() async {
+    try {
+      final flatTypes = await ApiService().fetchFlatTypes();
+      final amenities = await ApiService().fetchAmenities();
+      setState(() {
+        availableFlatTypes = ['All', ...flatTypes];
+        availableAmenities = amenities;
+      });
+    } catch (e) {
+      print("Error fetching filter data: $e");
+    }
   }
 
   void _updateSearchQuery(String query) {
@@ -88,6 +112,329 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
     });
   }
 
+  void _showFiltersDialog(BuildContext context) {
+
+    String tempFlatType = selectedFlatType;
+    List<String> tempAmenities = [...selectedAmenities];
+    RangeValues tempPriceRange = selectedPriceRange;
+    bool tempIsPriceModified = isPriceRangeModified;
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            List<String> flatTypes = availableFlatTypes;
+
+
+            return Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text("Filter", style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold)),
+
+                  SizedBox(height: 20),
+
+                  // Flat Type
+                  DropdownButtonFormField<String>(
+                    value: tempFlatType,
+                    items: flatTypes
+                        .map((type) => DropdownMenuItem(
+                      value: type,
+                      child: Text(
+                        type,
+                        style: GoogleFonts.poppins(
+                          fontSize: 14,
+                        ),
+                      ),
+                    ))
+                        .toList(),
+                    onChanged: (value) {
+                      setModalState(() => tempFlatType = value!);
+                    },
+                    decoration: InputDecoration(
+                      labelText: "Flat Type",
+                      labelStyle: GoogleFonts.poppins(fontSize: 14, color: Colors.grey[700]),
+                      filled: true,
+                      fillColor: Colors.grey[100],
+                      contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: Colors.black87, width: 1),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: Colors.black87, width: 1),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: Colors.black, width: 1),
+                      ),
+                    ),
+                    dropdownColor: Colors.white,
+                    icon: Icon(Icons.keyboard_arrow_down),
+                    style: GoogleFonts.poppins(
+                      fontSize: 14,
+                      color: Colors.black87,
+                    ),
+                  ),
+
+
+                  SizedBox(height: 20),
+
+                  // Price Range
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Text("Price Range (AED)", style: GoogleFonts.poppins(fontWeight: FontWeight.w500)),
+                      SliderTheme(
+                        data: SliderTheme.of(context).copyWith(
+                          activeTrackColor: appbar_color,             // ✅ selected range color
+                          inactiveTrackColor: Colors.grey.shade300,   // ✅ unselected range
+                          thumbColor: appbar_color,                   // ✅ draggable circle
+                          overlayColor: appbar_color.withOpacity(0.2),// ✅ circle glow on press
+                          valueIndicatorColor: appbar_color,          // ✅ popup value indicator
+                          trackHeight: 4,
+                          thumbShape: RoundSliderThumbShape(enabledThumbRadius: 10),
+                          overlayShape: RoundSliderOverlayShape(overlayRadius: 20),
+                          rangeTrackShape: RoundedRectRangeSliderTrackShape(),
+                          rangeThumbShape: RoundRangeSliderThumbShape(),
+                        ),
+                        child: RangeSlider(
+                          values: tempPriceRange,
+                          min: rangeMin,
+                          max: rangeMax,
+                          divisions: 100,
+                          labels: RangeLabels(
+                            tempPriceRange.start.round().toString(),
+                            tempPriceRange.end.round().toString(),
+                          ),
+                          onChanged: (range) {
+                            setModalState(() {
+                              tempPriceRange = range;
+                              tempIsPriceModified = true;
+                            });
+                          },
+                        ),
+                      )
+                    ],
+                  ),
+
+                  SizedBox(height: 20),
+
+
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      "Amenities",
+                      style: GoogleFonts.poppins(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                        color: Colors.black87,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Wrap(
+                      spacing: 8.0,
+                      runSpacing: 8.0,
+                      children: availableAmenities.map((amenity) {
+                        final isSelected = tempAmenities.contains(amenity);
+                        return FilterChip(
+                          label: Text(
+                            amenity,
+                            style: GoogleFonts.poppins(
+                              fontSize: 13,
+                              color: isSelected ? Colors.white : Colors.black87,
+                            ),
+                          ),
+                          selected: isSelected,
+                          selectedColor: appbar_color,
+                          backgroundColor: Colors.grey.shade200,
+                          checkmarkColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          onSelected: (selected) {
+                            setModalState(() {
+                              selected
+                                  ? tempAmenities.add(amenity)
+                                  : tempAmenities.remove(amenity);
+                            });
+                          },
+                        );
+                      }).toList(),
+                    ),
+                  ),
+
+
+                  SizedBox(height: 30),
+
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      // 🔁 Reset Button - Styled Outlined
+                      OutlinedButton.icon(
+                        onPressed: () {
+                          setModalState(() {
+                            tempFlatType = 'All';
+                            tempAmenities.clear();
+                            tempPriceRange = RangeValues(rangeMin, rangeMax); // shared prefs wala
+                            tempIsPriceModified = false;
+                          });
+                        },
+                        icon: Icon(Icons.refresh, color: Colors.black87),
+                        label: Text(
+                          "Reset",
+                          style: GoogleFonts.poppins(
+                            color: Colors.black87,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        style: OutlinedButton.styleFrom(
+                          side: BorderSide(color: Colors.black87, width: 1.2),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                        ),
+                      ),
+
+                      SizedBox(width: 16), // spacing between buttons
+
+                      // ✅ Apply Filters Button - Styled Elevated
+                      ElevatedButton.icon(
+                        onPressed: () {
+                          setState(() {
+                            selectedFlatType = tempFlatType;
+                            selectedAmenities = [...tempAmenities];
+                            selectedPriceRange = tempPriceRange;
+                            isPriceRangeModified = tempIsPriceModified;
+                          });
+                          Navigator.pop(context);
+                          applyFilters();
+                        },
+                        icon: Icon(Icons.check, color: Colors.white),
+                        label: Text(
+                          "Apply Filters",
+                          style: GoogleFonts.poppins(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: appbar_color,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                          elevation: 4,
+                        ),
+                      ),
+                    ],
+                  ),
+
+
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+  void applyFilters() {
+    if (allUnits.isEmpty) {
+      print("⚠️ allUnits is empty. Skipping filters.");
+      return;
+    }
+
+    print("🔥 APPLYING FILTERS 🔥");
+    print("Selected flat type: $selectedFlatType");
+    print("Selected price range: ${selectedPriceRange.start} - ${selectedPriceRange.end}");
+    print("Is price range modified: $isPriceRangeModified");
+    print("Selected amenities: $selectedAmenities");
+
+    setState(() {
+      filteredUnits = allUnits.where((unit) {
+        final rent = unit.basicRent;
+
+        // ✅ Flat type match
+        final flatTypeMatch = selectedFlatType == 'All' ||
+            unit.flatTypeName.toLowerCase().trim() == selectedFlatType.toLowerCase().trim();
+
+        // ✅ Price range match (only if user changed it)
+        final priceMatch = !isPriceRangeModified ||
+            (rent != null &&
+                rent >= selectedPriceRange.start &&
+                rent <= selectedPriceRange.end);
+
+        // ✅ Amenities match (if selected)
+        final amenitiesMatch = selectedAmenities.every((a) => unit.amenities.contains(a));
+
+        final finalMatch = flatTypeMatch && priceMatch && amenitiesMatch;
+
+        print("🔎 ${unit.name} → flatTypeMatch: $flatTypeMatch | priceMatch: $priceMatch | rent: $rent | amenitiesMatch: $amenitiesMatch | Final Match: $finalMatch");
+
+        return finalMatch;
+      }).toList();
+    });
+
+    print("✅ Filtered units count: ${filteredUnits.length}");
+  }
+
+  void _showSortOptions(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: Icon(Icons.arrow_upward),
+              title: Text("Price: Low to High"),
+              onTap: () {
+                Navigator.pop(context);
+                _sortUnitsByPrice(ascending: true);
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.arrow_downward),
+              title: Text("Price: High to Low"),
+              onTap: () {
+                Navigator.pop(context);
+                _sortUnitsByPrice(ascending: false);
+              },
+            ),
+          ],
+        );
+      },
+    );
+
+  }
+  void _sortUnitsByPrice({required bool ascending}) {
+    setState(() {
+      filteredUnits.sort((a, b) {
+        int priceA = a.basicRent ?? 0;
+        int priceB = b.basicRent ?? 0;
+        return ascending ? priceA.compareTo(priceB) : priceB.compareTo(priceA);
+      });
+    });
+  }
+
+
+
+  List<String> availableFlatTypes = ['All'];
+  List<String> availableAmenities = [];
+  String selectedFlatType = 'All';
+  RangeValues selectedPriceRange = const RangeValues(0, 2000000);
+  List<String> selectedAmenities = [];
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -99,28 +446,31 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
         backgroundColor: const Color(0xFFF2F4F8),
         appBar: AppBar(
           bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(60.0),
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: TextField(
-                onChanged: _updateSearchQuery,
-                decoration: InputDecoration(
-                  hintText: 'Search Units',
-                  hintStyle: GoogleFonts.poppins(
-                    fontSize: 14,
-                    color: Colors.grey,
+            preferredSize: const Size.fromHeight(70),
+            child: Container(
+              margin: const EdgeInsets.only(bottom: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: Material(
+                elevation: 3,
+                borderRadius: BorderRadius.circular(12),
+                child: TextField(
+                  onChanged: _updateSearchQuery,
+                  decoration: InputDecoration(
+                    hintText: 'Search Units',
+                    hintStyle: GoogleFonts.poppins(fontSize: 14, color: Colors.grey),
+                    prefixIcon: const Icon(Icons.search),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide.none,
+                    ),
+                    filled: true,
+                    fillColor: Colors.white,
                   ),
-                  prefixIcon: const Icon(Icons.search),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12.0),
-                    borderSide: BorderSide.none,
-                  ),
-                  filled: true,
-                  fillColor: Colors.white,
                 ),
               ),
             ),
           ),
+
           title: Text(
             'Available Units',
             style: GoogleFonts.poppins(
@@ -139,6 +489,7 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
             },
           ),
         ),
+
         drawer: Sidebar(
           isDashEnable: isDashEnable,
           isRolesVisible: isRolesVisible,
@@ -159,103 +510,201 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
           )
           : Container(
             color: Colors.white,
-            child: ListView.builder(
-              itemCount: filteredUnits.length,
-              itemBuilder: (context, index) {
-                final unit = filteredUnits[index];
-                return Container(
-                  margin: const EdgeInsets.symmetric(
-                  vertical: 5.0, horizontal: 20),
-                  padding: const EdgeInsets.all(16.0),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(16.0),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.withOpacity(0.2),
-                        blurRadius: 10.0,
-                        offset: const Offset(0, 5),
+            child: Column(
+              children: [
+
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(10, 8, 10, 4),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.05),
+                          blurRadius: 10,
+                          spreadRadius: 1,
+                          offset: Offset(0, 4),
+                        ),
+                      ],
+                      border: Border.all(
+                        color: Colors.grey.shade200,
+                        width: 1.2,
                       ),
-                    ],
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        // 🔘 Filters Button
+                        Expanded(
+                          child: TextButton.icon(
+                            onPressed: () => _showFiltersDialog(context),
+                            icon: Icon(Icons.filter_list, color: appbar_color),
+                            label: Text(
+                              "Filters",
+                              style: GoogleFonts.poppins(
+                                color: appbar_color,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 14,
+                              ),
+                            ),
+                            style: TextButton.styleFrom(
+                              foregroundColor: appbar_color,
+                              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                              backgroundColor: Colors.grey.shade100,
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 12),
+                        // 🔘 Sort Button
+                        Expanded(
+                          child: TextButton.icon(
+                            onPressed: () => _showSortOptions(context),
+                            icon: Icon(Icons.sort, color: appbar_color),
+                            label: Text(
+                              "Sort",
+                              style: GoogleFonts.poppins(
+                                color: appbar_color,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 14,
+                              ),
+                            ),
+                            style: TextButton.styleFrom(
+                              foregroundColor: appbar_color,
+                              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                              backgroundColor: Colors.grey.shade100,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                     Row(
-                        children: [
-                          const Icon(Icons.home),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: Text(
-                              unit.flatTypeName,
-                              style: GoogleFonts.poppins(fontSize: 16),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 10),
-                      Row(
-                        children: [
-                          const Icon(Icons.location_city),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: Text(
-                              unit.buildingName,
-                              style: GoogleFonts.poppins(fontSize: 16),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 10),
-                      Row(
-                        children: [
-                          const Icon(Icons.location_on),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: Text(
-                              "${unit.areaName}, ${unit.stateName}",
-                              style: GoogleFonts.poppins(fontSize: 16),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 10),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 0, bottom: 0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            _buildDecentButton(
-                              'View',
-                              Icons.remove_red_eye,
-                              Colors.orange,
-                                  () {
-                                showDialog(
-                                  context: context,
-                                  builder: (context) => AvailableUnitsDialog(
-                                    unitno: unit.name,
-                                    area: unit.areaName,
-                                    emirate: unit.stateName,
-                                    unittype: unit.flatTypeName,
-                                    rent: unit.basicRent != null ? "AED ${unit.basicRent}" : "AED N/A",
-                                    parking: unit.noOfParking.toString(),
-                                    balcony: unit.amenities.contains("Balcony") ? "Yes" : "No",
-                                    bathrooms: unit.noOfBathrooms.toString(),
-                                    building_name: unit.buildingName,
+                ),
 
-                                    ownership: unit.ownership ?? "N/A",
-                                    basicRent: unit.basicRent?.toString() ?? "N/A",
-                                    basicSaleValue: unit.basicSaleValue?.toString() ?? "N/A",
-                                    isExempt: unit.isExempt ? "true" : "false",
-                                    amenities: unit.amenities,
+                Expanded(
+                    child: ListView.builder(
+                        itemCount: filteredUnits.length,
+                        itemBuilder: (context, index) {
+                          final unit = filteredUnits[index];
+                          return Container(
+                              margin: const EdgeInsets.symmetric(
+                                  vertical: 5.0, horizontal: 10),
+                              padding: const EdgeInsets.all(16.0),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(16.0),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey.withOpacity(0.2),
+                                    blurRadius: 10.0,
+                                    offset: const Offset(0, 5),
                                   ),
-                                );
-                              },
-                            ),
-                          ]))]));}))),
+                                ],
+                              ),
+                              child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        const Icon(Icons.home),
+                                        const SizedBox(width: 10),
+                                        Expanded(
+                                          child: Text(
+                                            unit.flatTypeName,
+                                            style: GoogleFonts.poppins(fontSize: 16),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 10),
+                                    Row(
+                                      children: [
+                                        const Icon(Icons.location_city),
+                                        const SizedBox(width: 10),
+                                        Expanded(
+                                          child: Text(
+                                            unit.buildingName,
+                                            style: GoogleFonts.poppins(fontSize: 16),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 10),
+                                    Row(
+                                      children: [
+                                        const Icon(Icons.location_on),
+                                        const SizedBox(width: 10),
+                                        Expanded(
+                                          child: Text(
+                                            "${unit.areaName}, ${unit.stateName}",
+                                            style: GoogleFonts.poppins(fontSize: 16),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 10),
+                                    Padding(
+                                        padding: const EdgeInsets.only(top: 0, bottom: 0),
+                                        child: Row(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            crossAxisAlignment: CrossAxisAlignment.center,
+                                            children: [
+                                              _buildDecentButton(
+                                                'View',
+                                                Icons.remove_red_eye,
+                                                Colors.orange,
+                                                    () {
+                                                  showDialog(
+                                                    context: context,
+                                                    builder: (context) => AvailableUnitsDialog(
+                                                      unitno: unit.name,
+                                                      area: unit.areaName,
+                                                      emirate: unit.stateName,
+                                                      unittype: unit.flatTypeName,
+                                                      rent: unit.basicRent != null ? "AED ${unit.basicRent}" : "AED N/A",
+                                                      parking: unit.noOfParking.toString(),
+                                                      balcony: unit.amenities.contains("Balcony") ? "Yes" : "No",
+                                                      bathrooms: unit.noOfBathrooms.toString(),
+                                                      building_name: unit.buildingName,
 
-        floatingActionButton: ExpandableFab(appbarColor: appbar_color,),
+                                                      ownership: unit.ownership ?? "N/A",
+                                                      basicRent: unit.basicRent?.toString() ?? "N/A",
+                                                      basicSaleValue: unit.basicSaleValue?.toString() ?? "N/A",
+                                                      isExempt: unit.isExempt ? "true" : "false",
+                                                      amenities: unit.amenities,
+                                                    ),
+                                                  );
+                                                },
+                                              ),
+                                            ]))]));}))
+              ],
+            ),
+          ),
+
+            ),
+
+        floatingActionButton: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            // ✅ 1. Expandable FAB (Bottom Right)
+            Align(
+              alignment: Alignment.bottomRight,
+              child: ExpandableFab(appbarColor: appbar_color),
+            ),
+
+
+          ],
+        ),
+
+
+
       ),
     );
   }
@@ -546,6 +995,43 @@ Widget _buildDecentButton(
 
 class ApiService {
 
+  Future<List<String>> fetchFlatTypes() async {
+    final response = await http.get(
+      Uri.parse("$baseurl/master/flatType"),
+      headers: {
+        "Authorization": "Bearer $Company_Token",
+        "Content-Type": "application/json",
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final jsonData = json.decode(response.body);
+      final List<dynamic> flatTypeList = jsonData["data"]["flatTypes"];
+
+      return flatTypeList.map((e) => e["name"].toString()).toList();
+    } else {
+      throw Exception("Failed to load flat types");
+    }
+  }
+
+  Future<List<String>> fetchAmenities() async {
+    final response = await http.get(
+      Uri.parse("$baseurl/lead/amenity"),
+      headers: {
+        "Authorization": "Bearer $Company_Token",
+        "Content-Type": "application/json",
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final jsonData = json.decode(response.body);
+      final List<dynamic> amenitiesList = jsonData["data"]["amenities"];
+
+      return amenitiesList.map((e) => e["name"].toString()).toList();
+    } else {
+      throw Exception("Failed to load amenities");
+    }
+  }
   Future<List<Flat>> fetchFlats() async {
 
     DateTime now = DateTime.now();

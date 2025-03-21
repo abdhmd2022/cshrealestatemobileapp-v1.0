@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'Sidebar.dart';
@@ -230,37 +231,38 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
                               Icons.remove_red_eye,
                               Colors.orange,
                                   () {
-                                String unitno = unit.name.toString();
-                                String unittype = unit.flatTypeName;
-                                String area = unit.areaName;
-                                String emirate = unit.stateName;
-                                String rent = "AED N/A";
-                                String parking = "N/A";
-                                String balcony = "N/A";
-                                String bathrooms = "N/A";
-                                String building = unit.buildingName;
-
                                 showDialog(
                                   context: context,
                                   builder: (context) => AvailableUnitsDialog(
-                                    unitno: unitno,
-                                    area: area,
-                                    emirate: emirate,
-                                    unittype: unittype,
-                                    rent: rent,
-                                    parking: parking,
-                                    balcony: balcony,
-                                    bathrooms: bathrooms,
-                                    building_name: building,
+                                    unitno: unit.name,
+                                    area: unit.areaName,
+                                    emirate: unit.stateName,
+                                    unittype: unit.flatTypeName,
+                                    rent: unit.basicRent != null ? "AED ${unit.basicRent}" : "AED N/A",
+                                    parking: unit.noOfParking.toString(),
+                                    balcony: unit.amenities.contains("Balcony") ? "Yes" : "No",
+                                    bathrooms: unit.noOfBathrooms.toString(),
+                                    building_name: unit.buildingName,
+
+                                    ownership: unit.ownership ?? "N/A",
+                                    basicRent: unit.basicRent?.toString() ?? "N/A",
+                                    basicSaleValue: unit.basicSaleValue?.toString() ?? "N/A",
+                                    isExempt: unit.isExempt ? "true" : "false",
+                                    amenities: unit.amenities,
                                   ),
                                 );
-                              })]))]));}))),
+                              },
+                            ),
+                          ]))]));}))),
 
         floatingActionButton: ExpandableFab(appbarColor: appbar_color,),
       ),
     );
   }
 }
+
+
+
 
 class AvailableUnitsDialog extends StatelessWidget {
   final String unitno;
@@ -273,6 +275,13 @@ class AvailableUnitsDialog extends StatelessWidget {
   final String balcony;
   final String bathrooms;
 
+  // ✅ New fields
+  final String ownership;
+  final String basicRent;
+  final String basicSaleValue;
+  final String isExempt;
+  final List<String> amenities;
+
   const AvailableUnitsDialog({
     Key? key,
     required this.unitno,
@@ -284,12 +293,17 @@ class AvailableUnitsDialog extends StatelessWidget {
     required this.parking,
     required this.balcony,
     required this.bathrooms,
+    required this.ownership,
+    required this.basicRent,
+    required this.basicSaleValue,
+    required this.isExempt,
+    required this.amenities,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     double screenHeight = MediaQuery.of(context).size.height;
-    double maxDialogHeight = screenHeight * 0.8; // Prevents full-screen expansion
+    double maxDialogHeight = screenHeight * 0.8;
 
     return Dialog(
       shape: RoundedRectangleBorder(
@@ -299,18 +313,18 @@ class AvailableUnitsDialog extends StatelessWidget {
       elevation: 10,
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white, // ✅ Light background for contrast
-          borderRadius: BorderRadius.circular(20), // ✅ Round corners for container
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
         ),
         child: ConstrainedBox(
           constraints: BoxConstraints(
-            maxHeight: maxDialogHeight, // Adaptive height, not exceeding 80% of screen
+            maxHeight: maxDialogHeight,
           ),
-          child: IntrinsicHeight( // Makes dialog fit content when possible
+          child: IntrinsicHeight(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // Header with unit number & background
+                // Header
                 Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
@@ -328,15 +342,19 @@ class AvailableUnitsDialog extends StatelessWidget {
                       SizedBox(height: 8),
                       Text(
                         "$unitno",
-                        style: GoogleFonts.poppins( // ✅ Poppins Font Applied
+                        style: GoogleFonts.poppins(
                           fontSize: 22,
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
-                        ))])),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
 
                 SizedBox(height: 10),
 
-                // Scrollable Details Section
+                // Scrollable Details
                 Expanded(
                   child: SingleChildScrollView(
                     child: Column(
@@ -349,6 +367,64 @@ class AvailableUnitsDialog extends StatelessWidget {
                         _buildDetailTile(Icons.local_parking, "Parking", parking),
                         _buildDetailTile(Icons.balcony, "Balcony", balcony),
                         _buildDetailTile(Icons.bathtub, "Bathrooms", bathrooms),
+
+                        // ✅ New fields
+                        if (amenities.isNotEmpty)
+                          Container(
+                            padding: EdgeInsets.symmetric(vertical: 5, horizontal: 15),
+                            color: Colors.white,
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Icon(Icons.checklist, color: appbar_color.shade200),
+                                SizedBox(width: 12),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        "Amenities",
+                                        style: GoogleFonts.poppins(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                      SizedBox(height: 6),
+                                      Wrap(
+                                        spacing: 8,
+                                        runSpacing: 8,
+                                        children: amenities.map((amenity) {
+                                          return Container(
+                                            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                            decoration: BoxDecoration(
+                                              color: Colors.grey.shade200,
+                                              borderRadius: BorderRadius.circular(20),
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: Colors.black12,
+                                                  blurRadius: 2,
+                                                  offset: Offset(0, 1),
+                                                ),
+                                              ],
+                                            ),
+                                            child: Text(
+                                              amenity,
+                                              style: GoogleFonts.poppins(
+                                                fontSize: 13,
+                                                fontWeight: FontWeight.w500,
+                                                color: Colors.black87,
+                                              ),
+                                            ),
+                                          );
+                                        }).toList(),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+
                       ],
                     ),
                   ),
@@ -370,7 +446,7 @@ class AvailableUnitsDialog extends StatelessWidget {
                     ),
                     child: Text(
                       "Close",
-                      style: GoogleFonts.poppins( // ✅ Poppins Font Applied
+                      style: GoogleFonts.poppins(
                         color: Colors.white,
                         fontSize: 16,
                       ),
@@ -385,7 +461,7 @@ class AvailableUnitsDialog extends StatelessWidget {
     );
   }
 
-  // ✅ Detail Tile with Poppins Font
+  // Detail Tile Widget
   Widget _buildDetailTile(IconData icon, String label, String value) {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 5, horizontal: 15),
@@ -400,7 +476,7 @@ class AvailableUnitsDialog extends StatelessWidget {
               children: [
                 Text(
                   label,
-                  style: GoogleFonts.poppins( // ✅ Applied Poppins
+                  style: GoogleFonts.poppins(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
                   ),
@@ -408,14 +484,14 @@ class AvailableUnitsDialog extends StatelessWidget {
                 SizedBox(height: 2),
                 Text(
                   value,
-                  style: GoogleFonts.poppins( // ✅ Applied Poppins
+                  style: GoogleFonts.poppins(
                     fontSize: 16,
                     fontWeight: FontWeight.normal,
                     color: Colors.black87,
                   ),
                   overflow: TextOverflow.ellipsis,
                   softWrap: true,
-                  maxLines: 2, // Prevents UI breaking with long text
+                  maxLines: 2,
                 ),
               ],
             ),
@@ -471,8 +547,10 @@ Widget _buildDecentButton(
 class ApiService {
 
   Future<List<Flat>> fetchFlats() async {
+
+    DateTime now = DateTime.now();
     final response = await http.get(
-      Uri.parse("$baseurl/reports/flat/available/date?date=2025-02-01"), // Update endpoint if necessary
+      Uri.parse("$baseurl/reports/flat/available/date?date=${DateFormat('yyyy-MM-dd').format(now)}"), // Update endpoint if necessary
       headers: {
         "Authorization": "Bearer $Company_Token",
         "Content-Type": "application/json",
@@ -501,6 +579,19 @@ class Flat {
   final String stateName;
   final String countryName;
   final String createdAt;
+  final int noOfBathrooms;
+  final int noOfParking;
+
+  // New fields
+  final String? ownership;
+  final int? basicRent;
+  final int? basicSaleValue;
+  final bool isExempt;
+  final int? companyId;
+  final int? buildingId;
+  final int? floorId;
+  final int? flatTypeId;
+  final List<String> amenities;
 
   Flat({
     required this.id,
@@ -513,13 +604,24 @@ class Flat {
     required this.stateName,
     required this.countryName,
     required this.createdAt,
+    required this.noOfBathrooms,
+    required this.noOfParking,
+    this.ownership,
+    this.basicRent,
+    this.basicSaleValue,
+    required this.isExempt,
+    this.companyId,
+    this.buildingId,
+    this.floorId,
+    this.flatTypeId,
+    required this.amenities,
   });
 
   factory Flat.fromJson(Map<String, dynamic> json) {
     return Flat(
       id: json["id"],
       name: json["name"],
-      grossArea: json["gross_area_in_sqft"],
+      grossArea: json["gross_area_in_sqft"]?.toString(),
       buildingName: json["building"]["name"],
       floorName: json["floors"]["name"],
       flatTypeName: json["flat_type"]["name"],
@@ -527,6 +629,22 @@ class Flat {
       stateName: json["building"]["area"]["state"]["name"],
       countryName: json["building"]["area"]["state"]["country"]["name"],
       createdAt: json["created_at"],
+      noOfBathrooms: json["no_of_bathrooms"] ?? 0,
+      noOfParking: json["no_of_parkings"] ?? 0,
+
+      ownership: json["ownership"],
+      basicRent: json["basic_rent"],
+      basicSaleValue: json["basic_sale_value"],
+      isExempt: json["is_exempt"] == "true",
+      companyId: json["company_id"],
+      buildingId: json["building_id"],
+      floorId: json["floor_id"],
+      flatTypeId: json["flat_type_id"],
+
+      amenities: (json["amenities"] as List<dynamic>?)
+          ?.map((e) => e["amenity"]["name"].toString())
+          .toList() ??
+          [],
     );
   }
 }

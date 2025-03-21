@@ -659,6 +659,8 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
 
       final response = await http.get(Uri.parse(url), headers: headers);
 
+      print("ticket ${response.body}");
+
       if (response.statusCode == 200) {
         final Map<String, dynamic> responseBody = json.decode(response.body);
         if (responseBody['success'] == true) {
@@ -1661,10 +1663,10 @@ void _showTransferDialog(BuildContext context, String subTicketId) {
   bool isLoading = true;
 
   // Fetch Technician List
-  Future<void> fetchTechnicians() async {
+  Future<void> fetchTechnicians(StateSetter setState) async {
     try {
       final response = await http.get(
-        Uri.parse("$baseurl/user"), // Change API endpoint if needed
+        Uri.parse("$baseurl/user"),
         headers: {
           'Authorization': 'Bearer $Company_Token',
           'Content-Type': 'application/json',
@@ -1676,34 +1678,42 @@ void _showTransferDialog(BuildContext context, String subTicketId) {
         if (data['success'] == true) {
           final List<dynamic> usersJson = data['data']['users'];
 
-          // Exclude the logged-in user from the list
           technicians = usersJson
-              .where((user) => user['id'].toString() != user_id) // Filter out current user
+              .where((user) => user['id'] != user_id) // Fixed comparison
               .map((userJson) {
             return {
-              'id': userJson['id'].toString(),  // Ensure ID is a string
-              'name': userJson['name'],         // Extract user name
+              'id': userJson['id'].toString(),
+              'name': userJson['name'],
             };
           }).toList();
+
+          print('technicians: ${technicians}');
         }
       }
     } catch (e) {
       print("Error fetching technicians: $e");
     } finally {
-      isLoading = false;
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 
-  // Show Dialog after fetching technicians
+  // Show Dialog
   showDialog(
     context: context,
     builder: (BuildContext context) {
       return StatefulBuilder(
         builder: (context, setState) {
+          // 👇 Only call fetchTechnicians ONCE after the first build
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (isLoading) fetchTechnicians(setState);
+          });
+
           return AlertDialog(
-            backgroundColor: Colors.white, // Ensuring white background
+            backgroundColor: Colors.white,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12.0), // Soft rounded corners
+              borderRadius: BorderRadius.circular(12.0),
             ),
             title: Text(
               "Transfer Job",
@@ -1715,67 +1725,68 @@ void _showTransferDialog(BuildContext context, String subTicketId) {
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                FutureBuilder(
-                  future: fetchTechnicians(),
-                  builder: (context, snapshot) {
-                    if (isLoading) {
-                      return Center(
-                        child: Platform.isIOS
-                            ? CupertinoActivityIndicator(radius: 15)
-                            : CircularProgressIndicator(
-                          strokeWidth: 3,
-                          valueColor: AlwaysStoppedAnimation<Color>(appbar_color),
-                        ),
-                      );
-                    }
-                    if (technicians.isEmpty) {
-                      return Text(
-                        "No technicians available.",
-                        style: GoogleFonts.poppins(color: Colors.black87),
-                      );
-                    }
-                    return DropdownButtonFormField<String>(
-                      value: selectedTechnicianId,
-                      isExpanded: true,
-                      decoration: InputDecoration(
-                        labelText: "Select Person",
-                        labelStyle: GoogleFonts.poppins(color: Colors.grey),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: Colors.grey.shade400, width: 1),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: Colors.grey.shade400, width: 1),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: appbar_color, width: 1.5),
-                        ),
-                        filled: true,
-                        fillColor: Colors.white, // White background for dropdown
-                        contentPadding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                if (isLoading)
+                  Center(
+                    child: Platform.isIOS
+                        ? CupertinoActivityIndicator(radius: 15)
+                        : CircularProgressIndicator(
+                      strokeWidth: 3,
+                      valueColor:
+                      AlwaysStoppedAnimation<Color>(appbar_color),
+                    ),
+                  )
+                else if (technicians.isEmpty)
+                  Text(
+                    "No technicians available.",
+                    style: GoogleFonts.poppins(color: Colors.black87),
+                  )
+                else
+                  DropdownButtonFormField<String>(
+                    value: selectedTechnicianId,
+                    isExpanded: true,
+                    decoration: InputDecoration(
+                      labelText: "Select Person",
+                      labelStyle: GoogleFonts.poppins(color: Colors.grey),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide:
+                        BorderSide(color: Colors.grey.shade400, width: 1),
                       ),
-                      dropdownColor: Colors.white, // Dropdown menu background
-                      style: GoogleFonts.poppins(fontSize: 16, color: Colors.black87),
-                      icon: Icon(Icons.keyboard_arrow_down, color: Colors.black),
-                      items: technicians.map((tech) {
-                        return DropdownMenuItem(
-                          value: tech['id'].toString(),
-                          child: Text(
-                            tech['name'],
-                            style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w500),
-                          ),
-                        );
-                      }).toList(),
-                      onChanged: (String? newValue) {
-                        setState(() {
-                          selectedTechnicianId = newValue;
-                        });
-                      },
-                    );
-                  },
-                ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide:
+                        BorderSide(color: Colors.grey.shade400, width: 1),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide:
+                        BorderSide(color: appbar_color, width: 1),
+                      ),
+                      filled: true,
+                      fillColor: Colors.white,
+                      contentPadding:
+                      EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                    ),
+                    dropdownColor: Colors.white,
+                    style: GoogleFonts.poppins(
+                        fontSize: 16, color: Colors.black87),
+                    icon: Icon(Icons.keyboard_arrow_down, color: Colors.black),
+                    items: technicians.map<DropdownMenuItem<String>>((tech) {
+                      return DropdownMenuItem<String>(
+                        value: tech['id'].toString(),
+                        child: Text(
+                          tech['name'],
+                          style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w500),
+                        ),
+                      );
+                    }).toList(),
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        selectedTechnicianId = newValue;
+                        print('technician id : $selectedTechnicianId');
+                      });
+                    },
+                  ),
                 SizedBox(height: 10),
               ],
             ),
@@ -1786,7 +1797,8 @@ void _showTransferDialog(BuildContext context, String subTicketId) {
                 },
                 child: Text(
                   "Cancel",
-                  style: GoogleFonts.poppins(color: Colors.red, fontWeight: FontWeight.w500),
+                  style: GoogleFonts.poppins(
+                      color: Colors.red, fontWeight: FontWeight.w500),
                 ),
               ),
               ElevatedButton(
@@ -1796,7 +1808,7 @@ void _showTransferDialog(BuildContext context, String subTicketId) {
                     return;
                   }
                   _transferSubTicket(subTicketId, selectedTechnicianId!);
-                  Navigator.of(context).pop(); // Close dialog
+                  Navigator.of(context).pop();
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: appbar_color,
@@ -1804,7 +1816,8 @@ void _showTransferDialog(BuildContext context, String subTicketId) {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                  padding:
+                  EdgeInsets.symmetric(vertical: 10, horizontal: 15),
                   elevation: 3,
                 ),
                 child: Text(
@@ -1818,8 +1831,6 @@ void _showTransferDialog(BuildContext context, String subTicketId) {
       );
     },
   );
-
-
 }
 
 Future<void> _transferSubTicket(String subTicketId, String technicianId) async {

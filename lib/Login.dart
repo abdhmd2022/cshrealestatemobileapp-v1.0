@@ -173,6 +173,7 @@ class _LoginPageState extends State<Login> {
           await prefs.setString("baseurl", firstUser.baseurl ?? "");
           await prefs.setString("adminurl", firstUser.adminurl ?? "");
           await prefs.setString("license_expiry", firstUser.license_expiry ?? "");
+          await prefs.setString("company_name", firstUser.companyName ?? "");
 
 
           List<Map<String, dynamic>> companiesJson = usersList

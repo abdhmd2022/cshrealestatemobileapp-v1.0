@@ -129,6 +129,8 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
         "next_followup_date":DateFormat('yyyy-MM-dd').format(nextFollowupDate!)
       };
 
+      print('followup request body : ${requestBody}');
+
       final response = await http.post(
         Uri.parse(url),
         headers: {

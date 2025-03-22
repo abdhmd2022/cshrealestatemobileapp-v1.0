@@ -32,7 +32,6 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
   String name = "", email = "";
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  late GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey;
   late SharedPreferences prefs;
 
   String? hostname = "", company = "", company_lowercase = "", serial_no = "", username = "", HttpURL = "", SecuritybtnAcessHolder = "";
@@ -114,7 +113,6 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
   @override
   void initState() {
     super.initState();
-    _scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
     _initSharedPreferences();
   }
 

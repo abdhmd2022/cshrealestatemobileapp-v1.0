@@ -522,7 +522,7 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
       },
       child: Scaffold(
         key: _scaffoldKey,
-        backgroundColor: const Color(0xFFF2F4F8),
+        backgroundColor:  Colors.white,
         appBar: AppBar(
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(70),

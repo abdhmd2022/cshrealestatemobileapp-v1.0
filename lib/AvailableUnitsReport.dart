@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'dart:math';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -13,13 +12,11 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:google_fonts/google_fonts.dart';
 
-
 class AvailableUnitsReport extends StatefulWidget {
   const AvailableUnitsReport({Key? key}) : super(key: key);
   @override
   _AvailableUnitsReportPageState createState() => _AvailableUnitsReportPageState();
 }
-
 
 class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with TickerProviderStateMixin {
   bool isDashEnable = true,
@@ -30,7 +27,6 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
       isVisibleNoUserFound = false;
 
   bool isLoading = true;
-
 
   String searchQuery = "";
   String name = "", email = "";
@@ -48,12 +44,31 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
 
   String? selectedSortLabel; // e.g. "Price: Low → High"
 
-
-
   double rangeMin = 0;
+
   double rangeMax = 2000000;
 
   String selectedSort = "none"; // Options: "low_to_high", "high_to_low"
+
+  List<String> availableFlatTypes = [];
+  List<String> availableAmenities = [];
+  List<String> selectedFlatTypes = [];
+  RangeValues selectedPriceRange = const RangeValues(0, 2000000);
+  List<String> selectedAmenities = [];
+
+  Future<void> _initSharedPreferences() async {
+    prefs = await SharedPreferences.getInstance();
+
+    rangeMin = prefs.getDouble('range_min') ?? 0;
+    rangeMax = prefs.getDouble('range_max') ?? 2000000;
+
+    selectedPriceRange = RangeValues(rangeMin, rangeMax); // default full range
+    setState(() {
+      fetchFiltersData(); // 👈 Add this
+
+      fetchFlats();
+    });
+  }
 
   void fetchFlats() async {
     setState(() {
@@ -74,21 +89,6 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
         isLoading = false;
       });
     }
-
-  }
-
-  Future<void> _initSharedPreferences() async {
-    prefs = await SharedPreferences.getInstance();
-
-    rangeMin = prefs.getDouble('range_min') ?? 0;
-    rangeMax = prefs.getDouble('range_max') ?? 2000000;
-
-    selectedPriceRange = RangeValues(rangeMin, rangeMax); // default full range
-    setState(() {
-       fetchFiltersData(); // 👈 Add this
-
-       fetchFlats();
-    });
   }
 
   Future<void> fetchFiltersData() async {
@@ -110,13 +110,13 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
       applyFilters(); // 🔁 call combined filter
     });
   }
+
   @override
   void initState() {
     super.initState();
     _scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
     _initSharedPreferences();
   }
-
 
   Future<void> _refresh() async {
     setState(() {
@@ -141,7 +141,6 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
         return StatefulBuilder(
           builder: (context, setModalState) {
             List<String> flatTypes = availableFlatTypes;
-
 
             return Padding(
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
@@ -171,7 +170,6 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
                           runSpacing: 8.0,
                           children: flatTypes.map((type) {
                             final isSelected = tempFlatTypes.contains(type);
-
                             return FilterChip(
                               label: Text(
                                 type,
@@ -203,11 +201,6 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
                       ],
                     ),
                   ),
-
-
-
-
-
 
                   SizedBox(height: 20),
 
@@ -252,14 +245,15 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
 
                   SizedBox(height: 20),
 
-
                   Align(
                     alignment: Alignment.centerLeft,
                     child:
                     Text("Amenities", style: GoogleFonts.poppins(fontWeight: FontWeight.w500)),
 
                   ),
+
                   const SizedBox(height: 8),
+
                   Align(
                     alignment: Alignment.centerLeft,
                     child: Wrap(
@@ -294,7 +288,6 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
                     ),
                   ),
 
-
                   SizedBox(height: 30),
 
                   Row(
@@ -309,7 +302,6 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
                             tempPriceRange = RangeValues(rangeMin, rangeMax); // shared prefs wala
                             tempIsPriceModified = false;
                             searchQuery = '';
-
                           });
                         },
                         icon: Icon(Icons.refresh, color: Colors.black87),
@@ -385,7 +377,6 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
       // ✅ Flat type match
       final flatTypeMatch = selectedFlatTypes.isEmpty ||
           selectedFlatTypes.contains(unit.flatTypeName);
-
 
       // ✅ Price range match (only if user changed it)
       final priceMatch = !isPriceRangeModified ||
@@ -525,14 +516,6 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
     });
   }
 
-
-
-
-  List<String> availableFlatTypes = [];
-  List<String> availableAmenities = [];
-  List<String> selectedFlatTypes = [];
-  RangeValues selectedPriceRange = const RangeValues(0, 2000000);
-  List<String> selectedAmenities = [];
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -696,12 +679,8 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
                               ),
                             ),
 
-
-
                           ],
                         ),
-
-
 
                         const SizedBox(height: 8),
 
@@ -741,16 +720,12 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
                                   : "Default (Latest)",
                               onTap: () => _showSortOptions(context),
                             ),
-
-
                           ],
                         ),
                       ],
                     ),
                   ),
                 ),
-
-
 
                 filteredUnits.isEmpty ?
                 Expanded(
@@ -770,11 +745,8 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
                         ),
                       ],
                     ),
-
                   )
-                )
-
-                :
+                ) :
                 Expanded(
                     child: ListView.builder(
                         itemCount: filteredUnits.length,
@@ -884,20 +856,12 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
               alignment: Alignment.bottomRight,
               child: ExpandableFab(appbarColor: appbar_color),
             ),
-
-
           ],
         ),
-
-
-
       ),
     );
   }
 }
-
-
-
 
 class AvailableUnitsDialog extends StatelessWidget {
   final String unitno;
@@ -1364,7 +1328,6 @@ class _ExpandableFabState extends State<ExpandableFab> with SingleTickerProvider
       {"icon": FontAwesomeIcons.whatsapp, "color": [Color(0xFF11998E), Color(0xFF38EF7D)], "action": "https://wa.me/971588313352"},
       {"icon": Icons.phone, "color": [Color(0xFF0575E6), Color(0xFF021B79)], "action": "tel:+971588313352"},
       {"icon": Icons.email, "color": [Color(0xFF0575E6), Color(0xFF26D0CE)], "action": "mailto:saadan@ca-eim.com"},
-
     ];
 
     for (int i = 0; i < actions.length; i++) {

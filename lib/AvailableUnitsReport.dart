@@ -636,7 +636,6 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(14),
                                   side: BorderSide(color: Colors.grey.shade300), // 🔲 Add black border here
-
                                 ),
                                 backgroundColor: Colors.grey.shade100,
                               ),

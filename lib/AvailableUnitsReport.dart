@@ -606,7 +606,7 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
                           blurRadius: 10,
                           spreadRadius: 1,
                           offset: Offset(0, 4),
-                        ),
+                        )
                       ],
                       border: Border.all(
                         color: Colors.grey.shade200,
@@ -616,7 +616,6 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-
                         // 🔘 FILTER SECTION
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -647,7 +646,6 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
 
                             const SizedBox(width: 10),
 
-                            // Filter Badges Row (wrap inside expanded for flexibility)
                             // 🔘 FILTER BADGES (right of Filter button)
                             Expanded(
                               child: SingleChildScrollView(
@@ -659,8 +657,7 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
                                           !isPriceRangeModified
                                           ? [
                                         _buildBadgeChip(Icons.info_outline, "No filters selected"),
-                                      ]
-                                          : [
+                                      ] : [
                                         ...selectedFlatTypes.map((type) =>
                                             _buildBadgeChip(Icons.apartment, type, onTap: () => _showFiltersDialog(context))),
                                         ...selectedAmenities.map((a) =>
@@ -680,7 +677,6 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
                                 ),
                               ),
                             ),
-
                           ],
                         ),
 
@@ -708,7 +704,6 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(14),
                                   side: BorderSide(color: Colors.grey.shade300), // 🔲 Add black border here
-
                                 ),
                                 backgroundColor: Colors.grey.shade100,
                               ),

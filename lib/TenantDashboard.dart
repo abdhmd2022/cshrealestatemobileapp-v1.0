@@ -1,6 +1,7 @@
 import 'package:cshrealestatemobile/AvailableUnitsReport.dart';
 import 'package:cshrealestatemobile/KYCUpdate.dart';
-import 'package:cshrealestatemobile/TenantAccessCardRequest.dart';
+import 'package:cshrealestatemobile/RequestCreation.dart';
+import 'package:cshrealestatemobile/RequestList.dart';
 import 'package:cshrealestatemobile/TenantComplaint.dart';
 import 'package:cshrealestatemobile/TenantProfile.dart';
 import 'package:cshrealestatemobile/TenantmoveinoutRequest.dart';
@@ -1117,22 +1118,16 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
                     MaterialPageRoute(builder: (context) => MaintenanceTicketReport()), // navigate to company and serial select screen
                   );
                 }),
-                _buildDashboardButton(Icons.move_to_inbox, 'Move In/Out', Colors.green, () {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => TenantmoveinoutRequest()),          // navigate to users screen
-                  );
-                }),
               ],
             ),
             SizedBox(height: 10),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _buildDashboardButton(Icons.credit_card, 'Access Card Replacement', Colors.purpleAccent, () {
+                _buildDashboardButton(Icons.credit_card, 'Request', Colors.purpleAccent, () {
                   Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(builder: (context) => TenantAccessCardRequest()),          // navigate to users screen
+                    MaterialPageRoute(builder: (context) => RequestListScreen()),          // navigate to users screen
                   );
                 }),
                 _buildDashboardButton(Icons.home, 'Available Units', Colors.orangeAccent, () {

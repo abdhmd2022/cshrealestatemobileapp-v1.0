@@ -10,7 +10,6 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 
-import 'TenantDashboard.dart';
 
 class SpecialRequestScreen extends StatefulWidget {
   const SpecialRequestScreen({Key? key}) : super(key: key);
@@ -191,7 +190,7 @@ class _SpecialRequestScreenState extends State<SpecialRequestScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("Request", style: GoogleFonts.poppins(fontWeight: FontWeight.normal,
+        title: Text("Generate Request", style: GoogleFonts.poppins(fontWeight: FontWeight.normal,
           color: Colors.white, // ← Color set here
 
         ),),

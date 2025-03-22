@@ -638,6 +638,8 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
                                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(14),
+                                  side: BorderSide(color: Colors.grey.shade300), // 🔲 Add black border here
+
                                 ),
                                 backgroundColor: Colors.grey.shade100,
                               ),
@@ -705,6 +707,8 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
                                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(14),
+                                  side: BorderSide(color: Colors.grey.shade300), // 🔲 Add black border here
+
                                 ),
                                 backgroundColor: Colors.grey.shade100,
                               ),

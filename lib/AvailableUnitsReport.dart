@@ -1444,14 +1444,7 @@ class _ExpandableFabState extends State<ExpandableFab> with SingleTickerProvider
                       : const Icon(Icons.more_vert, color: Colors.white, size: 34),
                 ),
                 onPressed: _toggleFab,
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
+              ))))]);}}
 
 Widget _buildBadgeChip(IconData icon, String label, {VoidCallback? onTap}) {
   return GestureDetector(
@@ -1471,7 +1464,3 @@ Widget _buildBadgeChip(IconData icon, String label, {VoidCallback? onTap}) {
     ),
   );
 }
-
-
-
-

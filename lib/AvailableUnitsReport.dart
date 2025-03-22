@@ -594,7 +594,7 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
             child: Column(
               children: [
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(10, 8, 10, 4),
+                  padding: const EdgeInsets.fromLTRB(10, 8, 10, 8),
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                     decoration: BoxDecoration(
@@ -756,97 +756,96 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
                         itemCount: filteredUnits.length,
                         itemBuilder: (context, index) {
                           final unit = filteredUnits[index];
-                          return Container(
-                              margin: const EdgeInsets.symmetric(
-                                  vertical: 5.0, horizontal: 10),
-                              padding: const EdgeInsets.all(16.0),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(16.0),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.grey.withOpacity(0.2),
-                                    blurRadius: 10.0,
-                                    offset: const Offset(0, 5),
-                                  ),
-                                ],
-                              ),
-                              child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        const Icon(Icons.home),
-                                        const SizedBox(width: 10),
-                                        Expanded(
-                                          child: Text(
-                                            unit.flatTypeName,
-                                            style: GoogleFonts.poppins(fontSize: 16),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 10),
-                                    Row(
-                                      children: [
-                                        const Icon(Icons.location_city),
-                                        const SizedBox(width: 10),
-                                        Expanded(
-                                          child: Text(
-                                            unit.buildingName,
-                                            style: GoogleFonts.poppins(fontSize: 16),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 10),
-                                    Row(
-                                      children: [
-                                        const Icon(Icons.location_on),
-                                        const SizedBox(width: 10),
-                                        Expanded(
-                                          child: Text(
-                                            "${unit.areaName}, ${unit.stateName}",
-                                            style: GoogleFonts.poppins(fontSize: 16),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 10),
-                                    Padding(
-                                        padding: const EdgeInsets.only(top: 0, bottom: 0),
-                                        child: Row(
-                                            mainAxisAlignment: MainAxisAlignment.center,
-                                            crossAxisAlignment: CrossAxisAlignment.center,
-                                            children: [
-                                              _buildDecentButton(
-                                                'View',
-                                                Icons.remove_red_eye,
-                                                Colors.orange,
-                                                    () {
-                                                  showDialog(
-                                                    context: context,
-                                                    builder: (context) => AvailableUnitsDialog(
-                                                      unitno: unit.name,
-                                                      area: unit.areaName,
-                                                      emirate: unit.stateName,
-                                                      unittype: unit.flatTypeName,
-                                                      rent: unit.basicRent != null ? "AED ${unit.basicRent}" : "AED N/A",
-                                                      parking: unit.noOfParking.toString(),
-                                                      balcony: unit.amenities.contains("Balcony") ? "Yes" : "No",
-                                                      bathrooms: unit.noOfBathrooms.toString(),
-                                                      building_name: unit.buildingName,
+                          return Card(
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                              elevation: 4,
+                              margin: EdgeInsets.only(bottom: 8,left:10,right:10),
+                              color:Colors.white,
 
-                                                      ownership: unit.ownership ?? "N/A",
-                                                      basicRent: unit.basicRent?.toString() ?? "N/A",
-                                                      basicSaleValue: unit.basicSaleValue?.toString() ?? "N/A",
-                                                      isExempt: unit.isExempt ? "true" : "false",
-                                                      amenities: unit.amenities,
-                                                    ),
-                                                  );
-                                                },
-                                              ),
-                                            ]))]));}))
+                              child:Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(16.0),
+                                  ),
+                                  padding: const EdgeInsets.all(18.0),
+                                child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          const Icon(Icons.home),
+                                          const SizedBox(width: 10),
+                                          Expanded(
+                                            child: Text(
+                                              unit.flatTypeName,
+                                              style: GoogleFonts.poppins(fontSize: 16),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 10),
+                                      Row(
+                                        children: [
+                                          const Icon(Icons.location_city),
+                                          const SizedBox(width: 10),
+                                          Expanded(
+                                            child: Text(
+                                              unit.buildingName,
+                                              style: GoogleFonts.poppins(fontSize: 16),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 10),
+                                      Row(
+                                        children: [
+                                          const Icon(Icons.location_on),
+                                          const SizedBox(width: 10),
+                                          Expanded(
+                                            child: Text(
+                                              "${unit.areaName}, ${unit.stateName}",
+                                              style: GoogleFonts.poppins(fontSize: 16),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 10),
+                                      Padding(
+                                          padding: const EdgeInsets.only(top: 0, bottom: 0),
+                                          child: Row(
+                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              crossAxisAlignment: CrossAxisAlignment.center,
+                                              children: [
+                                                _buildDecentButton(
+                                                  'View',
+                                                  Icons.remove_red_eye,
+                                                  Colors.orange,
+                                                      () {
+                                                    showDialog(
+                                                      context: context,
+                                                      builder: (context) => AvailableUnitsDialog(
+                                                        unitno: unit.name,
+                                                        area: unit.areaName,
+                                                        emirate: unit.stateName,
+                                                        unittype: unit.flatTypeName,
+                                                        rent: unit.basicRent != null ? "AED ${unit.basicRent}" : "AED N/A",
+                                                        parking: unit.noOfParking.toString(),
+                                                        balcony: unit.amenities.contains("Balcony") ? "Yes" : "No",
+                                                        bathrooms: unit.noOfBathrooms.toString(),
+                                                        building_name: unit.buildingName,
+
+                                                        ownership: unit.ownership ?? "N/A",
+                                                        basicRent: unit.basicRent?.toString() ?? "N/A",
+                                                        basicSaleValue: unit.basicSaleValue?.toString() ?? "N/A",
+                                                        isExempt: unit.isExempt ? "true" : "false",
+                                                        amenities: unit.amenities,
+                                                      ),
+                                                    );
+                                                  },
+                                                ),
+                                              ]))])
+                              ),
+                              );}))
               ],
             ),
           ),

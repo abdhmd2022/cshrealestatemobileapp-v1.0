@@ -154,8 +154,24 @@ class _RequestListScreenState extends State<RequestListScreen> {
         ),
       )
           : requests.isEmpty
-          ? Center(
-        child: Text("No requests found", style: GoogleFonts.poppins()),
+          ? Expanded(
+          child:  Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min, // center inside column
+
+              children: [
+                Icon(Icons.search_off, size: 48, color: Colors.grey),
+                SizedBox(height: 10),
+                Text(
+                  "No request found",
+                  style: GoogleFonts.poppins(
+                    fontSize: 16,
+                    color: Colors.grey,
+                  ),
+                ),
+              ],
+            ),
+          )
       )
           : ListView.builder(
         padding: EdgeInsets.all(12),

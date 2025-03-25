@@ -6,7 +6,6 @@ class RegisteredCompany {
   final String adminurl;
   final String license_expiry;
 
-
   RegisteredCompany({
     required this.id,
     required this.name,
@@ -14,7 +13,6 @@ class RegisteredCompany {
     required this.baseurl,
     required this.adminurl,
     required this.license_expiry,
-
   });
 
   factory RegisteredCompany.fromJson(Map<String, dynamic> json) {

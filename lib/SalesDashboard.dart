@@ -46,7 +46,6 @@ class _SalesDashboardScreenState extends State<SalesDashboardScreen> with Ticker
       "Nov": 2400,
       "Dec": 2500,
     },
-
     "2023": {
       "Jan": 1200,
       "Feb": 1800,

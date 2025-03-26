@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:cshrealestatemobile/TenantComplaint.dart';
 import 'package:cshrealestatemobile/constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -10,16 +11,16 @@ import 'package:intl/intl.dart';
 import 'RequestCreation.dart';
 import 'TenantDashboard.dart';
 
-class RequestListScreen extends StatefulWidget {
-  const RequestListScreen({Key? key}) : super(key: key);
+class ComplaintListScreen extends StatefulWidget {
+  const ComplaintListScreen({Key? key}) : super(key: key);
 
   @override
-  State<RequestListScreen> createState() => _RequestListScreenState();
+  State<ComplaintListScreen> createState() => _ComplaintListScreenState();
 }
 
-class _RequestListScreenState extends State<RequestListScreen> {
+class _ComplaintListScreenState extends State<ComplaintListScreen> {
   bool isLoading = true;
-  List<dynamic> requests = [];
+  List<dynamic> complaints = [];
   DateTime? _startDate;
   DateTime? _endDate;
   List<dynamic> filteredComplaints = [];
@@ -32,13 +33,13 @@ class _RequestListScreenState extends State<RequestListScreen> {
     final now = DateTime.now();
     _startDate = DateTime(now.year, now.month, 1);
     _endDate = DateTime(now.year, now.month + 1, 0);
-    fetchRequests();
+    fetchComplaints();
   }
 
-  Future<void> fetchRequests() async {
+  Future<void> fetchComplaints() async {
     try {
       final response = await http.get(
-        Uri.parse('$baseurl/tenant/request'),
+        Uri.parse('$baseurl/tenant/complaint/?user_id = $user_id'),
         headers: {
           'Authorization': 'Bearer $Company_Token',
           'Content-Type': 'application/json',
@@ -52,30 +53,34 @@ class _RequestListScreenState extends State<RequestListScreen> {
         print('request : $jsonData');
 
         // Filter only requests with flat_id == 1
-        final allRequests = jsonData['data']['requests'] as List;
-        final filteredRequests = allRequests.where((req) => req['flat_id'] == flat_id).toList();
+        final allRequests = jsonData['data']['complaints'] as List;
 
         setState(() {
-          requests= filteredRequests.reversed.toList();
+          complaints= allRequests.reversed.toList();
           _filterComplaintsByDate(); // ✅ apply filter using default dates
+
+          print("total length ${complaints.length}");
+
 
 
         });
 
       }
     } catch (e) {
-      print("Error fetching requests: $e");
+      print("Error fetching complaints: $e");
     } finally {
       setState(() => isLoading = false);
     }
   }
+
+
   void _filterComplaintsByDate() {
     if (_startDate == null || _endDate == null) {
-      filteredComplaints = requests;
+      filteredComplaints = complaints;
       return;
     }
 
-    filteredComplaints = requests.where((comp) {
+    filteredComplaints = complaints.where((comp) {
       final createdAt = DateTime.tryParse(comp['created_at'] ?? '');
       if (createdAt == null) return false;
       return createdAt.isAfter(_startDate!.subtract(Duration(days: 0))) &&
@@ -86,6 +91,8 @@ class _RequestListScreenState extends State<RequestListScreen> {
 
     setState(() {});
   }
+
+
 
 
   Widget buildStatusChip(dynamic isApproved) {
@@ -119,8 +126,8 @@ class _RequestListScreenState extends State<RequestListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Requests", style: GoogleFonts.poppins(fontWeight: FontWeight.normal,
-        color:Colors.white)),
+        title: Text("Complaints/Suggestions", style: GoogleFonts.poppins(fontWeight: FontWeight.normal,
+            color:Colors.white)),
         backgroundColor: appbarColor.withOpacity(0.9),
         centerTitle: true,
         automaticallyImplyLeading: true,
@@ -159,7 +166,7 @@ class _RequestListScreenState extends State<RequestListScreen> {
             child: FloatingActionButton(
               onPressed: () => Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (_) => SpecialRequestScreen()),
+                MaterialPageRoute(builder: (_) => TenantComplaint()),
               ),
               backgroundColor: Colors.transparent,
               elevation: 30,
@@ -172,7 +179,16 @@ class _RequestListScreenState extends State<RequestListScreen> {
 
       body: Container(
         color: Colors.white,
-        child: Column(
+        child: isLoading
+            ? Center(
+          child: Platform.isIOS
+              ? const CupertinoActivityIndicator(radius: 18)
+              : CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(appbarColor),
+          ),
+        )
+
+            : Column(
           children: [
 
             Container(
@@ -212,7 +228,7 @@ class _RequestListScreenState extends State<RequestListScreen> {
                           _startDate = picked.start;
                           _endDate = picked.end;
                         });
-                        fetchRequests(); // ✅ Apply date filter
+                        fetchComplaints(); // ✅ Apply date filter
                       }
                     },
                     child: Container(
@@ -243,7 +259,6 @@ class _RequestListScreenState extends State<RequestListScreen> {
                                 ),
                               ],
                             ),
-
                           ),
                           Icon(Icons.calendar_today, color: appbar_color, size: 18),
                         ],
@@ -254,15 +269,7 @@ class _RequestListScreenState extends State<RequestListScreen> {
               ),
             ),
 
-            isLoading
-                ? Center(
-              child: Platform.isIOS
-                  ? const CupertinoActivityIndicator(radius: 18)
-                  : CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(appbarColor),
-              ),
-            )
-                : filteredComplaints.isEmpty
+            filteredComplaints.isEmpty
                 ? Expanded(
                 child:  Center(
                   child: Column(
@@ -272,7 +279,7 @@ class _RequestListScreenState extends State<RequestListScreen> {
                       Icon(Icons.search_off, size: 48, color: Colors.grey),
                       SizedBox(height: 10),
                       Text(
-                        "No request found",
+                        "No complaints/suggestions found",
                         style: GoogleFonts.poppins(
                           fontSize: 16,
                           color: Colors.grey,
@@ -281,19 +288,18 @@ class _RequestListScreenState extends State<RequestListScreen> {
                     ],
                   ),
                 )
-            )
-                : Expanded(
+            ):
+
+            Expanded(
               child: ListView.builder(
                 padding: EdgeInsets.only(bottom:12,left:12,right:12),
                 itemCount: filteredComplaints.length,
                 itemBuilder: (context, index) {
-                  final req = filteredComplaints[index];
-                  final req_id = req["id"];
-                  final flat = req['contract_flat']['flat'];
-                  final building = flat['building'];
-                  final area = building['area'];
-                  final state = area['state'];
-                  final approved_by = req['approved_by'];
+                  final comp = filteredComplaints[index];
+                  final comp_id = comp["id"];
+                  final type = comp["type"];
+                  final description = comp['description'];
+                  final created_at = comp['created_at'];
 
                   return Card(
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -305,7 +311,7 @@ class _RequestListScreenState extends State<RequestListScreen> {
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(16.0),
                       ),
-                      padding: const EdgeInsets.only(bottom:18.0,left:18,right:18,top:18),
+                      padding: const EdgeInsets.all(18.0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -315,7 +321,7 @@ class _RequestListScreenState extends State<RequestListScreen> {
                             children: [
                               Expanded(
                                 child: Text(
-                                  '${req['type']['name'].toString()}',
+                                  type == 'Complaint' ? "C - $comp_id" : "S - $comp_id",
                                   style: GoogleFonts.poppins(
                                     fontWeight: FontWeight.w600,
 
@@ -326,8 +332,8 @@ class _RequestListScreenState extends State<RequestListScreen> {
                                   overflow: TextOverflow.ellipsis,
                                 ),
                               ),
-                              SizedBox(width: 8),
-                              _getRequestStatusBadge(req['is_approved']),
+
+                              _getRequestStatusBadge(type),
                             ],
                           ),
 
@@ -335,85 +341,31 @@ class _RequestListScreenState extends State<RequestListScreen> {
                           Divider(height: 1, color: Colors.grey.shade300),
                           SizedBox(height: 12),
 
-                          // 📍 Location
+
                           Row(
                             children: [
-                              Icon(Icons.apartment, size: 16, color: Colors.blue),
+                              Icon(Icons.calendar_month, size: 16, color: Colors.blueAccent),
                               SizedBox(width: 6),
                               Expanded(
                                 child: Text(
-                                  "${flat['name']} • ${building['name']}",
-                                  style: GoogleFonts.poppins(fontSize: 13.5, fontWeight: FontWeight.w500),
-                                ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 6),
-                          Row(
-                            children: [
-                              Icon(Icons.location_on, size: 16, color: Colors.redAccent),
-                              SizedBox(width: 6),
-                              Expanded(
-                                child: Text(
-                                  "${area['name']}, ${state['name']}",
+                                  formatDate(created_at),
                                   style: GoogleFonts.poppins(fontSize: 13),
                                 ),
                               ),
                             ],
                           ),
 
-                          // 📝 Approved user
-                          /*if(approved_by!=null)...[
-
-                      SizedBox(height: 6),
-
-
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Icon(Icons.checklist_rounded, size: 16, color: Colors.green),
-                          SizedBox(width: 6),
-                          Expanded(
-                            child: Text(
-                              req['approved_user']['name'],
-                              style: GoogleFonts.poppins(fontSize: 13.2),
-                            ),
-                          ),
-                        ],
-                      ),
-
-                    ],*/
-
-                          // creation date
                           SizedBox(height: 6),
 
                           // 📝 Description
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Icon(Icons.calendar_month, size: 16, color: Colors.black),
+                              Icon(Icons.notes, size: 16, color: Colors.black),
                               SizedBox(width: 6),
                               Expanded(
                                 child: Text(
-                                  formatDate(req['created_at']),
-                                  style: GoogleFonts.poppins(fontSize: 13.2),
-                                ),
-                              ),
-                            ],
-                          ),
-
-
-                          SizedBox(height: 6),
-
-                          // 📝 Description
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Icon(Icons.notes, size: 16, color: Colors.grey),
-                              SizedBox(width: 6),
-                              Expanded(
-                                child: Text(
-                                  req['description'],
+                                  description,
                                   style: GoogleFonts.poppins(fontSize: 13.2),
                                 ),
                               ),
@@ -427,13 +379,9 @@ class _RequestListScreenState extends State<RequestListScreen> {
 
                 },
               ),
-            ),
-
-
+            )
+            ,
           ],
-
-
-
         ),
 
       ),
@@ -441,18 +389,18 @@ class _RequestListScreenState extends State<RequestListScreen> {
     );
   }
 }
-Widget _getRequestStatusBadge(dynamic isApproved) {
+Widget _getRequestStatusBadge(dynamic type) {
   String status;
   Color color;
 
-  if (isApproved == null) {
-    status = "Pending";
+  if (type == null) {
+    status = "N/A";
     color = Colors.orange;
-  } else if (isApproved == "true") {
-    status = "Approved";
-    color = Colors.green;
+  } else if (type == "Suggestion") {
+    status = type;
+    color = Colors.orange;
   } else {
-    status = "Rejected";
+    status = type;
     color = Colors.red;
   }
 

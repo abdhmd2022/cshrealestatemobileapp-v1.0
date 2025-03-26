@@ -1,4 +1,5 @@
 import 'package:cshrealestatemobile/AvailableUnitsReport.dart';
+import 'package:cshrealestatemobile/ComplaintList.dart';
 import 'package:cshrealestatemobile/KYCUpdate.dart';
 import 'package:cshrealestatemobile/RequestCreation.dart';
 import 'package:cshrealestatemobile/RequestList.dart';
@@ -1154,7 +1155,7 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
                 Navigator.pushReplacement
                   (
                   context,
-                  MaterialPageRoute(builder: (context) => TenantComplaint()), // navigate to company and serial select screen
+                  MaterialPageRoute(builder: (context) => ComplaintListScreen()), // navigate to company and serial select screen
                 );
               }),
             ],

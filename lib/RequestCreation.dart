@@ -70,8 +70,8 @@ class _SpecialRequestScreenState extends State<SpecialRequestScreen> {
           tenantFlats.add({
             'flatId': flat['id'],
             'flatName': flat['name'],
-            'buildingName': 'Building ${flat['building_id']}',
-            'areaName': 'Area Name',
+            'buildingName': '${flat['building']['name']}',
+            'areaName': '${flat['building']['area']['name']}',
             'contractId': contractId,
           });
         }
@@ -194,7 +194,7 @@ class _SpecialRequestScreenState extends State<SpecialRequestScreen> {
           color: Colors.white, // ← Color set here
 
         ),),
-        backgroundColor: appbarColor,
+        backgroundColor: appbarColor.withOpacity(0.9),
         automaticallyImplyLeading: true, // ✅ Ensures back button shows when needed
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white),
@@ -209,163 +209,193 @@ class _SpecialRequestScreenState extends State<SpecialRequestScreen> {
         elevation: 6,
         centerTitle: true,
       ),
-      body: isLoading
-          ? Center(
-        child: Center(
-          child: Platform.isIOS
-              ? const CupertinoActivityIndicator(radius: 18)
-              : CircularProgressIndicator(
-            valueColor: AlwaysStoppedAnimation<Color>(appbarColor),
-            strokeWidth: 3.0,
-          ),
+      body: Container(
+        color: Colors.white,
+        child: isLoading
+            ? Center(
+            child: Center(
+              child: Platform.isIOS
+                  ? const CupertinoActivityIndicator(radius: 18)
+                  : CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(appbarColor),
+                strokeWidth: 3.0,
+              ),
+            )
         )
-      )
-          : Padding(
-    padding: const EdgeInsets.all(16),
-    child: SingleChildScrollView(
-    child: Form(
-      key: _formKey,
-      child:
-      Column(
-        children: [
-          const SizedBox(height: 10),
-          DropdownButtonFormField<int>(
-            decoration: InputDecoration(
-              labelText: "Unit(s)",
-              hintText: "Select Unit(s)",
-              labelStyle: GoogleFonts.poppins(color: Colors.black),
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-              enabledBorder: border,
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: appbarColor, width: 1), // 🔵 On focus
-              ),
-            ),
-            value: selectedFlatId,
-            validator: (value) => value == null ? 'Please select a unit' : null,
+            : Padding(
+            padding: const EdgeInsets.all(16),
+            child: SingleChildScrollView(
+              child: Form(
+                key: _formKey,
+                child:
+                Column(
+                  children: [
+                    const SizedBox(height: 10),
+                    DropdownButtonFormField<int>(
+                      decoration: InputDecoration(
+                        labelText: "Unit(s)",
+                        hintText: "Select Unit(s)",
+                        labelStyle: GoogleFonts.poppins(color: Colors.black),
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                        enabledBorder: border,
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: appbarColor, width: 1), // 🔵 On focus
+                        ),
+                      ),
+                      value: selectedFlatId,
+                      validator: (value) => value == null ? 'Please select a unit' : null,
 
-            items: tenantFlats.map((item) {
-              return DropdownMenuItem<int>(
-                value: item['flatId'],
-                child: Text(
-                  "${item['flatName']} - ${item['buildingName']}, ${item['areaName']}",
-                  style: GoogleFonts.poppins(),
+                      items: tenantFlats.map((item) {
+                        return DropdownMenuItem<int>(
+                          value: item['flatId'],
+                          child: Text(
+                            "${item['flatName']} - ${item['buildingName']}, ${item['areaName']}",
+                            style: GoogleFonts.poppins(),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                          ),
+
+                        );
+                      }).toList(),
+                      onChanged: (flatId) {
+                        setState(() {
+                          selectedFlatId = flatId;
+                          selectedContractId = tenantFlats.firstWhere(
+                                (item) => item['flatId'] == flatId,
+                          )['contractId'];
+                        });
+                      },
+                    ),
+
+                    const SizedBox(height: 15),
+
+                    DropdownButtonFormField<int>(
+                      decoration: InputDecoration(
+                        labelText: "Request Type(s)",
+
+                        labelStyle: GoogleFonts.poppins(color: Colors.black),
+                        hintText: "Select Request Type(s)",
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                        enabledBorder: border,
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: appbarColor, width: 1), // 🔵 On focus
+                        ),
+                      ),
+                      value: selectedRequestTypeId,
+                      validator: (value) => value == null ? 'Please select request type' : null,
+
+                      items: requestTypes.map((type) {
+                        return DropdownMenuItem<int>(
+                          value: type['id'],
+                          child: Text(type['name'], style: GoogleFonts.poppins()),
+                        );
+                      }).toList(),
+                      onChanged: (value) {
+                        setState(() {
+                          selectedRequestTypeId = value;
+                        });
+                      },
+                    ),
+                    const SizedBox(height: 18),
+
+                    // 🔹 Description Field
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text("Description", style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
+                    ),
+                    const SizedBox(height: 10),
+                    TextFormField(
+                        controller: descriptionController,
+                        maxLines: 5,
+
+                        maxLength: 100,
+                        validator: (val) {
+                          if (val == null || val.trim().isEmpty) {
+                            return 'Please enter description';
+                          } else if (val.trim().length < 10) {
+                            return 'Description must be at least 10 characters';
+                          }
+                          return null;
+                        },
+
+                        style: GoogleFonts.poppins(),
+                        decoration: InputDecoration(
+                          hintText: "Write your request description...",
+                          hintStyle: GoogleFonts.poppins(color: Colors.grey.shade500),
+                          filled: true,
+                          fillColor: Colors.white,
+                          border: border,
+                          enabledBorder: border,
+                          focusedBorder: border.copyWith(
+                            borderSide: BorderSide(color: appbarColor),
+                          ),
+                          contentPadding: const EdgeInsets.all(16),
+                        ),
+                        onChanged: (val)
+                        {
+                          descriptionController.text = val;
+                        }
+                    ),
+
+                    const SizedBox(height: 32),
+
+                    // 🔹 Submit Button
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        icon: isSubmitting
+                            ? Platform.isIOS
+                            ? CupertinoActivityIndicator(color: Colors.white)
+                            : SizedBox(
+                          height: 18,
+                          width: 18,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2,
+                          ),
+                        )
+                            : Icon(Icons.send_rounded,color:Colors.white),
+                        label: isSubmitting
+                            ? Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+
+                            Text(
+                              'Submitting...',
+                              style: GoogleFonts.poppins(
+                                color: Colors.white,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ],
+                        )
+                            : Text(
+                          'Submit',
+                          style: GoogleFonts.poppins(
+                            color: Colors.white,
+                            fontSize: 16,
+                          ),
+                        ),
+                        onPressed: isSubmitting ? null : submitRequest,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: appbarColor,
+                          padding: EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                          elevation: 6,
+                          shadowColor: appbarColor.withOpacity(0.3),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              );
-            }).toList(),
-            onChanged: (flatId) {
-              setState(() {
-                selectedFlatId = flatId;
-                selectedContractId = tenantFlats.firstWhere(
-                      (item) => item['flatId'] == flatId,
-                )['contractId'];
-              });
-            },
-          ),
-
-          const SizedBox(height: 15),
-
-          DropdownButtonFormField<int>(
-            decoration: InputDecoration(
-              labelText: "Request Type(s)",
-
-              labelStyle: GoogleFonts.poppins(color: Colors.black),
-              hintText: "Select Request Type(s)",
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-              enabledBorder: border,
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: appbarColor, width: 1), // 🔵 On focus
               ),
-            ),
-            value: selectedRequestTypeId,
-            validator: (value) => value == null ? 'Please select request type' : null,
 
-            items: requestTypes.map((type) {
-              return DropdownMenuItem<int>(
-                value: type['id'],
-                child: Text(type['name'], style: GoogleFonts.poppins()),
-              );
-            }).toList(),
-            onChanged: (value) {
-              setState(() {
-                selectedRequestTypeId = value;
-              });
-            },
-          ),
-          const SizedBox(height: 18),
-
-          // 🔹 Description Field
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Text("Description", style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
-          ),
-          const SizedBox(height: 10),
-          TextFormField(
-              controller: descriptionController,
-              maxLines: 5,
-              maxLength: 100,
-              validator: (val) {
-                if (val == null || val.trim().isEmpty) {
-                  return 'Please enter description';
-                } else if (val.trim().length < 10) {
-                  return 'Description must be at least 10 characters';
-                }
-                return null;
-              },
-
-              style: GoogleFonts.poppins(),
-              decoration: InputDecoration(
-                hintText: "Write your request description...",
-                hintStyle: GoogleFonts.poppins(color: Colors.grey.shade500),
-                filled: true,
-                fillColor: Colors.grey.shade50,
-                border: border,
-                enabledBorder: border,
-                focusedBorder: border.copyWith(
-                  borderSide: BorderSide(color: appbarColor),
-                ),
-                contentPadding: const EdgeInsets.all(16),
-              ),
-              onChanged: (val)
-              {
-                descriptionController.text = val;
-              }
-          ),
-
-          const SizedBox(height: 32),
-
-          // 🔹 Submit Button
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton.icon(
-              icon: isSubmitting
-                  ? SizedBox(
-                height: 18,
-                width: 18,
-                child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-              )
-                  : Icon(Icons.send_rounded,color:Colors.white),
-              label: Text(
-                isSubmitting ? "Submitting..." : "Submit Request",
-                style: GoogleFonts.poppins(fontWeight: FontWeight.w600,
-                    color: Colors.white),
-              ),
-              onPressed: isSubmitting ? null : submitRequest,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: appbarColor,
-                padding: EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                elevation: 6,
-                shadowColor: appbarColor.withOpacity(0.3),
-              ),
-            ),
-          ),
-        ],
+            ))
       ),
-    ),
-
-    )))
+        )
     ;
   }
 

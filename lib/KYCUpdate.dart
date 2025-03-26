@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:cshrealestatemobile/SalesDashboard.dart';
 import 'package:cshrealestatemobile/TenantDashboard.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -87,6 +88,7 @@ class _DecentTenantKYCFormState extends State<DecentTenantKYCForm> {
   String? emiratesIdFrontFile, emiratesIdBackFile, passportFile, visaFile;
 
   final List<String> documentTypes = ['Emirates ID', 'Passport', 'Visa'];
+  bool _isUploading = false;
 
 
   Future<void> pickFile({bool isFront = true}) async {
@@ -319,25 +321,36 @@ class _DecentTenantKYCFormState extends State<DecentTenantKYCForm> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 DropdownButtonFormField<String>(
+                  isExpanded: true,
                   decoration: InputDecoration(
                     labelText: "Document Type",
                     hintText: "Select Document Type",
-                    labelStyle: GoogleFonts.poppins(color: Colors.black), // Set label text color to blue
+                    labelStyle: GoogleFonts.poppins(color: Colors.black),
+                    filled: true,
+                    fillColor: Colors.white,
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                     border: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.black), // Default border color
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: Colors.black),
                     ),
                     enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.black, width: 1), // Blue border when not focused
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: Colors.black, width: 1),
                     ),
                     focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: appbar_color, width: 1), // Thicker blue border when focused
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: appbar_color, width: 1),
                     ),
                   ),
                   value: selectedDocumentType,
                   items: documentTypes.map((String doc) {
                     return DropdownMenuItem<String>(
                       value: doc,
-                      child: Text(doc),
+                      child: Text(
+                        doc,
+                        style: GoogleFonts.poppins(),
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     );
                   }).toList(),
                   onChanged: (String? newValue) {
@@ -359,71 +372,126 @@ class _DecentTenantKYCFormState extends State<DecentTenantKYCForm> {
                     ],
                   ),
                 SizedBox(height: 30),
-                Center(
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(backgroundColor: appbar_color),
-                    onPressed: () async {
-                    if (selectedDocumentType == null) {
-                    _showSnackBar("Please select a document type.");
-                    return;
-                    }
 
-                    File? fileToSend;
-                    String fileType = "";
-                    String date = "2023-10-25"; // Modify as needed
-                    bool isPdf = false;
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    icon: _isUploading
+                        ? (Platform.isIOS
+                        ? CupertinoActivityIndicator(color: Colors.white)
+                        : SizedBox(
+                      height: 18,
+                      width: 18,
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 2,
+                      ),
+                    ))
+                        : Icon(Icons.send_rounded, color: Colors.white),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: appbar_color,
+                      padding: EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      elevation: 5,
+                    ),
+                    onPressed: _isUploading
+                        ? null
+                        : () async {
+                      if (selectedDocumentType == null) {
+                        _showSnackBar("Please select a document type.");
+                        return;
+                      }
 
-                    switch (selectedDocumentType) {
-                    case 'Emirates ID':
-                    if (emiratesIdFrontFile == null || emiratesIdBackFile == null) {
-                    _showSnackBar("Please upload both front and back of Emirates ID");
-                    return;
-                    }
+                      setState(() => _isUploading = true);
 
-                    // Convert front and back images into a PDF
-                    fileToSend = await generatePdf(File(emiratesIdFrontFile!), File(emiratesIdBackFile!));
-                    if (!fileToSend.existsSync()) {
-                      print("🚨 PDF Generation Failed! File does not exist");
-                      return;
-                    }
-                    print("✅ PDF Generated: ${fileToSend.path}");
-                    print("📦 PDF Size: ${await fileToSend.length()} bytes");
-                    fileType = "Emirates_Id";
-                    isPdf = true;
-                    break;
+                      File? fileToSend;
+                      String fileType = "";
+                      String date = "2023-10-25"; // Modify as needed
+                      bool isPdf = false;
 
-                    case 'Passport':
-                    if (passportFile == null) {
-                    _showSnackBar("Please upload the Passport");
-                    return;
-                    }
-                    fileToSend = File(passportFile!);
-                    fileType = "Passport";
-                    break;
+                      try {
+                        switch (selectedDocumentType) {
+                          case 'Emirates ID':
+                            if (emiratesIdFrontFile == null || emiratesIdBackFile == null) {
+                              _showSnackBar("Please upload both front and back of Emirates ID");
+                              setState(() => _isUploading = false);
+                              return;
+                            }
 
-                    case 'Visa':
-                    if (visaFile == null) {
-                    _showSnackBar("Please upload the Visa");
-                    return;
-                    }
-                    fileToSend = File(visaFile!);
-                    fileType = "Visa";
-                    break;
+                            fileToSend = await generatePdf(File(emiratesIdFrontFile!), File(emiratesIdBackFile!));
+                            if (!fileToSend.existsSync()) {
+                              print("🚨 PDF Generation Failed! File does not exist");
+                              setState(() => _isUploading = false);
+                              return;
+                            }
 
-                    default:
-                    _showSnackBar("Invalid document type selected.");
-                    return;
-                    }
+                            print("✅ PDF Generated: ${fileToSend.path}");
+                            print("📦 PDF Size: ${await fileToSend.length()} bytes");
+                            fileType = "Emirates_Id";
+                            isPdf = true;
+                            break;
 
-                    if (fileToSend != null) {
-                    await sendFormData(fileToSend, fileType, date, isPdf: isPdf);
-                    } else {
-                    _showSnackBar("Error processing the file.");
-                    }
+                          case 'Passport':
+                            if (passportFile == null) {
+                              _showSnackBar("Please upload the Passport");
+                              setState(() => _isUploading = false);
+                              return;
+                            }
+                            fileToSend = File(passportFile!);
+                            fileType = "Passport";
+                            break;
+
+                          case 'Visa':
+                            if (visaFile == null) {
+                              _showSnackBar("Please upload the Visa");
+                              setState(() => _isUploading = false);
+                              return;
+                            }
+                            fileToSend = File(visaFile!);
+                            fileType = "Visa";
+                            break;
+
+                          default:
+                            _showSnackBar("Invalid document type selected.");
+                            setState(() => _isUploading = false);
+                            return;
+                        }
+
+                        if (fileToSend != null) {
+                          await sendFormData(fileToSend, fileType, date, isPdf: isPdf);
+                        } else {
+                          _showSnackBar("Error processing the file.");
+                        }
+                      } catch (e) {
+                        print("❌ Exception during submission: $e");
+                        _showSnackBar("Something went wrong. Please try again.");
+                      } finally {
+                        setState(() => _isUploading = false);
+                      }
                     },
-                    child: Text('Submit', style: GoogleFonts.poppins(color: Colors.white)),
+                    label: _isUploading
+                        ? Text(
+                      'Submitting...',
+                      style: GoogleFonts.poppins(
+                        color: Colors.white,
+                        fontSize: 16,
+                      ),
+                    )
+                        : Text(
+                      'Submit',
+                      style: GoogleFonts.poppins(
+                        color: Colors.white,
+                        fontSize: 16,
+                      ),
+                    ),
                   ),
-                )
+                ),
+
+
+
+
 
               ],
             ),

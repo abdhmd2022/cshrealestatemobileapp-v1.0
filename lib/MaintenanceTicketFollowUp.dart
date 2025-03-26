@@ -877,6 +877,9 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
                 var followups = subTickets
                     .firstWhere((ticket) => ticket["id"] == selectedSubTicketId)["followps"];
 
+                followups.sort((a, b) =>
+                    DateTime.parse(b['created_at']).compareTo(DateTime.parse(a['created_at'])));
+
                 if (followups.isEmpty) {
                   return Container(
                     width: double.infinity,
@@ -889,49 +892,70 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
                   );
                 }
 
-                return ListView.builder(
-                  shrinkWrap: true,
-                  clipBehavior: Clip.none,
-                  physics: NeverScrollableScrollPhysics(),
-                  itemCount: followups.length,
-                  itemBuilder: (context, index) {
-                    var followup = followups[index];
-                    return Padding(
-                      padding: EdgeInsets.only(top:12,bottom:0),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Follow-ups",
-                            style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold),
-                          ),
-                          SizedBox(height: 6),
-                          Row(
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(height: 18),
+                    Text(
+                      "Follow-ups",
+                      style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(height: 8),
+
+
+
+
+                    ListView.builder(
+                shrinkWrap: true,
+                clipBehavior: Clip.none,
+                physics: NeverScrollableScrollPhysics(),
+                itemCount: followups.length,
+                itemBuilder: (context, index) {
+                var followup = followups[index];
+                return Padding(
+                padding: EdgeInsets.only(top:6,bottom:0),
+                child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+
+                  IntrinsicHeight(
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Column(
+                          children: [
+                            Icon(Icons.circle, size: 12, color: appbar_color),
+                            if (index != followups.length)
+                              Expanded(
+                                child: Container(width: 2, color: appbar_color),
+                              ),
+                          ],
+                        ),
+                        SizedBox(width: 6),
+                        Expanded(
+                          child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Column(
-                                children: [
-                                  Container(
-                                    margin: EdgeInsets.only(top: 2),
-                                    child: Icon(Icons.circle, size: 12, color: appbar_color),
-                                  ),
-                                  if (index != followups.length)
-                                    Container(height: 32, width: 2, color: appbar_color),
-                                ],
+                              Text(
+                                followup["created_user"]["name"],
+                                style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w600),
                               ),
-                              SizedBox(width: 6),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(followup["created_user"]["name"],
-                                        style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w600)),
-                                    Text(followup["description"],
-                                        style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey[600])),
-                                  ]
-                                )
-                              )])]));});})]))),
+                              Text(
+                                followup["description"],
+                                style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey[600]),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                ]));})
+                  ],
+                );
+                })]))),
 
               Container(
                 margin: EdgeInsets.only(left: 0, right: 20,bottom:6),

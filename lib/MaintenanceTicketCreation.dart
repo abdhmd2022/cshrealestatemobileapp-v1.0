@@ -138,12 +138,12 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                 },
                 children: flats.map((flat) {
                   // Extract building name if available
-                  String buildingName = flat['building_id'].toString() ?? "Unknown";
+                  String buildingName = flat['building_name'].toString() ?? "Unknown";
 
                   return Center(
                     child: Text(
                       '${flat['tenant_name']} | ${flat['flat_name'] ?? "Unknown"} | '
-                          'Building: $buildingName',
+                          '$buildingName',
                       style: GoogleFonts.poppins(fontSize: 16),
                     ),
                   );
@@ -240,7 +240,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                         'tenant_name': tenantName,
                         'flat_id': flat['id'],
                         'flat_name': flat['name'],
-                        'building_id': flat['building_id'], // Store building ID
+                        'building_name': flat['building']['name'], // Store building ID
                         'contract_id': contractId, // Include contract ID
                       });
                     }
@@ -266,7 +266,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                         'tenant_name': tenantName,
                         'flat_id': flat['id'],
                         'flat_name': flat['name'],
-                        'building_id': flat['building_id'], // Store building ID
+                        'building_name': flat['building']['name'], // Store building ID
                         'contract_id': contractId, // Include contract ID
                       });
                     }
@@ -709,7 +709,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                                   selectedFlat != null
                                       ? '${selectedFlat!['tenant_name'] ?? "Unknown Tenant"} | '
                                       '${selectedFlat!['flat_name'] ?? "Unknown Flat"} | '
-                                      'Building: ${selectedFlat!['building_id'].toString() ?? "Unknown Building"}'
+                                      '${selectedFlat?['building_name'] ?? "Unknown Building"}'
                                       : "Select Flat",
                                   style: GoogleFonts.poppins(
                                     color: appbar_color.shade700,

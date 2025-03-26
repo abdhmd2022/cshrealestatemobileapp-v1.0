@@ -725,7 +725,6 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
                   child:  Center(
                     child: Column(
                       mainAxisSize: MainAxisSize.min, // center inside column
-
                       children: [
                         Icon(Icons.search_off, size: 48, color: Colors.grey),
                         SizedBox(height: 10),

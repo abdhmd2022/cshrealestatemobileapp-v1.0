@@ -129,7 +129,6 @@ class _LoginPageState extends State<Login> {
     );
   }
 
-
   @override
   void initState() {
     super.initState();
@@ -196,7 +195,6 @@ class _LoginPageState extends State<Login> {
           await prefs.setString("adminurl", firstUser.adminurl ?? "");
           await prefs.setString("license_expiry", firstUser.license_expiry ?? "");
           await prefs.setString("company_name", firstUser.companyName ?? "");
-
 
           List<Map<String, dynamic>> companiesJson = usersList
               .map((user) => {

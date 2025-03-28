@@ -175,7 +175,6 @@ class _TenantComplaintPageState extends State<TenantComplaint> with TickerProvid
                 DropdownButtonFormField<String>(
                   value: selectedType!.isNotEmpty ? selectedType : null,
                   hint: Text('Select Type'),
-
                   decoration: InputDecoration(
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                     focusedBorder: OutlineInputBorder(

@@ -381,7 +381,6 @@ class _ActivitySourceReportState extends State<ActivitySourceReport> {
               color: Colors.white
           ),),
         backgroundColor: appbar_color.withOpacity(0.9),
-
       ),
       body: isLoading
           ? Center(
@@ -422,7 +421,6 @@ class _ActivitySourceReportState extends State<ActivitySourceReport> {
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(12), // Rounded corners
-
                 ),
                 child:  ListTile(
                   contentPadding: const EdgeInsets.symmetric(
@@ -483,12 +481,8 @@ class _ActivitySourceReportState extends State<ActivitySourceReport> {
                   ),
                 ),
               ),
-
             );
-          },
-        ),
-
-      ),
+          })),
 
       floatingActionButton: FloatingActionButton(
         onPressed:()
@@ -546,5 +540,3 @@ Widget _buildDecentButton(
     ),
   );
 }
-
-

@@ -571,19 +571,26 @@ class _LeadStatusReportState extends State<LeadStatusReport> {
       ),
       body: isLoading
           ? Center(
-        child: Platform.isIOS
-            ? CupertinoActivityIndicator(radius: 15.0)
-            : CircularProgressIndicator(
-          valueColor: AlwaysStoppedAnimation<Color>(appbar_color),
-          strokeWidth: 4.0,
+        child: Container(
+          color: Colors.white,
+          child: Platform.isIOS
+              ? CupertinoActivityIndicator(radius: 15.0)
+              : CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(appbar_color),
+            strokeWidth: 4.0,
+          ),
         ),
+
       )
           : leadStatuses.isEmpty
           ? Center(
-        child: Text(
+        child: Container(
+          color: Colors.white,
+          child:Text(
           'No data available',
           style: GoogleFonts.poppins(color: appbar_color.withOpacity(0.9), fontSize: 18),
         ),
+      )
       )
           : Container(
         color: Colors.white,

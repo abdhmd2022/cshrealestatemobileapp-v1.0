@@ -386,20 +386,24 @@ class _ActivitySourceReportState extends State<ActivitySourceReport> {
       ),
       body: isLoading
           ? Center(
-        child: Platform.isIOS
+        child: Container(
+          color: Colors.white,
+          child: Platform.isIOS
             ? CupertinoActivityIndicator(radius: 15.0)
             : CircularProgressIndicator(
           valueColor: AlwaysStoppedAnimation<Color>(appbar_color),
           strokeWidth: 4.0,
         ),
-      )
+      ))
           : activitySource_list.isEmpty
           ? Center(
-        child: Text(
+        child: Container(
+          color: Colors.white,
+          child: Text(
           'No data available',
           style: GoogleFonts.poppins(color: appbar_color.withOpacity(0.9), fontSize: 18),
         ),
-      )
+      ))
           : Container(
         color: Colors.white,
         padding: EdgeInsets.only(top: 10),

@@ -503,8 +503,8 @@ class _ActivitySourceReportState extends State<ActivitySourceReport> {
       ),
     );
   }
-
 }
+
 Widget _buildDecentButton(
     String label, IconData icon, Color color, VoidCallback onPressed) {
   return InkWell(

@@ -13,7 +13,8 @@ class ActivitySourceReport extends StatefulWidget {
   _ActivitySourceReportState createState() => _ActivitySourceReportState();
 }
 
-class _ActivitySourceReportState extends State<ActivitySourceReport> {
+class _ActivitySourceReportState extends State<ActivitySourceReport>
+{
   List<dynamic> activitySource_list = [];
   bool isLoading = true;
 

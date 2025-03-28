@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:cshrealestatemobile/Settings.dart';
 import 'package:cshrealestatemobile/constants.dart';
 import 'package:flutter/cupertino.dart';

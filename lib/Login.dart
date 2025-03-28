@@ -108,6 +108,28 @@ class _LoginPageState extends State<Login> {
 
   SharedPreferences? prefs;
 
+  void showErrorSnackbar(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            Icon(Icons.error_outline, color: Colors.white),
+            SizedBox(width: 8),
+            Expanded(child: Text(message)),
+          ],
+        ),
+        backgroundColor: Colors.redAccent,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        margin: EdgeInsets.all(16),
+        duration: Duration(seconds: 3),
+      ),
+    );
+  }
+
+
   @override
   void initState() {
     super.initState();
@@ -212,10 +234,12 @@ class _LoginPageState extends State<Login> {
           }
         }
       } else {
-        throw Exception("Invalid credentials");
+        final errorMessage = responseData['message'] ?? 'Unknown error occurred';
+        showErrorSnackbar(context, errorMessage);
       }
     } catch (e) {
-      print("❌ Exception: $e");
+      final errorMessage = responseData['message'] ?? 'Unknown error occurred';
+      showErrorSnackbar(context, errorMessage);
     } finally {
       setState(() => _isLoading = false);
     }
@@ -412,15 +436,16 @@ class _LoginPageState extends State<Login> {
             );
           }
         } else {
-          throw Exception("No tenant data found.");
+          final errorMessage = responseData['message'] ?? 'Unknown error occurred';
+          showErrorSnackbar(context, errorMessage);
         }
       } else {
-        throw Exception("Invalid credentials");
+        final errorMessage = responseData['message'] ?? 'Unknown error occurred';
+        showErrorSnackbar(context, errorMessage);
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error: ${responseData['message'] ?? 'Login failed'}")),
-      );
+      final errorMessage = responseData['message'] ?? 'Unknown error occurred';
+      showErrorSnackbar(context, errorMessage);
     } finally {
       setState(() => _isLoading = false);
     }

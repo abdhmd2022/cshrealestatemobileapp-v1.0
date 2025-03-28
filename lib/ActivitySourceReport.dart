@@ -463,8 +463,8 @@ class _ActivitySourceReportState extends State<ActivitySourceReport> {
                               'Edit',
                               Icons.edit,
                               Colors.blue,
-                                  () {
-
+                               ()
+                              {
                                 showEditActivitySourceDialog(activitysource['id'],activitysource['name']);
                               },
                             ),

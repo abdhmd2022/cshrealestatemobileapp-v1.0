@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:cshrealestatemobile/Settings.dart';
 import 'package:cshrealestatemobile/constants.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -383,8 +386,11 @@ class _ActivitySourceReportState extends State<ActivitySourceReport> {
       ),
       body: isLoading
           ? Center(
-        child: CircularProgressIndicator(
-          color: appbar_color.withOpacity(0.9),
+        child: Platform.isIOS
+            ? CupertinoActivityIndicator(radius: 15.0)
+            : CircularProgressIndicator(
+          valueColor: AlwaysStoppedAnimation<Color>(appbar_color),
+          strokeWidth: 4.0,
         ),
       )
           : activitySource_list.isEmpty
@@ -394,79 +400,93 @@ class _ActivitySourceReportState extends State<ActivitySourceReport> {
           style: GoogleFonts.poppins(color: appbar_color.withOpacity(0.9), fontSize: 18),
         ),
       )
-          : ListView.builder(
-        itemCount: activitySource_list.length,
-        itemBuilder: (context, index) {
-          final activitysource = activitySource_list[index];
-          return Card(
-            color: Colors.white,
-            margin: const EdgeInsets.symmetric(
-                horizontal: 16, vertical: 5),
-            elevation: 2,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: ListTile(
-              contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16, vertical: 12),
-              title: Container(
-                child:  Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.assignment_ind,
-                          color: appbar_color.withOpacity(0.9),
-                        ),
-
-                        SizedBox(width: 5,),
-                        Text(
-                          activitysource['name'] ?? 'Unnamed',
-                          style: GoogleFonts.poppins(
-                            fontWeight: FontWeight.normal,
-                            color: appbar_color[800],
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    SizedBox(height: 8),
-
-
-
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-
-                        _buildDecentButton(
-                          'Edit',
-                          Icons.edit,
-                          Colors.blue,
-                              () {
-
-                            showEditActivitySourceDialog(activitysource['id'],activitysource['name']);
-                          },
-                        ),
-                        SizedBox(width:5),
-                        _buildDecentButton(
-                          'Delete',
-                          Icons.delete,
-                          Colors.redAccent,
-                              () {
-
-                            deleteActivitySource(activitysource['id']); },
-                        ),
-                        SizedBox(width:5)
-                      ],),
-                  ],),
+          : Container(
+        color: Colors.white,
+        padding: EdgeInsets.only(top: 10),
+        child: ListView.builder(
+          itemCount: activitySource_list.length,
+          itemBuilder: (context, index) {
+            final activitysource = activitySource_list[index];
+            return Card(
+              color: Colors.white,
+              margin: const EdgeInsets.symmetric(
+                  horizontal: 16, vertical: 5),
+              elevation: 2,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
               ),
-            ),
-          );
-        },
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12), // Rounded corners
+
+                ),
+                child:  ListTile(
+                  contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16, vertical: 12),
+                  title: Container(
+                    child:  Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.assignment_ind,
+                              color: appbar_color.withOpacity(0.9),
+                            ),
+
+                            SizedBox(width: 5,),
+                            Text(
+                              activitysource['name'] ?? 'Unnamed',
+                              style: GoogleFonts.poppins(
+                                fontWeight: FontWeight.normal,
+                                color: appbar_color[800],
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        SizedBox(height: 8),
+
+
+
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+
+                            _buildDecentButton(
+                              'Edit',
+                              Icons.edit,
+                              Colors.blue,
+                                  () {
+
+                                showEditActivitySourceDialog(activitysource['id'],activitysource['name']);
+                              },
+                            ),
+                            SizedBox(width:5),
+                            _buildDecentButton(
+                              'Delete',
+                              Icons.delete,
+                              Colors.redAccent,
+                                  () {
+
+                                deleteActivitySource(activitysource['id']); },
+                            ),
+                            SizedBox(width:5)
+                          ],),
+                      ],),
+                  ),
+                ),
+              ),
+
+            );
+          },
+        ),
+
       ),
+
       floatingActionButton: FloatingActionButton(
         onPressed:()
         {

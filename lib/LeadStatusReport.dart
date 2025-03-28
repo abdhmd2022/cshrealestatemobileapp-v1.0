@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:cshrealestatemobile/Settings.dart';
 import 'package:cshrealestatemobile/constants.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -568,8 +571,11 @@ class _LeadStatusReportState extends State<LeadStatusReport> {
       ),
       body: isLoading
           ? Center(
-        child: CircularProgressIndicator(
-          color: appbar_color.withOpacity(0.9),
+        child: Platform.isIOS
+            ? CupertinoActivityIndicator(radius: 15.0)
+            : CircularProgressIndicator(
+          valueColor: AlwaysStoppedAnimation<Color>(appbar_color),
+          strokeWidth: 4.0,
         ),
       )
           : leadStatuses.isEmpty
@@ -579,110 +585,124 @@ class _LeadStatusReportState extends State<LeadStatusReport> {
           style: GoogleFonts.poppins(color: appbar_color.withOpacity(0.9), fontSize: 18),
         ),
       )
-          : ListView.builder(
-        itemCount: leadStatuses.length,
-        itemBuilder: (context, index) {
-          final lead = leadStatuses[index];
-          return Card(
-            color: Colors.white,
-            margin: const EdgeInsets.symmetric(
-                horizontal: 16, vertical: 5),
-            elevation: 2,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: ListTile(
-              contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16, vertical: 12),
-              title: Container(
-                child:  Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+          : Container(
+        color: Colors.white,
+        padding: EdgeInsets.only(top: 10),
+        child:  ListView.builder(
+          itemCount: leadStatuses.length,
+          itemBuilder: (context, index) {
+            final lead = leadStatuses[index];
+            return Card(
+              color: Colors.white,
+              margin: const EdgeInsets.symmetric(
+                  horizontal: 16, vertical: 5),
+              elevation: 2,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12), // Rounded corners
 
-                    Row(
-                      children: [
-                        Text(
-                          'Name:',
-                          style: GoogleFonts.poppins(
-                            fontWeight: FontWeight.bold,
-                            color: appbar_color[800],
-                          ),
-                        ),
-
-                        SizedBox(width: 5,),
-                        Text(
-                          lead['name'] ?? 'Unnamed',
-                          style: GoogleFonts.poppins(
-                            fontWeight: FontWeight.normal,
-                            color: appbar_color[800],
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    SizedBox(height: 10),
-
-                    Row(
-                      children: [
-                        Text(
-                          'Category:',
-                          style: GoogleFonts.poppins(
-                            fontWeight: FontWeight.bold,
-                            color: appbar_color[800],
-                          ),
-                        ),
-
-                        SizedBox(width: 5,),
-                        Text(
-                          lead['category'] ?? 'Unnamed',
-                          style: GoogleFonts.poppins(
-                            fontWeight: FontWeight.normal,
-                            color: appbar_color[800],
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    SizedBox(height: 10),
-
-
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
+                ),
+                child:  ListTile(
+                  contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16, vertical: 12),
+                  title: Container(
+                    child:  Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
 
-                        _buildDecentButton(
-                          'Edit',
-                          Icons.edit,
-                          Colors.blue,
-                              () {
-                            setState(() {
-                              selectedCategory = lead['category'] ?? 'Normal';
-                            });
+                        Row(
+                          children: [
+                            Text(
+                              'Name:',
+                              style: GoogleFonts.poppins(
+                                fontWeight: FontWeight.bold,
+                                color: appbar_color[800],
+                              ),
+                            ),
+
+                            SizedBox(width: 5,),
+                            Text(
+                              lead['name'] ?? 'Unnamed',
+                              style: GoogleFonts.poppins(
+                                fontWeight: FontWeight.normal,
+                                color: appbar_color[800],
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        SizedBox(height: 10),
+
+                        Row(
+                          children: [
+                            Text(
+                              'Category:',
+                              style: GoogleFonts.poppins(
+                                fontWeight: FontWeight.bold,
+                                color: appbar_color[800],
+                              ),
+                            ),
+
+                            SizedBox(width: 5,),
+                            Text(
+                              lead['category'] ?? 'Unnamed',
+                              style: GoogleFonts.poppins(
+                                fontWeight: FontWeight.normal,
+                                color: appbar_color[800],
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        SizedBox(height: 10),
+
+
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+
+                            _buildDecentButton(
+                              'Edit',
+                              Icons.edit,
+                              Colors.blue,
+                                  () {
+                                setState(() {
+                                  selectedCategory = lead['category'] ?? 'Normal';
+                                });
 
                                 showEditLeadStatusDialog(lead['id'],lead['name'],lead['category']);
                               },
-                        ),
-                        SizedBox(width:5),
-                        _buildDecentButton(
-                          'Delete',
-                          Icons.delete,
-                          Colors.redAccent,
-                              () {
+                            ),
+                            SizedBox(width:5),
+                            _buildDecentButton(
+                              'Delete',
+                              Icons.delete,
+                              Colors.redAccent,
+                                  () {
 
-                            deleteLeadStatus(lead['id']); },
-                        ),
-                        SizedBox(width:5)
+                                deleteLeadStatus(lead['id']); },
+                            ),
+                            SizedBox(width:5)
+                          ],),
+
                       ],),
+                  ),
 
-                  ],),
+
+                ),
               ),
 
+            );
+          },
+        ),
 
-            ),
-          );
-        },
       ),
+
       floatingActionButton: FloatingActionButton(
         onPressed:()
         {
@@ -690,6 +710,7 @@ class _LeadStatusReportState extends State<LeadStatusReport> {
           selectedCategory = categories_list.first;
 
           showLeadStatusDialog();
+
         },
         backgroundColor: appbar_color.withOpacity(0.9),
         

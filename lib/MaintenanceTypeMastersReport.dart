@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:cshrealestatemobile/Settings.dart';
 import 'package:cshrealestatemobile/constants.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -571,8 +574,11 @@ class _MaintenanceTypeMastersReportState extends State<MaintenanceTypeMastersRep
       ),
       body: isLoading
           ? Center(
-        child: CircularProgressIndicator(
-          color: appbar_color.withOpacity(0.9),
+        child: Platform.isIOS
+            ? CupertinoActivityIndicator(radius: 15.0)
+            : CircularProgressIndicator(
+          valueColor: AlwaysStoppedAnimation<Color>(appbar_color),
+          strokeWidth: 4.0,
         ),
       )
           : maintenance_types_list.isEmpty
@@ -582,103 +588,116 @@ class _MaintenanceTypeMastersReportState extends State<MaintenanceTypeMastersRep
           style: GoogleFonts.poppins(color: appbar_color.withOpacity(0.9), fontSize: 18),
         ),
       )
-          : ListView.builder(
-        itemCount: maintenance_types_list.length,
-        itemBuilder: (context, index) {
-          final type = maintenance_types_list[index];
-          return Card(
-            color: Colors.white,
-            margin: const EdgeInsets.symmetric(
-                horizontal: 16, vertical: 5),
-            elevation: 2,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: ListTile(
-              contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16, vertical: 12),
-              title: Container(
-                child:  Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+          : Container(
+          color: Colors.white,
+          padding: EdgeInsets.only(top: 10),
+        child: ListView.builder(
+          itemCount: maintenance_types_list.length,
+          itemBuilder: (context, index) {
+            final type = maintenance_types_list[index];
+            return Card(
+              color: Colors.white,
+              margin: const EdgeInsets.symmetric(
+                  horizontal: 16, vertical: 5),
+              elevation: 2,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12), // Rounded corners
 
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.assignment_ind,
-                          color: appbar_color.withOpacity(0.9),
-                        ),
-
-                        SizedBox(width: 5,),
-                        Text(
-                          type['name'] ?? 'Unnamed',
-                          style: GoogleFonts.poppins(
-                            fontWeight: FontWeight.normal,
-                            color: appbar_color[800],
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    SizedBox(height: 10),
-
-                    Row(
-                      children: [
-                        Text(
-                          'Category:',
-                          style: GoogleFonts.poppins(
-                            fontWeight: FontWeight.bold,
-                            color: appbar_color[800],
-                          ),
-                        ),
-
-                        SizedBox(width: 5,),
-                        Text(
-                          type['category'] ?? 'Unnamed',
-                          style: GoogleFonts.poppins(
-                            fontWeight: FontWeight.normal,
-                            color: appbar_color[800],
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    SizedBox(height: 10),
-
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
+                ),
+                child: ListTile(
+                  contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16, vertical: 12),
+                  title: Container(
+                    child:  Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
 
-                        _buildDecentButton(
-                          'Edit',
-                          Icons.edit,
-                          Colors.blue,
-                              () {
-                            selectedCategory = type['category'] ?? categories_list.first;
-                            showEditMaintenanceTypeDialog(type['id'],type['name']);
-                          },
-                        ),
-                        SizedBox(width:5),
-                        _buildDecentButton(
-                          'Delete',
-                          Icons.delete,
-                          Colors.redAccent,
-                              () {
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.assignment_ind,
+                              color: appbar_color.withOpacity(0.9),
+                            ),
 
-                            deleteMaintenanceType(type['id']); },
+                            SizedBox(width: 5,),
+                            Text(
+                              type['name'] ?? 'Unnamed',
+                              style: GoogleFonts.poppins(
+                                fontWeight: FontWeight.normal,
+                                color: appbar_color[800],
+                              ),
+                            ),
+                          ],
                         ),
-                        SizedBox(width:5)
+
+                        SizedBox(height: 10),
+
+                        Row(
+                          children: [
+                            Text(
+                              'Category:',
+                              style: GoogleFonts.poppins(
+                                fontWeight: FontWeight.bold,
+                                color: appbar_color[800],
+                              ),
+                            ),
+
+                            SizedBox(width: 5,),
+                            Text(
+                              type['category'] ?? 'Unnamed',
+                              style: GoogleFonts.poppins(
+                                fontWeight: FontWeight.normal,
+                                color: appbar_color[800],
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        SizedBox(height: 10),
+
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+
+                            _buildDecentButton(
+                              'Edit',
+                              Icons.edit,
+                              Colors.blue,
+                                  () {
+                                selectedCategory = type['category'] ?? categories_list.first;
+                                showEditMaintenanceTypeDialog(type['id'],type['name']);
+                              },
+                            ),
+                            SizedBox(width:5),
+                            _buildDecentButton(
+                              'Delete',
+                              Icons.delete,
+                              Colors.redAccent,
+                                  () {
+
+                                deleteMaintenanceType(type['id']); },
+                            ),
+                            SizedBox(width:5)
+                          ],),
+
                       ],),
+                  ),
 
-                  ],),
+
+                ),
               ),
 
-
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
+
       floatingActionButton: FloatingActionButton(
         onPressed:()
         {

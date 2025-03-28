@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:cshrealestatemobile/Settings.dart';
 import 'package:cshrealestatemobile/constants.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -462,8 +465,11 @@ class _AmentiesReportState extends State<AmentiesReport> {
       ),
       body: isLoading
           ? Center(
-        child: CircularProgressIndicator(
-          color: appbar_color.withOpacity(0.9),
+        child: Platform.isIOS
+            ? CupertinoActivityIndicator(radius: 15.0)
+            : CircularProgressIndicator(
+          valueColor: AlwaysStoppedAnimation<Color>(appbar_color),
+          strokeWidth: 4.0,
         ),
       )
           : amenities.isEmpty
@@ -473,111 +479,124 @@ class _AmentiesReportState extends State<AmentiesReport> {
           style: GoogleFonts.poppins(color: appbar_color.withOpacity(0.9), fontSize: 18),
         ),
       )
-          : ListView.builder(
-        itemCount: amenities.length,
-        itemBuilder: (context, index) {
-          final amenity = amenities[index];
-          return Card(
-            color: Colors.white,
-            margin: const EdgeInsets.symmetric(
-                horizontal: 16, vertical: 5),
-            elevation: 2,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: ListTile(
-              contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16, vertical: 12),
-              title: Container(
-                child:  Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+          : Container(
+        color: Colors.white,
+        padding: EdgeInsets.only(top: 10),
+        child: ListView.builder(
+          itemCount: amenities.length,
+          itemBuilder: (context, index) {
+            final amenity = amenities[index];
+            return Card(
+              color: Colors.white,
+              margin: const EdgeInsets.symmetric(
+                  horizontal: 16, vertical: 5),
+              elevation: 2,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12), // Rounded corners
 
-                    Row(
+                ),
+                child:  ListTile(
+                  contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16, vertical: 12),
+                  title: Container(
+                    child:  Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Icon(
-                          Icons.assignment_ind,
-                          color: appbar_color.withOpacity(0.9),
-                        ),
 
-                        SizedBox(width: 5,),
-                        Text(
-                          amenity['name'] ?? 'Unnamed',
-                          style: GoogleFonts.poppins(
-                            fontWeight: FontWeight.normal,
-                            color: appbar_color[800],
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    SizedBox(height: 8),
-
-                    Row(
-                      children: [
-                        Text('Preference: ',
-                        style: GoogleFonts.poppins(
-                          fontWeight: FontWeight.bold
-                        ),),
-
-                        if(amenity['is_special'] == 'true')
-                          Text(
-                            'Yes',
-                            style: GoogleFonts.poppins(
-                              fontWeight: FontWeight.normal,
-                              color: appbar_color[800],
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.assignment_ind,
+                              color: appbar_color.withOpacity(0.9),
                             ),
-                          ),
 
-                        if(amenity['is_special'] == 'false')
-                          Text(
-                            'No',
-                            style: GoogleFonts.poppins(
-                              fontWeight: FontWeight.normal,
-                              color: appbar_color[800],
+                            SizedBox(width: 5,),
+                            Text(
+                              amenity['name'] ?? 'Unnamed',
+                              style: GoogleFonts.poppins(
+                                fontWeight: FontWeight.normal,
+                                color: appbar_color[800],
+                              ),
                             ),
-                          ),
-
-
-                      ],
-                    ),
-
-                    SizedBox(height: 10),
-
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-
-                        _buildDecentButton(
-                          'Edit',
-                          Icons.edit,
-                          Colors.blue,
-                              () {
-
-                            showEditAmenitiesDialog(amenity['id'],amenity['name'],amenity['is_special']);
-                          },
+                          ],
                         ),
-                        SizedBox(width:5),
-                        _buildDecentButton(
-                          'Delete',
-                          Icons.delete,
-                          Colors.redAccent,
-                              () {
 
-                            deleteAmenities(amenity['id']); },
+                        SizedBox(height: 8),
+
+                        Row(
+                          children: [
+                            Text('Preference: ',
+                              style: GoogleFonts.poppins(
+                                  fontWeight: FontWeight.bold
+                              ),),
+
+                            if(amenity['is_special'] == 'true')
+                              Text(
+                                'Yes',
+                                style: GoogleFonts.poppins(
+                                  fontWeight: FontWeight.normal,
+                                  color: appbar_color[800],
+                                ),
+                              ),
+
+                            if(amenity['is_special'] == 'false')
+                              Text(
+                                'No',
+                                style: GoogleFonts.poppins(
+                                  fontWeight: FontWeight.normal,
+                                  color: appbar_color[800],
+                                ),
+                              ),
+
+
+                          ],
                         ),
-                        SizedBox(width:5)
+
+                        SizedBox(height: 10),
+
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+
+                            _buildDecentButton(
+                              'Edit',
+                              Icons.edit,
+                              Colors.blue,
+                                  () {
+
+                                showEditAmenitiesDialog(amenity['id'],amenity['name'],amenity['is_special']);
+                              },
+                            ),
+                            SizedBox(width:5),
+                            _buildDecentButton(
+                              'Delete',
+                              Icons.delete,
+                              Colors.redAccent,
+                                  () {
+
+                                deleteAmenities(amenity['id']); },
+                            ),
+                            SizedBox(width:5)
+                          ],),
+
                       ],),
+                  ),
 
-                  ],),
+
+                ),
               ),
 
-
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
+
       floatingActionButton: FloatingActionButton(
         onPressed:()
         {

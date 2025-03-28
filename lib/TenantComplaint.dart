@@ -1,16 +1,10 @@
 import 'dart:io';
 import 'package:cshrealestatemobile/ComplaintList.dart';
-import 'package:cshrealestatemobile/MaintenanceTicketReport.dart';
-import 'package:cshrealestatemobile/SalesDashboard.dart';
-import 'package:cshrealestatemobile/TenantDashboard.dart';
 import 'package:cshrealestatemobile/constants.dart';
-import 'package:flutter/animation.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:multi_select_flutter/multi_select_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:convert'; // for jsonDecode
 import 'package:http/http.dart' as http;

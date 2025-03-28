@@ -58,53 +58,71 @@ class _SettingsScreenState extends State<SettingsScreen> with TickerProviderStat
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Set Price Range'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: minController,
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  labelText: 'Minimum Price',
-                  border: OutlineInputBorder(),
+        return Theme(
+          data: Theme.of(context).copyWith(
+            dialogBackgroundColor: Colors.white,
+          ),
+          child: AlertDialog(
+            title: Text('Set Price Range'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: minController,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    labelText: 'Minimum Price',
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.grey),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.grey),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: appbar_color, width: 1),
+                    ),                  ),
+                ),
+                SizedBox(height: 20),
+                TextField(
+                  controller: maxController,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    labelText: 'Maximum Price',
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.grey),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.grey),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: appbar_color, width: 1),
+                    ),                  ),
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text(
+                  'Cancel',
+                  style: GoogleFonts.poppins(color: appbar_color),
                 ),
               ),
-              SizedBox(height: 20),
-              TextField(
-                controller: maxController,
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  labelText: 'Maximum Price',
-                  border: OutlineInputBorder(),
+              ElevatedButton(
+                onPressed: () {
+                  _saveRangeValues();
+                  Navigator.of(context).pop();
+                },
+                style: ElevatedButton.styleFrom(backgroundColor: appbar_color),
+                child: Text(
+                  "Save",
+                  style: GoogleFonts.poppins(color: Colors.white),
                 ),
               ),
             ],
           ),
-          actions: [
-
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text('Cancel',
-              style: GoogleFonts.poppins(color: appbar_color)),
-            ),
-
-
-            ElevatedButton(
-              onPressed: () {
-
-                _saveRangeValues();
-                Navigator.of(context).pop();
-              },
-              style: ElevatedButton.styleFrom(backgroundColor: appbar_color),
-              child: Text("Save",style: GoogleFonts.poppins(color: Colors.white)),
-            ),
-
-
-          ],
         );
       },
     );
@@ -135,15 +153,18 @@ class _SettingsScreenState extends State<SettingsScreen> with TickerProviderStat
         isUserVisible: true,
 
       ),
-      body: ListView(
+      body: Container(
+        color: Colors.white,
+        child:
+      ListView(
         children: [
 
 
           Padding(padding: EdgeInsets.only(top: 5,bottom: 5),
               child: ListTile(
-                  title: Text('Lead Status'),
-                  subtitle: Text('Manage lead/follow-up status masters for the app'),
-                  onTap: ()
+                title: Text('Lead Status'),
+                subtitle: Text('Manage lead/follow-up status masters for the app'),
+                onTap: ()
                 {
                   Navigator.pushReplacement
 
@@ -153,7 +174,7 @@ class _SettingsScreenState extends State<SettingsScreen> with TickerProviderStat
                   );
 
                 },
-                  )),
+              )),
           Divider(),
 
           Padding(padding: EdgeInsets.only(top: 5,bottom: 5),
@@ -261,7 +282,8 @@ class _SettingsScreenState extends State<SettingsScreen> with TickerProviderStat
 
 
         ],
-      ),
+      ),),
+
     );
   }
 }

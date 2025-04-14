@@ -61,8 +61,6 @@ class _ComplaintListScreenState extends State<ComplaintListScreen> {
 
           print("total length ${complaints.length}");
 
-
-
         });
 
       }

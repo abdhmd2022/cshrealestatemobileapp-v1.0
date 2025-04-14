@@ -49,7 +49,7 @@ class _RequestListScreenState extends State<RequestListScreen> {
       if (data['success'] == true) {
         final jsonData = json.decode(response.body);
 
-        print('request : $jsonData');
+        print('request : ${jsonData}');
 
         // Filter only requests with flat_id == 1
         final allRequests = jsonData['data']['requests'] as List;
@@ -57,6 +57,8 @@ class _RequestListScreenState extends State<RequestListScreen> {
 
         setState(() {
           requests= filteredRequests.reversed.toList();
+
+
           _filterComplaintsByDate(); // ✅ apply filter using default dates
 
 

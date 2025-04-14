@@ -997,12 +997,7 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
                                 ),
                               );
                             }).toList(),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                          )))])),
 
                 // Inquiry List
                 Expanded(

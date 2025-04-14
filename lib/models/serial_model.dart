@@ -23,7 +23,6 @@ class RegisteredCompany {
       baseurl: json['baseurl'] ?? '',
       adminurl: json['adminurl'] ?? '',
       license_expiry: json['license_expiry'] ?? '',
-
     );
   }
 

@@ -60,9 +60,7 @@ class _ComplaintListScreenState extends State<ComplaintListScreen> {
           _filterComplaintsByDate(); // ✅ apply filter using default dates
 
           print("total length ${complaints.length}");
-
         });
-
       }
     } catch (e) {
       print("Error fetching complaints: $e");

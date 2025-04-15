@@ -58,12 +58,9 @@ class _RequestListScreenState extends State<RequestListScreen> {
         setState(() {
           requests= filteredRequests.reversed.toList();
 
-
           _filterComplaintsByDate(); // ✅ apply filter using default dates
 
-
         });
-
       }
     } catch (e) {
       print("Error fetching requests: $e");
@@ -320,7 +317,6 @@ class _RequestListScreenState extends State<RequestListScreen> {
                                   '${req['type']['name'].toString()}',
                                   style: GoogleFonts.poppins(
                                     fontWeight: FontWeight.w600,
-
                                     fontSize: 16,
                                     color: Colors.black,
                                   ),
@@ -368,7 +364,6 @@ class _RequestListScreenState extends State<RequestListScreen> {
                           /*if(approved_by!=null)...[
 
                       SizedBox(height: 6),
-
 
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,

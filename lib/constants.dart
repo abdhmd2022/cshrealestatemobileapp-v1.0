@@ -16,9 +16,10 @@ const String BASE_URL_config = "http://192.168.2.185:7750/api";
 
 const String OAuth_URL = "http://192.168.2.185:4555";
 
-const String client_id_constant = "580587447f71610db9ff0a135d897ad3aec183a7";
+const String client_id_constant = "a72c76cc0983d1ed796788a40a21288ef70d365f";
 
 const String client_password_constant = "internal@001";
+
 
 // Serial & Company Tokens (Loaded Dynamically)
 /*late String Company_Token;*/

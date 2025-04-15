@@ -49,7 +49,7 @@ class _RequestListScreenState extends State<RequestListScreen> {
       if (data['success'] == true) {
         final jsonData = json.decode(response.body);
 
-        print('request : ${jsonData}');
+        /*print('request : ${jsonData}');*/
 
         // Filter only requests with flat_id == 1
         final allRequests = jsonData['data']['requests'] as List;
@@ -344,7 +344,7 @@ class _RequestListScreenState extends State<RequestListScreen> {
                               SizedBox(width: 6),
                               Expanded(
                                 child: Text(
-                                  "${flat['name']} • ${building['name']}",
+                                  "${flat['name']} • ${building['name']}, ${state['name']}",
                                   style: GoogleFonts.poppins(fontSize: 13.5, fontWeight: FontWeight.w500),
                                 ),
                               ),

@@ -69,7 +69,6 @@ class _ComplaintListScreenState extends State<ComplaintListScreen> {
     }
   }
 
-
   void _filterComplaintsByDate() {
     if (_startDate == null || _endDate == null) {
       filteredComplaints = complaints;

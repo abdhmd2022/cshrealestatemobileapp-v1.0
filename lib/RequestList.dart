@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
-
 import 'RequestCreation.dart';
 import 'TenantDashboard.dart';
 
@@ -148,7 +147,6 @@ class _RequestListScreenState extends State<RequestListScreen> {
               boxShadow: [
                 BoxShadow(
                   color: Colors.black26.withOpacity(0.4),
-
                   blurRadius: 10,
                   spreadRadius: 1,
                   offset: Offset(0, 1),
@@ -163,7 +161,6 @@ class _RequestListScreenState extends State<RequestListScreen> {
               backgroundColor: Colors.transparent,
               elevation: 30,
               child: Icon(Icons.add_rounded, size: 28, color: Colors.white),
-
             ),
           ),
         ),
@@ -173,7 +170,6 @@ class _RequestListScreenState extends State<RequestListScreen> {
         color: Colors.white,
         child: Column(
           children: [
-
             Container(
               padding: const EdgeInsets.only(top: 8.0, left: 12.0,right:12),
               margin: const EdgeInsets.only(bottom:12),
@@ -252,7 +248,6 @@ class _RequestListScreenState extends State<RequestListScreen> {
                 ],
               ),
             ),
-
             isLoading
                 ? Center(
               child: Platform.isIOS
@@ -420,24 +415,16 @@ class _RequestListScreenState extends State<RequestListScreen> {
                       ),
                     ),
                   );
-
-
                 },
               ),
             ),
-
-
           ],
-
-
-
         ),
-
       ),
-
     );
   }
 }
+
 Widget _getRequestStatusBadge(dynamic isApproved) {
   String status;
   Color color;

@@ -177,10 +177,8 @@ class _ComplaintListScreenState extends State<ComplaintListScreen> {
             valueColor: AlwaysStoppedAnimation<Color>(appbarColor),
           ),
         )
-
             : Column(
           children: [
-
             Container(
               padding: const EdgeInsets.only(top: 8.0, left: 12.0,right:12),
               margin: const EdgeInsets.only(bottom:12),

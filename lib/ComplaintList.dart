@@ -148,7 +148,6 @@ class _ComplaintListScreenState extends State<ComplaintListScreen> {
               boxShadow: [
                 BoxShadow(
                   color: Colors.black26.withOpacity(0.4),
-
                   blurRadius: 10,
                   spreadRadius: 1,
                   offset: Offset(0, 1),
@@ -163,7 +162,6 @@ class _ComplaintListScreenState extends State<ComplaintListScreen> {
               backgroundColor: Colors.transparent,
               elevation: 30,
               child: Icon(Icons.add_rounded, size: 28, color: Colors.white),
-
             ),
           ),
         ),

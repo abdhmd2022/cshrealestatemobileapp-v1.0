@@ -373,7 +373,6 @@ class _RequestListScreenState extends State<RequestListScreen> {
                           ),
                         ],
                       ),
-
                     ],*/
 
                           // creation date

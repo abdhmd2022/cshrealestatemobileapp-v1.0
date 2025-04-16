@@ -646,7 +646,6 @@ class _LoginPageState extends State<Login> {
                                           children: [
                                             Padding(padding: EdgeInsets.symmetric(horizontal: 20), child: Text("Tenant")),
                                             Padding(padding: EdgeInsets.symmetric(horizontal: 20), child: Text("Admin")),
-
                                           ],
                                         ),
                                       ),

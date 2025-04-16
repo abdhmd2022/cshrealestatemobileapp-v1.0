@@ -394,7 +394,6 @@ class _RequestListScreenState extends State<RequestListScreen> {
                             ],
                           ),
 
-
                           SizedBox(height: 6),
 
                           // 📝 Description
@@ -408,52 +407,38 @@ class _RequestListScreenState extends State<RequestListScreen> {
                                   req['description'],
                                   style: GoogleFonts.poppins(fontSize: 13.2),
                                 ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
-          ],
+                              )
+                            ])])));}))])));}}
+
+  Widget _getRequestStatusBadge(dynamic isApproved) {
+    String status;
+    Color color;
+
+    if (isApproved == null) {
+      status = "Pending";
+      color = Colors.orange;
+    } else if (isApproved == "true") {
+      status = "Approved";
+      color = Colors.green;
+    } else {
+      status = "Rejected";
+      color = Colors.red;
+    }
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.15),
+        borderRadius: BorderRadius.circular(16.0),
+      ),
+      child: Text(
+        status,
+        style: GoogleFonts.poppins(
+          color: color,
+          fontWeight: FontWeight.w600,
+          fontSize: 13,
         ),
       ),
     );
   }
-}
-
-Widget _getRequestStatusBadge(dynamic isApproved) {
-  String status;
-  Color color;
-
-  if (isApproved == null) {
-    status = "Pending";
-    color = Colors.orange;
-  } else if (isApproved == "true") {
-    status = "Approved";
-    color = Colors.green;
-  } else {
-    status = "Rejected";
-    color = Colors.red;
-  }
-
-  return Container(
-    padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
-    decoration: BoxDecoration(
-      color: color.withOpacity(0.15),
-      borderRadius: BorderRadius.circular(16.0),
-    ),
-    child: Text(
-      status,
-      style: GoogleFonts.poppins(
-        color: color,
-        fontWeight: FontWeight.w600,
-        fontSize: 13,
-      ),
-    ),
-  );
-}
 

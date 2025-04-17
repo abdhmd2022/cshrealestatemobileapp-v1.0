@@ -1,5 +1,3 @@
-import 'package:cshrealestatemobile/KYCUpdate.dart';
-import 'package:cshrealestatemobile/SalesDashboard.dart';
 import 'package:flutter/material.dart';
 import 'Login.dart';
 import 'constants.dart';

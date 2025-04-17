@@ -21,6 +21,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
         textTheme: globalTextTheme, // ✅ Apply global text theme without fixed sizes
       ),
-      home: Login(title: app_name,),
-    );}
+      home: Login(title: app_name),
+    );
+  }
 }

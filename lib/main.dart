@@ -13,7 +13,6 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return MaterialApp(
       scaffoldMessengerKey: scaffoldMessengerKey,
       title: app_name,

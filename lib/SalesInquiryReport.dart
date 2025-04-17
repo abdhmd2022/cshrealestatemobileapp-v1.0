@@ -558,6 +558,7 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
                     Color statusColor = getCategoryColor(category);
                     String? nextFollowUpDate = item["next_followup_date"];
                     Color followUpDateColor = getFollowUpDateColor(nextFollowUpDate);
+                    String followup_type = item["followup_type"]?['name']?? "" ;
 
                     return Container(
                       decoration: BoxDecoration(
@@ -600,11 +601,24 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
                                   ),
                                 ],
                               ),
+
+                              if (followup_type.isNotEmpty) ...[
+                                SizedBox(height: 8),
+
+                                Text(
+                                  "Follow-up Type: ${followup_type}",
+                                  style: GoogleFonts.poppins(color: Colors.grey.shade700),
+                                ),
+
+                              ],
                               SizedBox(height: 8),
                               Text(
                                 "Date: ${formatDate(item["date"])}",
                                 style: GoogleFonts.poppins(color: Colors.grey.shade700),
                               ),
+
+
+
                               if (item["remarks"] != null) ...[
                                 SizedBox(height: 6),
                                 Text(

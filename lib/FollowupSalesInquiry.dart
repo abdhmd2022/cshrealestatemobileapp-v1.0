@@ -488,7 +488,6 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                             selectedfollowup_type = value;
                             isFollowUpTypeEmpty = value == null;
                             updateMainState();
-
                           });
                         },
                       ),

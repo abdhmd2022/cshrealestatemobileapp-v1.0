@@ -320,7 +320,7 @@ class _RequestListScreenState extends State<RequestListScreen> {
                                 ),
                               ),
                               SizedBox(width: 8),
-                              _getRequestStatusBadge(req['is_approved']),
+                              _getRequestStatusBadge(req['status']?['name'] ?? 'Pending', req['status']?['category'] ?? null),
                             ],
                           ),
 
@@ -409,18 +409,18 @@ class _RequestListScreenState extends State<RequestListScreen> {
                               )
                             ])])));}))])));}}
 
-  Widget _getRequestStatusBadge(dynamic isApproved) {
+  Widget _getRequestStatusBadge(dynamic name,dynamic category) {
     String status;
     Color color;
 
-    if (isApproved == null) {
-      status = "Pending";
+    if (category == "Hold" || category == null) {
+      status = name;
       color = Colors.orange;
-    } else if (isApproved == "true") {
-      status = "Approved";
+    } else if (category == "Approved") {
+      status = name;
       color = Colors.green;
     } else {
-      status = "Rejected";
+      status = name;
       color = Colors.red;
     }
 

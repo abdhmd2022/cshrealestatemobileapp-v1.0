@@ -133,11 +133,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
               },
               child: Text("Submit",style: GoogleFonts.poppins(),),
             ),
-          ],
-        );
-      },
-    );
-  }
+          ]);});}
 
   Future<List<dynamic>> fetchCommentHistory(String id) async {
 

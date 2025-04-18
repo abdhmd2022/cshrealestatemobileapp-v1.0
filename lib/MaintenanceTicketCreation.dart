@@ -190,6 +190,8 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
     }
   }
 
+
+
   Future<void> fetchUnits() async {
     flats.clear();
 
@@ -1132,7 +1134,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
                             }
                           else
                             {
-                              sendFormData();
+                              sendFormData(context);
                             }
                         }
                       },
@@ -1163,7 +1165,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
             return false;
           }
 
-          Future<void> sendFormData() async {
+          Future<void> sendFormData(BuildContext context) async {
 
           try {
 
@@ -1182,7 +1184,6 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
               "description": _descriptionController.text,
               "types": selectedMaintenanceTypeIds, // Converts the list of objects to a list of IDs
               "contract_id": selectedFlat?['contract_id']
-
             };
 
             final response = await http.post(
@@ -1195,16 +1196,25 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
             );
 
             print('body: ${jsonEncode(requestBody)}');
-
+            Map<String, dynamic> decodedResponse = jsonDecode(response.body);
             if (response.statusCode == 201) {
-              print('Ticket successful');
-              Map<String, dynamic> decodedResponse = jsonDecode(response.body);
+
+              setState(() {
+                selectedMaintenanceType = [];
+                selectedMaintenanceTypeIds = [];
+                _descriptionController.clear();
+                selectedFlat = flats[0];
+                _attachment.clear();
+              });
+              showResponseSnackbar(context, decodedResponse);
+
               int ticketId = decodedResponse['data']['ticket']['id'];
 
               // ✅ Call sendImageData in a separate request
-              await sendImageData(ticketId);
+              await sendImageData(ticketId,context);
             } else {
 
+              showResponseSnackbar(context, decodedResponse);
 
               /*showSnackBar("Status Code: ${response.statusCode} and Response: ${response.body}");*/
               print('Upload failed with status code: ${response.statusCode}');
@@ -1220,7 +1230,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
           return mimeType?.split('/').last ?? 'jpeg'; // Default to JPEG
         }
 
-  Future<void> sendImageData(int id) async {
+  Future<void> sendImageData(int id,BuildContext context) async {
     try {
       final String urll = "$baseurl/uploads/ticket/$id";
       final url = Uri.parse(urll);
@@ -1261,9 +1271,12 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
       // ✅ Send request & handle response
       var streamedResponse = await request.send();
       var response = await http.Response.fromStream(streamedResponse);
+      Map<String, dynamic> decodedResponse = jsonDecode(response.body);
 
       if (response.statusCode == 201) {
-        print('Image upload successful');
+
+
+
 
         setState(() {
           selectedMaintenanceType = [];
@@ -1307,4 +1320,7 @@ Widget _attachmentOption({required IconData icon, required String label, require
       ],
     ),
   );
-}}
+}
+
+}
+

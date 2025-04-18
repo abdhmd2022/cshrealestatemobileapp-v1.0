@@ -95,3 +95,23 @@ String formatDate(String dateString) {
   return DateFormat('dd-MMM-yyyy').format(date);
 }
 
+void showResponseSnackbar(BuildContext context, Map<String, dynamic> responseJson) {
+  final bool isSuccess = responseJson['success'] == true;
+  final String message = responseJson['message'] ?? 'Unexpected response';
+
+  final Color backgroundColor = isSuccess ? Colors.green : Colors.red;
+
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text(
+        message,
+        style: TextStyle(color: Colors.white),
+      ),
+      backgroundColor: backgroundColor,
+      duration: Duration(seconds: 3),
+      behavior: SnackBarBehavior.floating,
+    ),
+  );
+}
+
+

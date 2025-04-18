@@ -80,11 +80,8 @@ class _TenantComplaintPageState extends State<TenantComplaint> with TickerProvid
         final responseData = jsonDecode(response.body);
 
         if (response.statusCode == 201 || responseData['success'] == true) {
-          String message = responseData['message'] ?? 'Submitted successfully';
 
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(message)),
-          );
+
 
           // Reset form
           setState(() {
@@ -97,6 +94,9 @@ class _TenantComplaintPageState extends State<TenantComplaint> with TickerProvid
             SnackBar(content: Text(error)),
           );
         }
+
+        showResponseSnackbar(context, responseData);
+
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error: ${e.toString()}')),

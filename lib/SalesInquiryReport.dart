@@ -4,7 +4,6 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:cshrealestatemobile/CreateSalesInquiry.dart';
 import 'package:cshrealestatemobile/FollowupSalesInquiry.dart';
-import 'package:cshrealestatemobile/SalesInquiryTransfer.dart';
 import 'package:cshrealestatemobile/constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -609,15 +608,12 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
                                   "Follow-up Type: ${followup_type}",
                                   style: GoogleFonts.poppins(color: Colors.grey.shade700),
                                 ),
-
                               ],
                               SizedBox(height: 8),
                               Text(
                                 "Date: ${formatDate(item["date"])}",
                                 style: GoogleFonts.poppins(color: Colors.grey.shade700),
                               ),
-
-
 
                               if (item["remarks"] != null) ...[
                                 SizedBox(height: 6),

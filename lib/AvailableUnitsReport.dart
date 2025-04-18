@@ -43,9 +43,9 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
 
   String? selectedSortLabel; // e.g. "Price: Low → High"
 
-  double rangeMin = 0;
+  double rangeMin = 10000;
 
-  double rangeMax = 2000000;
+  double rangeMax = 100000;
 
   String selectedSort = "none"; // Options: "low_to_high", "high_to_low"
 
@@ -1186,12 +1186,14 @@ class ApiService {
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
-      List<dynamic> flatsJson = data["data"];
+      List<dynamic> flatsJson = data["data"]["flats"];
+
       return flatsJson.map((json) => Flat.fromJson(json)).toList();
     } else {
-      throw Exception("Failed to fetch data. Status Code: ${response.statusCode}");
+      throw Exception("Failed to fetch data: ${response.body}");
     }
   }
+
 }
 
 // Model Class
@@ -1256,13 +1258,14 @@ class Flat {
       stateName: json["building"]["area"]["state"]["name"],
       countryName: json["building"]["area"]["state"]["country"]["name"],
       createdAt: json["created_at"],
-      noOfBathrooms: json["no_of_bathrooms"] ?? 0,
-      noOfParking: json["no_of_parkings"] ?? 0,
+
 
       ownership: json["ownership"],
       basicRent: json["basic_rent"],
       basicSaleValue: json["basic_sale_value"],
-      isExempt: json["is_exempt"] == "true",
+      isExempt: json["is_exempt"]?.toString() == "true",
+      noOfBathrooms: json["no_of_bathrooms"] ?? 0,
+      noOfParking: json["no_of_parkings"] ?? 0,
       companyId: json["company_id"],
       buildingId: json["building_id"],
       floorId: json["floor_id"],

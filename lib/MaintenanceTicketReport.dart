@@ -255,7 +255,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        "Comments History",
+                        "Comments",
                         style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.w600),
                       ),
                       IconButton(

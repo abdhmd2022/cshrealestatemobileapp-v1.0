@@ -217,8 +217,6 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
     }
   }
 
-
-
   void _showViewCommentPopup(BuildContext contextt, String id) async {
     List<dynamic> filteredData = [];
     TextEditingController commentController = TextEditingController();

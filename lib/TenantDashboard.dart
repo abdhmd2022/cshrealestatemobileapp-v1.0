@@ -56,7 +56,6 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
   final Map<String, Map<String, int>> chequeData = {
     "1 BHK (Al Khaleej Center)": {"Cleared": 2, "Pending": 4},
     "2 BHK (Musalla Tower)": {"Cleared": 5, "Pending": 2},
-
   };
 
   final Map<String, Map<String, double>> pendingInvoicesData = {
@@ -65,7 +64,6 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
   };
 
   String? selectedApartment;
-  // Current selected apartment
 
   // Current index for CupertinoPicker
   int selectedIndex = 0;

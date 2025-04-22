@@ -410,7 +410,6 @@ class _LoginPageState extends State<Login> {
               'adminurl': tenant['tenant']['company']['hosting']['adminurl'] ?? '',
               'license_expiry': tenant['tenant']['company']['hosting']['license_expiry'] ?? '',
               'accessToken': tenant['accessToken'] ?? '',
-
             };
           }).toList();
 

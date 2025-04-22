@@ -220,7 +220,6 @@ class _LoginPageState extends State<Login> {
               MaterialPageRoute(builder: (context) => CompanySelection()),
             );
           } else {
-
             print("✅ Selected Company: ${ firstUser.companyName ?? ""}");
             print("🔑 Company Token: ${firstUser.token}");
 

@@ -1,11 +1,8 @@
 import 'package:cshrealestatemobile/AvailableUnitsReport.dart';
 import 'package:cshrealestatemobile/ComplaintList.dart';
 import 'package:cshrealestatemobile/KYCUpdate.dart';
-import 'package:cshrealestatemobile/RequestCreation.dart';
 import 'package:cshrealestatemobile/RequestList.dart';
-import 'package:cshrealestatemobile/TenantComplaint.dart';
 import 'package:cshrealestatemobile/TenantProfile.dart';
-import 'package:cshrealestatemobile/TenantmoveinoutRequest.dart';
 import 'package:cshrealestatemobile/constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +13,6 @@ import 'dart:ui' as ui;
 import 'MaintenanceTicketReport.dart';
 import 'Sidebar.dart';
 import 'package:google_fonts/google_fonts.dart';
-
 
 class Invoice {
   final String invoiceId;
@@ -50,67 +46,6 @@ class TenantDashboardScreen extends StatefulWidget {
 }
 
 class _SalesDashboardScreenState extends State<TenantDashboardScreen> with TickerProviderStateMixin {
-
-  /*String? selectedYear;
-  Map<String, Map<String, int>> salesData = {
-    "2024": {
-      "Jan": 1000,
-      "Feb": 2000,
-      "Mar": 1500,
-      "Apr": 3000,
-      "May": 2500,
-      "Jun": 1800,
-      "Jul": 2200,
-      "Aug": 1900,
-      "Sep": 2100,
-      "Oct": 2300,
-      "Nov": 2400,
-      "Dec": 2800,
-
-    },
-    "2023": {
-      "Jan": 1200,
-      "Feb": 1800,
-      "Mar": 2200,
-      "Apr": 2500,
-      "May": 1900,
-      "Jun": 1600,
-      "Jul": 2100,
-      "Aug": 2000,
-      "Sep": 1800,
-      "Oct": 2300,
-      "Nov": 2400,
-      "Dec": 2700,
-    },
-    "2022": {
-      "Jan": 1100,
-      "Feb": 2100,
-      "Mar": 2300,
-      "Apr": 2700,
-      "May": 2900,
-      "Jun": 1800,
-      "Jul": 2400,
-      "Aug": 2000,
-      "Sep": 1500,
-      "Oct": 2200,
-      "Nov": 2100,
-      "Dec": 2500,
-    },
-    "2021": {
-      "Jan": 5100,
-      "Feb":6200,
-      "Mar": 7300,
-      "Apr": 8400,
-      "May": 9500,
-      "Jun": 10600,
-      "Jul": 11700,
-      "Aug": 12800,
-      "Sep": 13900,
-      "Oct": 15000,
-      "Nov": 15000,
-      "Dec": 8000,
-    }
-  };*/
 
   final List<Map<String, String>> apartments = [
     {"apartment": "1 BHK", "building": "Al Khaleej Center"},

@@ -204,8 +204,7 @@ class _LoginPageState extends State<Login> {
             'baseurl': user.baseurl,
             'adminurl': user.adminurl,
             'license_expiry': user.license_expiry,
-          })
-              .toList();
+          }).toList();
 
           await prefs.setString("companies_list", jsonEncode(companiesJson));
 
@@ -354,7 +353,6 @@ class _LoginPageState extends State<Login> {
   Future<void> tenantLogin(String email, String password) async {
     String url = "$OAuth_URL/oauth/token";
     String token = 'Bearer $authTokenBase';
-
 
     setState(() => _isLoading = true);
     dynamic responseData;

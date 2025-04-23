@@ -364,7 +364,7 @@ class _LoginPageState extends State<Login> {
 
       var loginData = json.decode(loginResponse.body);
       if (loginResponse.statusCode != 200 || !loginData.containsKey('user')) {
-        showErrorSnackbar(context, "${loginData['message']}->1" ?? 'Login failed');
+        showErrorSnackbar(context, "${loginData['message']}" ?? 'Login failed');
         return;
       }
 
@@ -404,7 +404,7 @@ class _LoginPageState extends State<Login> {
       print('response -> ${tenantResponse.body}');
 
       if (!tenantData['success']) {
-        final errorMsg = "${tenantData['message']}->2" ?? "Failed to fetch tenant details.";
+        final errorMsg = "${tenantData['message']}" ?? "Failed to fetch tenant details.";
         showErrorSnackbar(context, errorMsg);
         return;
       }

@@ -613,7 +613,7 @@ late int loaded_flat_id;
 
   Future<void> _initSharedPreferences() async {
      prefs = await SharedPreferences.getInstance();
-     loaded_flat_id = prefs!.getInt('flat_id') ?? 0;
+     loaded_flat_id = prefs.getInt('flat_id') ?? 0;
 
     fetchUnits();
     fetchMaintenanceTypes();

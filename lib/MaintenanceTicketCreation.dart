@@ -296,7 +296,6 @@ late int loaded_flat_id;
     }
   }
 
-
   Future<void> fetchContracts() async {
     flats.clear();
 
@@ -378,7 +377,6 @@ late int loaded_flat_id;
       print('Error fetching data: $e');
     }
   }
-
 
   /*Future<void> fetchUnits() async {
     flats.clear();

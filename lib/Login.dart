@@ -388,8 +388,8 @@ class _LoginPageState extends State<Login> {
       // Step 2: Get tenant + flats details using tenantId
       final tenantUrl = "${hosting['baseurl']}/tenant/$tenantId";
 
-      print('tenant url $tenantUrl');
-      print('token -> $token');
+      // print('tenant url $tenantUrl');
+      // print('token -> $token');
 
       var tenantResponse = await http.get(
         Uri.parse(tenantUrl),
@@ -401,7 +401,7 @@ class _LoginPageState extends State<Login> {
 
       var tenantData = json.decode(tenantResponse.body);
 
-      print('response -> ${tenantResponse.body}');
+      // print('response -> ${tenantResponse.body}');
 
       if (!tenantData['success']) {
         final errorMsg = "${tenantData['message']}" ?? "Failed to fetch tenant details.";

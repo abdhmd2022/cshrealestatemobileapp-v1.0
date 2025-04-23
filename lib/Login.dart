@@ -241,116 +241,9 @@ class _LoginPageState extends State<Login> {
       setState(() => _isLoading = false);
     }
   }
-// old tenant login function
+  // old tenant login function
+
   /*Future<void> tenantLogin(String email, String password) async {
-    String url = "$BASE_URL_config/v1/auth/tenent/login";
-    String token = 'Bearer $authTokenBase';
-
-    setState(() => _isLoading = true);
-    dynamic responseData;
-
-    try {
-      Map<String, String> headers = {
-        'Authorization': token,
-        "Content-Type": "application/json"
-      };
-
-      Map<String, String> body = {
-        'username': email,
-        'password': password,
-        'client_id': client_id_constant,
-        'client_secret': client_password_constant,
-        'scope': "tenant",
-        "grant_type" : "password"
-      };
-      var response = await http.post(
-        Uri.parse(url),
-        body: body,
-        headers: headers,
-      );
-      responseData = json.decode(response.body);
-
-      if (response.statusCode == 200 && responseData['success']) {
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-
-        List<dynamic> tenantsData = responseData['user'] ?? [];
-
-        if (tenantsData.isNotEmpty) {
-          var firstTenant = tenantsData[0];
-
-          // ✅ Fetching Tenant Details
-          await prefs.setInt("user_id", firstTenant['id']);
-          await prefs.setString("user_name", firstTenant['name']);
-          await prefs.setString("user_email", firstTenant['email']);
-          await prefs.setString("company_token", firstTenant['accessToken']);
-          await prefs.setInt("company_id", firstTenant['company_id'] ?? 0);
-          await prefs.setBool('is_admin', false);
-
-          // ✅ Extract Flats (Instead of Companies)
-          List<Map<String, dynamic>> flatsList = tenantsData.expand((tenant) {
-            return ((tenant['flat'] as List<dynamic>? ?? []).map((flatObj) {
-              if (flatObj is Map<String, dynamic> && flatObj.containsKey('flat')) {
-                var flat = (flatObj['flat'] as Map<dynamic, dynamic>).cast<String, dynamic>();
-
-                return {
-                  'id': flat['id'] ?? 0,
-                  'name': flat['name'] ?? 'Unknown Flat',
-                  'floor': (flat['floor'] as Map?)?.cast<String, dynamic>()['name'] ?? 'Unknown Floor',
-                  'flat_type': (flat['flat_type'] as Map?)?.cast<String, dynamic>()['name'] ?? 'Unknown Type',
-                  'building': (flat['building'] as Map?)?.cast<String, dynamic>()['name'] ?? 'Unknown Building',
-                  'area': (flat['building']?['area'] as Map?)?.cast<String, dynamic>()['name'] ?? 'Unknown Area',
-                  'state': (flat['building']?['area']?['state'] as Map?)?.cast<String, dynamic>()['name'] ?? 'Unknown State',
-                  'country': (flat['building']?['area']?['state']?['country'] as Map?)?.cast<String, dynamic>()['name'] ?? 'Unknown Country',
-                };
-              }
-              return null; // Instead of an empty map, return null to filter out later
-            }).where((flat) => flat != null).cast<Map<String, dynamic>>()).toList();
-          }).toList();
-
-          await prefs.setString("flats_list", jsonEncode(flatsList));
-
-          loadTokens();
-
-          // ✅ Redirect to Flat Selection if multiple flats exist
-          if (flatsList.length > 1) {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => FlatSelection()),
-            );
-          }
-          else
-          {
-            await prefs.setInt("flat_id", flatsList.first['id']);
-            await prefs.setString("flat_name", flatsList.first['name']);
-            await prefs.setString("floor", flatsList.first['floor']);
-            await prefs.setString("flat_type", flatsList.first['flat_type']);
-            await prefs.setString("building", flatsList.first['building']);
-            await prefs.setString("area", flatsList.first['area']);
-            await prefs.setString("state", flatsList.first['state']);
-            await prefs.setString("country", flatsList.first['country']);
-
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => TenantDashboard()),
-            );
-          }
-        } else {
-          throw Exception("No tenant data found.");
-        }
-      } else {
-        throw Exception("Invalid credentials");
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error: ${responseData['message'] ?? 'Login failed'}")),
-      );
-    } finally {
-      setState(() => _isLoading = false);
-    }
-  }*/
-  // new tenant login function
-
-  Future<void> tenantLogin(String email, String password) async {
     String url = "$OAuth_URL/oauth/token";
     String token = 'Bearer $authTokenBase';
 
@@ -444,7 +337,129 @@ class _LoginPageState extends State<Login> {
     } finally {
       setState(() => _isLoading = false);
     }
+  }*/
+
+  // new tenant login function
+
+  Future<void> tenantLogin(String email, String password) async {
+    String loginUrl = "$OAuth_URL/oauth/token";
+    setState(() => _isLoading = true);
+
+    try {
+      // Step 1: Get token and user info
+      var loginResponse = await http.post(
+        Uri.parse(loginUrl),
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: {
+          'username': email,
+          'password': password,
+          'client_id': client_id_constant,
+          'client_secret': client_password_constant,
+          'scope': "tenant",
+          "grant_type": "password",
+        },
+      );
+
+      var loginData = json.decode(loginResponse.body);
+      if (loginResponse.statusCode != 200 || !loginData.containsKey('user')) {
+        showErrorSnackbar(context, "${loginData['message']}->1" ?? 'Login failed');
+        return;
+      }
+
+      final user = loginData['user'][0];
+      final company = user['company'];
+      final hosting = company['hosting'];
+      final token = user['accessToken'];
+      final tenantId = user['id']; // tenant_id
+
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setInt("user_id", tenantId);
+      await prefs.setString("user_name", user['name']);
+      await prefs.setString("user_email", user['email']);
+      await prefs.setString("company_token", token);
+      await prefs.setInt("company_id", user['company_id'] ?? 0);
+      await prefs.setBool('is_admin', false);
+      await prefs.setString("license_expiry", hosting['license_expiry']);
+      await prefs.setString("baseurl", hosting['baseurl']);
+      await prefs.setString("adminurl", hosting['adminurl']);
+
+      // Step 2: Get tenant + flats details using tenantId
+      final tenantUrl = "${hosting['baseurl']}/tenant/$tenantId";
+
+      print('tenant url $tenantUrl');
+      print('token -> $token');
+
+      var tenantResponse = await http.get(
+        Uri.parse(tenantUrl),
+        headers: {
+          "Authorization": "Bearer $token",
+          "Accept": "application/json",
+        },
+      );
+
+      var tenantData = json.decode(tenantResponse.body);
+
+      print('response -> ${tenantResponse.body}');
+
+      if (!tenantData['success']) {
+        final errorMsg = "${tenantData['message']}->2" ?? "Failed to fetch tenant details.";
+        showErrorSnackbar(context, errorMsg);
+        return;
+      }
+
+      var tenant = tenantData['data']['tenant'];
+      var contracts = tenant['contracts'] as List<dynamic>;
+
+      List<Map<String, dynamic>> flatsList = contracts.expand((contract) {
+        return (contract['flats'] as List<dynamic>).map((flatData) {
+          var flat = flatData['flat'];
+          return {
+            'tenant_id': tenant['id'],
+            'id': flat['id'],
+            'name': flat['name'],
+            'building': flat['building']['name'] ?? 'Unknown Building',
+            'company_id': tenant['company_id'],
+            'baseurl': hosting['baseurl'],
+            'adminurl': hosting['adminurl'],
+            'license_expiry': hosting['license_expiry'],
+            'accessToken': token,
+          };
+        });
+      }).toList();
+
+      await prefs.setString("flats_list", jsonEncode(flatsList));
+
+
+      // Step 3: Redirect user
+      if (flatsList.length > 1) {
+        loadTokens();
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => FlatSelection()),
+        );
+      } else if (flatsList.isNotEmpty) {
+
+        var flat = flatsList.first;
+        await prefs.setInt("flat_id", flat['id']);
+        await prefs.setString("flat_name", flat['name']);
+        await prefs.setString("building", flat['building']);
+        loadTokens();
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => TenantDashboard()),
+        );
+      } else {
+        showErrorSnackbar(context, "No flats found for this tenant.");
+      }
+    } catch (e) {
+      showErrorSnackbar(context, "Something went wrong during login.");
+    } finally {
+      setState(() => _isLoading = false);
+    }
   }
+
 
   void loginUser(String email, String password, bool isAdmin) {
     if (isAdmin) {

@@ -61,6 +61,8 @@ Future<void> loadTokens() async {
   }
 
   print("Loaded Token: $Company_Token");
+  print("Selected Flat ID: $flat_id");
+
   print("Loaded Company ID: $company_id");
   print("Loaded User ID: $user_id");
   print("Loading Admin Status: $is_admin");

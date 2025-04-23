@@ -11,6 +11,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:multi_select_flutter/dialog/multi_select_dialog_field.dart';
 import 'package:multi_select_flutter/util/multi_select_item.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 import 'Sidebar.dart';
 import 'package:flutter/foundation.dart'; // For kIsWeb
@@ -53,10 +54,12 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
 
   List<MaintanceType>? selectedMaintenanceType = [];
 
+  late SharedPreferences prefs;
+
   List<MaintanceType> maintenance_types_list = [];
   List<int> selectedMaintenanceTypeIds = []; // Store selected maintenance type IDs
 
-
+late int loaded_flat_id;
   TextEditingController _descriptionController = TextEditingController();
   // TextEditingController _totalamountController = TextEditingController();
 
@@ -279,7 +282,10 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
           }
 
           // Select first flat if available
-          selectedFlat = flats.isNotEmpty ? flats[0] : {};
+          selectedFlat = flats.firstWhere(
+                (flat) => flat['flat_id'] == loaded_flat_id ,
+            orElse: () => flats.isNotEmpty ? flats[0] : {},
+          );
         });
       } else {
         print("Error: ${response.statusCode}");
@@ -608,6 +614,8 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
   }
 
   Future<void> _initSharedPreferences() async {
+     prefs = await SharedPreferences.getInstance();
+     loaded_flat_id = prefs!.getInt('flat_id') ?? 0;
 
     fetchUnits();
     fetchMaintenanceTypes();

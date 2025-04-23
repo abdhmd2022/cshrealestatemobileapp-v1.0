@@ -274,11 +274,7 @@ late int loaded_flat_id;
                         'building_name': flat['building']['name'], // Store building ID
                         'contract_id': contractId, // Include contract ID
                       });
-                    }
-                  }
-                }
-              }
-            }
+                    }}}}}
           }
 
           // Select first flat if available

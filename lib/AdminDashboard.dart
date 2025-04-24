@@ -1,4 +1,5 @@
 import 'package:cshrealestatemobile/AvailableUnitsReport.dart';
+import 'package:cshrealestatemobile/AnalyticsReport.dart';
 import 'package:cshrealestatemobile/MaintenanceTicketReport.dart';
 import 'package:cshrealestatemobile/SalesProfile.dart';
 import 'package:cshrealestatemobile/constants.dart';
@@ -11,24 +12,24 @@ import 'SalesInquiryReport.dart';
 import 'Sidebar.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class SalesDashboard extends StatelessWidget {
+class AdminDashboard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Dashboard',
       theme: ThemeData(primarySwatch: Colors.blue),
-      home: SalesDashboardScreen(),
+      home: AdminDashboardScreen(),
     );
   }
 }
 
-class SalesDashboardScreen extends StatefulWidget {
+class AdminDashboardScreen extends StatefulWidget {
   @override
-  _SalesDashboardScreenState createState() => _SalesDashboardScreenState();
+  _AdminDashboardScreenState createState() => _AdminDashboardScreenState();
 }
 
-class _SalesDashboardScreenState extends State<SalesDashboardScreen> with TickerProviderStateMixin {
+class _AdminDashboardScreenState extends State<AdminDashboardScreen> with TickerProviderStateMixin {
 
   String? selectedYear;
   Map<String, Map<String, int>> salesData = {
@@ -294,8 +295,8 @@ class _SalesDashboardScreenState extends State<SalesDashboardScreen> with Ticker
                 ),
               ),
             ),
-            SizedBox(height: 20),
 
+            SizedBox(height: 20),
 
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -304,8 +305,8 @@ class _SalesDashboardScreenState extends State<SalesDashboardScreen> with Ticker
                 _buildDashboardButton(Icons.check_circle_outline, 'Closed', '8', appbar_color, () {}),
               ],
             ),
-            SizedBox(height: 10),
 
+            SizedBox(height: 10),
 
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -317,7 +318,16 @@ class _SalesDashboardScreenState extends State<SalesDashboardScreen> with Ticker
                     MaterialPageRoute(builder: (context) => SalesInquiryReport()),          // navigate to users screen
                   );
                 }),
-                _buildDashboardButton(Icons.account_balance_wallet, 'Outstanding', '', Colors.redAccent, () {}),
+                _buildDashboardButton(Icons.analytics_outlined, 'Analytics', '', Colors.redAccent, () {
+
+                  Navigator.pushReplacement(
+                    context,
+
+                    MaterialPageRoute(builder: (context) => LandlordDashboardScreen()),          // navigate to users screen
+                  );
+
+
+                }),
 
               ],
             ),
@@ -329,7 +339,7 @@ class _SalesDashboardScreenState extends State<SalesDashboardScreen> with Ticker
               children: [
                 _buildDashboardButton(Icons.build, 'Maintenance', '', appbar_color, () {
 
-                  Navigator.push(
+                  Navigator.pushReplacement(
                     context,
 
                     MaterialPageRoute(builder: (context) => MaintenanceTicketReport()),          // navigate to users screen
@@ -343,6 +353,8 @@ class _SalesDashboardScreenState extends State<SalesDashboardScreen> with Ticker
                   );
                 }),              ],
             ),
+
+
 
           ],
         ),

@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:cshrealestatemobile/SalesDashboard.dart';
+import 'package:cshrealestatemobile/AdminDashboard.dart';
 import 'package:cshrealestatemobile/TenantDashboard.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

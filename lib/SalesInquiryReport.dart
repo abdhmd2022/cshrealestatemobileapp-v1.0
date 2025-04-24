@@ -9,7 +9,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
-import 'SalesDashboard.dart';
+import 'AdminDashboard.dart';
 import 'Sidebar.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -831,7 +831,7 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
           onTap: () {
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) => SalesDashboard()),
+              MaterialPageRoute(builder: (context) => AdminDashboard()),
             );
           },
           child: Icon(

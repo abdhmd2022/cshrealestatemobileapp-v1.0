@@ -1,10 +1,12 @@
+import 'package:cshrealestatemobile/BuildingsScreen.dart';
+import 'package:cshrealestatemobile/AdminDashboard.dart';
 import 'package:cshrealestatemobile/constants.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
-import 'LandlordBuildingScreen.dart';
+import 'BuildingDetailsScreen.dart';
 import 'Sidebar.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -13,12 +15,13 @@ class LandlordDashboard extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Landlord Dashboard',
+      title: 'Analytics',
       theme: ThemeData(primarySwatch: Colors.blue),
       home: LandlordDashboardScreen(),
     );
   }
 }
+
 
 class LandlordDashboardScreen extends StatefulWidget {
   @override
@@ -64,23 +67,27 @@ class _LandlordDashboardScreenState extends State<LandlordDashboardScreen> with 
 
   @override
   Widget build(BuildContext context) {
-
-
-
     return Scaffold(
       key: _scaffoldKey,
       backgroundColor: const Color(0xFFF2F4F8),
       appBar: AppBar(
         backgroundColor: appbar_color.withOpacity(0.9),
-        title: Text('Landlord Dashboard',
+        title: Text('Analytics',
             style: GoogleFonts.poppins(color: Colors.white)),
         centerTitle: true,
-        leading: IconButton(
-          icon: Icon(Icons.menu, color: Colors.white),
-          onPressed: () {
-            _scaffoldKey.currentState!.openDrawer();
+        leading: GestureDetector(
+
+          onTap: ()
+          {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => AdminDashboard()),
+            );
           },
-        ),
+          child: Icon(
+            Icons.arrow_back,
+            color: Colors.white,
+          ),),
       ),
       drawer: Sidebar(
         isDashEnable: true,
@@ -151,59 +158,26 @@ class _LandlordDashboardScreenState extends State<LandlordDashboardScreen> with 
                 ),
               ),
 
-              SizedBox(height: 16,),
-              Text(
-                'Building(s)',
-                style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 8),
+              SizedBox(height: 16),
+
               Expanded(
                 child: Container(
 
-                  child: ListView.builder(
-                    itemCount: buildingNames.length,
-                    itemBuilder: (context, index) {
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 3),
-                        child: Card(
-                          elevation: 8.0,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15), // Adjust the radius here
-                          ),
+                  child:
 
-                          child: Container(
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: [appbar_color.withOpacity(0.5), appbar_color.withOpacity(0.9)],
-                                begin: Alignment.topCenter,
-                                end: Alignment.bottomCenter,
-                              ),
-                              borderRadius: BorderRadius.circular(15),
-                            ),
-                            child: ListTile(
-                              title: Text(
-                                buildingNames[index],
-                                style: GoogleFonts.poppins(fontWeight: FontWeight.bold,
-                                color: Colors.white),
-                              ),
-                              trailing: Icon(Icons.arrow_forward,color: Colors.white,),
-                              onTap: () {
-                                Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => BuildingReportScreen(
-                                      buildingName: buildingNames[index],
-                                      occupiedUnits: [occupiedUnits[index]], // Pass only the selected building's occupied units
-                                      availableUnits: [availableUnits[index]],
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                        ),
-                      );
-                    },
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildDashboardButton(Icons.apartment, 'Building(s)', '', appbar_color, () {
+
+                        Navigator.pushReplacement(
+                          context,
+
+                          MaterialPageRoute(builder: (context) => BuildingsScreen()),          // navigate to users screen
+                        );
+                      }),
+                    ],
                   ),
                 ))]))));}
 }
@@ -343,6 +317,58 @@ class BarGraph extends StatelessWidget {
 
   }
 }
+
+Widget _buildDashboardButton(IconData icon, String label, String count, Color color, VoidCallback onTap) {
+  return Expanded(
+    child: GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: EdgeInsets.symmetric(horizontal: 5),
+        padding: EdgeInsets.only(top:10,bottom:10),
+        height: 110,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black12,
+              blurRadius: 8,
+              offset: Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+
+            Icon(icon, color: color, size: 32),
+            SizedBox(height: 5),
+            Text(
+              label,
+              style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w600),
+            ),
+            if (count.isNotEmpty)
+              Column(
+                children: [
+                  SizedBox(height: 3,),
+                  Text(
+                    count,
+                    style: GoogleFonts.poppins(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: color,
+                    ),
+                  ),
+                ],
+              )
+
+          ],
+        ),
+      ),
+    ),
+  );
+}
+
 
 
 

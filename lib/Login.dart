@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:cshrealestatemobile/TenantDashboard.dart';
 import 'package:http/http.dart' as http;
-import 'package:cshrealestatemobile/SalesDashboard.dart';
+import 'package:cshrealestatemobile/AdminDashboard.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -223,10 +223,11 @@ class _LoginPageState extends State<Login> {
             print("✅ Selected Company: ${ firstUser.companyName ?? ""}");
             print("🔑 Company Token: ${firstUser.token}");
 
+
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(builder: (context) =>
-              isAdmin ? SalesDashboard() : TenantDashboard()),
+              isAdmin ? AdminDashboard() : TenantDashboard()),
             );
           }
         }

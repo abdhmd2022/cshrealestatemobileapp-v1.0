@@ -1,4 +1,4 @@
-import 'package:cshrealestatemobile/SalesDashboard.dart';
+import 'package:cshrealestatemobile/AdminDashboard.dart';
 import 'package:cshrealestatemobile/TenantDashboard.dart';
 import 'package:cshrealestatemobile/constants.dart';
 import 'package:flutter/cupertino.dart';

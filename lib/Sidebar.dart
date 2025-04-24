@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'constants.dart';
 import 'Login.dart';
-import 'SalesDashboard.dart';
+import 'AdminDashboard.dart';
 import 'TenantDashboard.dart';
-import 'LandlordDashboard.dart';
+import 'AnalyticsReport.dart';
 import 'SerialSelect.dart';
 import 'Settings.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -211,7 +211,7 @@ class _SidebarState extends State<Sidebar> {
                 children: [
                   if(is_admin)
                     _buildDrawerItem(Icons.dashboard, "Dashboard", widget.isDashEnable, () {
-                    _navigateTo(context, SalesDashboard());
+                    _navigateTo(context, AdminDashboard());
                   }),
                   if(!is_admin)
                     _buildDrawerItem(Icons.dashboard, "Dashboard", true, () {

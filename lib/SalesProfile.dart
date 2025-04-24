@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import 'SalesDashboard.dart';
+import 'AdminDashboard.dart';
 
 class SalesProfileScreen extends StatelessWidget {
   @override
@@ -17,7 +17,7 @@ class SalesProfileScreen extends StatelessWidget {
 
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (context) => SalesDashboard()),
+                MaterialPageRoute(builder: (context) => AdminDashboard()),
               );
             },
             child:

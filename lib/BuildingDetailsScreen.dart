@@ -1,4 +1,5 @@
-import 'package:cshrealestatemobile/LandlordDashboard.dart';
+import 'package:cshrealestatemobile/BuildingsScreen.dart';
+import 'package:cshrealestatemobile/AnalyticsReport.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -9,21 +10,20 @@ import 'package:google_fonts/google_fonts.dart';
 import 'constants.dart';
 
 class BuildingReportScreen extends StatelessWidget {
-  final String buildingName;
-  final List<int> occupiedUnits;
-  final List<int> availableUnits;
+  final dynamic building;
 
-  BuildingReportScreen({required this.buildingName, required this.occupiedUnits, required this.availableUnits});
+
+  BuildingReportScreen({required this.building});
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   void _openMaps() async {
     final String googleMapsUrl =
-        "https://www.google.com/maps/search/?api=1&query=${Uri.encodeComponent(buildingName)}";
+        "https://www.google.com/maps/search/?api=1&query=${Uri.encodeComponent(building['name'])}";
     final String appleMapsUrl =
-        "https://maps.apple.com/?q=${Uri.encodeComponent(buildingName)}";
+        "https://maps.apple.com/?q=${Uri.encodeComponent(building['name'])}";
     final String wazeUrl =
-        "waze://?q=${Uri.encodeComponent(buildingName)}"; // Waze URL scheme
+        "waze://?q=${Uri.encodeComponent(building['name'])}"; // Waze URL scheme
 
     if (defaultTargetPlatform == TargetPlatform.iOS) {
       // For iOS, prefer Apple Maps
@@ -55,7 +55,7 @@ class BuildingReportScreen extends StatelessWidget {
       key: _scaffoldKey,
       appBar: AppBar(
         backgroundColor: appbar_color.withOpacity(0.9),
-        title: Text(buildingName,
+        title: Text(building['name'],
             style: GoogleFonts.poppins(color: Colors.white)),
         centerTitle: true,
         leading: GestureDetector(
@@ -64,7 +64,7 @@ class BuildingReportScreen extends StatelessWidget {
           {
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) => LandlordDashboardScreen()),
+              MaterialPageRoute(builder: (context) => BuildingsScreen()),
             );
           },
           child: Icon(
@@ -84,17 +84,19 @@ class BuildingReportScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    '$buildingName Units Overview',
+                    '${building['name']} Units Overview',
                     style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
 
                   SizedBox(height: 1),
 
+/*
                   PieChartGraph(occupiedUnits: occupiedUnits, availableUnits: availableUnits,buildingName: buildingName,),
+*/
 
-                  SizedBox(height: 10),
+                  // SizedBox(height: 10),
 
-                  Padding(
+                  /*Padding(
                     padding: const EdgeInsets.symmetric(vertical: 0),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -133,7 +135,8 @@ class BuildingReportScreen extends StatelessWidget {
                         ),
                       ],
                     ),
-                  ),
+                  ),*/
+
                 ],
               ),
             ),),

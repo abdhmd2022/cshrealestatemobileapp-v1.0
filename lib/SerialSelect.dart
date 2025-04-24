@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'SalesDashboard.dart';
+import 'AdminDashboard.dart';
 import 'constants.dart';
 import 'models/serial_model.dart';
 
@@ -70,7 +70,7 @@ class _CompanySelectionState extends State<CompanySelection> {
 
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => SalesDashboard()), // Navigate to dashboard
+      MaterialPageRoute(builder: (context) => AdminDashboard()), // Navigate to dashboard
     );
   }
 

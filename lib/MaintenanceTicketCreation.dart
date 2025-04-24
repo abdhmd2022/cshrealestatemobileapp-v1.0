@@ -259,7 +259,6 @@ late int loaded_flat_id;
 
             if (tenant != null) {
               String tenantName = tenant['name'];
-
               if (tenant['contracts'] != null) {
                 for (var contract in tenant['contracts']) {
                   int contractId = contract['id']; // Extract contract ID
@@ -274,7 +273,8 @@ late int loaded_flat_id;
                         'building_name': flat['building']['name'], // Store building ID
                         'contract_id': contractId, // Include contract ID
                       });
-                    }}}}}
+                    }}}
+              }}
           }
 
           // Select first flat if available

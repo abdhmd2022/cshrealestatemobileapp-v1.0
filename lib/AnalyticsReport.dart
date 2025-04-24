@@ -106,7 +106,7 @@ class _LandlordDashboardScreenState extends State<LandlordDashboardScreen> with 
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Units Overview',
+                'Unit(s) Overview',
                 style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 16),

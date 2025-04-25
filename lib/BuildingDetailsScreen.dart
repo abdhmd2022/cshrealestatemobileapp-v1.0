@@ -344,7 +344,7 @@ SizedBox(height: 10,),
                             trailing: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                /*Container(
+                                Container(
                                   padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                                   decoration: BoxDecoration(
                                     color: isOccupied ? Colors.orange.shade50 : Colors.green.shade50,
@@ -359,11 +359,11 @@ SizedBox(height: 10,),
                                     ),
                                   ),
                                 ),
-                                SizedBox(width: 8),*/
+                                SizedBox(width: 8),
 
 
 
-                                IconButton(
+                                /*IconButton(
                                   icon: Icon(Icons.arrow_forward_ios_rounded, size: 18, color: Colors.grey.shade600),
                                   onPressed: () async {
                                     final response = await http.get(
@@ -422,7 +422,7 @@ SizedBox(height: 10,),
                                     }
                                   },
 
-                                ),
+                                ),*/
                               ],
                             ),
 

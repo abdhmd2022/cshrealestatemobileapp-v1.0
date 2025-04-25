@@ -39,6 +39,7 @@ dependencies:
   multi_select_flutter:
   file_picker:
   fl_chart:
+  flutter_slidable:
   intl:
   http:
   url_launcher:

@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:cshrealestatemobile/BuildingsScreen.dart';
 import 'package:cshrealestatemobile/AdminDashboard.dart';
 import 'package:cshrealestatemobile/constants.dart';
@@ -6,8 +9,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
+import 'package:intl/intl.dart';
 import 'BuildingDetailsScreen.dart';
 import 'Sidebar.dart';
+import 'package:http/http.dart' as http;
+
 import 'package:google_fonts/google_fonts.dart';
 
 class LandlordDashboard extends StatelessWidget {
@@ -30,14 +36,13 @@ class LandlordDashboardScreen extends StatefulWidget {
 
 class _LandlordDashboardScreenState extends State<LandlordDashboardScreen> with TickerProviderStateMixin {
 
-  final List<String> buildingNames = [
-    'Al Khaleej Center',
-    'Al Musalla Tower',
-    'Al Ain Center',
+   List<String> buildingNames = [
+
   ];
 
-  final List<int> occupiedUnits = [10, 5, 8]; // Example data for occupied units
-  final List<int> availableUnits = [20, 15, 12]; // Example data for available units
+   bool isLoadingBarChart = false;
+   List<int> occupiedUnits = []; // Example data for occupied units
+   List<int> availableUnits = []; // Example data for available units
 
 
   @override
@@ -50,15 +55,52 @@ class _LandlordDashboardScreenState extends State<LandlordDashboardScreen> with 
   Future<void> _initSharedPreferences() async {
 
 
+    fetchBuildingData();
+
+
+
+
+  }
+
+  Future<void> fetchBuildingData() async {
+
+    buildingNames.clear();
+    availableUnits.clear();
+    occupiedUnits.clear();
 
     setState(() {
-
-
+      isLoadingBarChart = true;
     });
+    final response = await http.get(
+      Uri.parse("$baseurl/reports/building/available/date?date=${DateFormat('yyyy-MM-dd').format(DateTime.now())}"),
+      headers: {
+        "Authorization": "Bearer $Company_Token",
+        "Content-Type": "application/json",
+      },
+    );
 
+    if (response.statusCode == 200) {
 
+      final jsonData = json.decode(response.body);
+      final buildingsJson = jsonData['data']['buildings'] as List;
 
+      for (var building in buildingsJson) {
+        final name = building['name'];
+        final flats = building['flats'] as List;
 
+        int occupied = flats.where((f) => f['is_occupied'] == 'true').length;
+        int available = flats.where((f) => f['is_occupied'] == 'false').length;
+
+        buildingNames.add(name);
+        occupiedUnits.add(occupied);
+        availableUnits.add(available);
+      }
+    } else {
+      throw Exception('Failed to load buildings');
+    }
+    setState(() {
+      isLoadingBarChart = false;
+    });
   }
 
 
@@ -105,60 +147,92 @@ class _LandlordDashboardScreenState extends State<LandlordDashboardScreen> with 
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+
+              isLoadingBarChart
+                  ? Center(
+                child: Platform.isIOS
+                    ? const CupertinoActivityIndicator(radius: 18)
+                    : CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(appbar_color),
+                ),
+              )
+                  :
+              buildingNames.isEmpty
+                  ? Center(
+                child: Column(
+
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.domain_disabled, color: Colors.grey, size: 48),
+                    SizedBox(height: 12),
+                    Text(
+                      'Building(s) Not Found',
+                      style: GoogleFonts.poppins(fontSize: 15, color: Colors.black54),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              )
+                  :
               Text(
                 'Unit(s) Overview',
                 style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 16),
 
-              Expanded(
-                flex: 1,
-                child: BarGraph(occupiedUnits: occupiedUnits, buildingNames: buildingNames,availableUnits: availableUnits,),
-              ),
-              SizedBox(height: 10),
+              if(buildingNames.isNotEmpty)...[
+                Expanded(
+                  flex: 1,
 
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    // Red Color for occupied
-                    Row(
-                      children: [
-                        Container(
-                          width: 15,
-                          height: 15,
-                          decoration: BoxDecoration(
-                            color: Colors.orangeAccent.shade200,
-                            shape: BoxShape.circle, // Make it round
-                          ),
+                  child: BarGraph(occupiedUnits: occupiedUnits, buildingNames: buildingNames,availableUnits: availableUnits,),
 
-                        ),
-                        SizedBox(width: 8),
-                        Text('Occupied'),
-                      ],
-                    ),
-                    SizedBox(width: 16),
-                    // Green Color for Available
-                    Row(
-                      children: [
-                        Container(
-                          width: 15,
-                          height: 15,
-                          decoration: BoxDecoration(
-                            color: appbar_color.withOpacity(0.7),
-                            shape: BoxShape.circle, // Make it round
-                          ),
-                        ),
-                        SizedBox(width: 8),
-                        Text('Available'),
-                      ],
-                    ),
-                  ],
                 ),
-              ),
 
-              SizedBox(height: 16),
+                SizedBox(height: 10),
+
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      // Red Color for occupied
+                      Row(
+                        children: [
+                          Container(
+                            width: 15,
+                            height: 15,
+                            decoration: BoxDecoration(
+                              color: Colors.orangeAccent.shade200,
+                              shape: BoxShape.circle, // Make it round
+                            ),
+                          ),
+                          SizedBox(width: 8),
+                          Text('Occupied'),
+                        ],
+                      ),
+                      SizedBox(width: 16),
+                      // Green Color for Available
+                      Row(
+                        children: [
+                          Container(
+                            width: 15,
+                            height: 15,
+                            decoration: BoxDecoration(
+                              color: appbar_color.withOpacity(0.7),
+                              shape: BoxShape.circle, // Make it round
+                            ),
+                          ),
+                          SizedBox(width: 8),
+                          Text('Available'),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 16),
+
+              ],
+
 
               Expanded(
                 child: Container(
@@ -201,11 +275,11 @@ class BarGraph extends StatelessWidget {
 
     // Calculate chart width based on the number of buildings
     double calculatedWidth =
-        buildingNames.length * (barWidth * 2 + groupSpace);
+        buildingNames.length * (barWidth * 2 + groupSpace) ;
 
     // Ensure the chart width is at least as wide as the screen
     double screenWidth = MediaQuery.of(context).size.width;
-    double chartWidth = calculatedWidth > screenWidth ? calculatedWidth : screenWidth;
+    double chartWidth = calculatedWidth > screenWidth ? calculatedWidth : screenWidth-20;
 
     // Calculate maximum value for the left titles
     int maxUnits = (occupiedUnits + availableUnits).reduce((a, b) => a > b ? a : b);
@@ -234,13 +308,20 @@ class BarGraph extends StatelessWidget {
               leftTitles: AxisTitles(
                 sideTitles: SideTitles(
                   showTitles: true,
+                  interval: 1,                   // step size of 1 unit on Y-axis&#8203;:contentReference[oaicite:4]{index=4}
                   reservedSize: leftTitleReservedSize,
-                  getTitlesWidget: (value, meta) {
-                    return SideTitleWidget(
-                      child: Text(
-                        formatLabel(value.toInt()),
+                  getTitlesWidget: (double value, TitleMeta meta) {
+                    // Only label integer values (to avoid 0.5, 1.5, etc.)
+                    if (value % 1 != 0) {
+                      return const SizedBox.shrink();  // no widget for fractional values
+                    }
+                    return Text(
+                      value.toInt().toString(),        // display the integer value
+                      style: const TextStyle(
+                        fontWeight: FontWeight.normal,
+                        fontSize: 12,
+
                       ),
-                      axisSide: meta.axisSide,
                     );
                   },
                 ),
@@ -264,12 +345,20 @@ class BarGraph extends StatelessWidget {
               rightTitles: AxisTitles(sideTitles: SideTitles(
                 showTitles: true,
                 reservedSize: leftTitleReservedSize,
-                getTitlesWidget: (value, meta) {
-                  return SideTitleWidget(
-                    child: Text(
-                      formatLabel(value.toInt()),
+                interval: 1,                   // step size of 1 unit on Y-axis&#8203;:contentReference[oaicite:4]{index=4}
+
+                getTitlesWidget: (double value, TitleMeta meta) {
+                  // Only label integer values (to avoid 0.5, 1.5, etc.)
+                  if (value % 1 != 0) {
+                    return const SizedBox.shrink();  // no widget for fractional values
+                  }
+                  return Text(
+                    value.toInt().toString(),        // display the integer value
+                    style: const TextStyle(
+                      fontWeight: FontWeight.normal,
+                      fontSize: 12,
+
                     ),
-                    axisSide: meta.axisSide,
                   );
                 },
               ),),
@@ -297,7 +386,7 @@ class BarGraph extends StatelessWidget {
                     gradient: LinearGradient(
                       colors: [appbar_color.withOpacity(0.5),appbar_color.withOpacity(0.7), appbar_color.withOpacity(0.9)], // Gradient background
                       begin: Alignment.topCenter,
-                      
+
                       end: Alignment.bottomCenter,
                     ),
                     width: barWidth,

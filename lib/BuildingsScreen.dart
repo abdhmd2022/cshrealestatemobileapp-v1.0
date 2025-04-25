@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import 'BuildingDetailsScreen.dart';
 import 'AnalyticsReport.dart';
 import 'Sidebar.dart';
@@ -32,7 +33,7 @@ class _BuildingsScreenState extends State<BuildingsScreen> {
       _isLoading = true;
     });
     buildings.clear();
-    final url = Uri.parse("$baseurl/master/building");
+    final url = Uri.parse("$baseurl/reports/building/available/date?date=${DateFormat('yyyy-MM-dd').format(DateTime.now())}");
 
     print('building url -> $url');
     final response = await http.get(url, headers: {

@@ -1,8 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:cshrealestatemobile/BuildingsScreen.dart';
-import 'package:cshrealestatemobile/AnalyticsReport.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -13,7 +11,6 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'constants.dart';
 import 'package:http/http.dart' as http;
-
 
 class BuildingReportScreen extends StatefulWidget {
   final dynamic building;
@@ -101,7 +98,6 @@ class _BuildingReportScreenState extends State<BuildingReportScreen> {
       ),
       body: Stack(
           children:[
-
             SingleChildScrollView(child:
             Container(
               padding: const EdgeInsets.all(16.0),
@@ -184,7 +180,6 @@ class _BuildingReportScreenState extends State<BuildingReportScreen> {
                     ),
 
                   ),
-
 
                   SizedBox(height: 10),
 
@@ -299,13 +294,7 @@ class _BuildingReportScreenState extends State<BuildingReportScreen> {
                     ],
                   ),
 
-
-
-
-
-
-
-SizedBox(height: 10,),
+                  SizedBox(height: 10,),
                   ListView.builder(
                     shrinkWrap: true,
                     physics: NeverScrollableScrollPhysics(),
@@ -396,7 +385,6 @@ SizedBox(height: 10,),
                               showErrorSnackbar(context, errorMessage);
                             }
                           },
-
                           child: isLoading
                               ? ListTile(
                             contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -457,13 +445,9 @@ SizedBox(height: 10,),
                       );
                     },
                   ),
-
-
                 ],
               ),
             ),),
-
-
 
             Positioned(
               bottom: 20, // Adjust as needed
@@ -471,8 +455,6 @@ SizedBox(height: 10,),
               right: 20,
               child: Align(
                 alignment: Alignment.bottomRight,
-
-
                 child: Container(
                   decoration: BoxDecoration(
                     color: Colors.white.withOpacity(0.8),
@@ -534,12 +516,10 @@ class PieChartGraph extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-
         Container(
           height: 235,
           child: PieChart(
@@ -574,8 +554,6 @@ class PieChartGraph extends StatelessWidget {
             ),
           ),
         ),
-
-
       ],
     );
   }

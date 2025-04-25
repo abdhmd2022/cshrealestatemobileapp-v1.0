@@ -38,9 +38,10 @@ late String baseurl,adminurl,license_expiry,building;
 /// Load tokens from SharedPreferences
 Future<void> loadTokens() async {
 
+
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  /*Company_Token = prefs.getString("Company_Token") ?? "";*/
-  Company_Token = prefs.getString("company_token") ?? "";
+  /*Company_Token = prefs.getString("company_token") ?? "";*/
+  Company_Token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzY29wZSI6InVzZXIiLCJ0b2tlbiI6ImJjYzYxNjQ2MzhiZmZhNjVmMzVjNjAxYTMwZThmMWYyNTJlMzhjM2QiLCJpYXQiOjE3NDU1NzgwNzIsImV4cCI6MTc0NTY2NDQ3Mn0.ThnCK8kvEusX880BrFc2QPOP1231_XH-E8rArcQe_sU';
   user_email = prefs.getString("user_email") ?? "";
   user_name = prefs.getString("user_name") ?? "";
   company_id = prefs.getInt("company_id") ?? 0;

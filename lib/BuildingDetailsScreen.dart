@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:cshrealestatemobile/BuildingsScreen.dart';
 import 'package:cshrealestatemobile/AnalyticsReport.dart';
@@ -7,6 +8,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'constants.dart';
@@ -25,6 +27,7 @@ class _BuildingReportScreenState extends State<BuildingReportScreen> {
 
   bool showPieChart = true; // toggle state
 
+  int? loadingTileIndex;
 
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -70,6 +73,11 @@ class _BuildingReportScreenState extends State<BuildingReportScreen> {
     final int available = building['flats']
         .where((f) => f['is_occupied'] == 'false')
         .length;
+
+    final completionDate = DateTime.tryParse(building['completion_date'] ?? '');
+    final formattedDate = completionDate != null
+        ? DateFormat('dd-MMM-yy').format(completionDate)
+        : 'N/A';
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
@@ -101,64 +109,191 @@ class _BuildingReportScreenState extends State<BuildingReportScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-
-                      Chip(
-                        avatar: Icon(
-                          Icons.info_outline,
-                          size: 16,
-                          color: building['status'] == 'Open' ? Colors.green : Colors.red,
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black12,
+                          blurRadius: 10,
+                          offset: Offset(0, 4),
                         ),
-                        label: Text(
-                          "${building['status']}",
-                          style: GoogleFonts.poppins(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                            color: building['status'] == 'Open' ? Colors.green.shade800 : Colors.red.shade800,
-                          ),
-                        ),
-                        backgroundColor: building['status'] == 'Open'
-                            ? Colors.green.shade50
-                            : Colors.red.shade50,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                          side: BorderSide(
-                            color: building['status'] == 'Open' ? Colors.green : Colors.red,
-                            width: 1,
-                          ),
-                        ),
-                        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                      ),
-
-                      Container(
-                        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: Colors.grey.shade200,
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Row(
+                      ],
+                    ),
+                    padding: EdgeInsets.only(top: 5,bottom: 5,left: 15,right: 15),
+                    child:                       Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-
-                            GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  showPieChart = !showPieChart;
-                                });
-                              },
-                              child: AnimatedSwitcher(
-                                duration: Duration(milliseconds: 300),
-                                transitionBuilder: (child, animation) =>
-                                    RotationTransition(turns: animation, child: child),
-                                child: Icon(
-                                  showPieChart ? Icons.pie_chart : Icons.bar_chart,
-                                  key: ValueKey(showPieChart),
-                                  color: appbar_color,
+                            Chip(
+                              avatar: Icon(
+                                Icons.info_outline,
+                                size: 16,
+                                color: building['status'] == 'Open' ? Colors.green : Colors.red,
+                              ),
+                              label: Text(
+                                "${building['status']}",
+                                style: GoogleFonts.poppins(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w500,
+                                  color: building['status'] == 'Open' ? Colors.green.shade800 : Colors.red.shade800,
                                 ),
                               ),
+                              backgroundColor: building['status'] == 'Open'
+                                  ? Colors.green.shade50
+                                  : Colors.red.shade50,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
+                                side: BorderSide(
+                                  color: building['status'] == 'Open' ? Colors.green : Colors.red,
+                                  width: 1,
+                                ),
+                              ),
+                              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                            ),
+
+                            // Completion Date Chip
+                            Chip(
+                              avatar: Icon(
+                                Icons.calendar_today,
+                                size: 16,
+                                color: appbar_color,
+                              ),
+                              label: Text(
+                                'Completed: $formattedDate',
+                                style: GoogleFonts.poppins(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w500,
+                                  color: appbar_color.shade700,
+                                ),
+                              ),
+                              backgroundColor: appbar_color.withOpacity(0.1),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
+                                side: BorderSide(color: appbar_color, width: 1),
+                              ),
+                              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                             ),
                           ],
+                        ),
+
+                      ],
+                    ),
+
+                  ),
+
+
+                  SizedBox(height: 10),
+
+                  Stack(
+                    children: [
+                      // Main chart container
+                      Container(
+                        height: 315,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(16),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black12,
+                              blurRadius: 10,
+                              offset: Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        padding: EdgeInsets.all(20),
+                        child: Container(
+                          height: MediaQuery.of(context).size.height * 0.4,
+                          width: MediaQuery.of(context).size.width,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Expanded(
+                                child: showPieChart
+                                    ? PieChartGraph(
+                                  occupied: occupied,
+                                  available: available,
+                                  buildingName: building['name'],
+                                )
+                                    : BarChartGraph(
+                                  occupied: occupied,
+                                  available: available,
+                                  buildingName: building['name'],
+                                ),
+                              ),
+                              SizedBox(height: 10),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 0),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Container(
+                                          width: 15,
+                                          height: 15,
+                                          decoration: BoxDecoration(
+                                            color: Colors.orangeAccent,
+                                            shape: BoxShape.circle,
+                                          ),
+                                        ),
+                                        SizedBox(width: 8),
+                                        Text('Occupied'),
+                                      ],
+                                    ),
+                                    SizedBox(width: 16),
+                                    Row(
+                                      children: [
+                                        Container(
+                                          width: 15,
+                                          height: 15,
+                                          decoration: BoxDecoration(
+                                            color: Colors.blueAccent,
+                                            shape: BoxShape.circle,
+                                          ),
+                                        ),
+                                        SizedBox(width: 8),
+                                        Text('Available'),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+
+                      // Positioned toggle button
+                      Positioned(
+                        top: 10,
+                        right: 10,
+                        child: Container(
+                          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: Colors.grey.shade200,
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                showPieChart = !showPieChart;
+                              });
+                            },
+                            child: AnimatedSwitcher(
+                              duration: Duration(milliseconds: 300),
+                              transitionBuilder: (child, animation) =>
+                                  RotationTransition(turns: animation, child: child),
+                              child: Icon(
+                                showPieChart ? Icons.pie_chart : Icons.bar_chart,
+                                key: ValueKey(showPieChart),
+                                color: appbar_color,
+                              ),
+                            ),
+                          ),
                         ),
                       ),
                     ],
@@ -169,65 +304,6 @@ class _BuildingReportScreenState extends State<BuildingReportScreen> {
 
 
 
-                  SizedBox(height: 25),
-
-
-                  showPieChart
-                      ? PieChartGraph(
-                    occupied: occupied,
-                    available: available,
-                    buildingName: building['name'],
-                  )
-                      : BarChartGraph(
-                    occupied: occupied,
-                    available: available,
-                    buildingName: building['name'],
-                  ),
-
-
-
-                  SizedBox(height: 10),
-
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        // Red Color for occupied
-                        Row(
-                          children: [
-                            Container(
-                              width: 15,
-                              height: 15,
-                              decoration: BoxDecoration(
-                                color: Colors.orangeAccent,
-                                shape: BoxShape.circle, // Make it round
-                              ),
-
-                            ),
-                            SizedBox(width: 8),
-                            Text('Occupied'),
-                          ],
-                        ),
-                        SizedBox(width: 16),
-                        // Green Color for Available
-                        Row(
-                          children: [
-                            Container(
-                              width: 15,
-                              height: 15,
-                              decoration: BoxDecoration(
-                                color: Colors.blueAccent,
-                                shape: BoxShape.circle, // Make it round
-                              ),
-                            ),
-                            SizedBox(width: 8),
-                            Text('Available'),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
 
 SizedBox(height: 10,),
                   ListView.builder(
@@ -237,10 +313,10 @@ SizedBox(height: 10,),
                     itemBuilder: (context, index) {
                       final flat = building['flats'][index];
                       final flat_id = flat['id'];
-
                       final isOccupied = flat['is_occupied'] == 'true';
                       final flatName = flat['name'] ?? 'N/A';
                       final flatType = flat['flat_type']?['name'] ?? 'N/A';
+                      final isLoading = loadingTileIndex == index;
 
                       return Container(
                         margin: EdgeInsets.symmetric(vertical: 2),
@@ -257,14 +333,22 @@ SizedBox(height: 10,),
                         ),
                         child: GestureDetector(
                           onTap: () async {
+                            setState(() {
+                              loadingTileIndex = index;
+                            });
+
                             final response = await http.get(
-                              Uri.parse('$baseurl/master/flat/$flat_id'), // replace with your actual endpoint
+                              Uri.parse('$baseurl/master/flat/$flat_id'),
                               headers: {
-                                "Authorization": "Bearer $Company_Token", // replace with your token
+                                "Authorization": "Bearer $Company_Token",
                                 "Content-Type": "application/json",
                               },
                             );
                             final data = json.decode(response.body);
+
+                            setState(() {
+                              loadingTileIndex = null;
+                            });
 
                             if (response.statusCode == 200) {
                               final flat = data['data']['flat'];
@@ -276,7 +360,7 @@ SizedBox(height: 10,),
                               final unittype = flat['flat_type']?['name'] ?? 'N/A';
                               final rent = (flat['basic_rent']?.toString() ?? '0') + ' AED';
                               final parking = flat['no_of_parkings']?.toString() ?? 'N/A';
-                              final balcony = 'N/A'; // if available, replace with actual key
+                              final balcony = 'N/A';
                               final bathrooms = flat['no_of_bathrooms']?.toString() ?? 'N/A';
                               final ownership = flat['ownership'] ?? 'N/A';
                               final basicRent = flat['basic_rent']?.toString() ?? 'N/A';
@@ -313,17 +397,29 @@ SizedBox(height: 10,),
                             }
                           },
 
-                          child: ListTile(
+                          child: isLoading
+                              ? ListTile(
+                            contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                            subtitle: Center(
+                              child: Platform.isIOS
+                                  ? const CupertinoActivityIndicator(radius: 18)
+                                  : CircularProgressIndicator(
+                                valueColor: AlwaysStoppedAnimation<Color>(appbar_color),
+                              ),
+
+                            )
+                          )
+                              : ListTile(
                             contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                             leading: Container(
                               padding: EdgeInsets.all(6),
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                color: isOccupied ? Colors.orange.shade100 : Colors.blue.shade100,
+                                color: isOccupied ? Colors.orange.shade100 : appbar_color.withOpacity(0.2),
                               ),
                               child: Icon(
                                 isOccupied ? Icons.home_work_rounded : Icons.home_outlined,
-                                color: isOccupied ? Colors.orange : Colors.blue,
+                                color: isOccupied ? Colors.orange : appbar_color,
                                 size: 24,
                               ),
                             ),
@@ -341,94 +437,23 @@ SizedBox(height: 10,),
                                 color: Colors.grey.shade600,
                               ),
                             ),
-                            trailing: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Container(
-                                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                                  decoration: BoxDecoration(
-                                    color: isOccupied ? Colors.orange.shade50 : Colors.green.shade50,
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
-                                  child: Text(
-                                    isOccupied ? 'Occupied' : 'Available',
-                                    style: GoogleFonts.poppins(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w500,
-                                      color: isOccupied ? Colors.orange : Colors.green,
-                                    ),
-                                  ),
+                            trailing: Container(
+                              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: isOccupied ? Colors.orange.shade50 : appbar_color.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Text(
+                                isOccupied ? 'Occupied' : 'Available',
+                                style: GoogleFonts.poppins(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w500,
+                                  color: isOccupied ? Colors.orange : appbar_color,
                                 ),
-                                SizedBox(width: 8),
-
-
-
-                                /*IconButton(
-                                  icon: Icon(Icons.arrow_forward_ios_rounded, size: 18, color: Colors.grey.shade600),
-                                  onPressed: () async {
-                                    final response = await http.get(
-                                      Uri.parse('$baseurl/master/flat/$flat_id'), // replace with your actual endpoint
-                                      headers: {
-                                        "Authorization": "Bearer $Company_Token", // replace with your token
-                                        "Content-Type": "application/json",
-                                      },
-                                    );
-                                    final data = json.decode(response.body);
-
-                                    if (response.statusCode == 200) {
-                                      final flat = data['data']['flat'];
-
-                                      final unitno = flat['name'] ?? 'N/A';
-                                      final buildingName = flat['building']?['name'] ?? 'N/A';
-                                      final area = flat['building']?['area']?['name'] ?? 'N/A';
-                                      final emirate = flat['building']?['area']?['state']?['name'] ?? 'N/A';
-                                      final unittype = flat['flat_type']?['name'] ?? 'N/A';
-                                      final rent = (flat['basic_rent']?.toString() ?? '0') + ' AED';
-                                      final parking = flat['no_of_parkings']?.toString() ?? 'N/A';
-                                      final balcony = 'N/A'; // if available, replace with actual key
-                                      final bathrooms = flat['no_of_bathrooms']?.toString() ?? 'N/A';
-                                      final ownership = flat['ownership'] ?? 'N/A';
-                                      final basicRent = flat['basic_rent']?.toString() ?? 'N/A';
-                                      final basicSaleValue = flat['basic_sale_value']?.toString() ?? 'N/A';
-                                      final isExempt = flat['is_exempt'] ?? 'false';
-                                      final amenities = (flat['amenities'] as List)
-                                          .map<String>((a) => a['amenity']['name'].toString())
-                                          .toList();
-
-                                      showDialog(
-                                        context: context,
-                                        builder: (context) {
-                                          return AvailableUnitsDialog(
-                                            unitno: unitno,
-                                            area: area,
-                                            building_name: buildingName,
-                                            emirate: emirate,
-                                            unittype: unittype,
-                                            rent: rent,
-                                            parking: parking,
-                                            balcony: balcony,
-                                            bathrooms: bathrooms,
-                                            ownership: ownership,
-                                            basicRent: basicRent,
-                                            basicSaleValue: basicSaleValue,
-                                            isExempt: isExempt,
-                                            amenities: amenities,
-                                          );
-                                        },
-                                      );
-                                    } else {
-                                      final errorMessage = data['message'] ?? 'Unknown error occurred';
-                                      showErrorSnackbar(context, errorMessage);
-                                    }
-                                  },
-
-                                ),*/
-                              ],
+                              ),
                             ),
-
                           ),
                         ),
-
                       );
                     },
                   ),
@@ -516,7 +541,7 @@ class PieChartGraph extends StatelessWidget {
       children: [
 
         Container(
-          height: 275,
+          height: 235,
           child: PieChart(
             PieChartData(
               centerSpaceRadius: 0,
@@ -634,7 +659,7 @@ class BarChartGraph extends StatelessWidget {
               barRods: [
                 BarChartRodData(
                   toY: occupied.toDouble(),
-                  width: 30,
+                  width: 40,
                   gradient: LinearGradient(
                     colors: [Colors.orangeAccent.shade100,Colors.orangeAccent.shade200, Colors.orangeAccent.shade200], // Gradient background
                     begin: Alignment.topCenter,
@@ -648,11 +673,10 @@ class BarChartGraph extends StatelessWidget {
               barRods: [
                 BarChartRodData(
                   toY: available.toDouble(),
-                  width: 30,
+                  width: 40,
                   gradient: LinearGradient(
                     colors: [appbar_color.withOpacity(0.5),appbar_color.withOpacity(0.7), appbar_color.withOpacity(0.9)], // Gradient background
                     begin: Alignment.topCenter,
-
                     end: Alignment.bottomCenter,
                   ),                  borderRadius: BorderRadius.circular(4),
                 ),

@@ -174,61 +174,88 @@ class _LandlordDashboardScreenState extends State<LandlordDashboardScreen> with 
                 ),
               )
                   :
-              Text(
-                'Unit(s) Overview',
-                style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 16),
+
+              SizedBox(height: 0),
 
               if(buildingNames.isNotEmpty)...[
-                Expanded(
-                  flex: 1,
 
-                  child: BarGraph(occupiedUnits: occupiedUnits, buildingNames: buildingNames,availableUnits: availableUnits,),
-
-                ),
-
-                SizedBox(height: 10),
-
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      // Red Color for occupied
-                      Row(
-                        children: [
-                          Container(
-                            width: 15,
-                            height: 15,
-                            decoration: BoxDecoration(
-                              color: Colors.orangeAccent.shade200,
-                              shape: BoxShape.circle, // Make it round
-                            ),
-                          ),
-                          SizedBox(width: 8),
-                          Text('Occupied'),
-                        ],
-                      ),
-                      SizedBox(width: 16),
-                      // Green Color for Available
-                      Row(
-                        children: [
-                          Container(
-                            width: 15,
-                            height: 15,
-                            decoration: BoxDecoration(
-                              color: appbar_color.withOpacity(0.7),
-                              shape: BoxShape.circle, // Make it round
-                            ),
-                          ),
-                          SizedBox(width: 8),
-                          Text('Available'),
-                        ],
+                Container(
+                  height: 370,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black12,
+                        blurRadius: 10,
+                        offset: Offset(0, 4),
                       ),
                     ],
                   ),
+                  padding: EdgeInsets.all(20),
+                  child: Container(
+                    height: MediaQuery.of(context).size.height * 0.4,
+                    width: MediaQuery.of(context).size.width,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+
+                        Text(
+                          'Unit(s) Overview',
+                          style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.bold),
+                        ),
+
+                        SizedBox(height: 20),
+                        Expanded(
+                          flex: 1,
+
+                          child: BarGraph(occupiedUnits: occupiedUnits, buildingNames: buildingNames,availableUnits: availableUnits,),
+
+                        ),                        SizedBox(height: 10),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Row(
+                                children: [
+                                  Container(
+                                    width: 15,
+                                    height: 15,
+                                    decoration: BoxDecoration(
+                                      color: Colors.orangeAccent,
+                                      shape: BoxShape.circle,
+                                    ),
+                                  ),
+                                  SizedBox(width: 8),
+                                  Text('Occupied'),
+                                ],
+                              ),
+                              SizedBox(width: 16),
+                              Row(
+                                children: [
+                                  Container(
+                                    width: 15,
+                                    height: 15,
+                                    decoration: BoxDecoration(
+                                      color: Colors.blueAccent,
+                                      shape: BoxShape.circle,
+                                    ),
+                                  ),
+                                  SizedBox(width: 8),
+                                  Text('Available'),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
+
+
+
                 SizedBox(height: 16),
 
               ],
@@ -279,7 +306,7 @@ class BarGraph extends StatelessWidget {
 
     // Ensure the chart width is at least as wide as the screen
     double screenWidth = MediaQuery.of(context).size.width;
-    double chartWidth = calculatedWidth > screenWidth ? calculatedWidth : screenWidth-20;
+    double chartWidth = calculatedWidth > screenWidth ? calculatedWidth : screenWidth-60;
 
     // Calculate maximum value for the left titles
     int maxUnits = (occupiedUnits + availableUnits).reduce((a, b) => a > b ? a : b);

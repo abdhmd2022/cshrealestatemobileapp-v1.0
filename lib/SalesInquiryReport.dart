@@ -404,6 +404,10 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
 
   bool isLoading = false;
 
+  int inquiryCurrentPage = 1;
+  int totalInquiryPages = 1;
+  bool isFetchingMoreInquiries = false;
+
   @override
   void initState() {
     super.initState();
@@ -676,47 +680,60 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
   DateTime endDate = DateTime(DateTime.now().year, DateTime.now().month + 1, 0); // ✅ Last day of current month
   bool showFilters = false; // ✅ Toggle filter visibility
 
-  Future<void> fetchInquiries() async {
-    setState(() {
-      isLoading = true;
-    });
+  Future<void> fetchInquiries({int page = 1}) async {
+    if (isFetchingMoreInquiries) return; // 🛡 Prevent double requests
 
-    print('Fetching inquiries...');
+    if (page == 1) {
+      setState(() {
+        isLoading = true;
+      });
+    } else {
+      setState(() {
+        isFetchingMoreInquiries = true;
+      });
+    }
 
-    filteredInquiries.clear();
-    salesinquiry.clear();
-    _expandedinquirys.clear();
+    print('Fetching inquiries page $page...');
 
-    final url = '$baseurl/lead';
+    final url = '$baseurl/lead?page=$page';
     String token = 'Bearer $Company_Token'; // Auth token
-    print("url of inquiry: $url");
+    print("Inquiry URL: $url");
 
     Map<String, String> headers = {
       'Authorization': token,
       "Content-Type": "application/json"
     };
+
     try {
       final response = await http.get(Uri.parse(url), headers: headers);
-      if (response.statusCode == 200) {
-        setState(() {
-          print("fetched record for inquiries : ${response.body}");
-          final jsonResponse = json.decode(response.body);
-          salesinquiry = parseInquiries(jsonResponse).reversed.toList();
-          _expandedinquirys = List.generate(salesinquiry.length, (index) => false);
 
-          filterInquiries(); // ✅ Apply default filtering after fetching
-        });
+      if (response.statusCode == 200) {
+        final jsonResponse = json.decode(response.body);
+
+        if (page == 1) {
+          salesinquiry = parseInquiries(jsonResponse).reversed.toList();
+        } else {
+          salesinquiry.addAll(parseInquiries(jsonResponse).reversed.toList());
+        }
+
+        if (jsonResponse.containsKey('meta')) {
+          totalInquiryPages = (jsonResponse['meta']['totalCount'] / jsonResponse['meta']['size']).ceil();
+        }
+
+        _expandedinquirys = List.generate(salesinquiry.length, (index) => false);
+
+        filterInquiries();
       } else {
         print("Error: ${response.statusCode}");
-        print("Message: ${response.body}");
         throw Exception('Failed to load data');
       }
     } catch (e) {
-      print('Error fetching data: $e');
+      print('Error fetching inquiries: $e');
     }
 
     setState(() {
       isLoading = false;
+      isFetchingMoreInquiries = false;
     });
   }
 
@@ -1033,13 +1050,38 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
                         ),
                       ),
                     )
-                        : ListView.builder(
-                      itemCount: filteredInquiries.length,
-                      itemBuilder: (context, index) {
-                        final inquiry = filteredInquiries[index];
-                        return _buildinquiryCard(inquiry, index);
+                        : NotificationListener<ScrollNotification>(
+                      onNotification: (ScrollNotification scrollInfo) {
+                        if (!isFetchingMoreInquiries &&
+                            scrollInfo.metrics.pixels >= scrollInfo.metrics.maxScrollExtent - 50 &&
+                            inquiryCurrentPage < totalInquiryPages) {
+                          inquiryCurrentPage++;
+                          fetchInquiries(page: inquiryCurrentPage);
+                        }
+                        return false;
                       },
+                      child: ListView.builder(
+                        itemCount: filteredInquiries.length + (isFetchingMoreInquiries ? 1 : 0),
+                        itemBuilder: (context, index) {
+                          if (isFetchingMoreInquiries && index == filteredInquiries.length) {
+                            return Padding(
+                              padding: EdgeInsets.all(12.0),
+                              child: Center(
+                                child: Platform.isAndroid
+                                    ? CircularProgressIndicator(
+                                  valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+                                )
+                                    : CupertinoActivityIndicator(radius: 15),
+                              ),
+                            );
+                          }
+
+                          final inquiry = filteredInquiries[index];
+                          return _buildinquiryCard(inquiry, index);
+                        },
+                      ),
                     ),
+
                   ),
                 ),
               ],
@@ -1197,7 +1239,7 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
                     )
                 )
             ),
-            
+
             if (_expandedinquirys[index])
               _buildExpandedinquiryView(inquiry),
 

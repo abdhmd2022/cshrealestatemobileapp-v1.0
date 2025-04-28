@@ -55,6 +55,22 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
 
   List<dynamic> feedbackHistoryList = [];
 
+  String getFormattedDateLabel(DateTime date) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final yesterday = today.subtract(Duration(days: 1));
+    final messageDate = DateTime(date.year, date.month, date.day);
+
+    if (messageDate == today) {
+      return "Today";
+    } else if (messageDate == yesterday) {
+      return "Yesterday";
+    } else {
+      return "${date.day}/${date.month}/${date.year}";
+    }
+  }
+
+
   @override
   void initState() {
     super.initState();
@@ -312,79 +328,131 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                         : ListView.builder(
                       controller: scrollController,
                       itemCount: filteredData.length + (isLoadingMore ? 1 : 0),
-                      itemBuilder: (contextt, index) {
-                        if (isLoadingMore && index == filteredData.length) {
-                          return Center(
-                            child: Padding(
-                              padding: EdgeInsets.all(8),
-                              child: CircularProgressIndicator(),
+                        itemBuilder: (contextt, index) {
+                          if (isLoadingMore && index == filteredData.length) {
+                            return Center(
+                              child: Padding(
+                                padding: EdgeInsets.all(8),
+                                child: CircularProgressIndicator(),
+                              ),
+                            );
+                          }
+
+                          var item = filteredData[index];
+
+                          bool isCurrentUserComment = false;
+
+                          if (currentScope == 'user') {
+                            isCurrentUserComment = item['created_by'] != null;
+                          } else if (currentScope == 'tenant') {
+                            isCurrentUserComment = item['tenant_id'] != null;
+                          }
+
+                          String username = item['tenant_id'] != null
+                              ? (item["tenant"] != null ? (item["tenant"]["name"] ?? "Tenant") : "Tenant")
+                              : (item["created_user"] != null ? (item["created_user"]["name"] ?? "Admin") : "Admin");
+
+                          // Get current message date (only date part)
+                          DateTime messageDate = DateTime.parse(item["created_at"]).toLocal();
+                          String messageDateString = "${messageDate.year}-${messageDate.month}-${messageDate.day}";
+
+                          // Check if we need to show a date separator
+                          bool showDateSeparator = false;
+                          if (index == 0) {
+                            showDateSeparator = true;
+                          } else {
+                            var previousItem = filteredData[index - 1];
+                            DateTime previousDate = DateTime.parse(previousItem["created_at"]).toLocal();
+                            String previousDateString = "${previousDate.year}-${previousDate.month}-${previousDate.day}";
+                            if (messageDateString != previousDateString) {
+                              showDateSeparator = true;
+                            }
+                          }
+
+                          List<Widget> widgets = [];
+
+                          if (showDateSeparator) {
+                            widgets.add(
+                              Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 10),
+                                child: Center(
+                                  child: Container(
+                                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey.shade300,
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: Text(
+                                      getFormattedDateLabel(messageDate),
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w500,
+                                        color: Colors.black87,
+                                      ),
+                                    ),
+
+                                  ),
+                                ),
+                              ),
+                            );
+                          }
+
+                          widgets.add(
+                            Container(
+                              alignment: isCurrentUserComment ? Alignment.centerRight : Alignment.centerLeft,
+                              margin: EdgeInsets.symmetric(vertical: 6),
+                              child: Container(
+                                constraints: BoxConstraints(
+                                  maxWidth: MediaQuery.of(contextt).size.width * 0.7,
+                                ),
+                                padding: EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  color: isCurrentUserComment ? appbar_color.withOpacity(0.9) : Colors.grey.shade300,
+                                  borderRadius: BorderRadius.only(
+                                    topLeft: Radius.circular(16),
+                                    topRight: Radius.circular(16),
+                                    bottomLeft: isCurrentUserComment ? Radius.circular(16) : Radius.circular(0),
+                                    bottomRight: isCurrentUserComment ? Radius.circular(0) : Radius.circular(16),
+                                  ),
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      username,
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 13,
+                                        color: isCurrentUserComment ? Colors.white70 : Colors.black87,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                    SizedBox(height: 4),
+                                    Text(
+                                      item["description"] ?? "",
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 15,
+                                        color: isCurrentUserComment ? Colors.white : Colors.black87,
+                                      ),
+                                    ),
+                                    SizedBox(height: 4),
+                                    Text(
+                                      formatDate(item["created_at"]),
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 10,
+                                        color: isCurrentUserComment ? Colors.white60 : Colors.black54,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
                             ),
+                          );
+
+                          return Column(
+                            children: widgets,
                           );
                         }
 
-                        var item = filteredData[index];
-
-                        bool isCurrentUserComment = false;
-
-                        if (currentScope == 'user') {
-                          isCurrentUserComment = item['created_by'] != null;
-                        } else if (currentScope == 'tenant') {
-                          isCurrentUserComment = item['tenant_id'] != null;
-                        }
-
-                        String username = item['tenant_id'] != null
-                            ? (item["tenant"] != null ? (item["tenant"]["name"] ?? "Tenant") : "Tenant")
-                            : (item["created_user"] != null ? (item["created_user"]["name"] ?? "Admin") : "Admin");
-
-                        return Container(
-                          alignment: isCurrentUserComment ? Alignment.centerRight : Alignment.centerLeft,
-                          margin: EdgeInsets.symmetric(vertical: 6),
-                          child: Container(
-                            constraints: BoxConstraints(
-                              maxWidth: MediaQuery.of(contextt).size.width * 0.7,
-                            ),
-                            padding: EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: isCurrentUserComment ? appbar_color.withOpacity(0.9) : Colors.grey.shade300,
-                              borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(16),
-                                topRight: Radius.circular(16),
-                                bottomLeft: isCurrentUserComment ? Radius.circular(16) : Radius.circular(0),
-                                bottomRight: isCurrentUserComment ? Radius.circular(0) : Radius.circular(16),
-                              ),
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  username,
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 13,
-                                    color: isCurrentUserComment ? Colors.white70 : Colors.black87,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                                SizedBox(height: 4),
-                                Text(
-                                  item["description"] ?? "",
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 15,
-                                    color: isCurrentUserComment ? Colors.white : Colors.black87,
-                                  ),
-                                ),
-                                SizedBox(height: 4),
-                                Text(
-                                  formatDate(item["created_at"]),
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 10,
-                                    color: isCurrentUserComment ? Colors.white60 : Colors.black54,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
                     ),
                   ),
 
@@ -701,14 +769,19 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
   Future<void> fetchTickets({int page = 1}) async {
     if (isFetchingMore) return;
 
-    setState(() {
-      isFetchingMore = true;
-      if (page == 1) isLoading = true;
-    });
+    if (page == 1) {
+      setState(() {
+        isLoading = true;
+      });
+    } else {
+      setState(() {
+        isFetchingMore = true;
+      });
+    }
 
     String url = is_admin
-        ? "$baseurl/maintenance/ticket"
-        : "$baseurl/maintenance/ticket/?tenant_id=$user_id&flat_id=$flat_id";
+        ? "$baseurl/maintenance/ticket?page=$page"
+        : "$baseurl/maintenance/ticket/?tenant_id=$user_id&flat_id=$flat_id&page=$page";
 
     print('Fetching tickets from URL: $url');
 
@@ -787,8 +860,8 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
     }
 
     setState(() {
-      isFetchingMore = false;
       isLoading = false;
+      isFetchingMore = false;
     });
   }
 
@@ -1294,44 +1367,41 @@ print(message);
                 ),
               )
             ) :
+            Expanded(
+              child: NotificationListener<ScrollNotification>(
+                onNotification: (ScrollNotification scrollInfo) {
+                  if (!isFetchingMore &&
+                      scrollInfo.metrics.pixels >= scrollInfo.metrics.maxScrollExtent - 50 &&
+                      currentPage < totalPages) {
+                    currentPage++;
+                    fetchTickets(page: currentPage);
+                  }
+                  return false;
+                },
+                child: ListView.builder(
+                  itemCount: filteredTickets.length + (isFetchingMore ? 1 : 0), // 🔥 Corrected
+                  itemBuilder: (context, index) {
+                    if (isFetchingMore && index == filteredTickets.length) {
+                      return Padding(
+                        padding: EdgeInsets.all(12.0),
+                        child: Center(
+                          child: Platform.isAndroid
+                              ? CircularProgressIndicator(
+                            valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+                          )
+                              : CupertinoActivityIndicator(radius: 15),
+                        ),
+                      );
+                    }
 
-    Expanded(
-        child: NotificationListener<ScrollNotification>(
-        onNotification: (ScrollNotification scrollInfo) {
-      if (!isFetchingMore &&
-          scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent &&
-          currentPage < totalPages) {
-        currentPage++;
-        fetchTickets(page: currentPage);
-      }
-      return false;
-    },
-    child: ListView.builder(
-    itemCount: filteredTickets.length + 1, // Extra item for loader
-    itemBuilder: (context, index) {
-    if (index == filteredTickets.length) {
-    return isFetchingMore
-    ? Padding(
-    padding: EdgeInsets.all(12.0),
-    child: Center(
-    child: Platform.isAndroid
-    ? CircularProgressIndicator(
-    valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
-    ) // Android: Blue color
-        : CupertinoActivityIndicator(
-    radius: 15, // Explicit size for visibility on iOS
-    ), // iOS: Large Cupertino loader
-    ),
-    )
-        : SizedBox.shrink();
-    }
-    final ticket = filteredTickets[index];
-    return _buildTicketCard(ticket, index);
-    },
-    ),
-    ),
-    ),
-    ],
+                    final ticket = filteredTickets[index];
+                    return _buildTicketCard(ticket, index);
+                  },
+                ),
+              ),
+            )
+
+          ],
         ),
       ),
     floatingActionButton: Container(

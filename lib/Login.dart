@@ -139,9 +139,19 @@ class _LoginPageState extends State<Login> {
 
   Future<void> _initSharedPreferences() async {
      prefs= await SharedPreferences.getInstance();
+     bool savedRememberMe = prefs!.getBool('remember_me') ?? false;
+     if (savedRememberMe) {
+       emailController.text = prefs!.getString('user_email') ?? '';
+       passwordController.text = prefs!.getString('password') ?? '';
+       setState(() {
+         remember_me = true;
+       });
+     }
   }
 
   Future<void> _adminlogin(String email, String password) async {
+
+    prefs!.clear();
 
     String url = "$OAuth_URL/oauth/token";
 
@@ -186,8 +196,11 @@ class _LoginPageState extends State<Login> {
           User firstUser = usersList[0];
 
           await prefs.setInt("user_id", firstUser.id);
+          await prefs.setBool('remember_me', true);
           await prefs.setString("scope", responseData["scope"]);
           await prefs.setString("user_name", firstUser.name);
+          await prefs.setString("password", password);
+
           await prefs.setString("user_email", firstUser.email);
           await prefs.setString("company_token", firstUser.token);
           await prefs.setInt("company_id", firstUser.companyId ?? 0);
@@ -233,10 +246,14 @@ class _LoginPageState extends State<Login> {
           }
         }
       } else {
+        await prefs!.setBool('remember_me', false);
+
         final errorMessage = responseData['message'] ?? 'Unknown error occurred';
         showErrorSnackbar(context, errorMessage);
       }
     } catch (e) {
+      await prefs!.setBool('remember_me', false);
+
       final errorMessage = responseData['message'] ?? 'Unknown error occurred';
       showErrorSnackbar(context, errorMessage);
     } finally {
@@ -344,6 +361,8 @@ class _LoginPageState extends State<Login> {
   // new tenant login function
 
   Future<void> tenantLogin(String email, String password) async {
+    prefs!.clear();
+
     String loginUrl = "$OAuth_URL/oauth/token";
     setState(() => _isLoading = true);
 
@@ -378,9 +397,13 @@ class _LoginPageState extends State<Login> {
 
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setInt("user_id", tenantId);
+      await prefs.setBool('remember_me', true);
+
       await prefs.setString("user_name", user['name']);
       await prefs.setString("scope", loginData["scope"]);
       await prefs.setString("user_email", user['email']);
+      await prefs.setString("password", password);
+
       await prefs.setString("company_token", token);
       await prefs.setInt("company_id", user['company_id'] ?? 0);
       await prefs.setBool('is_admin', false);
@@ -454,9 +477,13 @@ class _LoginPageState extends State<Login> {
           MaterialPageRoute(builder: (context) => TenantDashboard()),
         );
       } else {
+        await prefs!.setBool('remember_me', false);
+
         showErrorSnackbar(context, "No flats found for this tenant.");
       }
     } catch (e) {
+      await prefs!.setBool('remember_me', false);
+
       showErrorSnackbar(context, "Something went wrong during login.");
     } finally {
       setState(() => _isLoading = false);
@@ -471,6 +498,8 @@ class _LoginPageState extends State<Login> {
       tenantLogin(email, password);
     }
   }
+
+
 
   /*Future<void> _adminlogin(String email, String password) async {
 

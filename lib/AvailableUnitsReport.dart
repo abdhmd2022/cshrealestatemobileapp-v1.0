@@ -28,6 +28,10 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
 
   bool isLoading = true;
 
+  int currentFlatPage = 1;
+  int totalFlatPages = 1;
+  bool isFetchingMoreFlats = false;
+
   String searchQuery = "";
   String name = "", email = "";
 
@@ -69,25 +73,37 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
     });
   }
 
-  void fetchFlats() async {
-    setState(() {
-      isLoading = true;
-    });
-    try {
-      List<Flat> flats = await ApiService().fetchFlats();
-      setState(() {
-        allUnits = flats;
-        allUnits = allUnits.reversed.toList();
-        filteredUnits = allUnits;
-        isLoading = false;
+  Future<void> fetchFlats({int page = 1}) async {
+    if (isFetchingMoreFlats) return;
 
+    if (page == 1) {
+      setState(() {
+        isLoading = true;
+      });
+    } else {
+      setState(() {
+        isFetchingMoreFlats = true;
+      });
+    }
+
+    try {
+      List<Flat> flats = await ApiService().fetchFlats(page: page);
+      setState(() {
+        if (page == 1) {
+          allUnits = flats.reversed.toList();
+        } else {
+          allUnits.addAll(flats.reversed.toList());
+        }
+        filteredUnits = allUnits;
       });
     } catch (e) {
       print("Error fetching flats: $e");
-      setState(() {
-        isLoading = false;
-      });
     }
+
+    setState(() {
+      isLoading = false;
+      isFetchingMoreFlats = false;
+    });
   }
 
   Future<void> fetchFiltersData() async {
@@ -740,100 +756,131 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
                   )
                 ) :
                 Expanded(
+                  child: NotificationListener<ScrollNotification>(
+                    onNotification: (ScrollNotification scrollInfo) {
+                      if (!isFetchingMoreFlats &&
+                          scrollInfo.metrics.pixels >= scrollInfo.metrics.maxScrollExtent - 50 &&
+                          currentFlatPage < totalFlatPages) {
+                        currentFlatPage++;
+                        fetchFlats(page: currentFlatPage);
+                      }
+                      return false;
+                    },
                     child: ListView.builder(
-                        itemCount: filteredUnits.length,
-                        itemBuilder: (context, index) {
-                          final unit = filteredUnits[index];
-                          return Card(
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                              elevation: 4,
-                              margin: EdgeInsets.only(bottom: 8,left:10,right:10),
-                              color:Colors.white,
+                      itemCount: filteredUnits.length + (isFetchingMoreFlats ? 1 : 0),
+                      itemBuilder: (context, index) {
+                        if (isFetchingMoreFlats && index == filteredUnits.length) {
+                          return Padding(
+                            padding: EdgeInsets.all(12.0),
+                            child: Center(
+                              child: Platform.isAndroid
+                                  ? CircularProgressIndicator(
+                                valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+                              )
+                                  : CupertinoActivityIndicator(radius: 15),
+                            ),
+                          );
+                        }
 
-                              child:Container(
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(16.0),
-                                  ),
-                                  padding: const EdgeInsets.all(18.0),
-                                child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                        final unit = filteredUnits[index];
+
+                        return Card(
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                          elevation: 4,
+                          margin: EdgeInsets.only(bottom: 8, left: 10, right: 10),
+                          color: Colors.white,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(16.0),
+                            ),
+                            padding: const EdgeInsets.all(18.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    const Icon(Icons.home),
+                                    const SizedBox(width: 10),
+                                    Expanded(
+                                      child: Text(
+                                        unit.flatTypeName,
+                                        style: GoogleFonts.poppins(fontSize: 16),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 10),
+                                Row(
+                                  children: [
+                                    const Icon(Icons.location_city),
+                                    const SizedBox(width: 10),
+                                    Expanded(
+                                      child: Text(
+                                        unit.buildingName,
+                                        style: GoogleFonts.poppins(fontSize: 16),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 10),
+                                Row(
+                                  children: [
+                                    const Icon(Icons.location_on),
+                                    const SizedBox(width: 10),
+                                    Expanded(
+                                      child: Text(
+                                        "${unit.areaName}, ${unit.stateName}",
+                                        style: GoogleFonts.poppins(fontSize: 16),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 10),
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 0, bottom: 0),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.center,
                                     children: [
-                                      Row(
-                                        children: [
-                                          const Icon(Icons.home),
-                                          const SizedBox(width: 10),
-                                          Expanded(
-                                            child: Text(
-                                              unit.flatTypeName,
-                                              style: GoogleFonts.poppins(fontSize: 16),
+                                      _buildDecentButton(
+                                        'View',
+                                        Icons.remove_red_eye,
+                                        Colors.orange,
+                                            () {
+                                          showDialog(
+                                            context: context,
+                                            builder: (context) => AvailableUnitsDialog(
+                                              unitno: unit.name,
+                                              area: unit.areaName,
+                                              emirate: unit.stateName,
+                                              unittype: unit.flatTypeName,
+                                              rent: unit.basicRent != null ? "AED ${unit.basicRent}" : "AED N/A",
+                                              parking: unit.noOfParking.toString(),
+                                              balcony: unit.amenities.contains("Balcony") ? "Yes" : "No",
+                                              bathrooms: unit.noOfBathrooms.toString(),
+                                              building_name: unit.buildingName,
+                                              ownership: unit.ownership ?? "N/A",
+                                              basicRent: unit.basicRent?.toString() ?? "N/A",
+                                              basicSaleValue: unit.basicSaleValue?.toString() ?? "N/A",
+                                              isExempt: unit.isExempt ? "true" : "false",
+                                              amenities: unit.amenities,
                                             ),
-                                          ),
-                                        ],
+                                          );
+                                        },
                                       ),
-                                      const SizedBox(height: 10),
-                                      Row(
-                                        children: [
-                                          const Icon(Icons.location_city),
-                                          const SizedBox(width: 10),
-                                          Expanded(
-                                            child: Text(
-                                              unit.buildingName,
-                                              style: GoogleFonts.poppins(fontSize: 16),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      const SizedBox(height: 10),
-                                      Row(
-                                        children: [
-                                          const Icon(Icons.location_on),
-                                          const SizedBox(width: 10),
-                                          Expanded(
-                                            child: Text(
-                                              "${unit.areaName}, ${unit.stateName}",
-                                              style: GoogleFonts.poppins(fontSize: 16),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      const SizedBox(height: 10),
-                                      Padding(
-                                          padding: const EdgeInsets.only(top: 0, bottom: 0),
-                                          child: Row(
-                                              mainAxisAlignment: MainAxisAlignment.center,
-                                              crossAxisAlignment: CrossAxisAlignment.center,
-                                              children: [
-                                                _buildDecentButton(
-                                                  'View',
-                                                  Icons.remove_red_eye,
-                                                  Colors.orange,
-                                                      () {
-                                                    showDialog(
-                                                      context: context,
-                                                      builder: (context) => AvailableUnitsDialog(
-                                                        unitno: unit.name,
-                                                        area: unit.areaName,
-                                                        emirate: unit.stateName,
-                                                        unittype: unit.flatTypeName,
-                                                        rent: unit.basicRent != null ? "AED ${unit.basicRent}" : "AED N/A",
-                                                        parking: unit.noOfParking.toString(),
-                                                        balcony: unit.amenities.contains("Balcony") ? "Yes" : "No",
-                                                        bathrooms: unit.noOfBathrooms.toString(),
-                                                        building_name: unit.buildingName,
+                                    ],
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                )
 
-                                                        ownership: unit.ownership ?? "N/A",
-                                                        basicRent: unit.basicRent?.toString() ?? "N/A",
-                                                        basicSaleValue: unit.basicSaleValue?.toString() ?? "N/A",
-                                                        isExempt: unit.isExempt ? "true" : "false",
-                                                        amenities: unit.amenities,
-                                                      ),
-                                                    );
-                                                  },
-                                                ),
-                                              ]))])
-                              ),
-                              );}))
               ],
             ),
           ),
@@ -1173,11 +1220,11 @@ class ApiService {
       throw Exception("Failed to load amenities");
     }
   }
-  Future<List<Flat>> fetchFlats() async {
-
+  Future<List<Flat>> fetchFlats({int page = 1}) async {
     DateTime now = DateTime.now();
+
     final response = await http.get(
-      Uri.parse("$baseurl/reports/flat/available/date?date=${DateFormat('yyyy-MM-dd').format(now)}"), // Update endpoint if necessary
+      Uri.parse("$baseurl/reports/flat/available/date?date=${DateFormat('yyyy-MM-dd').format(now)}&page=$page"), // 🔥 add page=$page
       headers: {
         "Authorization": "Bearer $Company_Token",
         "Content-Type": "application/json",
@@ -1190,9 +1237,10 @@ class ApiService {
 
       return flatsJson.map((json) => Flat.fromJson(json)).toList();
     } else {
-      throw Exception("Failed to fetch data: ${response.body}");
+      throw Exception("Failed to fetch flats: ${response.body}");
     }
   }
+
 
 }
 

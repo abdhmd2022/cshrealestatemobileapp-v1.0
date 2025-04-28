@@ -339,7 +339,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Ticker
               children: [
                 _buildDashboardButton(Icons.build, 'Maintenance', '', appbar_color, () {
 
-                  Navigator.pushReplacement(
+                  Navigator.push(
                     context,
 
                     MaterialPageRoute(builder: (context) => MaintenanceTicketReport()),          // navigate to users screen

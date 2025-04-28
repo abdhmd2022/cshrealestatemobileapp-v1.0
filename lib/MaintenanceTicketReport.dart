@@ -135,30 +135,26 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
             ),
           ]);});}
 
-  Future<List<dynamic>> fetchCommentHistory(String id) async {
-
-    commentHistoryList.clear();
-
-    String url = '$baseurl/maintenance/comment/?ticket_id=$id';
+  Future<Map<String, dynamic>> fetchCommentHistory(String id, {int page = 1}) async {
+    // ✅ Don't clear list here, let popup manage list updates
+    String url = '$baseurl/maintenance/comment/?ticket_id=$id&page=$page'; // 🔥 Added page=$page
 
     print('url comment $url');
     String token = 'Bearer $Company_Token'; // Auth token
 
     Map<String, String> headers = {
       'Authorization': token,
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
     };
 
     final response = await http.get(Uri.parse(url), headers: headers);
     final Map<String, dynamic> jsonData = jsonDecode(response.body);
 
     if (response.statusCode == 200) {
-
-      commentHistoryList = jsonData["data"]["comments"];
-
+      return jsonData; // 🔥 Return full response (comments + meta info)
+    } else {
+      throw Exception('Failed to load comments');
     }
-    return commentHistoryList;
-
   }
 
   Future<List<dynamic>> fetchFeedbackHistory(String id) async {
@@ -217,16 +213,41 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
     }
   }
 
-  void _showViewCommentPopup(BuildContext contextt, String id) async {
+  void _showViewCommentPopup(BuildContext contextt, String id, String currentScope) async {
     List<dynamic> filteredData = [];
     TextEditingController commentController = TextEditingController();
+    ScrollController scrollController = ScrollController();
     bool isSubmitting = false;
 
-    try {
-      filteredData = await fetchCommentHistory(id);
-    } catch (e) {
-      print('Error fetching data: $e');
+    int currentPage = 1;
+    bool isLoadingMore = false;
+    bool hasMoreData = true;
+    bool scrollListenerAdded = false;
+    bool initialScrollDone = false; // ✅ To scroll once on open
+
+    Future<void> fetchComments({bool loadMore = false}) async {
+      try {
+        var response = await fetchCommentHistory(id, page: currentPage);
+        List<dynamic> newComments = response['data']['comments'] ?? [];
+        var meta = response['meta'];
+
+        if (loadMore) {
+          filteredData.addAll(newComments);
+        } else {
+          filteredData = newComments.toList();
+        }
+
+        if (newComments.isNotEmpty) {
+          currentPage++;
+        }
+
+        hasMoreData = (filteredData.length < meta['totalCount']);
+      } catch (e) {
+        print('Error fetching comments: $e');
+      }
     }
+
+    await fetchComments(); // 🔥 Load first page initially
 
     showModalBottomSheet(
       context: contextt,
@@ -237,12 +258,36 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
       builder: (contextt) {
         return StatefulBuilder(
           builder: (contextt, setState) {
+            if (!scrollListenerAdded) {
+              scrollController.addListener(() async {
+                if (scrollController.position.pixels >= scrollController.position.maxScrollExtent - 100 &&
+                    !isLoadingMore &&
+                    hasMoreData) {
+                  setState(() => isLoadingMore = true);
+
+                  await fetchComments(loadMore: true);
+
+                  setState(() => isLoadingMore = false);
+                }
+              });
+              scrollListenerAdded = true;
+            }
+
+            // 🔥 Auto-scroll to bottom once after popup open
+            if (!initialScrollDone && filteredData.isNotEmpty) {
+              Future.delayed(Duration(milliseconds: 100), () {
+                if (scrollController.hasClients) {
+                  scrollController.jumpTo(scrollController.position.maxScrollExtent);
+                  initialScrollDone = true;
+                }
+              });
+            }
+
             return Container(
               padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
               height: MediaQuery.of(contextt).size.height * 0.7,
               color: Colors.white,
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Header
                   Row(
@@ -263,44 +308,77 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                   // Comments List
                   Expanded(
                     child: filteredData.isEmpty
-                        ? Center(child: Text("No Comments Found",style: GoogleFonts.poppins(),))
+                        ? Center(child: Text("No Comments Found", style: GoogleFonts.poppins()))
                         : ListView.builder(
-                      itemCount: filteredData.length,
+                      controller: scrollController,
+                      itemCount: filteredData.length + (isLoadingMore ? 1 : 0),
                       itemBuilder: (contextt, index) {
-                        var item = filteredData.reversed.toList()[index];
-                        var username = item["created_user"]?["name"] ?? item["tenant"]["name"];
-                        return Card(
-                          margin: EdgeInsets.symmetric(vertical: 8),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          elevation: 5,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(12),
+                        if (isLoadingMore && index == filteredData.length) {
+                          return Center(
+                            child: Padding(
+                              padding: EdgeInsets.all(8),
+                              child: CircularProgressIndicator(),
                             ),
-                            padding: EdgeInsets.all(16),
+                          );
+                        }
+
+                        var item = filteredData[index];
+
+                        bool isCurrentUserComment = false;
+
+                        if (currentScope == 'user') {
+                          isCurrentUserComment = item['created_by'] != null;
+                        } else if (currentScope == 'tenant') {
+                          isCurrentUserComment = item['tenant_id'] != null;
+                        }
+
+                        String username = item['tenant_id'] != null
+                            ? (item["tenant"] != null ? (item["tenant"]["name"] ?? "Tenant") : "Tenant")
+                            : (item["created_user"] != null ? (item["created_user"]["name"] ?? "Admin") : "Admin");
+
+                        return Container(
+                          alignment: isCurrentUserComment ? Alignment.centerRight : Alignment.centerLeft,
+                          margin: EdgeInsets.symmetric(vertical: 6),
+                          child: Container(
+                            constraints: BoxConstraints(
+                              maxWidth: MediaQuery.of(contextt).size.width * 0.7,
+                            ),
+                            padding: EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: isCurrentUserComment ? appbar_color.withOpacity(0.9) : Colors.grey.shade300,
+                              borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(16),
+                                topRight: Radius.circular(16),
+                                bottomLeft: isCurrentUserComment ? Radius.circular(16) : Radius.circular(0),
+                                bottomRight: isCurrentUserComment ? Radius.circular(0) : Radius.circular(16),
+                              ),
+                            ),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
                                   username,
                                   style: GoogleFonts.poppins(
-                                      fontSize: 16, fontWeight: FontWeight.w600),
-                                ),
-                                SizedBox(height: 6),
-                                Text(
-                                  item["description"],
-                                  style: GoogleFonts.poppins(
-                                    color: Colors.grey.shade800,
+                                    fontSize: 13,
+                                    color: isCurrentUserComment ? Colors.white70 : Colors.black87,
                                     fontWeight: FontWeight.w500,
                                   ),
                                 ),
-                                SizedBox(height: 8),
+                                SizedBox(height: 4),
                                 Text(
-                                  "Date: ${formatDate(item["created_at"])}",
-                                  style: GoogleFonts.poppins(color: Colors.grey.shade700),
+                                  item["description"] ?? "",
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 15,
+                                    color: isCurrentUserComment ? Colors.white : Colors.black87,
+                                  ),
+                                ),
+                                SizedBox(height: 4),
+                                Text(
+                                  formatDate(item["created_at"]),
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 10,
+                                    color: isCurrentUserComment ? Colors.white60 : Colors.black54,
+                                  ),
                                 ),
                               ],
                             ),
@@ -310,114 +388,103 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                     ),
                   ),
 
-                  SizedBox(height: 15),
+                  SizedBox(height: 10),
 
-                  // Add New Comment Input
-                  TextField(
-                    controller: commentController,
-                    maxLines: 2,
-                    style: GoogleFonts.poppins(color: Colors.black),
-                    decoration: InputDecoration(
-                      hintText: "Enter your comment...",
-
-                      hintStyle: GoogleFonts.poppins(color: Colors.black54),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide(color: Colors.grey.shade400),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide(color: appbar_color),
-                      ),
-                      filled: true,
-                      fillColor: Colors.white,
-                    ),
-                  ),
-                  SizedBox(height: 15),
-
-                  // Submit Button
-                  Center(
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(14),
-                      onTap: isSubmitting
-                          ? null
-                          : () async {
-                        if (commentController.text.isEmpty) {
-                          ScaffoldMessenger.of(contextt).showSnackBar(
-                            SnackBar(
-                              content: Text("Please enter a comment!",style: GoogleFonts.poppins(),),
-                              backgroundColor: Colors.red,
-                              behavior: SnackBarBehavior.floating,
-                              margin: EdgeInsets.all(16),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
+                  // Comment input area
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: commentController,
+                          maxLines: null,
+                          style: GoogleFonts.poppins(color: Colors.black),
+                          decoration: InputDecoration(
+                            hintText: "Type your message...",
+                            hintStyle: GoogleFonts.poppins(color: Colors.black54),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide(color: Colors.grey.shade400),
                             ),
-                          );
-                          return;
-                        }
-
-                        setState(() {
-                          isSubmitting = true;
-                        });
-
-                        bool success = await saveComment(id, commentController.text); // ✅ Now properly waiting
-
-
-                        setState(() {
-                          isSubmitting = false;
-                        });
-
-                        if (success == true) {
-                          Navigator.pop(contextt);
-
-                                               }
-
-                      },
-                      child: Container(
-                        padding: EdgeInsets.symmetric(vertical: 14, horizontal: 40), // Better touch area
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(14),
-                          gradient: LinearGradient(
-                            colors: [appbar_color.withOpacity(0.9), appbar_color], // Soft gradient effect
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide(color: appbar_color),
+                            ),
+                            filled: true,
+                            fillColor: Colors.white,
+                            contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                           ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: appbar_color.withOpacity(0.3), // Soft shadow
-                              blurRadius: 8,
-                              offset: Offset(0, 4),
-                            ),
-                          ],
-                        ),
-                        child: isSubmitting
-                            ? Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Platform.isIOS
-                                ? CupertinoActivityIndicator(radius: 12, color: Colors.white)
-                                : CircularProgressIndicator(
-                              strokeWidth: 3,
-                              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                            ),
-                            SizedBox(width: 10),
-                            Text("Submitting...",
-                                style: GoogleFonts.poppins(
-                                    fontSize: 16, fontWeight: FontWeight.w600, color: Colors.white)),
-                          ],
-                        )
-                            : Text(
-                          "Submit",
-                          style: GoogleFonts.poppins(
-                              fontSize: 16, fontWeight: FontWeight.w600, color: Colors.white),
                         ),
                       ),
-                    ),
+                      SizedBox(width: 8),
+                      InkWell(
+                        borderRadius: BorderRadius.circular(50),
+                        onTap: isSubmitting
+                            ? null
+                            : () async {
+                          if (commentController.text.trim().isEmpty) {
+                            ScaffoldMessenger.of(contextt).showSnackBar(
+                              SnackBar(
+                                content: Text("Please enter a comment!", style: GoogleFonts.poppins()),
+                                backgroundColor: Colors.red,
+                                behavior: SnackBarBehavior.floating,
+                                margin: EdgeInsets.all(16),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                            );
+                            return;
+                          }
+
+                          setState(() => isSubmitting = true);
+
+                          bool success = await saveComment(id, commentController.text.trim());
+
+                          if (success) {
+                            setState(() {
+                              filteredData.add({
+                                "description": commentController.text.trim(),
+                                "created_at": DateTime.now().toIso8601String(),
+                                currentScope == 'user' ? "created_by" : "tenant_id": 1,
+                                "tenant": currentScope == 'tenant' ? {"name": "You"} : null,
+                                "created_user": currentScope == 'user' ? {"name": "You"} : null,
+                              });
+                              commentController.clear();
+                            });
+
+                            // 🔥 Smooth scroll to bottom after sending
+                            Future.delayed(Duration(milliseconds: 100), () {
+                              if (scrollController.hasClients) {
+                                scrollController.animateTo(
+                                  scrollController.position.maxScrollExtent,
+                                  duration: Duration(milliseconds: 300),
+                                  curve: Curves.easeOut,
+                                );
+                              }
+                            });
+                          }
+
+                          setState(() => isSubmitting = false);
+                        },
+                        child: CircleAvatar(
+                          radius: 24,
+                          backgroundColor: appbar_color,
+                          child: isSubmitting
+                              ? SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2.5,
+                              color: Colors.white,
+                            ),
+                          )
+                              : Icon(Icons.send, color: Colors.white),
+                        ),
+                      ),
+                    ],
                   ),
-                  SizedBox(height: 15),
 
-
+                  SizedBox(height: 10),
                 ],
               ),
             );
@@ -967,6 +1034,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
           textColor: Colors.white,
           fontSize: 16.0,
         );
+print(message);
         return true; // ✅ Return true on success
       } else {
         String message = 'Code: ${response.statusCode}\nMessage: ${responseData['message']}';
@@ -1352,7 +1420,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                       Colors.green,
                           () {
                         commentController.clear();
-                        _showViewCommentPopup(context, ticket['ticketNumber']); // Existing Comment Section
+                        _showViewCommentPopup(context, ticket['ticketNumber'],scope); // Existing Comment Section
                       },
                     ),
                     SizedBox(width: 5),

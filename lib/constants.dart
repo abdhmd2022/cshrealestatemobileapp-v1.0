@@ -28,6 +28,7 @@ late String user_name;
 late int company_id;
 late int serial_id;
 late int user_id;
+late String scope;
 late bool is_admin;
 late int flat_id;
 late String flat_name;
@@ -40,11 +41,16 @@ Future<void> loadTokens() async {
 
 
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  /*Company_Token = prefs.getString("company_token") ?? "";*/
-  Company_Token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzY29wZSI6InVzZXIiLCJ0b2tlbiI6ImJjYzYxNjQ2MzhiZmZhNjVmMzVjNjAxYTMwZThmMWYyNTJlMzhjM2QiLCJpYXQiOjE3NDU1NzgwNzIsImV4cCI6MTc0NTY2NDQ3Mn0.ThnCK8kvEusX880BrFc2QPOP1231_XH-E8rArcQe_sU';
+  Company_Token = prefs.getString("company_token") ?? "";
+/*
+  Company_Token = 'eyJhbGciOiJIUzI1N iIsInR5cCI6IkpXVCJ9.eyJzY29wZSI6InVzZXIiLCJ0b2tlbiI6ImJjYzYxNjQ2MzhiZmZhNjVmMzVjNjAxYTMwZThmMWYyNTJlMzhjM2QiLCJpYXQiOjE3NDU1NzgwNzIsImV4cCI6MTc0NTY2NDQ3Mn0.ThnCK8kvEusX880BrFc2QPOP1231_XH-E8rArcQe_sU';
+*/
+
   user_email = prefs.getString("user_email") ?? "";
   user_name = prefs.getString("user_name") ?? "";
   company_id = prefs.getInt("company_id") ?? 0;
+  scope = prefs.getString("scope") ?? "";
+
   serial_id = prefs.getInt("serial_id") ?? 0;
   user_id = prefs.getInt("user_id") ?? 0;
   is_admin = prefs.getBool("is_admin") ?? false;

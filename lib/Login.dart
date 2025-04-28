@@ -186,6 +186,7 @@ class _LoginPageState extends State<Login> {
           User firstUser = usersList[0];
 
           await prefs.setInt("user_id", firstUser.id);
+          await prefs.setString("scope", responseData["scope"]);
           await prefs.setString("user_name", firstUser.name);
           await prefs.setString("user_email", firstUser.email);
           await prefs.setString("company_token", firstUser.token);
@@ -378,6 +379,7 @@ class _LoginPageState extends State<Login> {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setInt("user_id", tenantId);
       await prefs.setString("user_name", user['name']);
+      await prefs.setString("scope", loginData["scope"]);
       await prefs.setString("user_email", user['email']);
       await prefs.setString("company_token", token);
       await prefs.setInt("company_id", user['company_id'] ?? 0);
@@ -389,8 +391,8 @@ class _LoginPageState extends State<Login> {
       // Step 2: Get tenant + flats details using tenantId
       final tenantUrl = "${hosting['baseurl']}/tenant/$tenantId";
 
-      // print('tenant url $tenantUrl');
-      // print('token -> $token');
+      print('tenant url $tenantUrl');
+      print('token -> $token');
 
       var tenantResponse = await http.get(
         Uri.parse(tenantUrl),
@@ -402,7 +404,7 @@ class _LoginPageState extends State<Login> {
 
       var tenantData = json.decode(tenantResponse.body);
 
-      // print('response -> ${tenantResponse.body}');
+      print('response -> ${tenantResponse.body}');
 
       if (!tenantData['success']) {
         final errorMsg = "${tenantData['message']}" ?? "Failed to fetch tenant details.";

@@ -2,8 +2,36 @@ import 'package:cshrealestatemobile/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'AdminDashboard.dart';
+import 'Login.dart';
+Future<void> _showLogoutDialog(BuildContext context) async {
+  return showDialog<void>(
+    context: context,
+    barrierDismissible: false,
+    builder: (context) {
+      return AlertDialog(
+        title: Text("Logout Confirmation"),
+        content: Text("Do you really want to logout?"),
+        actions: [
+          TextButton(
+            child: Text("No", style: GoogleFonts.poppins(color: appbar_color)),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+          TextButton(
+            child: Text("Yes", style: GoogleFonts.poppins(color: appbar_color)),
+            onPressed: () async {
+              final prefs = await SharedPreferences.getInstance();
+              await prefs.clear();
+              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Login(title: app_name)));
+            },
+          ),
+        ],
+      );
+    },
+  );
+}
 
 class SalesProfileScreen extends StatelessWidget {
   @override
@@ -157,7 +185,7 @@ class SalesProfileScreen extends StatelessWidget {
                       title: const Text('Logout'),
                       trailing: const Icon(Icons.arrow_forward_ios),
                       onTap: () {
-                        // Handle Logout
+                        _showLogoutDialog(context);
                       },
                     ),
                   ),

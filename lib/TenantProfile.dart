@@ -8,7 +8,9 @@ import 'package:cshrealestatemobile/TenantDashboard.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
+import 'Login.dart';
 import 'constants.dart';
 
 class TenantProfile extends StatefulWidget {
@@ -19,6 +21,33 @@ class TenantProfile extends StatefulWidget {
 class _TenantProfileState extends State<TenantProfile> with TickerProviderStateMixin {
 
   int ticketCount = 0;
+
+  Future<void> _showLogoutDialog(BuildContext context) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return AlertDialog(
+          title: Text("Logout Confirmation"),
+          content: Text("Do you really want to logout?"),
+          actions: [
+            TextButton(
+              child: Text("No", style: GoogleFonts.poppins(color: appbar_color)),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+            TextButton(
+              child: Text("Yes", style: GoogleFonts.poppins(color: appbar_color)),
+              onPressed: () async {
+                final prefs = await SharedPreferences.getInstance();
+                await prefs.clear();
+                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Login(title: app_name)));
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   Future<void> fetchTicketCount() async {
     String url = "$BASE_URL_config/v1/tenent/maintenance?tenent_id=$user_id&flat_id=$flat_id";
@@ -295,7 +324,7 @@ class _TenantProfileState extends State<TenantProfile> with TickerProviderStateM
                       title: const Text('Logout'),
                       trailing: const Icon(Icons.arrow_forward_ios),
                       onTap: () {
-                        // Handle Logout
+                        _showLogoutDialog(context);
                       },
                     ),
                   ),

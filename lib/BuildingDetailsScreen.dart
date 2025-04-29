@@ -244,9 +244,6 @@ class _BuildingReportScreenState extends State<BuildingReportScreen> {
                                 ),
                               ),
 
-
-
-
                               SizedBox(height: 10),
                               Padding(
                                 padding: const EdgeInsets.symmetric(vertical: 0),

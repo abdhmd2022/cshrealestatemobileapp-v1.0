@@ -11,6 +11,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'constants.dart';
 import 'package:http/http.dart' as http;
+import 'dart:math';
 
 class BuildingReportScreen extends StatefulWidget {
   final dynamic building;
@@ -207,18 +208,45 @@ class _BuildingReportScreenState extends State<BuildingReportScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Expanded(
-                                child: showPieChart
-                                    ? PieChartGraph(
-                                  occupied: occupied,
-                                  available: available,
-                                  buildingName: building['name'],
-                                )
-                                    : BarChartGraph(
-                                  occupied: occupied,
-                                  available: available,
-                                  buildingName: building['name'],
+                                child: AnimatedSwitcher(
+                                  duration: Duration(milliseconds: 600),
+                                  switchInCurve: Curves.easeOutExpo,
+                                  switchOutCurve: Curves.easeInExpo,
+                                  transitionBuilder: (child, animation) {
+                                    final fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(animation);
+                                    final scaleAnimation = Tween<double>(begin: 0.95, end: 1.0).animate(animation);
+                                    final slideAnimation = Tween<Offset>(begin: Offset(0, 0.1), end: Offset.zero).animate(animation);
+
+                                    return FadeTransition(
+                                      opacity: fadeAnimation,
+                                      child: SlideTransition(
+                                        position: slideAnimation,
+                                        child: ScaleTransition(
+                                          scale: scaleAnimation,
+                                          child: child,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  child: showPieChart
+                                      ? PieChartGraph(
+                                    key: ValueKey('pie'),
+                                    occupied: occupied,
+                                    available: available,
+                                    buildingName: building['name'],
+                                  )
+                                      : BarChartGraph(
+                                    key: ValueKey('bar'),
+                                    occupied: occupied,
+                                    available: available,
+                                    buildingName: building['name'],
+                                  ),
                                 ),
                               ),
+
+
+
+
                               SizedBox(height: 10),
                               Padding(
                                 padding: const EdgeInsets.symmetric(vertical: 0),
@@ -506,12 +534,14 @@ class PieChartGraph extends StatelessWidget {
   final int occupied;
   final int available;
   final String buildingName;
+  final Key? key; // <-- ADD THIS
 
   PieChartGraph({
+    this.key, // <-- ADD THIS
     required this.occupied,
     required this.available,
     required this.buildingName,
-  });
+  }) : super(key: key); // <-- ADD THIS
 
   @override
   Widget build(BuildContext context) {
@@ -587,12 +617,14 @@ class BarChartGraph extends StatelessWidget {
   final int occupied;
   final int available;
   final String buildingName;
+  final Key? key; // <-- ADD THIS
 
   BarChartGraph({
+    this.key, // <-- ADD THIS
     required this.occupied,
     required this.available,
     required this.buildingName,
-  });
+  }) : super(key: key); // <-- ADD THIS
 
   @override
   Widget build(BuildContext context) {

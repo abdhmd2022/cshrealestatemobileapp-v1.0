@@ -121,7 +121,7 @@ class SalesProfileScreen extends StatelessWidget {
             const SizedBox(height: 20),
 
             // Statistics Section
-            Padding(
+            /*Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -131,10 +131,10 @@ class SalesProfileScreen extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 20),*/
 
             // User Details
-            Padding(
+            /*Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Card(
                 shape: RoundedRectangleBorder(
@@ -146,15 +146,15 @@ class SalesProfileScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       _buildDetailRow('Role', 'Sales Executive'),
-                      /*const SizedBox(height: 10),
-                      _buildDetailRow('Team', 'Sales'),*/
-                      /*const SizedBox(height: 10),
-                      _buildDetailRow('Target', '\AED 50K/month'),*/
+                      *//*const SizedBox(height: 10),
+                      _buildDetailRow('Team', 'Sales'),*//*
+                      *//*const SizedBox(height: 10),
+                      _buildDetailRow('Target', '\AED 50K/month'),*//*
                     ],
                   ),
                 ),
               ),
-            ),
+            ),*/
             const SizedBox(height: 20),
 
             // Profile Options

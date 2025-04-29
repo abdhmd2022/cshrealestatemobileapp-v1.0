@@ -298,7 +298,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Ticker
 
             SizedBox(height: 20),
 
-            Row(
+            /*Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 _buildDashboardButton(Icons.show_chart, 'In Progress', '12', appbar_color, () {}),
@@ -306,7 +306,8 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Ticker
               ],
             ),
 
-            SizedBox(height: 10),
+            SizedBox(height: 10),*/
+
 
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -318,6 +319,17 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Ticker
                     MaterialPageRoute(builder: (context) => SalesInquiryReport()),          // navigate to users screen
                   );
                 }),
+
+
+              ],
+            ),
+
+            SizedBox(height: 10),
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+
                 _buildDashboardButton(Icons.analytics_outlined, 'Analytics', '', Colors.redAccent, () {
 
                   Navigator.pushReplacement(

@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:cshrealestatemobile/BuildingsScreen.dart';
 import 'package:cshrealestatemobile/AdminDashboard.dart';
+import 'package:cshrealestatemobile/ComplaintReport.dart';
 import 'package:cshrealestatemobile/constants.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/cupertino.dart';
@@ -266,9 +267,9 @@ class _LandlordDashboardScreenState extends State<LandlordDashboardScreen> with 
 
                   child:
 
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch, // stretches children
+
                     children: [
                       _buildDashboardButton(Icons.apartment, 'Building(s)', '', appbar_color, () {
 
@@ -278,7 +279,19 @@ class _LandlordDashboardScreenState extends State<LandlordDashboardScreen> with 
                           MaterialPageRoute(builder: (context) => BuildingsScreen()),          // navigate to users screen
                         );
                       }),
+
+                      SizedBox( height: 10),
+
+                      _buildDashboardButton(Icons.apartment, 'Complaints/Suggestions', '', appbar_color, () {
+
+                        Navigator.pushReplacement(
+                          context,
+
+                          MaterialPageRoute(builder: (context) => ComplaintSuggestionReportScreen()),          // navigate to users screen
+                        );
+                      }),
                     ],
+
                   ),
                 ))]))));}
 }
@@ -435,51 +448,50 @@ class BarGraph extends StatelessWidget {
 }
 
 Widget _buildDashboardButton(IconData icon, String label, String count, Color color, VoidCallback onTap) {
-  return Expanded(
-    child: GestureDetector(
-      onTap: onTap,
-      child: Container(
-        margin: EdgeInsets.symmetric(horizontal: 5),
-        padding: EdgeInsets.only(top:10,bottom:10),
-        height: 110,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black12,
-              blurRadius: 8,
-              offset: Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
+  return GestureDetector(
+    onTap: onTap,
+    child: Container(
+      height: 100,
+      width: double.infinity,
+      margin: EdgeInsets.symmetric(horizontal: 0),
+      padding: EdgeInsets.only(top:10,bottom:10),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 8,
+            offset: Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
 
-            Icon(icon, color: color, size: 32),
-            SizedBox(height: 5),
-            Text(
-              label,
-              style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w600),
-            ),
-            if (count.isNotEmpty)
-              Column(
-                children: [
-                  SizedBox(height: 3,),
-                  Text(
-                    count,
-                    style: GoogleFonts.poppins(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: color,
-                    ),
+          Icon(icon, color: color, size: 32),
+          SizedBox(height: 5),
+          Text(
+            label,
+            style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w600),
+          ),
+          if (count.isNotEmpty)
+            Column(
+              children: [
+                SizedBox(height: 3,),
+                Text(
+                  count,
+                  style: GoogleFonts.poppins(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: color,
                   ),
-                ],
-              )
+                ),
+              ],
+            )
 
-          ],
-        ),
+        ],
       ),
     ),
   );

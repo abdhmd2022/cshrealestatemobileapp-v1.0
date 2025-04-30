@@ -2,13 +2,11 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:cshrealestatemobile/MaintenanceTicketCreation.dart';
 import 'package:cshrealestatemobile/MaintenanceTicketFollowUp.dart';
-import 'package:cshrealestatemobile/MaintenanceTicketTransfer.dart';
 import 'package:cshrealestatemobile/constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -36,7 +34,6 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
   DateTime startDate = DateTime(DateTime.now().year, DateTime.now().month, 1); // ✅ First day of current month
   DateTime endDate = DateTime(DateTime.now().year, DateTime.now().month + 1, 0); // ✅ Last day of current month
 
-
   TextEditingController commentController = TextEditingController();
 
   Future<void> openCaller(String no) async {
@@ -49,12 +46,9 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
     }
   }
 
-
-
   List<dynamic> commentHistoryList = [];
 
   List<dynamic> feedbackHistoryList = [];
-
 
   String getFormattedDateLabel(DateTime date) {
     final now = DateTime.now();

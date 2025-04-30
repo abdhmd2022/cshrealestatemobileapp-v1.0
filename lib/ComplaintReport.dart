@@ -464,7 +464,6 @@ child:         Container(
                                       ),
                                     )
 
-
                                     /*Spacer(),
                                     Text(
                                       trendText,

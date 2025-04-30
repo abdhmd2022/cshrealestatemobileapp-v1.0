@@ -13,13 +13,27 @@ class MonthlyDetailScreen extends StatelessWidget {
 
   Map<String, List<Map<String, dynamic>>> groupByDay(List<Map<String, dynamic>> data) {
     final Map<String, List<Map<String, dynamic>>> grouped = {};
+
     for (var item in data) {
       final createdAt = DateTime.tryParse(item['created_at'] ?? "") ?? DateTime.now();
       final key = DateFormat('dd-MMM').format(createdAt);
       if (!grouped.containsKey(key)) grouped[key] = [];
       grouped[key]!.add(item);
     }
-    return grouped;
+
+    // Sort each group (latest feedback first)
+    for (var list in grouped.values) {
+      list.sort((a, b) => DateTime.parse(b['created_at']).compareTo(DateTime.parse(a['created_at'])));
+    }
+
+    return Map.fromEntries(
+      grouped.entries.toList()
+        ..sort((a, b) {
+          final aDate = DateFormat('dd-MMM').parse(a.key);
+          final bDate = DateFormat('dd-MMM').parse(b.key);
+          return bDate.compareTo(aDate); // Latest date first
+        }),
+    );
   }
 
   String getInitials(String name) {

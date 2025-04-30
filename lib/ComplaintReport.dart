@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -146,14 +147,14 @@ child:         Container(
               LineChartBarData(
                 isCurved: true,
                 spots: complaintSpots,
-                barWidth: 3,
+                barWidth: 2,
                 gradient: LinearGradient(colors: [Colors.redAccent, Colors.deepOrange]),
                 dotData: FlDotData(
                   show: true,
                   getDotPainter: (spot, _, __, ___) => FlDotCirclePainter(
                     radius: 3,
                     color: Colors.redAccent,
-                    strokeWidth: 1,
+                    strokeWidth: 2,
                     strokeColor: Colors.white,
                   ),
                 ),
@@ -161,14 +162,14 @@ child:         Container(
               LineChartBarData(
                 isCurved: true,
                 spots: suggestionSpots,
-                barWidth: 3,
-                gradient: LinearGradient(colors: [Colors.green, Colors.lightGreen]),
+                barWidth: 2,
+                gradient: LinearGradient(colors: [Colors.teal.withOpacity(0.8), Colors.teal.withOpacity(0.7)]),
                 dotData: FlDotData(
                   show: true,
                   getDotPainter: (spot, _, __, ___) => FlDotCirclePainter(
                     radius: 3,
-                    color: Colors.green,
-                    strokeWidth: 1,
+                    color: Colors.teal.withOpacity(0.8),
+                    strokeWidth: 2,
                     strokeColor: Colors.white,
                   ),
                 ),
@@ -239,7 +240,7 @@ child:         Container(
         children: [
           _buildLegendDot(color: Colors.redAccent, label: 'Complaints'),
           SizedBox(width: 16),
-          _buildLegendDot(color: Colors.green, label: 'Suggestions'),
+          _buildLegendDot(color: Colors.teal.withOpacity(0.8), label: 'Suggestions'),
         ],
       ),
     ],
@@ -278,7 +279,9 @@ child:         Container(
     final filteredMonths = groupedByMonth.entries.where((e) {
       final year = int.parse(e.key.split("-")[0]);
       return year == selectedYear;
-    }).toList();
+    }).toList()
+      ..sort((a, b) => b.key.compareTo(a.key)); // 👈 Sort by latest month first
+
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -329,7 +332,7 @@ child:         Container(
                     child: AnimatedContainer(
                       duration: const Duration(milliseconds: 250),
                       curve: Curves.easeOut,
-                      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+                      margin: const EdgeInsets.symmetric(horizontal: 3, vertical: 10),
                       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                       decoration: BoxDecoration(
                         color: isSelected ? Colors.white : Colors.grey.shade100,
@@ -344,7 +347,7 @@ child:         Container(
                         ],
                         border: Border.all(
                           color: isSelected ? appbar_color.withOpacity(0.6) : Colors.grey.shade300,
-                          width: isSelected ? 1.8 : 1.0,
+                          width: isSelected ? 1.0 : 1.0,
                         ),
                       ),
                       child: AnimatedDefaultTextStyle(
@@ -406,7 +409,7 @@ child:         Container(
                       );
                     },
                     child: TweenAnimationBuilder<double>(
-                      duration: Duration(milliseconds: 150),
+                      duration: Duration(milliseconds: 250),
                       tween: Tween(begin: 0.0, end: 1.0),
                       builder: (context, scale, child) => Transform.scale(
                         scale: scale,
@@ -435,9 +438,13 @@ child:         Container(
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text("$monthName, $year",
-                                        style: GoogleFonts.poppins(
-                                            fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black87)),
+                                    SingleChildScrollView(
+                                      scrollDirection: Axis.horizontal,
+                                      child: Text("$monthName, $year",
+                                          style: GoogleFonts.poppins(
+                                              fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black87)),
+
+                                    ),
                                     SizedBox(height: 10),
 
                                     SingleChildScrollView(
@@ -456,7 +463,7 @@ child:         Container(
                                       scrollDirection: Axis.horizontal,
                                       child: Row(
                                         children: [
-                                          Icon(Icons.lightbulb_outline, size: 18, color: Colors.green),
+                                          Icon(Icons.lightbulb_outline, size: 18, color: Colors.teal.withOpacity(0.8)),
                                           SizedBox(width: 4),
                                           Text("Suggestions: $suggestionCount",
                                               style: GoogleFonts.poppins(fontSize: 13, color: Colors.black87)),
@@ -472,7 +479,7 @@ child:         Container(
                                         color: trendText.contains("↑")
                                             ? Colors.red
                                             : trendText.contains("↓")
-                                            ? Colors.green
+                                            ? Colors.teal.withOpacity(0.8)
                                             : Colors.grey,
                                         fontWeight: FontWeight.w500,
                                       ),

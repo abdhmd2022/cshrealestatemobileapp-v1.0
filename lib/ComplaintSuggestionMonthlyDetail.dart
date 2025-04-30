@@ -94,7 +94,7 @@ class MonthlyDetailScreen extends StatelessWidget {
                 final dateLabel = DateFormat('dd-MMM-yyyy • hh:mm a').format(createdAt);
 
                 final isComplaint = type == 'Complaint';
-                final bgColor = isComplaint ? Colors.red : Colors.green;
+                final bgColor = isComplaint ? Colors.red : Colors.teal.withOpacity(0.8);
                 final icon = isComplaint ? Icons.report_problem : Icons.lightbulb;
 
                 return Container(

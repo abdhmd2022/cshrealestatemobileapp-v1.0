@@ -148,7 +148,18 @@ child:         Container(
                 isCurved: true,
                 spots: complaintSpots,
                 barWidth: 2,
-                gradient: LinearGradient(colors: [Colors.redAccent, Colors.deepOrange]),
+                gradient: LinearGradient(colors: [Colors.redAccent, Colors.redAccent]),
+                belowBarData: BarAreaData(
+                  show: true,
+                  gradient: LinearGradient(
+                    colors: [
+                      Colors.redAccent.withOpacity(0.3),
+                      Colors.redAccent.withOpacity(0.0),
+                    ],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                  ),
+                ),
                 dotData: FlDotData(
                   show: true,
                   getDotPainter: (spot, _, __, ___) => FlDotCirclePainter(
@@ -164,6 +175,17 @@ child:         Container(
                 spots: suggestionSpots,
                 barWidth: 2,
                 gradient: LinearGradient(colors: [Colors.teal.withOpacity(0.8), Colors.teal.withOpacity(0.7)]),
+                belowBarData: BarAreaData(
+                  show: true,
+                  gradient: LinearGradient(
+                    colors: [
+                      Colors.teal.withOpacity(0.3),
+                      Colors.teal.withOpacity(0.0),
+                    ],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                  ),
+                ),
                 dotData: FlDotData(
                   show: true,
                   getDotPainter: (spot, _, __, ___) => FlDotCirclePainter(
@@ -174,6 +196,7 @@ child:         Container(
                   ),
                 ),
               ),
+
             ],
             titlesData: FlTitlesData(
               leftTitles: AxisTitles(
@@ -364,9 +387,6 @@ child:         Container(
                 },
               ),
             ),
-
-
-
 
             buildLineChart(),
 

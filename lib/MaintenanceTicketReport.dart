@@ -55,6 +55,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
 
   List<dynamic> feedbackHistoryList = [];
 
+
   String getFormattedDateLabel(DateTime date) {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
@@ -66,7 +67,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
     } else if (messageDate == yesterday) {
       return "Yesterday";
     } else {
-      return "${date.day}/${date.month}/${date.year}";
+      return DateFormat('dd-MMM-yyyy').format(date); // 👈 Uses MMM format
     }
   }
 

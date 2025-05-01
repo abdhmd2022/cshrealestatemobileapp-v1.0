@@ -34,7 +34,6 @@ class _AddUserPageState extends State<AddUser> with TickerProviderStateMixin {
   ];
 
   dynamic _selectedrole;
-  List<String> _selectedCompanies = [];
   List<String> myDataCompanies = [];
 
 

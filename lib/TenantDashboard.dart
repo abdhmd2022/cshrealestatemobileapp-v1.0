@@ -1028,7 +1028,8 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
                               colors: [Colors.blueAccent.shade100,Colors.blueAccent.shade200, Colors.blueAccent.shade200], // Gradient background
                               begin: Alignment.topCenter,
                               end: Alignment.bottomCenter,
-                            ),                        value: data["Cleared"]!.toDouble(),
+                            ),
+                            value: data["Cleared"]!.toDouble(),
                             title: 'Cleared\n${data["Cleared"]}',
                             radius: 110,
                             titleStyle: GoogleFonts.poppins(fontSize: 15.0, fontWeight: FontWeight.bold,

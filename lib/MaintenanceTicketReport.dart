@@ -1533,7 +1533,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                     ],
 
                     if (is_admin)...[
-                      if(ticket['status']!='Normal')
+                      if(ticket['status']=='Close')
                       _buildDecentButton(
                         'Feedback',
                         Icons.feedback,
@@ -1683,12 +1683,13 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
+
         Row(
           children: [
             Icon(Icons.confirmation_number, color: Colors.teal, size: 24.0),
             SizedBox(width: 8.0),
             Text(
-              "MT-${ticket['ticketNumber']}",
+              "MT-${ticket['ticketNumber']} - ${ticket['status']}",
               style: GoogleFonts.poppins(
                 fontSize: 18.0,
                 fontWeight: FontWeight.bold,

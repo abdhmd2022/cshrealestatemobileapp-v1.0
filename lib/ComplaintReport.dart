@@ -324,7 +324,7 @@ child:         Container(
         centerTitle: true,
       ),
       body: isLoading
-          ? Expanded(child: Center(
+          ? Center(
         child: Platform.isIOS
             ? CupertinoActivityIndicator(
           radius: 15.0, // Adjust size if needed
@@ -334,7 +334,6 @@ child:         Container(
           strokeWidth: 4.0, // Adjust thickness if needed
         ),
       )
-        ,)
           : SingleChildScrollView(
 
         child: Column(

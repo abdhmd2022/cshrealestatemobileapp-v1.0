@@ -101,9 +101,7 @@ class _BuildingReportScreenState extends State<BuildingReportScreen> {
           height: MediaQuery.of(context).size.height,
           child:Stack(
               children:[
-
                 SingleChildScrollView(child:
-
                 Container(
                   padding: EdgeInsets.all(16),
                     color: Colors.white,

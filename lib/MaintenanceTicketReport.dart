@@ -70,9 +70,9 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
   void initState() {
     super.initState();
     // Initialize all tickets to be collapsed by default
-
-    fetchTickets();
+    fetchAllTickets();
   }
+
 
   void _showFeedbackDialog(int ticketId) {
     showDialog(
@@ -224,7 +224,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
     }
   }
 
-  void _showViewCommentPopup(BuildContext contextt, String id, String currentScope) async {
+  void _showViewCommentPopup(BuildContext contextt, String id, String currentScope,String status) async {
     List<dynamic> filteredData = [];
     TextEditingController commentController = TextEditingController();
     ScrollController scrollController = ScrollController();
@@ -451,103 +451,108 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                     ),
                   ),
 
-                  SizedBox(height: 10),
+                  if(status=='N/A')...[
+                    SizedBox(height: 10),
 
-                  // Comment input area
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          controller: commentController,
-                          maxLines: null,
-                          style: GoogleFonts.poppins(color: Colors.black),
-                          decoration: InputDecoration(
-                            hintText: "Type your message...",
-                            hintStyle: GoogleFonts.poppins(color: Colors.black54),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(color: Colors.grey.shade400),
+                    // Comment input area
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            controller: commentController,
+                            maxLines: null,
+                            enabled: status!='N/A' ? false: true,
+
+                            style: GoogleFonts.poppins(color: Colors.black),
+                            decoration: InputDecoration(
+                              hintText: "Type your message...",
+                              hintStyle: GoogleFonts.poppins(color: Colors.black54),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(color: Colors.grey.shade400),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(color: appbar_color),
+                              ),
+                              filled: true,
+                              fillColor: Colors.white,
+                              contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                             ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(color: appbar_color),
-                            ),
-                            filled: true,
-                            fillColor: Colors.white,
-                            contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                           ),
                         ),
-                      ),
-                      SizedBox(width: 8),
-                      InkWell(
-                        borderRadius: BorderRadius.circular(50),
-                        onTap: isSubmitting
-                            ? null
-                            : () async {
-                          if (commentController.text.trim().isEmpty) {
-                            ScaffoldMessenger.of(contextt).showSnackBar(
-                              SnackBar(
-                                content: Text("Please enter a comment!", style: GoogleFonts.poppins()),
-                                backgroundColor: Colors.red,
-                                behavior: SnackBarBehavior.floating,
-                                margin: EdgeInsets.all(16),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
+                        SizedBox(width: 8),
+                        InkWell(
+                          borderRadius: BorderRadius.circular(50),
+                          onTap: isSubmitting
+                              ? null
+                              : () async {
+                            if (commentController.text.trim().isEmpty) {
+                              ScaffoldMessenger.of(contextt).showSnackBar(
+                                SnackBar(
+                                  content: Text("Please enter a comment!", style: GoogleFonts.poppins()),
+                                  backgroundColor: Colors.red,
+                                  behavior: SnackBarBehavior.floating,
+                                  margin: EdgeInsets.all(16),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
                                 ),
-                              ),
-                            );
-                            return;
-                          }
+                              );
+                              return;
+                            }
 
-                          setState(() => isSubmitting = true);
+                            setState(() => isSubmitting = true);
 
-                          bool success = await saveComment(id, commentController.text.trim());
+                            bool success = await saveComment(id, commentController.text.trim());
 
-                          if (success) {
-                            setState(() {
-                              filteredData.add({
-                                "description": commentController.text.trim(),
-                                "created_at": DateTime.now().toIso8601String(),
-                                currentScope == 'user' ? "created_by" : "tenant_id": 1,
-                                "tenant": currentScope == 'tenant' ? {"name": "You"} : null,
-                                "created_user": currentScope == 'user' ? {"name": "You"} : null,
+                            if (success) {
+                              setState(() {
+                                filteredData.add({
+                                  "description": commentController.text.trim(),
+                                  "created_at": DateTime.now().toIso8601String(),
+                                  currentScope == 'user' ? "created_by" : "tenant_id": 1,
+                                  "tenant": currentScope == 'tenant' ? {"name": "You"} : null,
+                                  "created_user": currentScope == 'user' ? {"name": "You"} : null,
+                                });
+                                commentController.clear();
                               });
-                              commentController.clear();
-                            });
 
-                            // 🔥 Smooth scroll to bottom after sending
-                            Future.delayed(Duration(milliseconds: 100), () {
-                              if (scrollController.hasClients) {
-                                scrollController.animateTo(
-                                  scrollController.position.maxScrollExtent,
-                                  duration: Duration(milliseconds: 300),
-                                  curve: Curves.easeOut,
-                                );
-                              }
-                            });
-                          }
+                              // 🔥 Smooth scroll to bottom after sending
+                              Future.delayed(Duration(milliseconds: 100), () {
+                                if (scrollController.hasClients) {
+                                  scrollController.animateTo(
+                                    scrollController.position.maxScrollExtent,
+                                    duration: Duration(milliseconds: 300),
+                                    curve: Curves.easeOut,
+                                  );
+                                }
+                              });
+                            }
 
-                          setState(() => isSubmitting = false);
-                        },
-                        child: CircleAvatar(
-                          radius: 24,
-                          backgroundColor: appbar_color,
-                          child: isSubmitting
-                              ? SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2.5,
-                              color: Colors.white,
-                            ),
-                          )
-                              : Icon(Icons.send, color: Colors.white),
+                            setState(() => isSubmitting = false);
+                          },
+                          child: CircleAvatar(
+                            radius: 24,
+                            backgroundColor: appbar_color,
+                            child: isSubmitting
+                                ? SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2.5,
+                                color: Colors.white,
+                              ),
+                            )
+                                : Icon(Icons.send, color: Colors.white),
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
+                      ],
+                    ),
+                  ],
 
-                  SizedBox(height: 10),
+
+                  SizedBox(height: 20),
                 ],
               ),
             );
@@ -761,103 +766,92 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
   int totalPages = 1;
   bool isFetchingMore = false;
 
-  Future<void> fetchTickets({int page = 1}) async {
-    if (isFetchingMore) return;
-
-    if (page == 1) {
-      setState(() {
-        isLoading = true;
-      });
-    } else {
-      setState(() {
-        isFetchingMore = true;
-      });
-    }
-
-    String url = is_admin
-        ? "$baseurl/maintenance/ticket?page=$page"
-        : "$baseurl/maintenance/ticket/?tenant_id=$user_id&flat_id=$flat_id&page=$page";
-
-    print('Fetching tickets from URL: $url');
-
-    try {
-      final Map<String, String> headers = {
-        'Authorization': 'Bearer $Company_Token',
-        'Content-Type': 'application/json',
-      };
-
-      final response = await http.get(Uri.parse(url), headers: headers);
-
-      print("ticket ${response.body}");
-
-      if (response.statusCode == 200) {
-        final Map<String, dynamic> responseBody = json.decode(response.body);
-        if (responseBody['success'] == true) {
-          final List<dynamic> apiTickets = responseBody['data']['tickets'];
-
-          if (responseBody.containsKey('meta')) {
-            totalPages = (responseBody['meta']['totalCount'] / responseBody['meta']['size']).ceil();
-          }
-
-          final List<Map<String, dynamic>> formattedTickets = apiTickets.map((apiTicket) {
-            final contractFlat = apiTicket['contract_flat'];
-            final flat = contractFlat['flat'];
-            final building = flat['building'];
-            final area = building['area'];
-            final state = area['state'];
-
-            return {
-              'ticketNumber': "${apiTicket['id'].toString()}",
-              'unitNumber': flat['name'].toString(),
-              'buildingName': building['name'].toString(),
-              'emirate': state['name'] ?? 'N/A',
-              'status': apiTicket['sub_tickets'].isNotEmpty
-                  ? apiTicket['sub_tickets'][0]['followps'].isNotEmpty
-                  ? apiTicket['sub_tickets'][0]['followps'][0]['status']['name']
-                  : 'N/A'
-                  : 'N/A',
-              'date': apiTicket['created_at']?.split('T')[0] ?? '',
-              'maintenanceTypes': (apiTicket['sub_tickets'] as List<dynamic>).map((subTicket) {
-                final type = subTicket['type'];
-                return {
-                  'subTicketId': subTicket['id'].toString(),
-                  'type': type['name'],
-                  'category': type['category'] ?? 'N/A',
-                };
-              }).toList(),
-              'description': apiTicket['description'] ?? '',
-            };
-          }).toList();
-
-          setState(() {
-            if (page == 1) {
-              tickets = formattedTickets;
-            } else {
-              tickets.addAll(formattedTickets);
-            }
-            filterTickets();
-          });
-        } else {
-          print("API returned success: false");
-        }
-      } else {
-        Map<String, dynamic> data = json.decode(response.body);
-        String error = data.containsKey('message')
-            ? 'Code: ${response.statusCode} , Message: ${data['message']}'
-            : 'Something went wrong!!!';
-
-        Fluttertoast.showToast(msg: error);
-        print("Error fetching data: ${response.statusCode}");
-        print("Response: ${response.body}");
-      }
-    } catch (e) {
-      print("Error fetching data: $e");
-    }
+  Future<void> fetchAllTickets() async {
+    List<Map<String, dynamic>> allFormattedTickets = [];
+    int page = 1;
+    bool hasMore = true;
 
     setState(() {
-      isLoading = false;
+      isLoading = true;
       isFetchingMore = false;
     });
+
+    try {
+      while (hasMore) {
+        String url = is_admin
+            ? "$baseurl/maintenance/ticket?page=$page"
+            : "$baseurl/maintenance/ticket/?tenant_id=$user_id&flat_id=$flat_id&page=$page";
+
+        final response = await http.get(Uri.parse(url), headers: {
+          'Authorization': 'Bearer $Company_Token',
+          'Content-Type': 'application/json',
+        });
+
+        if (response.statusCode == 200) {
+          final Map<String, dynamic> responseBody = json.decode(response.body);
+
+          if (responseBody['success'] == true) {
+            final List<dynamic> apiTickets = responseBody['data']['tickets'];
+
+            final List<Map<String, dynamic>> formattedTickets = apiTickets.map((apiTicket) {
+              final contractFlat = apiTicket['contract_flat'];
+              final flat = contractFlat['flat'];
+              final building = flat['building'];
+              final area = building['area'];
+              final state = area['state'];
+
+              return {
+                'ticketNumber': "${apiTicket['id']}",
+                'unitNumber': flat['name'] ?? 'N/A',
+                'buildingName': building['name'] ?? 'N/A',
+                'emirate': state['name'] ?? 'N/A',
+                'status': apiTicket['sub_tickets'].isNotEmpty
+                    ? apiTicket['sub_tickets'][0]['followps'].isNotEmpty
+                    ? apiTicket['sub_tickets'][0]['followps'][0]['status']['name']
+                    : 'N/A'
+                    : 'N/A',
+                'date': apiTicket['created_at']?.split('T')[0] ?? '',
+                'maintenanceTypes': (apiTicket['sub_tickets'] as List<dynamic>).map((subTicket) {
+                  final type = subTicket['type'];
+                  return {
+                    'subTicketId': subTicket['id'].toString(),
+                    'type': type['name'],
+                    'category': type['category'] ?? 'N/A',
+                  };
+                }).toList(),
+                'description': apiTicket['description'] ?? '',
+              };
+            }).toList();
+
+            allFormattedTickets.addAll(formattedTickets);
+
+            final meta = responseBody['meta'];
+            final currentPage = meta['page'];
+            final totalPages = (meta['totalCount'] / meta['size']).ceil();
+
+            hasMore = currentPage < totalPages;
+            page++;
+          } else {
+            hasMore = false;
+          }
+        } else {
+          hasMore = false;
+          print("Error: ${response.statusCode}, ${response.body}");
+        }
+      }
+
+      setState(() {
+        tickets = allFormattedTickets;
+        filterTickets(); // optional if you’re filtering
+      });
+    } catch (e) {
+      print("Error fetching all tickets: $e");
+    } finally {
+      setState(() {
+        isLoading = false;
+        isFetchingMore = false;
+      });
+    }
   }
 
 
@@ -866,6 +860,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
     setState(() {
       isLoading = true;
     });
+
 
     String url = is_admin
         ? "$baseurl/maintenance/ticket"
@@ -1363,40 +1358,30 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
               )
             ) :
             Expanded(
-              child: NotificationListener<ScrollNotification>(
-                onNotification: (ScrollNotification scrollInfo) {
-                  if (!isFetchingMore &&
-                      scrollInfo.metrics.pixels >= scrollInfo.metrics.maxScrollExtent - 50 &&
-                      currentPage < totalPages) {
-                    currentPage++;
-                    fetchTickets(page: currentPage);
+              child: ListView.builder(
+                itemCount: filteredTickets.length + (isFetchingMore ? 1 : 0), // 🔥 Corrected
+                itemBuilder: (context, index) {
+                  if (isFetchingMore && index == filteredTickets.length) {
+                    return Padding(
+                      padding: EdgeInsets.all(12.0),
+                      child: Center(
+                        child: Platform.isAndroid
+                            ? CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+                        )
+                            : CupertinoActivityIndicator(radius: 15),
+                      ),
+                    );
                   }
-                  return false;
-                },
-                child: ListView.builder(
-                  itemCount: filteredTickets.length + (isFetchingMore ? 1 : 0), // 🔥 Corrected
-                  itemBuilder: (context, index) {
-                    if (isFetchingMore && index == filteredTickets.length) {
-                      return Padding(
-                        padding: EdgeInsets.all(12.0),
-                        child: Center(
-                          child: Platform.isAndroid
-                              ? CircularProgressIndicator(
-                            valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
-                          )
-                              : CupertinoActivityIndicator(radius: 15),
-                        ),
-                      );
-                    }
 
-                    final ticket = filteredTickets[index];
-                    return _buildTicketCard(ticket, index);
-                  },
-                ),
+                  final ticket = filteredTickets[index];
+                  return _buildTicketCard(ticket, index);
+                },
               ),
             )
 
           ],
+
         ),
       ),
     floatingActionButton: Container(
@@ -1479,18 +1464,36 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                       ),
                     SizedBox(width: 5),
 
-                    _buildDecentButton(
-                      'Comment',
-                      Icons.comment,
-                      Colors.green,
-                          () {
-                        commentController.clear();
-                        _showViewCommentPopup(context, ticket['ticketNumber'],scope); // Existing Comment Section
-                      },
-                    ),
-                    SizedBox(width: 5),
+                    if(ticket['status']=='N/A')...[
+                      _buildDecentButton(
+                        'Comment',
+                        Icons.comment,
+                        Colors.green,
+                            () {
+                          commentController.clear();
+                          _showViewCommentPopup(context, ticket['ticketNumber'],scope,ticket['status']); // Existing Comment Section
+                        },
+                      ),
+                      SizedBox(width: 5),
+                    ],
 
-                    if (!is_admin)
+                    if(ticket['status']!='N/A')...[
+                      if(is_admin)
+                      _buildDecentButton(
+                        'Comment',
+                        Icons.comment,
+                        Colors.green,
+                            () {
+                          commentController.clear();
+                          _showViewCommentPopup(context, ticket['ticketNumber'],scope,ticket['status']); // Existing Comment Section
+                        },
+                      ),
+                      SizedBox(width: 5),
+                    ],
+
+
+                    if (!is_admin)...[
+                      if(ticket['status']!='N/A')
                       _buildDecentButton(
                         'Feedback',
                         Icons.feedback,
@@ -1499,7 +1502,10 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                           _showFeedbackDialog(int.parse(ticket['ticketNumber'])); // Existing Feedback Section
                         },
                       ),
-                    if (is_admin)
+                    ],
+
+                    if (is_admin)...[
+                      if(ticket['status']!='N/A')
                       _buildDecentButton(
                         'Feedback',
                         Icons.feedback,
@@ -1508,6 +1514,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                           _showViewFeedbackPopup(context, ticket['ticketNumber']); // Admin View Feedback
                         },
                       ),
+                    ]
                   ],
                 ),
                 SizedBox(height: 10,),
@@ -1661,7 +1668,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
             ),
           ],
         ),
-        /*_getStatusBadge(ticket['status']),*/
+        _getStatusBadge(ticket['status']),
       ],
     );
   }
@@ -1745,11 +1752,13 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
   Widget _getStatusBadge(String status) {
     Color color;
     switch (status) {
-      case 'In Progress':
-        color = Colors.orange;
-        break;
-      case 'Resolved':
+
+      case 'Closed':
         color = Colors.green;
+        break;
+      case 'N/A':
+        color = Colors.orange;
+        status = 'Pending';
         break;
       default:
         color = Colors.grey;

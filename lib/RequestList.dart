@@ -35,32 +35,48 @@ class _RequestListScreenState extends State<RequestListScreen> {
   }
 
   Future<void> fetchRequests() async {
+    List<dynamic> allRequests = [];
+    int page = 1;
+    bool hasMore = true;
+
+    setState(() => isLoading = true);
+
     try {
-      final response = await http.get(
-        Uri.parse('$baseurl/tenant/request'),
-        headers: {
-          'Authorization': 'Bearer $Company_Token',
-          'Content-Type': 'application/json',
-        },
-      );
+      while (hasMore) {
+        final response = await http.get(
+          Uri.parse('$baseurl/tenant/request?page=$page'),
+          headers: {
+            'Authorization': 'Bearer $Company_Token',
+            'Content-Type': 'application/json',
+          },
+        );
 
-      final data = json.decode(response.body);
-      if (data['success'] == true) {
-        final jsonData = json.decode(response.body);
+        final data = json.decode(response.body);
 
-        /*print('request : ${jsonData}');*/
+        if (data['success'] == true) {
+          final requestsPage = data['data']['requests'] as List;
+          final meta = data['meta'];
 
-        // Filter only requests with flat_id == 1
-        final allRequests = jsonData['data']['requests'] as List;
-        final filteredRequests = allRequests.where((req) => req['flat_id'] == flat_id).toList();
+          // Append filtered requests only (where flat_id matches)
+          final filteredPage = requestsPage.where((req) => req['flat_id'] == flat_id).toList();
+          allRequests.addAll(filteredPage);
 
-        setState(() {
-          requests= filteredRequests.reversed.toList();
+          int currentPage = meta['page'];
+          int pageSize = meta['size'];
+          int totalCount = meta['totalCount'];
+          int totalPages = (totalCount / pageSize).ceil();
 
-          _filterComplaintsByDate(); // ✅ apply filter using default dates
-
-        });
+          hasMore = currentPage < totalPages;
+          page++;
+        } else {
+          hasMore = false;
+        }
       }
+
+      setState(() {
+        requests = allRequests.reversed.toList();
+        _filterComplaintsByDate(); // ✅ if you're using this for filtering
+      });
     } catch (e) {
       print("Error fetching requests: $e");
     } finally {

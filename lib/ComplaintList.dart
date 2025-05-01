@@ -37,31 +37,47 @@ class _ComplaintListScreenState extends State<ComplaintListScreen> {
   }
 
   Future<void> fetchComplaints() async {
+    List<dynamic> allComplaints = [];
+    int page = 1;
+    bool hasMore = true;
+
+    setState(() => isLoading = true);
+
     try {
-      final response = await http.get(
-        Uri.parse('$baseurl/tenant/complaint/?user_id = $user_id'),
-        headers: {
-          'Authorization': 'Bearer $Company_Token',
-          'Content-Type': 'application/json',
-        },
-      );
+      while (hasMore) {
+        final response = await http.get(
+          Uri.parse('$baseurl/tenant/complaint/?user_id=$user_id&page=$page'),
+          headers: {
+            'Authorization': 'Bearer $Company_Token',
+            'Content-Type': 'application/json',
+          },
+        );
 
-      final data = json.decode(response.body);
-      if (data['success'] == true) {
-        final jsonData = json.decode(response.body);
+        final data = json.decode(response.body);
 
-        print('request : $jsonData');
+        if (data['success'] == true) {
+          final complaintsPage = data['data']['complaints'] as List;
+          final meta = data['meta'];
 
-        // Filter only requests with flat_id == 1
-        final allRequests = jsonData['data']['complaints'] as List;
+          allComplaints.addAll(complaintsPage);
 
-        setState(() {
-          complaints= allRequests.reversed.toList();
-          _filterComplaintsByDate(); // ✅ apply filter using default dates
+          int currentPage = meta['page'];
+          int pageSize = meta['size'];
+          int totalCount = meta['totalCount'];
+          int totalPages = (totalCount / pageSize).ceil();
 
-          print("total length ${complaints.length}");
-        });
+          hasMore = currentPage < totalPages;
+          page++;
+        } else {
+          hasMore = false;
+        }
       }
+
+      setState(() {
+        complaints = allComplaints.reversed.toList();
+        _filterComplaintsByDate();
+        print("Total complaints fetched: ${complaints.length}");
+      });
     } catch (e) {
       print("Error fetching complaints: $e");
     } finally {

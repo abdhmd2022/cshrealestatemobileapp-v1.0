@@ -84,7 +84,6 @@ class _BuildingReportScreenState extends State<BuildingReportScreen> {
             style: GoogleFonts.poppins(color: Colors.white)),
         centerTitle: true,
         leading: GestureDetector(
-
           onTap: ()
           {
             Navigator.pushReplacement(
@@ -97,13 +96,19 @@ class _BuildingReportScreenState extends State<BuildingReportScreen> {
             color: Colors.white,
           ),),
       ),
-      body: Stack(
-          children:[
-            SingleChildScrollView(child:
-            Container(
-              padding: const EdgeInsets.all(16.0),
-              color: Colors.white,
-              child: Column(
+      body: Container(
+          color: Colors.white,
+          height: MediaQuery.of(context).size.height,
+          child:Stack(
+              children:[
+
+                SingleChildScrollView(child:
+
+                Container(
+                  padding: EdgeInsets.all(16),
+                    color: Colors.white,
+
+                    child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
@@ -412,15 +417,15 @@ class _BuildingReportScreenState extends State<BuildingReportScreen> {
                           },
                           child: isLoading
                               ? ListTile(
-                            contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                            subtitle: Center(
-                              child: Platform.isIOS
-                                  ? const CupertinoActivityIndicator(radius: 18)
-                                  : CircularProgressIndicator(
-                                valueColor: AlwaysStoppedAnimation<Color>(appbar_color),
-                              ),
+                              contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                              subtitle: Center(
+                                child: Platform.isIOS
+                                    ? const CupertinoActivityIndicator(radius: 18)
+                                    : CircularProgressIndicator(
+                                  valueColor: AlwaysStoppedAnimation<Color>(appbar_color),
+                                ),
 
-                            )
+                              )
                           )
                               : ListTile(
                             contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -471,38 +476,41 @@ class _BuildingReportScreenState extends State<BuildingReportScreen> {
                     },
                   ),
                 ],
-              ),
-            ),),
+              )
+          ),
+                  ),
 
-            Positioned(
-              bottom: 20, // Adjust as needed
-              left: 0,
-              right: 20,
-              child: Align(
-                alignment: Alignment.bottomRight,
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.8),
-                    borderRadius: BorderRadius.circular(10),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black26,
-                        blurRadius: 5,
-                        offset: Offset(2, 2),
+                Positioned(
+                  bottom: 20, // Adjust as needed
+                  left: 0,
+                  right: 20,
+                  child: Align(
+                    alignment: Alignment.bottomRight,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.8),
+                        borderRadius: BorderRadius.circular(10),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black26,
+                            blurRadius: 5,
+                            offset: Offset(2, 2),
+                          ),
+                        ],
                       ),
-                    ],
+                      child: Image.asset(
+                        'assets/building_location.png', // Image from assets
+                        width: 75, // Adjust size as needed
+                        height: 75,
+                      ),
+                    ),
                   ),
-                  child: Image.asset(
-                    'assets/building_location.png', // Image from assets
-                    width: 75, // Adjust size as needed
-                    height: 75,
-                  ),
-                ),
-              ),
 
-            ),
-          ]
-      )
+                ),
+              ]
+          )
+      ),
+
     );
   }
 }

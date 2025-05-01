@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:mime/mime.dart';
@@ -364,6 +365,10 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
 
       print("Signature saved at: $filePath");
 
+      // send sign to api
+      await uploadSignatureImage(selectedSubTicketId!);
+
+      // sending followup data
       sendFormData();
      /* generatePdf(context);*/
 
@@ -371,6 +376,43 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error saving signature: $e')),
       );
+    }
+  }
+
+  Future<void> uploadSignatureImage(int subTicketId) async {
+    try {
+      if (_signatureFile == null || !await _signatureFile!.exists()) {
+        print("No signature file to upload.");
+        return;
+      }
+
+      final url = Uri.parse("$baseurl/maintenance/followup/sign/$subTicketId"); // ✅ your API for sub_ticket_id
+
+      final request = http.MultipartRequest('POST', url);
+      request.headers.addAll({
+        'Authorization': 'Bearer $Company_Token',
+      });
+
+      request.files.add(
+        await http.MultipartFile.fromPath(
+          'signature', // field name your backend expects
+          _signatureFile!.path,
+          filename: basename(_signatureFile!.path),
+          contentType: MediaType('image', 'png'),
+        ),
+      );
+
+      final streamedResponse = await request.send();
+      final response = await http.Response.fromStream(streamedResponse);
+
+      if (response.statusCode == 201) {
+        print('✅ Signature uploaded successfully.');
+      } else {
+        print('❌ Signature upload failed. Status: ${response.statusCode}');
+        print('Body: ${response.body}');
+      }
+    } catch (e) {
+      print('Error uploading signature: $e');
     }
   }
 
@@ -947,9 +989,14 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
                                 style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w600),
                               ),
                               Text(
-                                followup["description"],
+                                'Status: ${followup["status"]['name']}',
                                 style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey[600]),
                               ),
+                              Text(
+                                'Description: ${followup["description"]}',
+                                style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey[600]),
+                              ),
+
                             ],
                           ),
                         ),
@@ -1251,14 +1298,14 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
                       style: GoogleFonts.poppins(fontSize: 16,
                         fontWeight: FontWeight.bold,),
                     ),
-                    /*SizedBox(width: 2),
+                    SizedBox(width: 2),
                     Text(
                       '*', // Red asterisk for required field
                       style: GoogleFonts.poppins(
                         fontSize: 20,
                         color: Colors.red, // Red color for the asterisk
                       ),
-                    ),*/
+                    ),
 
                   ],
                 ),
@@ -1441,6 +1488,18 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
                               {
                                 _saveSignature(widget.ticketid,context);
                               }
+                            else if(_attachment.isEmpty)
+                            {
+                              String message = 'Attachment is missing';
+                              Fluttertoast.showToast(
+                                msg: message,
+                                toastLength: Toast.LENGTH_SHORT,
+                                gravity: ToastGravity.BOTTOM, // Change to CENTER or TOP if needed
+                                backgroundColor: Colors.black,
+                                textColor: Colors.white,
+                                fontSize: 16.0,
+                              );
+                            }
                             else
                               {
                                 sendFormData();

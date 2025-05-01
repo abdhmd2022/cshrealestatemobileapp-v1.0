@@ -1099,7 +1099,6 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-
                 _buildDashboardButton(Icons.build, 'Maintenance', appbar_color, () {
                   Navigator.push
                     (
@@ -1148,7 +1147,6 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
               }),
             ],
           ),
-
 
             SizedBox(height: 20),
           ],

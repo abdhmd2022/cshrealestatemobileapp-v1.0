@@ -166,7 +166,6 @@ class MonthlyDetailScreen extends StatelessWidget {
           );
         }).toList(),
       )
-
     );
   }
 }

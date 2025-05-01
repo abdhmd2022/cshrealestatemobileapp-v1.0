@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:cshrealestatemobile/AvailableUnitsReport.dart';
 import 'package:cshrealestatemobile/ComplaintList.dart';
 import 'package:cshrealestatemobile/KYCUpdate.dart';
@@ -9,24 +11,13 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
+import 'package:http/http.dart' as http;
+
 import 'dart:ui' as ui;
 import 'MaintenanceTicketReport.dart';
 import 'Sidebar.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class Invoice {
-  final String invoiceId;
-  final double amount;
-  final String dueDate;
-  final bool isPaid;
-
-  Invoice({
-    required this.invoiceId,
-    required this.amount,
-    required this.dueDate,
-    required this.isPaid,
-  });
-}
 
 class TenantDashboard extends StatelessWidget {
   @override
@@ -45,6 +36,35 @@ class TenantDashboardScreen extends StatefulWidget {
   _SalesDashboardScreenState createState() => _SalesDashboardScreenState();
 }
 
+class Cheque {
+  final bool isReceived;
+  final bool isDeposited;
+
+  Cheque({required this.isReceived, required this.isDeposited});
+
+  factory Cheque.fromJson(Map<String, dynamic> json) {
+    return Cheque(
+      isReceived: json['is_received'] == "true",
+      isDeposited: json['is_deposited'] == "true",
+    );
+  }
+}
+
+class Invoice {
+  final double amount;
+  final String dueDate;
+
+  Invoice({required this.amount, required this.dueDate});
+
+  factory Invoice.fromJson(Map<String, dynamic> json) {
+    return Invoice(
+      amount: json['amount_incl']?.toDouble() ?? 0.0,
+      dueDate: json['received_date'] ?? DateTime.now().toIso8601String(),
+    );
+  }
+}
+
+
 class _SalesDashboardScreenState extends State<TenantDashboardScreen> with TickerProviderStateMixin {
 
   final List<Map<String, String>> apartments = [
@@ -54,19 +74,56 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
 
   // Data for each apartment's cheques
   final Map<String, Map<String, int>> chequeData = {
-    "1 BHK (Al Khaleej Center)": {"Cleared": 2, "Pending": 4},
-    "2 BHK (Musalla Tower)": {"Cleared": 5, "Pending": 2},
+
   };
 
   final Map<String, Map<String, double>> pendingInvoicesData = {
-    "1 BHK (Al Khaleej Center)": {"Jan": 10000, "Mar": 10000,"May": 10000,"July":10000},
-    "2 BHK (Musalla Tower)": {"Mar": 10000, "May": 10000},
+
   };
 
   String? selectedApartment;
 
   // Current index for CupertinoPicker
   int selectedIndex = 0;
+
+  Future<void> fetchTenantDashboardData() async {
+    final url = Uri.parse("$baseurl/reports/tenant/cheques/$user_id"); // Replace with your actual endpoint
+    final response = await http.get(
+      url,
+      headers: {
+        "Authorization": "Bearer $Company_Token", // Update this token accordingly
+        "Content-Type": "application/json",
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body)["data"]["tenant"];
+      final chequesJson = List<Map<String, dynamic>>.from(data["cheques"]);
+
+      List<Cheque> cheques = chequesJson.map((e) => Cheque.fromJson(e)).toList();
+      List<Invoice> invoices = chequesJson.map((e) => Invoice.fromJson(e["payment"])).toList();
+
+      int cleared = cheques.where((c) => c.isReceived).length;
+      int pending = cheques.where((c) => !c.isReceived).length;
+
+      final invoiceMap = <String, double>{};
+      for (var invoice in invoices) {
+        final month = invoice.dueDate.substring(0, 7);
+        invoiceMap[month] = (invoiceMap[month] ?? 0) + invoice.amount;
+      }
+
+      setState(() {
+        chequeData[selectedApartment!] = {
+          "Cleared": cleared,
+          "Pending": pending,
+        };
+        pendingInvoicesData[selectedApartment!] = invoiceMap;
+      });
+    } else {
+      print("API Error: ${response.body}");
+    }
+  }
+
 
   List<Map<String, dynamic>> groupInvoicesByMonth(List<Invoice> invoices) {
     final grouped = <String, double>{};
@@ -90,6 +147,8 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
   void initState() {
     super.initState();
     _initSharedPreferences();
+    fetchTenantDashboardData();
+
   }
 
   double _getTextWidth(String text, TextStyle style) {
@@ -137,12 +196,7 @@ class _SalesDashboardScreenState extends State<TenantDashboardScreen> with Ticke
     // Add some padding to the width
     double containerWidth = maxWidth + 20.0;
 
-    final invoices = [
-      Invoice(invoiceId: "001", amount: 1500, dueDate: "2025-01-15", isPaid: false),
-      Invoice(invoiceId: "002", amount: 2000, dueDate: "2025-02-15", isPaid: false),
-    ];
 
-    final chartData = groupInvoicesByMonth(invoices);
 
     /*return Scaffold(
       key: _scaffoldKey,

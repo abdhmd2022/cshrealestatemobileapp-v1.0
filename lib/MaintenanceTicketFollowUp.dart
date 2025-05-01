@@ -126,7 +126,7 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
         "status_id":selectedStatus!.id,
         "date":todayDate,
         "description": _remarksController.text,
-        "next_followup_date":DateFormat('yyyy-MM-dd').format(nextFollowupDate!)
+        "next_followup_date":DateFormat('yyyy-MM-dd').format(nextFollowupDate ?? DateTime.now())
       };
 
       print('followup request body : ${requestBody}');
@@ -364,6 +364,7 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
 
       print("Signature saved at: $filePath");
 
+      sendFormData();
      /* generatePdf(context);*/
 
     } catch (e) {
@@ -515,8 +516,11 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
         /*print('data $jsonData');*/
         final List<dynamic> statuses = jsonData['data']['maintenanceStatus'];
         setState(() {
-          maintenanceStatusList =
-              statuses.map((status) => MaintenanceStatus.fromJson(status)).toList();
+          maintenanceStatusList = statuses
+              .where((status) =>
+          (status['category'] as String).toLowerCase() != 'drop')
+              .map((status) => MaintenanceStatus.fromJson(status))
+              .toList();
         });
       } else {
         print('Upload failed with status code: ${response.statusCode}');
@@ -1007,16 +1011,24 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
     setState(() {
     selectedStatus = value;
 
+    print('status category -> ${selectedStatus!.category}');
+
     if(selectedStatus!.category != 'Close')
       {
         _signatureController.clear();
       }
+
+    if(selectedStatus!.category != 'Normal')
+    {
+      nextFollowupDate = null;
+    }
     });
     },
     ),
     ),
 
-              SizedBox(
+              if(selectedStatus !=null && (selectedStatus!.category != "Close" && selectedStatus!.category != "Drop"))
+                SizedBox(
                 width: double.infinity, // Expands to full screen width
                 height: 40, // Standard button height
                 child: ElevatedButton(

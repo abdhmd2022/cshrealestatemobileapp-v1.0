@@ -815,7 +815,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
 
                   bool allFollowupsMissing = true;
                   bool allClosed = true;
-
+                  var category = '';
                   for (var sub in subTickets) {
                     final followUps = sub['followps'] as List<dynamic>;
 
@@ -826,8 +826,8 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
 
                     allFollowupsMissing = false;
 
-                    final lastFollowUp = followUps.last;
-                    final category = lastFollowUp['status']['category'];
+                    final lastFollowUp = followUps.first;
+                    category = lastFollowUp['status']['category'];
 
                     if (category != "Close") {
                       allClosed = false;
@@ -835,13 +835,13 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                   }
 
                   if (allFollowupsMissing) return "Pending";
-                  return allClosed ? "Close" : "Normal";
+                  return allClosed ? "Close" : 'Normal';
                 })(),
 
-
-
                 'date': apiTicket['created_at']?.split('T')[0] ?? '',
-                'maintenanceTypes': (apiTicket['sub_tickets'] as List<dynamic>).map((subTicket) {
+
+                'maintenanceTypesAll': (apiTicket['sub_tickets'] as List<dynamic>)
+                    .map((subTicket) {
                   final type = subTicket['type'];
                   return {
                     'subTicketId': subTicket['id'].toString(),
@@ -849,6 +849,25 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                     'category': type['category'] ?? 'N/A',
                   };
                 }).toList(),
+
+                'maintenanceTypesFiltered': (apiTicket['sub_tickets'] as List<dynamic>)
+                    .where((subTicket) {
+                  final followUps = subTicket['followps'] as List<dynamic>;
+                  if (followUps.isEmpty) return true; // Include if no followups
+                  final firstFollowUp = followUps.first;
+                  return firstFollowUp['status']['category'] != 'Close';
+                })
+                    .map((subTicket) {
+                  final type = subTicket['type'];
+                  return {
+                    'subTicketId': subTicket['id'].toString(),
+                    'type': type['name'],
+                    'category': type['category'] ?? 'N/A',
+                  };
+                }).toList(),
+
+
+
                 'description': apiTicket['description'] ?? '',
               };
             }).toList();
@@ -1180,8 +1199,8 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
     setState(() {
       filteredTickets = listToFilter.where((ticket) {
         // Ensure 'maintenanceTypes' is a List before using `.any()`
-        bool hasMatchingSubTicket = ticket['maintenanceTypes'] is List &&
-            (ticket['maintenanceTypes'] as List).any((subTicket) =>
+        bool hasMatchingSubTicket = ticket['maintenanceTypesAll'] is List &&
+            (ticket['maintenanceTypesAll'] as List).any((subTicket) =>
             subTicket is Map &&
                 subTicket.containsKey('type') &&
                 subTicket['type'] is String &&
@@ -1549,7 +1568,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                 // Subtickets list (Each with only "Transfer" button)
             if(is_admin && ticket['status']!='Close')
             Column(
-            children: ticket['maintenanceTypes'].map<Widget>((subTicket) {
+            children: ticket['maintenanceTypesFiltered'].map<Widget>((subTicket) {
       return Container(
       margin: EdgeInsets.symmetric(vertical: 3, horizontal: 0),
       padding: EdgeInsets.symmetric(vertical: 14, horizontal: 18),
@@ -1689,7 +1708,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
             Icon(Icons.confirmation_number, color: Colors.teal, size: 24.0),
             SizedBox(width: 8.0),
             Text(
-              "MT-${ticket['ticketNumber']} - ${ticket['status']}",
+              "MT-${ticket['ticketNumber']}",
               style: GoogleFonts.poppins(
                 fontSize: 18.0,
                 fontWeight: FontWeight.bold,
@@ -1712,8 +1731,8 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
        /* _buildInfoRow('Emirate:', ticket['emirate']),*/
         _buildInfoRow_subtype(
           'Type:',
-          (ticket['maintenanceTypes'] != null && ticket['maintenanceTypes'].isNotEmpty)
-              ? ticket['maintenanceTypes'].map((type) => type['type'] ?? 'Unknown').join(', ')
+          (ticket['maintenanceTypesAll'] != null && ticket['maintenanceTypesAll'].isNotEmpty)
+              ? ticket['maintenanceTypesAll'].map((type) => type['type'] ?? 'Unknown').join(', ')
               : 'N/A',
         ),
         _buildInfoRow('Date:', DateFormat('dd-MMM-yyyy').format(DateTime.parse(ticket['date']))),
@@ -1791,6 +1810,10 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
       case 'Normal':
         label = 'In Progress';
         color = Colors.orange;
+        break;
+      case 'Drop':
+        label = 'Drop';
+        color = Colors.redAccent;
         break;
       case 'null':
       case '':

@@ -128,7 +128,7 @@ class _ComplaintSuggestionReportScreenState extends State<ComplaintSuggestionRep
         color: Colors.white,
         child: ClipRRect(
           borderRadius: BorderRadius.circular(20),
-child:         Container(
+child: Container(
 
   color: Colors.white,
   height: 270,
@@ -196,7 +196,6 @@ child:         Container(
                   ),
                 ),
               ),
-
             ],
             titlesData: FlTitlesData(
               leftTitles: AxisTitles(
@@ -254,7 +253,6 @@ child:         Container(
               ),
             ),
           ),
-
         ),
       ),
       SizedBox(height: 16),
@@ -269,11 +267,8 @@ child:         Container(
     ],
   ),
 ),
-
         ),
       );
-
-
   }
 
   Widget _buildLegendDot({required Color color, required String label}) {
@@ -296,7 +291,6 @@ child:         Container(
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
     final filteredMonths = groupedByMonth.entries.where((e) {
@@ -304,7 +298,6 @@ child:         Container(
       return year == selectedYear;
     }).toList()
       ..sort((a, b) => b.key.compareTo(a.key)); // 👈 Sort by latest month first
-
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -315,7 +308,6 @@ child:         Container(
           onPressed: () {
             Navigator.pushReplacement(
               context,
-
               MaterialPageRoute(builder: (_) => LandlordDashboardScreen()),
             );
           },
@@ -512,16 +504,12 @@ child:         Container(
                       ),
                     ),
                   );
-
-
                 },
               ),
             ),
           ],
         ),
-
       ),
-
     );
   }
 }

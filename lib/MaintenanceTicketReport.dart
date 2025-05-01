@@ -451,7 +451,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                     ),
                   ),
 
-                  if(status=='N/A')...[
+                  if(status!='Close')...[
                     SizedBox(height: 10),
 
                     // Comment input area
@@ -461,7 +461,6 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                           child: TextField(
                             controller: commentController,
                             maxLines: null,
-                            enabled: status!='N/A' ? false: true,
 
                             style: GoogleFonts.poppins(color: Colors.black),
                             decoration: InputDecoration(
@@ -805,11 +804,42 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                 'unitNumber': flat['name'] ?? 'N/A',
                 'buildingName': building['name'] ?? 'N/A',
                 'emirate': state['name'] ?? 'N/A',
-                'status': apiTicket['sub_tickets'].isNotEmpty
+                /*'status': apiTicket['sub_tickets'].isNotEmpty
                     ? apiTicket['sub_tickets'][0]['followps'].isNotEmpty
                     ? apiTicket['sub_tickets'][0]['followps'][0]['status']['name']
                     : 'N/A'
-                    : 'N/A',
+                    : 'N/A',*/
+                'status': (() {
+                  final subTickets = apiTicket['sub_tickets'] as List<dynamic>;
+                  if (subTickets.isEmpty) return null;
+
+                  bool allFollowupsMissing = true;
+                  bool allClosed = true;
+
+                  for (var sub in subTickets) {
+                    final followUps = sub['followps'] as List<dynamic>;
+
+                    if (followUps.isEmpty) {
+                      allClosed = false;
+                      continue;
+                    }
+
+                    allFollowupsMissing = false;
+
+                    final lastFollowUp = followUps.last;
+                    final category = lastFollowUp['status']['category'];
+
+                    if (category != "Close") {
+                      allClosed = false;
+                    }
+                  }
+
+                  if (allFollowupsMissing) return "Pending";
+                  return allClosed ? "Close" : "Normal";
+                })(),
+
+
+
                 'date': apiTicket['created_at']?.split('T')[0] ?? '',
                 'maintenanceTypes': (apiTicket['sub_tickets'] as List<dynamic>).map((subTicket) {
                   final type = subTicket['type'];
@@ -1446,7 +1476,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    if (is_admin)
+                    if (is_admin && ticket['status'] != 'Close')
                       _buildDecentButton(
                         'Follow Up',
                         Icons.schedule,
@@ -1464,36 +1494,34 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                       ),
                     SizedBox(width: 5),
 
-                    if(ticket['status']=='N/A')...[
+                    if (ticket['status'] == 'Close' && is_admin) ...[
                       _buildDecentButton(
                         'Comment',
                         Icons.comment,
                         Colors.green,
                             () {
                           commentController.clear();
-                          _showViewCommentPopup(context, ticket['ticketNumber'],scope,ticket['status']); // Existing Comment Section
+                          _showViewCommentPopup(context, ticket['ticketNumber'], scope, ticket['status']);
+                        },
+                      ),
+                      SizedBox(width: 5),
+                    ] else if (ticket['status'] != 'Close') ...[
+                      _buildDecentButton(
+                        'Comment',
+                        Icons.comment,
+                        Colors.green,
+                            () {
+                          commentController.clear();
+                          _showViewCommentPopup(context, ticket['ticketNumber'], scope, ticket['status']);
                         },
                       ),
                       SizedBox(width: 5),
                     ],
 
-                    if(ticket['status']!='N/A')...[
-                      if(is_admin)
-                      _buildDecentButton(
-                        'Comment',
-                        Icons.comment,
-                        Colors.green,
-                            () {
-                          commentController.clear();
-                          _showViewCommentPopup(context, ticket['ticketNumber'],scope,ticket['status']); // Existing Comment Section
-                        },
-                      ),
-                      SizedBox(width: 5),
-                    ],
 
 
                     if (!is_admin)...[
-                      if(ticket['status']!='N/A')
+                      if(ticket['status']=='Close')
                       _buildDecentButton(
                         'Feedback',
                         Icons.feedback,
@@ -1505,7 +1533,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                     ],
 
                     if (is_admin)...[
-                      if(ticket['status']!='N/A')
+                      if(ticket['status']!='Normal')
                       _buildDecentButton(
                         'Feedback',
                         Icons.feedback,
@@ -1519,7 +1547,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                 ),
                 SizedBox(height: 10,),
                 // Subtickets list (Each with only "Transfer" button)
-            if(is_admin)
+            if(is_admin && ticket['status']!='Close')
             Column(
             children: ticket['maintenanceTypes'].map<Widget>((subTicket) {
       return Container(
@@ -1668,6 +1696,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
             ),
           ],
         ),
+
         _getStatusBadge(ticket['status']),
       ],
     );
@@ -1749,18 +1778,28 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
     );
   }
 
-  Widget _getStatusBadge(String status) {
+  Widget _getStatusBadge(String category) {
+    String label;
     Color color;
-    switch (status) {
 
-      case 'Closed':
+    switch (category) {
+      case 'Close':
+        label = 'Closed';
         color = Colors.green;
         break;
-      case 'N/A':
+      case 'Normal':
+        label = 'In Progress';
         color = Colors.orange;
-        status = 'Pending';
+        break;
+      case 'null':
+      case '':
+      case 'N/A':
+      case 'Pending':
+        label = 'Pending';
+        color = Colors.orange;
         break;
       default:
+        label = category;
         color = Colors.grey;
     }
 
@@ -1771,7 +1810,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
         borderRadius: BorderRadius.circular(16.0),
       ),
       child: Text(
-        status,
+        label,
         style: GoogleFonts.poppins(
           color: color,
           fontWeight: FontWeight.bold,

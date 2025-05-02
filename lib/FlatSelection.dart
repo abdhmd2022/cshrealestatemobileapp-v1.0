@@ -98,7 +98,7 @@ class _FlatSelectionState extends State<FlatSelection> {
       backgroundColor: Color(0xFFF5F7FA),
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: Text("Select Flat", style: GoogleFonts.poppins(
+        title: Text("Select Unit", style: GoogleFonts.poppins(
             fontSize: 16,
             fontWeight: FontWeight.w600,
             color: Colors.white
@@ -126,7 +126,7 @@ class _FlatSelectionState extends State<FlatSelection> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "Choose Flat",
+                    "Unit(s)",
                     style: GoogleFonts.poppins(
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
@@ -136,7 +136,7 @@ class _FlatSelectionState extends State<FlatSelection> {
                   SizedBox(height: 10),
                   _buildDropdown<Map<String, dynamic>>(
                     selectedFlat,
-                    "Select Flat",
+                    "Select Unit",
                     flats.map((flat) {
                       return DropdownMenuItem(
                         value: flat,

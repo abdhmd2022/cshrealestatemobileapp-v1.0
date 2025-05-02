@@ -215,7 +215,7 @@ class _SidebarState extends State<Sidebar> {
                   }),
                   if(!is_admin)
                     _buildDrawerItem(Icons.dashboard, "Dashboard", true, () {
-                    _navigateTo(context, TenantDashboardScreen());
+                    _navigateTo(context, TenantDashboard());
                   }),
                   if(is_admin)
                     _buildDrawerItem(Icons.dashboard, "Landlord Dashboard", true, () {
@@ -226,7 +226,7 @@ class _SidebarState extends State<Sidebar> {
                     _navigateTo(context, CompanySelection());
                   }),
                   if(!is_admin)
-                    _buildDrawerItem(Icons.business, "Flats", true, () {
+                    _buildDrawerItem(Icons.business, "Unit(s)", true, () {
                       _navigateTo(context, FlatSelection());
                     }),
                   if(is_admin)

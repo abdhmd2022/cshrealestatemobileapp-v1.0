@@ -142,10 +142,7 @@ class _ComplaintListScreenState extends State<ComplaintListScreen> {
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white),
           onPressed: () {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (_) => TenantDashboard()),
-            );
+            Navigator.pop(context);
           },
         ),
       ),

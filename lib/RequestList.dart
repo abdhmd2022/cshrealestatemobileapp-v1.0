@@ -141,10 +141,7 @@ class _RequestListScreenState extends State<RequestListScreen> {
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white),
           onPressed: () {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (_) => TenantDashboard()),
-            );
+            Navigator.pop(context);
           },
         ),
       ),
@@ -265,12 +262,14 @@ class _RequestListScreenState extends State<RequestListScreen> {
               ),
             ),
             isLoading
-                ? Center(
-              child: Platform.isIOS
-                  ? const CupertinoActivityIndicator(radius: 18)
-                  : CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(appbarColor),
-              ),
+                ? Expanded(
+              child: Center(
+                child: Platform.isIOS
+                    ? const CupertinoActivityIndicator(radius: 18)
+                    : CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(appbarColor),
+                ),
+              )
             )
                 : filteredComplaints.isEmpty
                 ? Expanded(

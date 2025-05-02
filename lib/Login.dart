@@ -411,6 +411,8 @@ class _LoginPageState extends State<Login> {
       await prefs.setString("baseurl", hosting['baseurl']);
       await prefs.setString("adminurl", hosting['adminurl']);
 
+      await Future.delayed(Duration(seconds: 1));
+
       // Step 2: Get tenant + flats details using tenantId
       final tenantUrl = "${hosting['baseurl']}/tenant/$tenantId";
 

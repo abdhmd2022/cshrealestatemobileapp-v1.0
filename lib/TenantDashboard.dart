@@ -178,7 +178,6 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
       pending = cheques.length - cleared;
     }
 
-
     return Scaffold(
       key: _scaffoldKey,
       backgroundColor: Colors.white,
@@ -580,7 +579,8 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
 
                                       String monthKey = invoices.keys.elementAt(idx); // e.g. "2025-02"
                                       DateTime date = DateTime.parse("$monthKey-01");
-                                      String label = "${date.day.toString().padLeft(2, '0')}-${_monthAbbr(date.month)}-${date.year % 100}";
+                                      String label = "${_monthAbbr(date.month)}-${date.year % 100}";
+
 
                                       return SideTitleWidget(
                                         axisSide: meta.axisSide,

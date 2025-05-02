@@ -217,10 +217,10 @@ class _SidebarState extends State<Sidebar> {
                     _buildDrawerItem(Icons.dashboard, "Dashboard", true, () {
                     _navigateTo(context, TenantDashboard());
                   }),
-                  if(is_admin)
+                  /*if(is_admin)
                     _buildDrawerItem(Icons.dashboard, "Landlord Dashboard", true, () {
                     _navigateTo(context, LandlordDashboardScreen());
-                  }),
+                  }),*/
                   if(is_admin)
                     _buildDrawerItem(Icons.business, "Companies", true, () {
                     _navigateTo(context, CompanySelection());

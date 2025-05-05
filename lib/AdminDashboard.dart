@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:cshrealestatemobile/AvailableUnitsReport.dart';
 import 'package:cshrealestatemobile/AnalyticsReport.dart';
@@ -130,24 +131,30 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Ticker
       DateTime? returnedOn = _parseDate(payment['returned_on']);
       DateTime? receivedOn = _parseDate(cheque['received_on']);
       DateTime? depositedOn = _parseDate(cheque['deposited_on']);
+      DateTime? chequeDate = _parseDate(cheque['date']);
 
       final isReceived = cheque['is_received'].toString().toLowerCase() == 'true';
       final isDeposited = cheque['is_deposited'].toString().toLowerCase() == 'true';
 
       bool counted = false;
 
+      // Returned cheque in range
       if (returnedOn != null &&
           !returnedOn.isBefore(selectedRange.start) &&
           !returnedOn.isAfter(selectedRange.end)) {
         returned++;
         counted = true;
-      } else if (isReceived && !isDeposited &&
+      }
+      // Received but not deposited in range
+      else if (isReceived && !isDeposited &&
           receivedOn != null &&
           !receivedOn.isBefore(selectedRange.start) &&
           !receivedOn.isAfter(selectedRange.end)) {
         received++;
         counted = true;
-      } else if (isReceived && isDeposited &&
+      }
+      // Received and deposited in range
+      else if (isReceived && isDeposited &&
           depositedOn != null &&
           !depositedOn.isBefore(selectedRange.start) &&
           !depositedOn.isAfter(selectedRange.end)) {
@@ -155,7 +162,11 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Ticker
         counted = true;
       }
 
-      if (!counted) {
+      // If not counted in any above, check if cheque date falls in range to consider as pending
+      if (!counted &&
+          chequeDate != null &&
+          !chequeDate.isBefore(selectedRange.start) &&
+          !chequeDate.isAfter(selectedRange.end)) {
         pending++;
       }
     }
@@ -176,7 +187,10 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Ticker
   }
 
   Future<void> fetchChequeData() async {
-    cheques.clear();
+    setState(() {
+      cheques.clear();
+      isLoading = true;
+    });
     try {
       final response = await http.get(
         Uri.parse('$baseurl/tenant/cheque'),
@@ -371,7 +385,13 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Ticker
                   // Bar Chart
 
                   Expanded(
-                    child: (returned == 0 && received == 0 && pending == 0 && cleared == 0)
+                    child: isLoading
+                        ? Center(child:  Platform.isIOS
+                        ? const CupertinoActivityIndicator(radius: 18)
+                        : CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(appbar_color),
+                    ),)
+                        : (returned == 0 && received == 0 && pending == 0 && cleared == 0)
                         ? Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,

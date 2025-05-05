@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:cshrealestatemobile/AvailableUnitsReport.dart';
 import 'package:cshrealestatemobile/AnalyticsReport.dart';
 import 'package:cshrealestatemobile/MaintenanceTicketReport.dart';
@@ -8,9 +10,12 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
+import 'package:intl/intl.dart';
 import 'SalesInquiryReport.dart';
 import 'Sidebar.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:http/http.dart' as http;
+
 
 class AdminDashboard extends StatelessWidget {
   @override
@@ -29,69 +34,17 @@ class AdminDashboardScreen extends StatefulWidget {
   _AdminDashboardScreenState createState() => _AdminDashboardScreenState();
 }
 
-
-
 class _AdminDashboardScreenState extends State<AdminDashboardScreen> with TickerProviderStateMixin {
 
-  String? selectedYear;
-  Map<String, Map<String, int>> salesData = {
-    "2024": {
-      "Jan": 1000,
-      "Feb": 2000,
-      "Mar": 1500,
-      "Apr": 3000,
-      "May": 2500,
-      "Jun": 1800,
-      "Jul": 2200,
-      "Aug": 1900,
-      "Sep": 2100,
-      "Oct": 2300,
-      "Nov": 2400,
-      "Dec": 2500,
-    },
-    "2023": {
-      "Jan": 1200,
-      "Feb": 1800,
-      "Mar": 2200,
-      "Apr": 2500,
-      "May": 1900,
-      "Jun": 1600,
-      "Jul": 2100,
-      "Aug": 2000,
-      "Sep": 1800,
-      "Oct": 2300,
-      "Nov": 2400,
-      "Dec": 2500,
-    },
-    "2022": {
-      "Jan": 1100,
-      "Feb": 2100,
-      "Mar": 2300,
-      "Apr": 2700,
-      "May": 2900,
-      "Jun": 1800,
-      "Jul": 2400,
-      "Aug": 2000,
-      "Sep": 1500,
-      "Oct": 2200,
-      "Nov": 2100,
-      "Dec": 2500,
-    },
-    "2021": {
-      "Jan": 5100,
-      "Feb": 6200,
-      "Mar": 7300,
-      "Apr": 8400,
-      "May": 9500,
-      "Jun": 10600,
-      "Jul": 11700,
-      "Aug": 12800,
-      "Sep": 13900,
-      "Oct": 15000,
-      "Nov": 15000,
-      "Dec": 8000,
-    }
-  };
+  List<dynamic> cheques = [];
+  bool isLoading = true;
+  late DateTimeRange selectedRange;
+
+  int returned = 0;
+  int received = 0;
+  int pending = 0;
+  int cleared = 0;
+
 
   @override
   void initState() {
@@ -100,20 +53,214 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Ticker
   }
 
   Future<void> _initSharedPreferences() async {
+    final now = DateTime.now();
+    selectedRange = DateTimeRange(
+      start: DateTime(now.year, now.month, 1),
+      end: now,
+    );
 
-    setState(() {
-      DateTime now = DateTime.now();  // Get the current date and time
-      selectedYear = (now.year).toString();  // Store the year as a string
-    });
+    await fetchChequeData(); // make sure cheques are loaded
+  }
+
+
+  Future<void> _pickDateRange() async {
+    final now = DateTime.now();
+    final picked = await showDateRangePicker(
+      context: context,
+      firstDate: DateTime(now.year - 1),
+      lastDate: DateTime(now.year + 1),
+      initialDateRange: selectedRange,
+      builder: (context, child) {
+        return Theme(
+          data: ThemeData.light().copyWith(
+            colorScheme: ColorScheme.light(
+              primary: appbar_color,           // start & end circle
+              onPrimary: Colors.white,         // text on primary (start/end date)
+              secondary: appbar_color.withOpacity(0.5),         // range fill color
+              onSecondary: Colors.white,       // text color inside range
+              surface: Colors.white,
+              onSurface: Colors.black,
+            ),
+            dialogBackgroundColor: Colors.white,
+            textButtonTheme: TextButtonThemeData(
+              style: TextButton.styleFrom(
+                foregroundColor: appbar_color, // Save / Cancel buttons
+              ),
+              
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+
+
+    if (picked != null) {
+      selectedRange = picked;
+
+      print('range -> $selectedRange');
+      await fetchChequeData();
+    }
+  }
+
+  String _formatRange(DateTimeRange range) {
+    final now = DateTime.now();
+    final currentYear = now.year;
+
+    final start = range.start;
+    final end = range.end;
+
+    final sameYear = start.year == end.year;
+
+    if (sameYear && start.year == currentYear) {
+      // Same year and current year
+      return '${DateFormat('dd MMM').format(start)} - ${DateFormat('dd MMM').format(end)}';
+    } else {
+      // Either different years or same year but not current year
+      return '${DateFormat('dd MMM yyyy').format(start)} - ${DateFormat('dd MMM yyyy').format(end)}';
+    }
+  }
+
+
+  void _updateStatusCounts() {
+    returned = 0;
+    received = 0;
+    pending = 0;
+    cleared = 0;
+
+    for (var cheque in cheques) {
+      final payment = cheque['payment'];
+      if (payment == null) continue;
+
+      DateTime? returnedOn = _parseDate(payment['returned_on']);
+      DateTime? receivedOn = _parseDate(cheque['received_on']);
+      DateTime? depositedOn = _parseDate(cheque['deposited_on']);
+
+      final isReceived = cheque['is_received'].toString().toLowerCase() == 'true';
+      final isDeposited = cheque['is_deposited'].toString().toLowerCase() == 'true';
+
+      bool counted = false;
+
+      if (returnedOn != null &&
+          !returnedOn.isBefore(selectedRange.start) &&
+          !returnedOn.isAfter(selectedRange.end)) {
+        returned++;
+        counted = true;
+      } else if (isReceived && !isDeposited &&
+          receivedOn != null &&
+          !receivedOn.isBefore(selectedRange.start) &&
+          !receivedOn.isAfter(selectedRange.end)) {
+        received++;
+        counted = true;
+      } else if (isReceived && isDeposited &&
+          depositedOn != null &&
+          !depositedOn.isBefore(selectedRange.start) &&
+          !depositedOn.isAfter(selectedRange.end)) {
+        cleared++;
+        counted = true;
+      }
+
+      if (!counted) {
+        pending++;
+      }
+    }
+
+    print('--- Cheque Status Counts ---');
+    print('Returned: $returned');
+    print('Received: $received');
+    print('Pending: $pending');
+    print('Cleared: $cleared');
+    print('----------------------------');
+
+    setState(() {});
+  }
+
+
+  DateTime? _parseDate(dynamic dateStr) {
+    if (dateStr == null) return null;
+    return DateTime.tryParse(dateStr.toString());
+  }
+
+
+  Future<void> fetchChequeData() async {
+    cheques.clear();
+    try {
+      final response = await http.get(
+        Uri.parse('$baseurl/tenant/cheque'),
+        headers: {
+          "Authorization": "Bearer $Company_Token",
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final json = jsonDecode(response.body);
+
+        // Update cheques and trigger status count update in same state block
+        setState(() {
+          cheques = json['data']['cheques'];
+          isLoading = false;
+        });
+
+        _updateStatusCounts(); // move here instead of postFrameCallback
+
+      } else {
+        print('Failed to load: ${response.body}');
+        setState(() => isLoading = false);
+      }
+    } catch (e) {
+      print('Error: $e');
+      setState(() => isLoading = false);
+    }
   }
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
-    List<String> years = salesData.keys.toList();
 
-    int initialYearIndex = years.indexOf(selectedYear ?? years.last);
+
+    final List<BarChartGroupData> visibleBars = [];
+    final List<String> labels = [];
+    int index = 0;
+
+
+    void addBarIfCountPositive(int count, String label, Color startColor, Color endColor) {
+      if (count > 0) {
+        visibleBars.add(
+          BarChartGroupData(x: index, barRods: [
+            BarChartRodData(
+              toY: count.toDouble(),
+              width: 40,
+              gradient: LinearGradient(
+                begin: Alignment.bottomCenter,
+                end: Alignment.topCenter,
+                colors: [startColor, endColor],
+              ),
+              borderRadius: BorderRadius.circular(12),
+              backDrawRodData: BackgroundBarChartRodData(
+                show: true,
+                toY: count.toDouble(),
+                color: startColor.withOpacity(0.1),
+              ),
+            )
+          ]),
+        );
+        labels.add(label);
+        index++; // Increase index for each valid bar
+      }
+    }
+
+// Use this to build your bars
+    addBarIfCountPositive(returned, "Returned", Colors.red.shade300, Colors.red.shade700);
+    addBarIfCountPositive(received, "Received", Colors.green.shade400, Colors.green.shade700);
+    addBarIfCountPositive(pending, "Pending", Colors.orangeAccent.shade200, Colors.deepOrange.shade400);
+    addBarIfCountPositive(cleared, "Cleared", appbar_color.shade100, appbar_color.shade400);
+
+
+
+
+
+
 
     return Scaffold(
       key: _scaffoldKey,
@@ -182,133 +329,151 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Ticker
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+
             Container(
-              height: 70,
+              height: 330,
+              margin: EdgeInsets.only(left:8,right:8),
+              padding: EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black12,
-                    blurRadius: 10,
-                    offset: Offset(0, 4),
-                  ),
-                ],
+                boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 10, offset: Offset(0, 4))],
               ),
-              child:  // Section Title
-              SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child:  Container(
-                      width: MediaQuery.of(context).size.width,
-                      child: Row(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Title + Date Selector
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "Cheque Status",
+                        style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w600),
+                      ),
+                      SizedBox(width: 10),
+                      Flexible( // Allows the right side to shrink as needed
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: InkWell(
+                            onTap: _pickDateRange,
+                            borderRadius: BorderRadius.circular(30),
+                            child: Container(
+                              padding: EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                              decoration: BoxDecoration(
+                                color: appbar_color.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(Icons.date_range, size: 18, color: appbar_color),
+                                  SizedBox(width: 6),
+                                  Text(
+                                    _formatRange(selectedRange),
+                                    style: GoogleFonts.poppins(fontSize: 12, color: appbar_color.shade700),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+
+
+                  SizedBox(height: 26),
+                  // Bar Chart
+
+                  Expanded(
+                    child: (returned == 0 && received == 0 && pending == 0 && cleared == 0)
+                        ? Center(
+                      child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Container(
-                            height: 65,
-                            width: 150,
-                            child: CupertinoPicker(
-                              itemExtent: 32,
-                              scrollController: FixedExtentScrollController(initialItem: initialYearIndex),  // Set initial scroll position
-
-                              onSelectedItemChanged: (index) {
-                                setState(() {
-                                  selectedYear = years[index]; // Update selected year based on index
-                                });
-                              },
-                              children: years
-                                  .map((year) => Center(child: Text(year, style: GoogleFonts.poppins(fontSize: 16))))
-                                  .toList(),
-                            ),
-                          ),
-                          Tooltip(
-                            message: 'Scroll up/down to change year',
-                            child: IconButton(
-                              icon: Icon(Icons.info_outline),
-                              onPressed: () {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Row(
-                                      children: [
-                                        Icon(Icons.info, color: Colors.white),
-                                        SizedBox(width: 10),
-                                        Expanded(
-                                          child: Text(
-                                            'Scroll up/down to change year',
-                                            style: GoogleFonts.poppins(color: Colors.white),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    backgroundColor: Colors.grey,
-                                    behavior: SnackBarBehavior.floating,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                    action: SnackBarAction(
-                                      label: 'Got it',
-                                      textColor: Colors.white,
-                                      onPressed: () {
-                                        // Optional: Add action logic
-                                      },
-                                    ),
-                                    duration: Duration(seconds: 2),
-                                  ),
-                                );
-                              },
-                            ),
+                          Icon(Icons.search_off, size: 48, color: Colors.grey),
+                          SizedBox(height: 8),
+                          Text(
+                            "All cheques (Returned, Received, Pending and Cleared) are 0 for the selected period.\nPlease choose a different date range to view activity.",
+                            textAlign: TextAlign.center,
+                            style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey[700]),
                           ),
                         ],
-                      ))),
+                      ),
+                    )
+                        : SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: SizedBox(
+                      width: (visibleBars.length * 80).clamp(310, double.infinity).toDouble(),
+                      child: BarChart(
+                        BarChartData(
+                          barGroups: visibleBars,
+                          maxY: [returned, received, pending, cleared].reduce((a, b) => a > b ? a : b).toDouble(),
+                          titlesData: FlTitlesData(
+                            bottomTitles: AxisTitles(
+                              sideTitles: SideTitles(
+                                showTitles: true,
+                                getTitlesWidget: (value, meta) {
+                                  return Padding(
+                                    padding: const EdgeInsets.only(top: 12.0),
+                                    child: Text(
+                                      labels[value.toInt()],
+                                      style: GoogleFonts.poppins(fontSize: 12),
+                                    ),
+                                  );
+                                },
+                                reservedSize: 30,
+                              ),
+                            ),
+                            rightTitles: AxisTitles(
+                              sideTitles: SideTitles(
+                                showTitles: true,
+                                reservedSize: 30,
+                                interval: 1,
+                                getTitlesWidget: (value, meta) => SideTitleWidget(
+                                  axisSide: meta.axisSide,
+                                  space: 4,
+                                  child: Text(
+                                    value.toInt().toString(),
+                                    style: GoogleFonts.poppins(fontSize: 10),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            leftTitles: AxisTitles(
+                              sideTitles: SideTitles(
+                                showTitles: true,
+                                interval: 1,
+                                reservedSize: 30,
+                                getTitlesWidget: (value, meta) => SideTitleWidget(
+                                  axisSide: meta.axisSide,
+                                  space: 4,
+                                  child: Text(
+                                    value.toInt().toString(),
+                                    style: GoogleFonts.poppins(fontSize: 10),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                          ),
+                          gridData: FlGridData(show: true, drawVerticalLine: false),
+                          borderData: FlBorderData(show: false),
+                          barTouchData: BarTouchData(enabled: true),
+                        ),
+                      ),
+                    ),
+                  ),
+
+            ),
+
+
+
+                ],
+              ),
             ),
 
             SizedBox(height: 10),
-
-            Container(
-              height: 275,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black12,
-                    blurRadius: 10,
-                    offset: Offset(0, 4),
-                  ),
-                ],
-              ),
-              padding: EdgeInsets.all(16),
-              child: Container(
-                height: MediaQuery.of(context).size.height * 0.4,
-                width: MediaQuery.of(context).size.width,
-                child:
-
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Monthly Sales',
-                      style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                    SizedBox(height: 20),
-                    Expanded(
-                      child: SalesBarChart(salesData: salesData, selectedYear: selectedYear!),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-
-            SizedBox(height: 20),
-
-            /*Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                _buildDashboardButton(Icons.show_chart, 'In Progress', '12', appbar_color, () {}),
-                _buildDashboardButton(Icons.check_circle_outline, 'Closed', '8', appbar_color, () {}),
-              ],
-            ),
-
-            SizedBox(height: 10),*/
 
 
             Row(
@@ -545,6 +710,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Ticker
                             shadowColor: Colors.black.withOpacity(0.2), // Soft shadow for depth
                             elevation: 5, // Moderate elevation for a subtle 3D effect
                           ),
+
                           child: Container(
                               alignment: Alignment.center, // Center the content inside the container
                               padding: EdgeInsets.all(16),
@@ -877,6 +1043,20 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Ticker
 
 }
 
+Widget _legend(String title, Color color) {
+  return Row(
+    children: [
+      Container(
+        width: 14,
+        height: 14,
+        decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(4)),
+      ),
+      SizedBox(width: 6),
+      Text(title, style: GoogleFonts.poppins(fontSize: 12)),
+    ],
+  );
+}
+
 class SalesBarChart extends StatelessWidget {
   final Map<String, Map<String, int>> salesData;
   final String selectedYear;
@@ -941,28 +1121,28 @@ class SalesBarChart extends StatelessWidget {
               leftTitles: AxisTitles(
                 sideTitles: SideTitles(
                   showTitles: true,
+                  reservedSize: 30,
+                  interval: 1, // Only show titles at step = 1
                   getTitlesWidget: (value, meta) {
-                    double salesValue = value;
-                    String formattedValue = salesValue >= 1000
-                        ? '${(salesValue / 1000).toStringAsFixed(1)}K'
-                        : salesValue.toStringAsFixed(0);
-
+                    if (value % 1 != 0) return const SizedBox(); // Skip non-integers
                     return SideTitleWidget(
                       axisSide: meta.axisSide,
+                      space: 4,
                       child: Text(
-                        formattedValue,
-                        style: GoogleFonts.poppins(fontSize: 12),
+                        value.toInt().toString(),
+                        style: GoogleFonts.poppins(fontSize: 10),
                       ),
                     );
                   },
-                  reservedSize: _getReservedSize(salesData[selectedYear]?.values.toList() ?? []),
                 ),
               ),
+
+
               topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
               rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
             ),
             gridData: FlGridData(show: true, drawVerticalLine: false),
-            
+
             borderData: FlBorderData(show: false, border: Border.all(color: Colors.black, width: 1)),
             alignment: BarChartAlignment.spaceEvenly,
           ),
@@ -990,3 +1170,5 @@ double _getReservedSize(List<int> salesValues) {
     return 30.0; // Default space for small sales values
   }
 }
+
+

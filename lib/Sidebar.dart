@@ -5,11 +5,9 @@ import 'constants.dart';
 import 'Login.dart';
 import 'AdminDashboard.dart';
 import 'TenantDashboard.dart';
-import 'AnalyticsReport.dart';
 import 'SerialSelect.dart';
 import 'Settings.dart';
 import 'package:google_fonts/google_fonts.dart';
-
 
 class Sidebar extends StatefulWidget {
   final bool isDashEnable, isRolesVisible, isUserEnable, isRolesEnable, isUserVisible;
@@ -39,8 +37,8 @@ class _SidebarState extends State<Sidebar> {
   int companyID = 0;
 
   int userID = 0;
-  bool is_admin = true;
 
+  bool is_admin = true;
 
   @override
   void initState() {
@@ -64,8 +62,6 @@ class _SidebarState extends State<Sidebar> {
       companyID = prefs.getInt("flat_id") ?? prefs.getInt("company_id") ?? 0;
       userID = prefs.getInt("user_id") ?? 0;
       is_admin = prefs.getBool("is_admin") ?? true;
-
-
     });
   }
 
@@ -74,10 +70,8 @@ class _SidebarState extends State<Sidebar> {
     return Drawer(
       child: Container(
         color: Colors.white,
-
         child: Column(
           children: [
-
             Card(
               color: appbar_color,
               shape: RoundedRectangleBorder(
@@ -155,7 +149,6 @@ class _SidebarState extends State<Sidebar> {
                               style: GoogleFonts.poppins(fontSize: 14, color: Colors.white),
                               softWrap: true, // Allows text to wrap instead of overflowing
                             ),
-
                             ],
                       ),
                     ),
@@ -163,14 +156,12 @@ class _SidebarState extends State<Sidebar> {
                 ),
               ),
             ),
-
             SizedBox(height: 10),
 
             Card(
               color: appbar_color,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
-
               ),
               elevation: 4,
               margin: EdgeInsets.symmetric(vertical: 0, horizontal: 16),
@@ -258,7 +249,6 @@ class _SidebarState extends State<Sidebar> {
           ],
         ),
       ),
-
     );
   }
 

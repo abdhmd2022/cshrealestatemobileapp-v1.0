@@ -404,7 +404,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Ticker
                         : SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: SizedBox(
-                      width: (visibleBars.length * 80).clamp(310, double.infinity).toDouble(),
+                      width: MediaQuery.of(context).size.width-80,
                       child: BarChart(
                         BarChartData(
                           barGroups: visibleBars,
@@ -415,7 +415,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Ticker
                                 showTitles: true,
                                 getTitlesWidget: (value, meta) {
                                   return Padding(
-                                    padding: const EdgeInsets.only(top: 12.0),
+                                    padding: const EdgeInsets.only(top: 12.0,left: 10,right:10),
                                     child: Text(
                                       labels[value.toInt()],
                                       style: GoogleFonts.poppins(fontSize: 12),

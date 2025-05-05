@@ -45,7 +45,6 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Ticker
   int pending = 0;
   int cleared = 0;
 
-
   @override
   void initState() {
     super.initState();
@@ -61,7 +60,6 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Ticker
 
     await fetchChequeData(); // make sure cheques are loaded
   }
-
 
   Future<void> _pickDateRange() async {
     final now = DateTime.now();
@@ -86,14 +84,12 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Ticker
               style: TextButton.styleFrom(
                 foregroundColor: appbar_color, // Save / Cancel buttons
               ),
-              
             ),
           ),
           child: child!,
         );
       },
     );
-
 
     if (picked != null) {
       selectedRange = picked;
@@ -120,7 +116,6 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Ticker
       return '${DateFormat('dd MMM yyyy').format(start)} - ${DateFormat('dd MMM yyyy').format(end)}';
     }
   }
-
 
   void _updateStatusCounts() {
     returned = 0;
@@ -175,12 +170,10 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Ticker
     setState(() {});
   }
 
-
   DateTime? _parseDate(dynamic dateStr) {
     if (dateStr == null) return null;
     return DateTime.tryParse(dateStr.toString());
   }
-
 
   Future<void> fetchChequeData() async {
     cheques.clear();
@@ -201,7 +194,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Ticker
           isLoading = false;
         });
 
-        _updateStatusCounts(); // move here instead of postFrameCallback
+        _updateStatusCounts(); // call for statuses update
 
       } else {
         print('Failed to load: ${response.body}');
@@ -218,11 +211,9 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Ticker
   @override
   Widget build(BuildContext context) {
 
-
     final List<BarChartGroupData> visibleBars = [];
     final List<String> labels = [];
     int index = 0;
-
 
     void addBarIfCountPositive(int count, String label, Color startColor, Color endColor) {
       if (count > 0) {
@@ -250,17 +241,11 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Ticker
       }
     }
 
-// Use this to build your bars
+    // Use this to build your bars
     addBarIfCountPositive(returned, "Returned", Colors.red.shade300, Colors.red.shade700);
     addBarIfCountPositive(received, "Received", Colors.green.shade400, Colors.green.shade700);
     addBarIfCountPositive(pending, "Pending", Colors.orangeAccent.shade200, Colors.deepOrange.shade400);
     addBarIfCountPositive(cleared, "Cleared", appbar_color.shade100, appbar_color.shade400);
-
-
-
-
-
-
 
     return Scaffold(
       key: _scaffoldKey,

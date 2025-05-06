@@ -418,7 +418,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                                       style: GoogleFonts.poppins(
                                         fontSize: 13,
                                         color: isCurrentUserComment ? Colors.white70 : Colors.black87,
-                                        fontWeight: FontWeight.w500,
+                                        fontWeight: FontWeight.w600,
                                       ),
                                     ),
                                     SizedBox(height: 4),
@@ -431,7 +431,8 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                                     ),
                                     SizedBox(height: 4),
                                     Text(
-                                      formatDate(item["created_at"]),
+                                      DateFormat('hh:mm a').format(DateTime.parse(item["created_at"]).toLocal()),
+
                                       style: GoogleFonts.poppins(
                                         fontSize: 10,
                                         color: isCurrentUserComment ? Colors.white60 : Colors.black54,

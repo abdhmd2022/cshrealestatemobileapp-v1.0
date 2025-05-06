@@ -400,7 +400,7 @@ Widget _getRequestStatusBadge(dynamic type) {
     color = Colors.orange;
   } else if (type == "Suggestion") {
     status = type;
-    color = Colors.orange;
+    color = Colors.teal;
   } else {
     status = type;
     color = Colors.red;

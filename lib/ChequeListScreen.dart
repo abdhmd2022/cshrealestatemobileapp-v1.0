@@ -210,8 +210,6 @@ class _ChequeListScreenState extends State<ChequeListScreen> {
                                               ),
                                             );
                                           }).toList(),
-
-
                                         ),
                                       ],
                                     ),

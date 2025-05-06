@@ -12,6 +12,8 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'ChequeListScreen.dart';
 import 'SalesInquiryReport.dart';
 import 'Sidebar.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -39,12 +41,13 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Ticker
 
   List<dynamic> cheques = [];
   bool isLoading = true;
-  late DateTimeRange selectedRange;
+  DateTimeRange? selectedRange;
 
   int returned = 0;
   int received = 0;
   int pending = 0;
   int cleared = 0;
+  late SharedPreferences prefs;
 
   @override
   void initState() {
@@ -53,13 +56,33 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Ticker
   }
 
   Future<void> _initSharedPreferences() async {
-    final now = DateTime.now();
-    selectedRange = DateTimeRange(
-      start: DateTime(now.year, now.month, 1),
-      end: now,
-    );
 
-    await fetchChequeData(); // make sure cheques are loaded
+     prefs = await SharedPreferences.getInstance();
+     String? startDateString = prefs.getString("startdate");
+     String? endDateString = prefs.getString("enddate");
+
+     DateTime now = DateTime.now();
+
+     if (startDateString != null && endDateString != null) {
+       selectedRange = DateTimeRange(
+         start: DateTime.parse(startDateString),
+         end: DateTime.parse(endDateString),
+       );
+     } else {
+       selectedRange = DateTimeRange(
+         start: DateTime(now.year, now.month, 1),
+         end: now,
+       );
+     }
+
+     prefs.setString("startdate", selectedRange!.start.toIso8601String());
+     prefs.setString("enddate", selectedRange!.end.toIso8601String());
+
+     print('start date -> ${selectedRange!.start..toIso8601String()}');
+     print('end date -> ${selectedRange!.end.toIso8601String()}');
+
+
+     await fetchChequeData(); // make sure cheques are loaded
   }
 
   Future<void> _pickDateRange() async {
@@ -96,6 +119,8 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Ticker
       selectedRange = picked;
 
       print('range -> $selectedRange');
+      prefs.setString("startdate", selectedRange!.start.toString());
+      prefs.setString("enddate", selectedRange!.end.toString());
       await fetchChequeData();
     }
   }
@@ -140,24 +165,24 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Ticker
 
       // Returned cheque in range
       if (returnedOn != null &&
-          !returnedOn.isBefore(selectedRange.start) &&
-          !returnedOn.isAfter(selectedRange.end)) {
+          !returnedOn.isBefore(selectedRange!.start) &&
+          !returnedOn.isAfter(selectedRange!.end)) {
         returned++;
         counted = true;
       }
       // Received but not deposited in range
       else if (isReceived && !isDeposited &&
           receivedOn != null &&
-          !receivedOn.isBefore(selectedRange.start) &&
-          !receivedOn.isAfter(selectedRange.end)) {
+          !receivedOn.isBefore(selectedRange!.start) &&
+          !receivedOn.isAfter(selectedRange!.end)) {
         received++;
         counted = true;
       }
       // Received and deposited in range
       else if (isReceived && isDeposited &&
           depositedOn != null &&
-          !depositedOn.isBefore(selectedRange.start) &&
-          !depositedOn.isAfter(selectedRange.end)) {
+          !depositedOn.isBefore(selectedRange!.start) &&
+          !depositedOn.isAfter(selectedRange!.end)) {
         cleared++;
         counted = true;
       }
@@ -165,8 +190,8 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Ticker
       // If not counted in any above, check if cheque date falls in range to consider as pending
       if (!counted &&
           chequeDate != null &&
-          !chequeDate.isBefore(selectedRange.start) &&
-          !chequeDate.isAfter(selectedRange.end)) {
+          !chequeDate.isBefore(selectedRange!.start) &&
+          !chequeDate.isAfter(selectedRange!.end)) {
         pending++;
       }
     }
@@ -329,154 +354,192 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Ticker
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
 
-            Container(
-              height: 330,
-              margin: EdgeInsets.only(left:8,right:8),
-              padding: EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 10, offset: Offset(0, 4))],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Title + Date Selector
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "Cheque Status",
-                        style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w600),
-                      ),
-                      SizedBox(width: 10),
-                      Flexible( // Allows the right side to shrink as needed
-                        child: SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: InkWell(
-                            onTap: _pickDateRange,
-                            borderRadius: BorderRadius.circular(30),
-                            child: Container(
-                              padding: EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-                              decoration: BoxDecoration(
-                                color: appbar_color.withOpacity(0.1),
-                                borderRadius: BorderRadius.circular(30),
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Icon(Icons.date_range, size: 18, color: appbar_color),
-                                  SizedBox(width: 6),
-                                  Text(
-                                    _formatRange(selectedRange),
-                                    style: GoogleFonts.poppins(fontSize: 12, color: appbar_color.shade700),
-                                  ),
-                                ],
+            InkWell(
+              onTap: () {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => ChequeListScreen(
+                      appbarColor: appbar_color,
+
+                    ),
+                  ),
+                );
+              },
+              borderRadius: BorderRadius.circular(16),
+              child: Container(
+                width: MediaQuery.of(context).size.width,
+                height: 330,
+                margin: EdgeInsets.only(left: 8, right: 8),
+                padding: EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 10, offset: Offset(0, 4))],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Title + Date Selector
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          "Cheque Status",
+                          style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w600),
+                        ),
+                        SizedBox(width: 10),
+                        Flexible( // Allows the right side to shrink as needed
+                          child: SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: InkWell(
+                              onTap: _pickDateRange,
+                              borderRadius: BorderRadius.circular(30),
+                              child: Container(
+                                padding: EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                                decoration: BoxDecoration(
+                                  color: appbar_color.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(30),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(Icons.date_range, size: 18, color: appbar_color),
+                                    SizedBox(width: 6),
+                                    selectedRange != null
+                                        ? Text(
+                                      _formatRange(selectedRange!),
+                                      style: GoogleFonts.poppins(fontSize: 12, color: appbar_color.shade700),
+                                    )
+                                        : CircularProgressIndicator(), // or SizedBox(), or any fallback widget
+                                  ],
+                                ),
                               ),
                             ),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
+                      ],
+                    ),
 
 
-                  SizedBox(height: 26),
-                  // Bar Chart
+                    SizedBox(height: 26),
+                    // Bar Chart
 
-                  Expanded(
-                    child: isLoading
-                        ? Center(child:  Platform.isIOS
-                        ? const CupertinoActivityIndicator(radius: 18)
-                        : CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(appbar_color),
-                    ),)
-                        : (returned == 0 && received == 0 && pending == 0 && cleared == 0)
-                        ? Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.search_off, size: 48, color: Colors.grey),
-                          SizedBox(height: 8),
-                          Text(
-                            "All cheques (Returned, Received, Pending and Cleared) are 0 for the selected period.\nPlease choose a different date range to view activity.",
-                            textAlign: TextAlign.center,
-                            style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey[700]),
-                          ),
-                        ],
-                      ),
-                    )
-                        : SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: SizedBox(
-                      width: MediaQuery.of(context).size.width-80,
-                      child: BarChart(
-                        BarChartData(
-                          barGroups: visibleBars,
-                          maxY: [returned, received, pending, cleared].reduce((a, b) => a > b ? a : b).toDouble(),
-                          titlesData: FlTitlesData(
-                            bottomTitles: AxisTitles(
-                              sideTitles: SideTitles(
-                                showTitles: true,
-                                getTitlesWidget: (value, meta) {
-                                  return Padding(
-                                    padding: const EdgeInsets.only(top: 12.0,left: 10,right:10),
-                                    child: Text(
-                                      labels[value.toInt()],
-                                      style: GoogleFonts.poppins(fontSize: 12),
+                    Expanded(
+                      child:  isLoading
+                          ? Center(child:  Platform.isIOS
+                          ? const CupertinoActivityIndicator(radius: 18)
+                          : CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(appbar_color),
+                      ),)
+                          : (returned == 0 && received == 0 && pending == 0 && cleared == 0)
+                          ? Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.search_off, size: 48, color: Colors.grey),
+                            SizedBox(height: 8),
+                            Text(
+                              "All cheques (Returned, Received, Pending and Cleared) are 0 for the selected period.\nPlease choose a different date range to view activity.",
+                              textAlign: TextAlign.center,
+                              style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey[700]),
+                            ),
+                          ],
+                        ),
+                      )
+                          : SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: SizedBox(
+                          width: MediaQuery.of(context).size.width-80,
+                          child: BarChart(
+                            BarChartData(
+                              barGroups: visibleBars,
+                              maxY: [returned, received, pending, cleared].reduce((a, b) => a > b ? a : b).toDouble(),
+                              titlesData: FlTitlesData(
+                                bottomTitles: AxisTitles(
+                                  sideTitles: SideTitles(
+                                    showTitles: true,
+                                    getTitlesWidget: (value, meta) {
+                                      return Padding(
+                                        padding: const EdgeInsets.only(top: 12.0,left: 10,right:10),
+                                        child: Text(
+                                          labels[value.toInt()],
+                                          style: GoogleFonts.poppins(fontSize: 12),
+                                        ),
+                                      );
+                                    },
+                                    reservedSize: 30,
+                                  ),
+                                ),
+                                rightTitles: AxisTitles(
+                                  sideTitles: SideTitles(
+                                    showTitles: true,
+                                    reservedSize: 30,
+                                    interval: 1,
+                                    getTitlesWidget: (value, meta) => SideTitleWidget(
+                                      axisSide: meta.axisSide,
+                                      space: 4,
+                                      child: Text(
+                                        value.toInt().toString(),
+                                        style: GoogleFonts.poppins(fontSize: 10),
+                                      ),
                                     ),
-                                  );
+                                  ),
+                                ),
+                                leftTitles: AxisTitles(
+                                  sideTitles: SideTitles(
+                                    showTitles: true,
+                                    interval: 1,
+                                    reservedSize: 30,
+                                    getTitlesWidget: (value, meta) => SideTitleWidget(
+                                      axisSide: meta.axisSide,
+                                      space: 4,
+                                      child: Text(
+                                        value.toInt().toString(),
+                                        style: GoogleFonts.poppins(fontSize: 10),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                              ),
+                              gridData: FlGridData(show: true, drawVerticalLine: false),
+                              borderData: FlBorderData(show: false),
+                              barTouchData: BarTouchData(
+                                enabled: true,
+                                touchCallback: (FlTouchEvent event, BarTouchResponse? response) {
+                                  if (event is FlTapUpEvent && response != null && response.spot != null) {
+                                    final tappedIndex = response.spot!.touchedBarGroupIndex;
+
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) => ChequeListScreen(
+                                          appbarColor: appbar_color,
+
+                                          // Optionally pass statusLabel if you want to filter by status too
+                                        ),
+                                      ),
+                                    );
+                                  }
                                 },
-                                reservedSize: 30,
                               ),
+
                             ),
-                            rightTitles: AxisTitles(
-                              sideTitles: SideTitles(
-                                showTitles: true,
-                                reservedSize: 30,
-                                interval: 1,
-                                getTitlesWidget: (value, meta) => SideTitleWidget(
-                                  axisSide: meta.axisSide,
-                                  space: 4,
-                                  child: Text(
-                                    value.toInt().toString(),
-                                    style: GoogleFonts.poppins(fontSize: 10),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            leftTitles: AxisTitles(
-                              sideTitles: SideTitles(
-                                showTitles: true,
-                                interval: 1,
-                                reservedSize: 30,
-                                getTitlesWidget: (value, meta) => SideTitleWidget(
-                                  axisSide: meta.axisSide,
-                                  space: 4,
-                                  child: Text(
-                                    value.toInt().toString(),
-                                    style: GoogleFonts.poppins(fontSize: 10),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
                           ),
-                          gridData: FlGridData(show: true, drawVerticalLine: false),
-                          borderData: FlBorderData(show: false),
-                          barTouchData: BarTouchData(enabled: true),
                         ),
                       ),
                     ),
-                  ),
-
-            ),
 
 
 
-                ],
+
+
+                  ],
+                ),
               ),
             ),
+
 
             SizedBox(height: 10),
 

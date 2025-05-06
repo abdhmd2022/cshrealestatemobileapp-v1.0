@@ -164,11 +164,63 @@ class _ChequeListScreenState extends State<ChequeListScreen> {
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            _buildDetailTile(Icons.credit_card, "Cheque Type", payment['payment_type'] ?? '-'),
+                            _buildDetailTile(Icons.credit_card, "Payment Type", payment['payment_type'] ?? '-'),
                             if (statusLabel.isNotEmpty)
                               _buildDetailTile(Icons.calendar_today, statusLabel, statusDate),
                             _buildDetailTile(Icons.text_snippet, "Description", payment['description'] ?? '-'),
-                            _buildDetailTile(Icons.home_work, "Flats", flatNames),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 15),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Icon(Icons.home_work, color: appbar_color.shade200),
+                                  SizedBox(width: 12),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          "Unit(s)",
+                                          style: GoogleFonts.poppins(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                        SizedBox(height: 6),
+                                        Wrap(
+                                          spacing: 8,
+                                          runSpacing: 8,
+                                          children: flats.map<Widget>((f) {
+                                            final flatName = f['flat']['name'];
+                                            return Container(
+                                              margin: EdgeInsets.only(right: 0, bottom: 0),
+                                              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                              decoration: BoxDecoration(
+                                                color: Colors.white.withOpacity(0.2),
+                                                border: Border.all(color: appbar_color.withOpacity(0.4)),
+                                                borderRadius: BorderRadius.circular(20),
+                                              ),
+                                              child: Text(
+                                                flatName,
+                                                style: GoogleFonts.poppins(
+                                                  fontSize: 13,
+                                                  fontWeight: FontWeight.w500,
+                                                  color: appbar_color.shade700,
+                                                ),
+                                              ),
+                                            );
+                                          }).toList(),
+
+
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+
+
                             _buildDetailTile(Icons.business, "Building", buildingName),
                             _buildDetailTile(Icons.location_on, "Location", "$areaName, $emirateName"),
                           ],
@@ -390,41 +442,41 @@ class _ChequeListScreenState extends State<ChequeListScreen> {
     final isReceived = cheque['is_received'].toString().toLowerCase() == 'true';
     final isDeposited = cheque['is_deposited'].toString().toLowerCase() == 'true';
 
-    // Returned
+    // Normalize to remove time part
+    DateTime normalize(DateTime dt) => DateTime(dt.year, dt.month, dt.day);
+
+    final start = normalize(_startDate!);
+    final end = normalize(_endDate!);
+
     if (returnedOn != null &&
-        !returnedOn.isBefore(_startDate!) &&
-        !returnedOn.isAfter(_endDate!)) {
+        !normalize(returnedOn).isBefore(start) &&
+        !normalize(returnedOn).isAfter(end)) {
       return 'Returned';
     }
 
-    // Received (but not deposited)
     if (isReceived && !isDeposited &&
         receivedOn != null &&
-        !receivedOn.isBefore(_startDate!) &&
-        !receivedOn.isAfter(_endDate!)) {
+        !normalize(receivedOn).isBefore(start) &&
+        !normalize(receivedOn).isAfter(end)) {
       return 'Received';
     }
 
-    // Cleared
     if (isReceived && isDeposited &&
         depositedOn != null &&
-        !depositedOn.isBefore(_startDate!) &&
-        !depositedOn.isAfter(_endDate!)) {
+        !normalize(depositedOn).isBefore(start) &&
+        !normalize(depositedOn).isAfter(end)) {
       return 'Cleared';
     }
 
-    // Pending
     if (!isReceived && !isDeposited &&
         chequeDate != null &&
-        !chequeDate.isBefore(_startDate!) &&
-        !chequeDate.isAfter(_endDate!)) {
+        !normalize(chequeDate).isBefore(start) &&
+        !normalize(chequeDate).isAfter(end)) {
       return 'Pending';
     }
 
-    // If none match
     return '';
   }
-
 
 
   DateTime? _parseDate(dynamic dateStr) {
@@ -490,6 +542,11 @@ class _ChequeListScreenState extends State<ChequeListScreen> {
 
   @override
   Widget build(BuildContext context) {
+
+
+
+
+
     return Scaffold(
       appBar: AppBar(
         title: Text("Cheques", style: GoogleFonts.poppins(color: Colors.white)),
@@ -597,6 +654,33 @@ class _ChequeListScreenState extends State<ChequeListScreen> {
                   final area = building?['area'];
                   final state = area?['state'];
 
+
+
+                  // Inside itemBuilder (before returning the card)
+
+                  final isReceived = cheque['is_received'].toString().toLowerCase() == 'true';
+                  final isDeposited = cheque['is_deposited'].toString().toLowerCase() == 'true';
+                  final returnedOn = cheque['payment']?['returned_on'];
+                  final depositedOn = cheque['deposited_on'];
+                  final receivedOn = cheque['received_on'];
+
+                  String dateLabel = "Pending";
+                  String dateValue = "-";
+
+
+                  if (returnedOn != null) {
+                    dateLabel = "Returned On";
+                    dateValue = formatDate(returnedOn);
+                  } else if (isReceived && isDeposited && depositedOn != null) {
+                    dateLabel = "Cleared On";
+                    dateValue = formatDate(depositedOn);
+                  } else if (isReceived && receivedOn != null) {
+                    dateLabel = "Received On";
+                    dateValue = formatDate(receivedOn);
+                  }
+
+
+
                   return Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20),
@@ -643,7 +727,7 @@ class _ChequeListScreenState extends State<ChequeListScreen> {
                             SizedBox(width: 6),
                             Expanded(
                               child: Text(
-                                "${firstFlat?['name']} • ${building?['name']}, ${state?['name']}",
+                                "${firstFlat?['name']} • ${building?['name']}",
                                 style: GoogleFonts.poppins(fontSize: 13.5, fontWeight: FontWeight.w500),
                               ),
                             ),
@@ -662,20 +746,26 @@ class _ChequeListScreenState extends State<ChequeListScreen> {
                             ),
                           ],
                         ),
-                        SizedBox(height: 6),
-                        Row(
-                          children: [
-                            Icon(Icons.calendar_today, size: 16, color: Colors.teal),
-                            SizedBox(width: 6),
-                            Expanded(
-                              child: Text(
-                                "Received: ${formatDate(cheque['received_on'])}",
-                                style: GoogleFonts.poppins(fontSize: 13, color: Colors.black87),
+
+                        if(dateLabel!='Pending')...[
+
+                          SizedBox(height: 6),
+                          Row(
+                            children: [
+                              Icon(Icons.calendar_today, size: 16, color: Colors.teal),
+                              SizedBox(width: 6),
+                              Expanded(
+                                child: Text(
+                                  "$dateLabel: $dateValue",
+                                  style: GoogleFonts.poppins(fontSize: 13, color: Colors.black87),
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 12),
+                            ],
+                          ),
+                          SizedBox(height: 12),
+                        ],
+
+
                         Align(
                           alignment: Alignment.centerRight,
                           child: IconButton(
@@ -684,6 +774,7 @@ class _ChequeListScreenState extends State<ChequeListScreen> {
                             onPressed: () => _showChequeDetailsDialogFromCard(cheque),
                           ),
                         ),
+
                       ],
                     ),
                   );

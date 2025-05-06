@@ -359,10 +359,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Ticker
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => ChequeListScreen(
-                      appbarColor: appbar_color,
-
-                    ),
+                    builder: (_) => ChequeListScreen(),
                   ),
                 );
               },
@@ -514,11 +511,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Ticker
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (_) => ChequeListScreen(
-                                          appbarColor: appbar_color,
-
-                                          // Optionally pass statusLabel if you want to filter by status too
-                                        ),
+                                        builder: (_) => ChequeListScreen(),
                                       ),
                                     );
                                   }

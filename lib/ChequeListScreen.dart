@@ -11,12 +11,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'constants.dart';
 
 class ChequeListScreen extends StatefulWidget {
-  final Color appbarColor;
 
 
   const ChequeListScreen({
     Key? key,
-    required this.appbarColor,
 
   }) : super(key: key);
 
@@ -548,7 +546,7 @@ class _ChequeListScreenState extends State<ChequeListScreen> {
       appBar: AppBar(
         title: Text("Cheques", style: GoogleFonts.poppins(color: Colors.white)),
         centerTitle: true,
-        backgroundColor: widget.appbarColor.withOpacity(0.9),
+        backgroundColor: appbar_color.withOpacity(0.9),
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white),
           onPressed: () => {
@@ -577,7 +575,7 @@ class _ChequeListScreenState extends State<ChequeListScreen> {
                   padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    border: Border.all(color: widget.appbarColor, width: 1.5),
+                    border: Border.all(color: appbar_color, width: 1.5),
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
@@ -589,7 +587,7 @@ class _ChequeListScreenState extends State<ChequeListScreen> {
                   ),
                   child: Row(
                     children: [
-                      Icon(Icons.calendar_today, color: widget.appbarColor, size: 18),
+                      Icon(Icons.calendar_today, color: appbar_color, size: 18),
                       SizedBox(width: 12),
                       Expanded(
 
@@ -602,7 +600,7 @@ class _ChequeListScreenState extends State<ChequeListScreen> {
                             : Center(child: CircularProgressIndicator()), // or SizedBox.shrink()
                       ),
 
-                      Icon(Icons.calendar_today, color: widget.appbarColor, size: 18),
+                      Icon(Icons.calendar_today, color: appbar_color, size: 18),
                     ],
                   ),
                 ),
@@ -769,7 +767,7 @@ class _ChequeListScreenState extends State<ChequeListScreen> {
                           Align(
                             alignment: Alignment.centerRight,
                             child: IconButton(
-                              icon: Icon(Icons.remove_red_eye_outlined, color: widget.appbarColor),
+                              icon: Icon(Icons.remove_red_eye_outlined, color: appbar_color),
                               tooltip: 'View Details',
                               onPressed: () => _showChequeDetailsDialogFromCard(cheque),
                             ),

@@ -544,18 +544,11 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Ticker
 
                   Navigator.pushReplacement(
                     context,
-
                     MaterialPageRoute(builder: (context) => LandlordDashboardScreen()),          // navigate to users screen
                   );
-
-
                 }),
-
-
               ],
             ),
-
-
 
             SizedBox(height: 10),
 
@@ -566,21 +559,17 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Ticker
 
                   Navigator.push(
                     context,
-
                     MaterialPageRoute(builder: (context) => MaintenanceTicketReport()),          // navigate to users screen
                   );
                 }),
                 _buildDashboardButton(Icons.home, 'Available Units', '', Colors.orangeAccent, () {
                   Navigator.pushReplacement(
                     context,
-
                     MaterialPageRoute(builder: (context) => AvailableUnitsReport()),          // navigate to users screen
                   );
-                }),              ],
+                }),
+              ],
             ),
-
-
-
           ],
         ),
       ),

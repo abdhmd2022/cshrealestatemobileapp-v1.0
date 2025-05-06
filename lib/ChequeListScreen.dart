@@ -593,6 +593,7 @@ class _ChequeListScreenState extends State<ChequeListScreen> {
                       Icon(Icons.calendar_today, color: widget.appbarColor, size: 18),
                       SizedBox(width: 12),
                       Expanded(
+
                         child: _startDate != null && _endDate != null
                             ? Text(
                           "${DateFormat('dd-MMM-yyyy').format(_startDate!)} - ${DateFormat('dd-MMM-yyyy').format(_endDate!)}",
@@ -609,14 +610,15 @@ class _ChequeListScreenState extends State<ChequeListScreen> {
               ),
             ),
 
-            Expanded(
-              child: isLoading
-                  ? Center(
-                child: Platform.isIOS
-                    ? const CupertinoActivityIndicator(radius: 18)
-                    : CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(appbar_color),
-                ),
+              isLoading
+                  ? Expanded(
+                child: Center(
+                  child: Platform.isIOS
+                      ? const CupertinoActivityIndicator(radius: 18)
+                      : CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(appbar_color),
+                  ),
+                )
               )
                   : filteredCheques.isEmpty
                   ? Expanded(
@@ -636,149 +638,151 @@ class _ChequeListScreenState extends State<ChequeListScreen> {
                 ),
               )
 
-                  : ListView.builder(
+                  : Expanded(
+                child: ListView.builder(
 
-                padding: EdgeInsets.symmetric(horizontal: 12),
-                itemCount: filteredCheques.length,
-                itemBuilder: (context, index) {
-                  final cheque = filteredCheques[index];
-                  final status = _getStatusLabel(cheque);
+                  padding: EdgeInsets.symmetric(horizontal: 12),
+                  itemCount: filteredCheques.length,
+                  itemBuilder: (context, index) {
+                    final cheque = filteredCheques[index];
+                    final status = _getStatusLabel(cheque);
 
-                  final payment = cheque['payment'];
-                  final contract = payment['contract'];
-                  final flats = contract['flats'];
-                  final firstFlat = flats.isNotEmpty ? flats[0]['flat'] : null;
-                  final building = firstFlat?['building'];
-                  final area = building?['area'];
-                  final state = area?['state'];
-
-
-
-                  // Inside itemBuilder (before returning the card)
-
-                  final isReceived = cheque['is_received'].toString().toLowerCase() == 'true';
-                  final isDeposited = cheque['is_deposited'].toString().toLowerCase() == 'true';
-                  final returnedOn = cheque['payment']?['returned_on'];
-                  final depositedOn = cheque['deposited_on'];
-                  final receivedOn = cheque['received_on'];
-
-                  String dateLabel = "Pending";
-                  String dateValue = "-";
-
-
-                  if (returnedOn != null) {
-                    dateLabel = "Returned On";
-                    dateValue = formatDate(returnedOn);
-                  } else if (isReceived && isDeposited && depositedOn != null) {
-                    dateLabel = "Cleared On";
-                    dateValue = formatDate(depositedOn);
-                  } else if (isReceived && receivedOn != null) {
-                    dateLabel = "Received On";
-                    dateValue = formatDate(receivedOn);
-                  }
+                    final payment = cheque['payment'];
+                    final contract = payment['contract'];
+                    final flats = contract['flats'];
+                    final firstFlat = flats.isNotEmpty ? flats[0]['flat'] : null;
+                    final building = firstFlat?['building'];
+                    final area = building?['area'];
+                    final state = area?['state'];
 
 
 
-                  return Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      color: Colors.white.withOpacity(0.9),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black12,
-                          blurRadius: 8,
-                          offset: Offset(0, 3),
-                        ),
-                      ],
-                    ),
-                    margin: EdgeInsets.only(bottom: 16),
-                    padding: EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              "AED ${payment['amount_incl']}",
-                              style: GoogleFonts.poppins(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black87,
-                              ),
-                            ),
-                            buildStatusChip(status.isNotEmpty ? status : 'Pending'),
-                          ],
-                        ),
-                        SizedBox(height: 8),
-                        Text("Type: ${payment['payment_type'] ?? 'N/A'}",
-                            style: GoogleFonts.poppins(fontSize: 13, color: Colors.grey[800])),
-                        if (payment['description'] != null) ...[
-                          SizedBox(height: 4),
-                          Text("Note: ${payment['description']}",
-                              style: GoogleFonts.poppins(fontSize: 13, color: Colors.grey[700])),
+                    // Inside itemBuilder (before returning the card)
+
+                    final isReceived = cheque['is_received'].toString().toLowerCase() == 'true';
+                    final isDeposited = cheque['is_deposited'].toString().toLowerCase() == 'true';
+                    final returnedOn = cheque['payment']?['returned_on'];
+                    final depositedOn = cheque['deposited_on'];
+                    final receivedOn = cheque['received_on'];
+
+                    String dateLabel = "Pending";
+                    String dateValue = "-";
+
+
+                    if (returnedOn != null) {
+                      dateLabel = "Returned On";
+                      dateValue = formatDate(returnedOn);
+                    } else if (isReceived && isDeposited && depositedOn != null) {
+                      dateLabel = "Cleared On";
+                      dateValue = formatDate(depositedOn);
+                    } else if (isReceived && receivedOn != null) {
+                      dateLabel = "Received On";
+                      dateValue = formatDate(receivedOn);
+                    }
+
+
+
+                    return Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        color: Colors.white.withOpacity(0.9),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black12,
+                            blurRadius: 8,
+                            offset: Offset(0, 3),
+                          ),
                         ],
-                        Divider(height: 20, color: Colors.grey.shade300),
-                        Row(
-                          children: [
-                            Icon(Icons.apartment, size: 16, color: Colors.indigo),
-                            SizedBox(width: 6),
-                            Expanded(
-                              child: Text(
-                                "${firstFlat?['name']} • ${building?['name']}",
-                                style: GoogleFonts.poppins(fontSize: 13.5, fontWeight: FontWeight.w500),
+                      ),
+                      margin: EdgeInsets.only(bottom: 16),
+                      padding: EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "AED ${payment['amount_incl']}",
+                                style: GoogleFonts.poppins(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black87,
+                                ),
                               ),
-                            ),
+                              buildStatusChip(status.isNotEmpty ? status : 'Pending'),
+                            ],
+                          ),
+                          SizedBox(height: 8),
+                          Text("Type: ${payment['payment_type'] ?? 'N/A'}",
+                              style: GoogleFonts.poppins(fontSize: 13, color: Colors.grey[800])),
+                          if (payment['description'] != null) ...[
+                            SizedBox(height: 4),
+                            Text("Note: ${payment['description']}",
+                                style: GoogleFonts.poppins(fontSize: 13, color: Colors.grey[700])),
                           ],
-                        ),
-                        SizedBox(height: 6),
-                        Row(
-                          children: [
-                            Icon(Icons.location_on, size: 16, color: Colors.redAccent),
-                            SizedBox(width: 6),
-                            Expanded(
-                              child: Text(
-                                "${area?['name']}, ${state?['name']}",
-                                style: GoogleFonts.poppins(fontSize: 13, color: Colors.black54),
-                              ),
-                            ),
-                          ],
-                        ),
-
-                        if(dateLabel!='Pending')...[
-
-                          SizedBox(height: 6),
+                          Divider(height: 20, color: Colors.grey.shade300),
                           Row(
                             children: [
-                              Icon(Icons.calendar_today, size: 16, color: Colors.teal),
+                              Icon(Icons.apartment, size: 16, color: Colors.indigo),
                               SizedBox(width: 6),
                               Expanded(
                                 child: Text(
-                                  "$dateLabel: $dateValue",
-                                  style: GoogleFonts.poppins(fontSize: 13, color: Colors.black87),
+                                  "${firstFlat?['name']} • ${building?['name']}",
+                                  style: GoogleFonts.poppins(fontSize: 13.5, fontWeight: FontWeight.w500),
                                 ),
                               ),
                             ],
                           ),
-                          SizedBox(height: 12),
-                        ],
-
-
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: IconButton(
-                            icon: Icon(Icons.remove_red_eye_outlined, color: widget.appbarColor),
-                            tooltip: 'View Details',
-                            onPressed: () => _showChequeDetailsDialogFromCard(cheque),
+                          SizedBox(height: 6),
+                          Row(
+                            children: [
+                              Icon(Icons.location_on, size: 16, color: Colors.redAccent),
+                              SizedBox(width: 6),
+                              Expanded(
+                                child: Text(
+                                  "${area?['name']}, ${state?['name']}",
+                                  style: GoogleFonts.poppins(fontSize: 13, color: Colors.black54),
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
 
-                      ],
-                    ),
-                  );
-                },
-              ),
-            ),
+                          if(dateLabel!='Pending')...[
+
+                            SizedBox(height: 6),
+                            Row(
+                              children: [
+                                Icon(Icons.calendar_today, size: 16, color: Colors.teal),
+                                SizedBox(width: 6),
+                                Expanded(
+                                  child: Text(
+                                    "$dateLabel: $dateValue",
+                                    style: GoogleFonts.poppins(fontSize: 13, color: Colors.black87),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 12),
+                          ],
+
+
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: IconButton(
+                              icon: Icon(Icons.remove_red_eye_outlined, color: widget.appbarColor),
+                              tooltip: 'View Details',
+                              onPressed: () => _showChequeDetailsDialogFromCard(cheque),
+                            ),
+                          ),
+
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              )
+
           ],
         ),
       ),

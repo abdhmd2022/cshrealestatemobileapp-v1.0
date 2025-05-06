@@ -1395,18 +1395,25 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
             )
               ,)
                 : filteredTickets.isEmpty
-                ? Expanded(
-              child:  Center(
-                child: Text(
-                  "No data available",
-                  style: GoogleFonts.poppins(
-                    fontSize: 18,
-                    color: Colors.grey,
-                    fontWeight: FontWeight.bold,
+                ?  Expanded(
+                child:  Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min, // center inside column
+
+                    children: [
+                      Icon(Icons.search_off, size: 48, color: Colors.grey),
+                      SizedBox(height: 10),
+                      Text(
+                        "No data available",
+                        style: GoogleFonts.poppins(
+                          fontSize: 16,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-              )
-            ) :
+                )
+            ):
             Expanded(
               child: ListView.builder(
                 itemCount: filteredTickets.length + (isFetchingMore ? 1 : 0), // 🔥 Corrected

@@ -555,16 +555,6 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Ticker
                   );
                 }),
 
-
-              ],
-            ),
-
-            SizedBox(height: 10),
-
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-
                 _buildDashboardButton(Icons.analytics_outlined, 'Analytics', '', Colors.redAccent, () {
 
                   Navigator.pushReplacement(
@@ -576,8 +566,11 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Ticker
 
                 }),
 
+
               ],
             ),
+
+
 
             SizedBox(height: 10),
 

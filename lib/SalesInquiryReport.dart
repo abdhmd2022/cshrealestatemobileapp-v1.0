@@ -1040,16 +1040,28 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
                       ),
                     )
                         : filteredInquiries.isEmpty
-                        ? Center(
-                      child: Text(
-                        "No data available",
-                        style: GoogleFonts.poppins(
-                          fontSize: 18,
-                          color: Colors.grey,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+                        ?
+
+                    Expanded(
+                        child:  Center(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min, // center inside column
+
+                            children: [
+                              Icon(Icons.search_off, size: 48, color: Colors.grey),
+                              SizedBox(height: 10),
+                              Text(
+                                "No data available",
+                                style: GoogleFonts.poppins(
+                                  fontSize: 16,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            ],
+                          ),
+                        )
                     )
+
                         : NotificationListener<ScrollNotification>(
                       onNotification: (ScrollNotification scrollInfo) {
                         if (!isFetchingMoreInquiries &&

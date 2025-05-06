@@ -1172,7 +1172,6 @@ class SalesBarChart extends StatelessWidget {
                 ),
               ),
 
-
               topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
               rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
             ),

@@ -517,25 +517,17 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Ticker
                                   }
                                 },
                               ),
-
                             ),
                           ),
                         ),
                       ),
                     ),
-
-
-
-
-
                   ],
                 ),
               ),
             ),
 
-
             SizedBox(height: 10),
-
 
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,

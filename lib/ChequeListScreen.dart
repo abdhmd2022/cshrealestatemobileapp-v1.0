@@ -514,7 +514,6 @@ class _ChequeListScreenState extends State<ChequeListScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(
         title: Text("Cheques", style: GoogleFonts.poppins(color: Colors.white)),
@@ -523,7 +522,6 @@ class _ChequeListScreenState extends State<ChequeListScreen> {
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white),
           onPressed: () => {
-
 
           Navigator.pushReplacement(
           context,

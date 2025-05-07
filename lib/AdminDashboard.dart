@@ -403,8 +403,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Ticker
                                         ? Text(
                                       _formatRange(selectedRange!),
                                       style: GoogleFonts.poppins(fontSize: 12, color: appbar_color.shade700),
-                                    )
-                                        : CircularProgressIndicator(), // or SizedBox(), or any fallback widget
+                                    ) : CircularProgressIndicator(), // or SizedBox(), or any fallback widget
                                   ],
                                 ),
                               ),

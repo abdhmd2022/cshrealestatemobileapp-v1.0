@@ -79,7 +79,6 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Ticker
      print('start date -> ${selectedRange!.start..toIso8601String()}');
      print('end date -> ${selectedRange!.end.toIso8601String()}');
 
-
      await fetchChequeData(); // make sure cheques are loaded
   }
 
@@ -286,7 +285,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Ticker
 
     return Scaffold(
       key: _scaffoldKey,
-      backgroundColor: Color(0xFFF8F9FB),
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: appbar_color.withOpacity(0.9),
         elevation: 1,
@@ -351,7 +350,6 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Ticker
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-
             InkWell(
               onTap: () {
                 Navigator.pushReplacement(

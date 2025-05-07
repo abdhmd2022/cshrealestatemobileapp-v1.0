@@ -418,10 +418,9 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Ticker
                       ],
                     ),
 
-
                     SizedBox(height: 26),
-                    // Bar Chart
 
+                    // Bar Chart
                     Expanded(
                       child:  isLoading
                           ? Center(child:  Platform.isIOS
@@ -1078,7 +1077,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Ticker
 
 }
 
-Widget _legend(String title, Color color) {
+/*Widget _legend(String title, Color color) {
   return Row(
     children: [
       Container(
@@ -1090,7 +1089,7 @@ Widget _legend(String title, Color color) {
       Text(title, style: GoogleFonts.poppins(fontSize: 12)),
     ],
   );
-}
+}*/
 
 class SalesBarChart extends StatelessWidget {
   final Map<String, Map<String, int>> salesData;
@@ -1191,7 +1190,7 @@ class SalesBarChart extends StatelessWidget {
   }
 }
 
-double _getReservedSize(List<int> salesValues) {
+/*double _getReservedSize(List<int> salesValues) {
   if (salesValues.isEmpty) return 40; // Default size if there are no sales values
   int maxSales = salesValues.reduce((a, b) => a > b ? a : b); // Find the maximum sales value
 
@@ -1203,6 +1202,6 @@ double _getReservedSize(List<int> salesValues) {
   } else {
     return 30.0; // Default space for small sales values
   }
-}
+}*/
 
 

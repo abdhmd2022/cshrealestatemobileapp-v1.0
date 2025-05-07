@@ -18,7 +18,6 @@ import 'Sidebar.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 
-
 class AdminDashboard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {

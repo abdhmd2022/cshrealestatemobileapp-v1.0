@@ -7,7 +7,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-
 import 'constants.dart';
 
 class ChequeListScreen extends StatefulWidget {
@@ -36,15 +35,10 @@ class _ChequeListScreenState extends State<ChequeListScreen> {
   @override
   void initState() {
 
-
     super.initState();
 
     _initSharedPreferences();
-
-
   }
-
-
 
   Future<void> _initSharedPreferences() async {
 
@@ -66,11 +60,8 @@ class _ChequeListScreenState extends State<ChequeListScreen> {
     prefs.setString("startdate", _startDate!.toIso8601String());
     prefs.setString("enddate", _endDate!.toIso8601String());
 
-
     fetchCheques();
-
   }
-
 
   Future<void> _showChequeDetailsDialogFromCard(Map<String, dynamic> cheque) async {
     try {
@@ -215,7 +206,6 @@ class _ChequeListScreenState extends State<ChequeListScreen> {
                               ),
                             ),
 
-
                             _buildDetailTile(Icons.business, "Building", buildingName),
                             _buildDetailTile(Icons.location_on, "Location", "$areaName, $emirateName"),
                           ],
@@ -299,9 +289,6 @@ class _ChequeListScreenState extends State<ChequeListScreen> {
     );
   }
 
-
-
-
   Future<void> fetchCheques() async {
     setState(() => isLoading = true);
     try {
@@ -326,7 +313,6 @@ class _ChequeListScreenState extends State<ChequeListScreen> {
       setState(() => isLoading = false);
     }
   }
-
 
   Future<void> _pickDateRange() async {
     final picked = await showDateRangePicker(
@@ -367,7 +353,6 @@ class _ChequeListScreenState extends State<ChequeListScreen> {
       _applyDateFilter(); // Step 2: Re-filter when user updates date
     }
   }
-
 
   void _applyDateFilter() {
     setState(() {
@@ -473,13 +458,10 @@ class _ChequeListScreenState extends State<ChequeListScreen> {
     return '';
   }
 
-
   DateTime? _parseDate(dynamic dateStr) {
     if (dateStr == null) return null;
     return DateTime.tryParse(dateStr.toString());
   }
-
-
 
   String formatDate(String? dateStr) {
     if (dateStr == null || dateStr.isEmpty) return "N/A";
@@ -526,7 +508,6 @@ class _ChequeListScreenState extends State<ChequeListScreen> {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-
           Icon(icon, size: 14, color: color),
           SizedBox(width: 6),
           Text(status, style: GoogleFonts.poppins(fontSize: 13, color: color,fontWeight: FontWeight.w600)),
@@ -537,10 +518,6 @@ class _ChequeListScreenState extends State<ChequeListScreen> {
 
   @override
   Widget build(BuildContext context) {
-
-
-
-
 
     return Scaffold(
       appBar: AppBar(
@@ -652,10 +629,7 @@ class _ChequeListScreenState extends State<ChequeListScreen> {
                     final area = building?['area'];
                     final state = area?['state'];
 
-
-
                     // Inside itemBuilder (before returning the card)
-
                     final isReceived = cheque['is_received'].toString().toLowerCase() == 'true';
                     final isDeposited = cheque['is_deposited'].toString().toLowerCase() == 'true';
                     final returnedOn = cheque['payment']?['returned_on'];
@@ -664,7 +638,6 @@ class _ChequeListScreenState extends State<ChequeListScreen> {
 
                     String dateLabel = "Pending";
                     String dateValue = "-";
-
 
                     if (returnedOn != null) {
                       dateLabel = "Returned On";
@@ -676,9 +649,6 @@ class _ChequeListScreenState extends State<ChequeListScreen> {
                       dateLabel = "Received On";
                       dateValue = formatDate(receivedOn);
                     }
-
-
-
                     return Container(
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(20),
@@ -763,7 +733,6 @@ class _ChequeListScreenState extends State<ChequeListScreen> {
                             SizedBox(height: 12),
                           ],
 
-
                           Align(
                             alignment: Alignment.centerRight,
                             child: IconButton(
@@ -772,18 +741,15 @@ class _ChequeListScreenState extends State<ChequeListScreen> {
                               onPressed: () => _showChequeDetailsDialogFromCard(cheque),
                             ),
                           ),
-
                         ],
                       ),
                     );
                   },
                 ),
               )
-
           ],
         ),
       ),
-
     );
   }
 }

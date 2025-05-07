@@ -605,8 +605,7 @@ class _ChequeListScreenState extends State<ChequeListScreen> {
                   ),
                 ),
               )
-
-                  : Expanded(
+               : Expanded(
                 child: ListView.builder(
 
                   padding: EdgeInsets.symmetric(horizontal: 12),

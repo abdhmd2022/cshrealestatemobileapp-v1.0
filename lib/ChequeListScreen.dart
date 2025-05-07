@@ -10,11 +10,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'constants.dart';
 
 class ChequeListScreen extends StatefulWidget {
-
-
   const ChequeListScreen({
     Key? key,
-
   }) : super(key: key);
 
   @override
@@ -31,10 +28,8 @@ class _ChequeListScreenState extends State<ChequeListScreen> {
 
   late SharedPreferences prefs;
 
-  // Inside _ChequeListScreenState
   @override
   void initState() {
-
     super.initState();
 
     _initSharedPreferences();

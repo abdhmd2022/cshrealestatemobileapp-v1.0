@@ -1392,14 +1392,12 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                 valueColor: AlwaysStoppedAnimation<Color>(appbar_color), // Change color here
                 strokeWidth: 4.0, // Adjust thickness if needed
               ),
-            )
-              ,)
+            ))
                 : filteredTickets.isEmpty
                 ?  Expanded(
                 child:  Center(
                   child: Column(
                     mainAxisSize: MainAxisSize.min, // center inside column
-
                     children: [
                       Icon(Icons.search_off, size: 48, color: Colors.grey),
                       SizedBox(height: 10),

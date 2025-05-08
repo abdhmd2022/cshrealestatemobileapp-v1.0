@@ -701,7 +701,6 @@ class _ChequeListScreenState extends State<ChequeListScreen> {
                           ),
 
                           if(dateLabel!='Pending')...[
-
                             SizedBox(height: 6),
                             Row(
                               children: [

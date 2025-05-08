@@ -26,6 +26,7 @@ class _BuildingReportScreenState extends State<BuildingReportScreen> {
   bool showPieChart = true; // toggle state
 
   int? loadingTileIndex;
+  String selectedFilter = 'All'; // Options: 'All', 'Occupied', 'Available'
 
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -71,6 +72,12 @@ class _BuildingReportScreenState extends State<BuildingReportScreen> {
     final int available = building['flats']
         .where((f) => f['is_occupied'] == 'false')
         .length;
+    final filteredFlats = widget.building['flats'].where((f) {
+      if (selectedFilter == 'All') return true;
+      if (selectedFilter == 'Occupied') return f['is_occupied'] == 'true';
+      if (selectedFilter == 'Available') return f['is_occupied'] == 'false';
+      return true;
+    }).toList();
 
     final completionDate = DateTime.tryParse(building['completion_date'] ?? '');
     final formattedDate = completionDate != null
@@ -237,12 +244,24 @@ class _BuildingReportScreenState extends State<BuildingReportScreen> {
                                     occupied: occupied,
                                     available: available,
                                     buildingName: building['name'],
+                                    onSectionTap: (type) {
+                                      setState(() {
+                                        selectedFilter = (selectedFilter == type) ? 'All' : type;
+
+                                      });
+                                    },
                                   )
                                       : BarChartGraph(
                                     key: ValueKey('bar'),
                                     occupied: occupied,
                                     available: available,
                                     buildingName: building['name'],
+                                    onBarTap: (type) {
+                                      setState(() {
+                                        selectedFilter = (selectedFilter == type) ? 'All' : type;
+
+                                      });
+                                    },
                                   ),
                                 ),
                               ),
@@ -326,9 +345,13 @@ class _BuildingReportScreenState extends State<BuildingReportScreen> {
                   ListView.builder(
                     shrinkWrap: true,
                     physics: NeverScrollableScrollPhysics(),
-                    itemCount: building['flats'].length,
+                    itemCount: filteredFlats.length,
+
+
                     itemBuilder: (context, index) {
-                      final flat = building['flats'][index];
+
+                      final flat = filteredFlats[index];
+
                       final flat_id = flat['id'];
                       final isOccupied = flat['is_occupied'] == 'true';
                       final flatName = flat['name'] ?? 'N/A';
@@ -539,12 +562,15 @@ class PieChartGraph extends StatelessWidget {
   final String buildingName;
   final Key? key; // <-- ADD THIS
 
+  final Function(String type)? onSectionTap;
   PieChartGraph({
-    this.key, // <-- ADD THIS
+    this.key,
     required this.occupied,
     required this.available,
     required this.buildingName,
-  }) : super(key: key); // <-- ADD THIS
+    this.onSectionTap,
+  }) : super(key: key);
+
 
   @override
   Widget build(BuildContext context) {
@@ -570,6 +596,7 @@ class PieChartGraph extends StatelessWidget {
                   ),
                   titleStyle: GoogleFonts.poppins(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
                   radius: 120,
+
                 ),
                 PieChartSectionData(
                   value: available.toDouble(),
@@ -583,7 +610,16 @@ class PieChartGraph extends StatelessWidget {
                   radius: 120,
                 ),
               ],
+
               borderData: FlBorderData(show: false),
+              pieTouchData: PieTouchData(
+                touchCallback: (event, response) {
+                  if (response?.touchedSection != null && onSectionTap != null) {
+                    final index = response!.touchedSection!.touchedSectionIndex;
+                    onSectionTap!(index == 0 ? 'Occupied' : 'Available');
+                  }
+                },
+              ),
             ),
           ),
         ),
@@ -622,12 +658,15 @@ class BarChartGraph extends StatelessWidget {
   final String buildingName;
   final Key? key; // <-- ADD THIS
 
+  final Function(String type)? onBarTap; // ✅ Add this line
+
   BarChartGraph({
-    this.key, // <-- ADD THIS
+    this.key,
     required this.occupied,
     required this.available,
     required this.buildingName,
-  }) : super(key: key); // <-- ADD THIS
+    this.onBarTap, // ✅ Add this line
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -666,6 +705,19 @@ class BarChartGraph extends StatelessWidget {
             rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
           ),
           borderData: FlBorderData(show: false),
+          barTouchData: BarTouchData(
+            touchCallback: (event, response) {
+              if (response != null && response.spot != null && onBarTap != null) {
+                final tappedIndex = response.spot!.touchedBarGroupIndex;
+                if (tappedIndex == 0) {
+                  onBarTap!("Occupied");
+                } else if (tappedIndex == 1) {
+                  onBarTap!("Available");
+                }
+
+              }
+            },
+          ),
           barGroups: [
             BarChartGroupData(
               x: 0,

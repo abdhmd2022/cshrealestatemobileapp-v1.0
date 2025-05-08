@@ -135,125 +135,168 @@ child: Container(
   child: Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
-      SizedBox(
-        height: 180, // ✅ give it a specific height
 
-        child: LineChart(
-          LineChartData(
-            minY: 0,
-            lineTouchData: LineTouchData(enabled: true),
-            lineBarsData: [
-              LineChartBarData(
-                isCurved: true,
-                spots: complaintSpots,
-                barWidth: 2,
-                gradient: LinearGradient(colors: [Colors.redAccent, Colors.redAccent]),
-                belowBarData: BarAreaData(
-                  show: true,
-                  gradient: LinearGradient(
-                    colors: [
-                      Colors.redAccent.withOpacity(0.3),
-                      Colors.redAccent.withOpacity(0.0),
-                    ],
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
+      Stack(
+        children: [
+          SizedBox(
+            height: 180,
+            child: LineChart(
+              LineChartData(
+                minY: 0,
+                lineTouchData: LineTouchData(enabled: true),
+                lineBarsData: [
+                  LineChartBarData(
+                    isCurved: true,
+                    spots: complaintSpots,
+                    barWidth: 2,
+                    gradient: LinearGradient(colors: [Colors.redAccent, Colors.redAccent]),
+                    belowBarData: BarAreaData(
+                      show: true,
+                      gradient: LinearGradient(
+                        colors: [
+                          Colors.redAccent.withOpacity(0.3),
+                          Colors.redAccent.withOpacity(0.0),
+                        ],
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                      ),
+                    ),
+                    dotData: FlDotData(
+                      show: true,
+                      getDotPainter: (spot, _, __, ___) => FlDotCirclePainter(
+                        radius: 3,
+                        color: Colors.redAccent,
+                        strokeWidth: 2,
+                        strokeColor: Colors.white,
+                      ),
+                    ),
                   ),
+                  LineChartBarData(
+                    isCurved: true,
+                    spots: suggestionSpots,
+                    barWidth: 2,
+                    gradient: LinearGradient(colors: [Colors.teal.withOpacity(0.8), Colors.teal.withOpacity(0.7)]),
+                    belowBarData: BarAreaData(
+                      show: true,
+                      gradient: LinearGradient(
+                        colors: [
+                          Colors.teal.withOpacity(0.3),
+                          Colors.teal.withOpacity(0.0),
+                        ],
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                      ),
+                    ),
+                    dotData: FlDotData(
+                      show: true,
+                      getDotPainter: (spot, _, __, ___) => FlDotCirclePainter(
+                        radius: 3,
+                        color: Colors.teal.withOpacity(0.8),
+                        strokeWidth: 2,
+                        strokeColor: Colors.white,
+                      ),
+                    ),
+                  ),
+                ],
+                titlesData: FlTitlesData(
+                  leftTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      interval: 1,
+                      reservedSize: 32,
+                      getTitlesWidget: (value, _) {
+                        if (value % 1 != 0) return SizedBox.shrink();
+                        return Text(
+                          value.toInt().toString(),
+                          style: TextStyle(fontSize: 11, color: Colors.grey[700]),
+                        );
+                      },
+                    ),
+                  ),
+                  bottomTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      reservedSize: 32,
+                      interval: 1,
+                      getTitlesWidget: (value, meta) {
+                        int index = value.toInt();
+                        if (index < 0 || index >= sortedKeys.length) return SizedBox.shrink();
+                        final month = DateFormat('MMM').format(DateTime.parse("${sortedKeys[index]}-01"));
+                        return SideTitleWidget(
+                          axisSide: meta.axisSide,
+                          space: 6,
+                          child: Text(
+                            month,
+                            style: TextStyle(fontSize: 11, color: Colors.grey[800]),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
                 ),
-                dotData: FlDotData(
+                borderData: FlBorderData(
                   show: true,
-                  getDotPainter: (spot, _, __, ___) => FlDotCirclePainter(
-                    radius: 3,
-                    color: Colors.redAccent,
-                    strokeWidth: 2,
-                    strokeColor: Colors.white,
+                  border: Border.all(color: Colors.grey.shade300, width: 1),
+                ),
+                gridData: FlGridData(
+                  show: true,
+                  drawVerticalLine: true,
+                  horizontalInterval: 1,
+                  getDrawingHorizontalLine: (value) => FlLine(
+                    color: Colors.grey.shade200,
+                    strokeWidth: 1,
+                  ),
+                  getDrawingVerticalLine: (value) => FlLine(
+                    color: Colors.grey.shade100,
+                    strokeWidth: 1,
                   ),
                 ),
               ),
-              LineChartBarData(
-                isCurved: true,
-                spots: suggestionSpots,
-                barWidth: 2,
-                gradient: LinearGradient(colors: [Colors.teal.withOpacity(0.8), Colors.teal.withOpacity(0.7)]),
-                belowBarData: BarAreaData(
-                  show: true,
-                  gradient: LinearGradient(
-                    colors: [
-                      Colors.teal.withOpacity(0.3),
-                      Colors.teal.withOpacity(0.0),
-                    ],
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                  ),
-                ),
-                dotData: FlDotData(
-                  show: true,
-                  getDotPainter: (spot, _, __, ___) => FlDotCirclePainter(
-                    radius: 3,
-                    color: Colors.teal.withOpacity(0.8),
-                    strokeWidth: 2,
-                    strokeColor: Colors.white,
-                  ),
-                ),
-              ),
-            ],
-            titlesData: FlTitlesData(
-              leftTitles: AxisTitles(
-                sideTitles: SideTitles(
-                  showTitles: true,
-                  interval: 1,
-                  reservedSize: 32,
-                  getTitlesWidget: (value, _) {
-                    if (value % 1 != 0) return SizedBox.shrink();
-                    return Text(
-                      value.toInt().toString(),
-                      style: TextStyle(fontSize: 11, color: Colors.grey[700]),
-                    );
-                  },
-                ),
-              ),
-              bottomTitles: AxisTitles(
-                sideTitles: SideTitles(
-                  showTitles: true,
-                  reservedSize: 32,
-                  interval: 1,
-                  getTitlesWidget: (value, meta) {
-                    int index = value.toInt();
-                    if (index < 0 || index >= sortedKeys.length) return SizedBox.shrink();
-                    final month = DateFormat('MMM').format(DateTime.parse("${sortedKeys[index]}-01"));
-                    return SideTitleWidget(
-                      axisSide: meta.axisSide,
-                      space: 6,
-                      child: Text(
-                        month,
-                        style: TextStyle(fontSize: 11, color: Colors.grey[800]),
+            ), // your existing chart
+          ),
+          Positioned.fill(
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final totalMonths = sortedKeys.length;
+                final widthPerMonth = constraints.maxWidth / totalMonths;
+
+                return Stack(
+                  children: List.generate(totalMonths, (index) {
+                    final key = sortedKeys[index];
+                    final entries = groupedByMonth[key]!;
+
+                    return Positioned(
+                      left: index * widthPerMonth,
+                      width: widthPerMonth,
+
+                      top: 0,
+                      bottom: 0,
+                      child: GestureDetector(
+                        behavior: HitTestBehavior.translucent,
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => MonthlyDetailScreen(monthKey: key, entries: entries),
+                            ),
+                          );
+                        },
+                        child: Container(), // Transparent touch zone
                       ),
                     );
-                  },
-                ),
-              ),
-              topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-              rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-            ),
-            borderData: FlBorderData(
-              show: true,
-              border: Border.all(color: Colors.grey.shade300, width: 1),
-            ),
-            gridData: FlGridData(
-              show: true,
-              drawVerticalLine: true,
-              horizontalInterval: 1,
-              getDrawingHorizontalLine: (value) => FlLine(
-                color: Colors.grey.shade200,
-                strokeWidth: 1,
-              ),
-              getDrawingVerticalLine: (value) => FlLine(
-                color: Colors.grey.shade100,
-                strokeWidth: 1,
-              ),
+                  }),
+                );
+              },
             ),
           ),
-        ),
+
+        ],
       ),
+
+
+
       SizedBox(height: 16),
       Row(
         mainAxisAlignment: MainAxisAlignment.center,

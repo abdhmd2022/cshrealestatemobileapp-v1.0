@@ -519,13 +519,10 @@ class _ChequeListScreenState extends State<ChequeListScreen> {
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white),
           onPressed: () => {
-
           Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-          builder: (_) => AdminDashboard(
-
-          ),
+          builder: (_) => AdminDashboard(),
           ),
           )
           }

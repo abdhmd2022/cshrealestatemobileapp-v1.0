@@ -11,7 +11,6 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'constants.dart';
 import 'package:http/http.dart' as http;
-import 'dart:math';
 
 class BuildingReportScreen extends StatefulWidget {
   final dynamic building;

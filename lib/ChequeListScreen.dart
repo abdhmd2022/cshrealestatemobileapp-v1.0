@@ -14,7 +14,6 @@ class ChequeListScreen extends StatefulWidget {
 
   const ChequeListScreen({Key? key, this.statusFilter}) : super(key: key); // <- Update constructor
 
-
   @override
   State<ChequeListScreen> createState() => _ChequeListScreenState();
 }

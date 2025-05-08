@@ -186,10 +186,8 @@ class _BuildingReportScreenState extends State<BuildingReportScreen> {
                             ),
                           ],
                         ),
-
                       ],
                     ),
-
                   ),
 
                   SizedBox(height: 10),
@@ -247,7 +245,6 @@ class _BuildingReportScreenState extends State<BuildingReportScreen> {
                                     onSectionTap: (type) {
                                       setState(() {
                                         selectedFilter = (selectedFilter == type) ? 'All' : type;
-
                                       });
                                     },
                                   )
@@ -259,7 +256,6 @@ class _BuildingReportScreenState extends State<BuildingReportScreen> {
                                     onBarTap: (type) {
                                       setState(() {
                                         selectedFilter = (selectedFilter == type) ? 'All' : type;
-
                                       });
                                     },
                                   ),

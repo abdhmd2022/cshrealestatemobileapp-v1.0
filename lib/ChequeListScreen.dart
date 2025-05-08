@@ -10,7 +10,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'constants.dart';
 
 class ChequeListScreen extends StatefulWidget {
-  final String? statusFilter; // <- Add this line
+  final String? statusFilter;
 
   const ChequeListScreen({Key? key, this.statusFilter}) : super(key: key); // <- Update constructor
 

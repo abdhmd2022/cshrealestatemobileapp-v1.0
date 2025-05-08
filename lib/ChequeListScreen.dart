@@ -512,7 +512,7 @@ class _ChequeListScreenState extends State<ChequeListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Cheques", style: GoogleFonts.poppins(color: Colors.white)),
+        title: Text("Cheque(s)", style: GoogleFonts.poppins(color: Colors.white)),
         centerTitle: true,
         backgroundColor: appbar_color.withOpacity(0.9),
         leading: IconButton(

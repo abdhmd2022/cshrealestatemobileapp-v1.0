@@ -10,9 +10,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'constants.dart';
 
 class ChequeListScreen extends StatefulWidget {
-  const ChequeListScreen({
-    Key? key,
-  }) : super(key: key);
+  final String? statusFilter; // <- Add this line
+
+  const ChequeListScreen({Key? key, this.statusFilter}) : super(key: key); // <- Update constructor
+
 
   @override
   State<ChequeListScreen> createState() => _ChequeListScreenState();
@@ -364,47 +365,43 @@ class _ChequeListScreenState extends State<ChequeListScreen> {
         final isReceived = cheque['is_received'].toString().toLowerCase() == 'true';
         final isDeposited = cheque['is_deposited'].toString().toLowerCase() == 'true';
 
-        bool counted = false;
+        String status = '';
 
-        // Match returned logic
         if (returnedOn != null &&
             !returnedOn.isBefore(_startDate!) &&
             !returnedOn.isAfter(_endDate!)) {
-          return true;
-        }
-
-        // Match received logic
-        if (!counted && isReceived && !isDeposited &&
+          status = 'Returned';
+        } else if (isReceived && !isDeposited &&
             receivedOn != null &&
             !receivedOn.isBefore(_startDate!) &&
             !receivedOn.isAfter(_endDate!)) {
-          return true;
-        }
-
-        // Match cleared logic
-        if (!counted && isReceived && isDeposited &&
+          status = 'Received';
+        } else if (isReceived && isDeposited &&
             depositedOn != null &&
             !depositedOn.isBefore(_startDate!) &&
             !depositedOn.isAfter(_endDate!)) {
-          return true;
-        }
-
-        // Match pending logic
-        if (!counted &&
-            chequeDate != null &&
+          status = 'Cleared';
+        } else if (chequeDate != null &&
             !chequeDate.isBefore(_startDate!) &&
             !chequeDate.isAfter(_endDate!)) {
-          return true;
+          status = 'Pending';
         }
 
-        return false;
+        // If a status filter is set, only include matching items
+        if (widget.statusFilter != null && widget.statusFilter!.isNotEmpty) {
+          print('filter ${status}');
+
+          return status == widget.statusFilter;
+        }
+
+        return true;
       }).toList();
 
-      // 🔽 Sort by cheque date descending (latest first)
+      // Sort by date
       filteredCheques.sort((a, b) {
         final dateA = _parseDate(a['date']) ?? DateTime(1900);
         final dateB = _parseDate(b['date']) ?? DateTime(1900);
-        return dateB.compareTo(dateA); // descending
+        return dateB.compareTo(dateA);
       });
     });
   }

@@ -500,17 +500,20 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Ticker
                                 enabled: true,
                                 touchCallback: (FlTouchEvent event, BarTouchResponse? response) {
                                   if (event is FlTapUpEvent && response != null && response.spot != null) {
-                                    // final tappedIndex = response.spot!.touchedBarGroupIndex;
+                                    final tappedIndex = response.spot!.touchedBarGroupIndex;
+                                    final tappedStatus = labels[tappedIndex]; // <-- label you set while building bars
 
                                     Navigator.push(
+
                                       context,
                                       MaterialPageRoute(
-                                        builder: (_) => ChequeListScreen(),
+                                        builder: (_) => ChequeListScreen(statusFilter: tappedStatus), // <-- Pass status
                                       ),
                                     );
                                   }
                                 },
                               ),
+
                             ),
                           ),
                         ),

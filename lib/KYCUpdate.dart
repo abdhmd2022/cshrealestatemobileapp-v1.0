@@ -94,8 +94,15 @@ class _DecentTenantKYCFormState extends State<DecentTenantKYCForm> {
   final RegExp emiratesIdRegex = RegExp(r'^784-\d{4}-\d{7}-\d{1}$');
 
 
-  final List<String> documentTypes = ['Emirates ID', 'Passport', 'Visa'];
+  final List<String> documentTypes = [
+    'Emirates ID',
+    'Passport',
+    'Visa',
+    'Trade License (Optional)',
+    'Vat Certificate (Optional)',
+  ];
   bool _isUploading = false;
+  String? tradeLicenseFile, vatCertificateFile;
 
 
   Future<void> pickFile({bool isFront = true}) async {
@@ -120,6 +127,12 @@ class _DecentTenantKYCFormState extends State<DecentTenantKYCForm> {
         } else if (selectedDocumentType == 'Visa') {
           visaFile = file.path;
         }
+       else if (selectedDocumentType == 'Trade License (Optional)') {
+          tradeLicenseFile = file.path;
+        } else if (selectedDocumentType == 'Vat Certificate (Optional)') {
+          vatCertificateFile = file.path;
+        }
+
       });
     }
   }
@@ -144,6 +157,12 @@ class _DecentTenantKYCFormState extends State<DecentTenantKYCForm> {
         } else if (selectedDocumentType == 'Visa') {
           visaFile = file.path;
         }
+        else if (selectedDocumentType == 'Trade License (Optional)') {
+          tradeLicenseFile = file.path;
+        } else if (selectedDocumentType == 'Vat Certificate (Optional)') {
+          vatCertificateFile = file.path;
+        }
+
       });
     }
   }
@@ -272,6 +291,11 @@ class _DecentTenantKYCFormState extends State<DecentTenantKYCForm> {
           } else if (selectedDocumentType == 'Visa') {
             visaFile =  null;
           }
+          else if (selectedDocumentType == 'Trade License (Optional)') {
+            tradeLicenseFile = null;
+          } else if (selectedDocumentType == 'Vat Certificate (Optional)') {
+            vatCertificateFile = null;
+          }
 
           selectedDocumentType = null;
 
@@ -321,6 +345,10 @@ class _DecentTenantKYCFormState extends State<DecentTenantKYCForm> {
         return 'Passport Number';
       case 'Visa':
         return 'Visa Number';
+      case 'Trade License (Optional)':
+        return 'Trade License Number';
+      case 'Vat Certificate (Optional)':
+        return 'Vat Certificate Number';
       default:
         return 'Document Number';
     }
@@ -334,14 +362,20 @@ class _DecentTenantKYCFormState extends State<DecentTenantKYCForm> {
         return 'Enter Passport Number';
       case 'Visa':
         return 'Enter Visa Number';
+      case 'Trade License (Optional)':
+        return 'Enter Trade License Number';
+      case 'Vat Certificate (Optional)':
+        return 'Enter Vat Certificate Number';
       default:
         return 'Enter Document Number';
     }
   }
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text('KYC Update', style: GoogleFonts.poppins(color: Colors.white)),
         centerTitle: true,
@@ -361,6 +395,7 @@ class _DecentTenantKYCFormState extends State<DecentTenantKYCForm> {
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 16),
         child: Form(
+
           key: _formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -521,8 +556,15 @@ class _DecentTenantKYCFormState extends State<DecentTenantKYCForm> {
                     if (selectedDocumentType == 'Emirates ID') ...[
                       buildDocumentCard(title: 'Emirates ID - Front', filePath: emiratesIdFrontFile, isFront: true),
                       buildDocumentCard(title: 'Emirates ID - Back', filePath: emiratesIdBackFile, isFront: false),
-                    ] else
-                      buildDocumentCard(title: selectedDocumentType!, filePath: selectedDocumentType == 'Passport' ? passportFile : visaFile),
+                    ] else if (selectedDocumentType == 'Passport') ...[
+                      buildDocumentCard(title: 'Passport', filePath: passportFile),
+                    ] else if (selectedDocumentType == 'Visa') ...[
+                      buildDocumentCard(title: 'Visa', filePath: visaFile),
+                    ] else if (selectedDocumentType == 'Trade License (Optional)') ...[
+                      buildDocumentCard(title: 'Trade License (Optional)', filePath: tradeLicenseFile),
+                    ] else if (selectedDocumentType == 'Vat Certificate (Optional)') ...[
+                      buildDocumentCard(title: 'Vat Certificate (Optional)', filePath: vatCertificateFile),
+                    ]
                   ],
                 ),
               SizedBox(height: 30),
@@ -610,6 +652,27 @@ class _DecentTenantKYCFormState extends State<DecentTenantKYCForm> {
                           fileToSend = File(visaFile!);
                           fileType = "Visa";
                           break;
+
+                        case 'Trade License (Optional)':
+                          if (tradeLicenseFile == null) {
+                            _showSnackBar("Please upload the Trade License (Optional)");
+                            setState(() => _isUploading = false);
+                            return;
+                          }
+                          fileToSend = File(tradeLicenseFile!);
+                          fileType = "Trade_License";
+                          break;
+
+                        case 'Vat Certificate (Optional)':
+                          if (vatCertificateFile == null) {
+                            _showSnackBar("Please upload the Vat Certificate (Optional)");
+                            setState(() => _isUploading = false);
+                            return;
+                          }
+                          fileToSend = File(vatCertificateFile!);
+                          fileType = "VAT_Certificate";
+                          break;
+
 
                         default:
                           _showSnackBar("Invalid document type selected.");

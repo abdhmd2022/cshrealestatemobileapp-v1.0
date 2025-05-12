@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:math';
+import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -148,6 +149,7 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      backgroundColor: Colors.white,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -784,98 +786,7 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
 
                         final unit = filteredUnits[index];
 
-                        return Card(
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                          elevation: 4,
-                          margin: EdgeInsets.only(bottom: 8, left: 10, right: 10),
-                          color: Colors.white,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(16.0),
-                            ),
-                            padding: const EdgeInsets.all(18.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  children: [
-                                    const Icon(Icons.home),
-                                    const SizedBox(width: 10),
-                                    Expanded(
-                                      child: Text(
-                                        unit.flatTypeName,
-                                        style: GoogleFonts.poppins(fontSize: 16),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 10),
-                                Row(
-                                  children: [
-                                    const Icon(Icons.location_city),
-                                    const SizedBox(width: 10),
-                                    Expanded(
-                                      child: Text(
-                                        unit.buildingName,
-                                        style: GoogleFonts.poppins(fontSize: 16),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 10),
-                                Row(
-                                  children: [
-                                    const Icon(Icons.location_on),
-                                    const SizedBox(width: 10),
-                                    Expanded(
-                                      child: Text(
-                                        "${unit.areaName}, ${unit.stateName}",
-                                        style: GoogleFonts.poppins(fontSize: 16),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 10),
-                                Padding(
-                                  padding: const EdgeInsets.only(top: 0, bottom: 0),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                    children: [
-                                      _buildDecentButton(
-                                        'View',
-                                        Icons.remove_red_eye,
-                                        Colors.orange,
-                                            () {
-                                          showDialog(
-                                            context: context,
-                                            builder: (context) => AvailableUnitsDialog(
-                                              unitno: unit.name,
-                                              area: unit.areaName,
-                                              emirate: unit.stateName,
-                                              unittype: unit.flatTypeName,
-                                              rent: unit.basicRent != null ? "AED ${unit.basicRent}" : "AED N/A",
-                                              parking: unit.noOfParking.toString(),
-                                              balcony: unit.amenities.contains("Balcony") ? "Yes" : "No",
-                                              bathrooms: unit.noOfBathrooms.toString(),
-                                              building_name: unit.buildingName,
-                                              ownership: unit.ownership ?? "N/A",
-                                              basicRent: unit.basicRent?.toString() ?? "N/A",
-                                              basicSaleValue: unit.basicSaleValue?.toString() ?? "N/A",
-                                              isExempt: unit.isExempt ? "true" : "false",
-                                              amenities: unit.amenities,
-                                            ),
-                                          );
-                                        },
-                                      ),
-                                    ],
-                                  ),
-                                )
-                              ],
-                            ),
-                          ),
-                        );
+                        return _buildModernUnitCard(unit);
                       },
                     ),
                   ),
@@ -899,6 +810,136 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
       ),
     );
   }
+
+  Widget _buildModernUnitCard(Flat unit) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(24),
+        gradient: LinearGradient(
+          colors: [Colors.white.withOpacity(0.8), Colors.white.withOpacity(0.9)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black12.withOpacity(0.05),
+            blurRadius: 12,
+            offset: Offset(0, 6),
+          ),
+        ],
+        border: Border.all(color: Colors.grey.shade200.withOpacity(0.4)),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(24),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 12.0, sigmaY: 12.0),
+          child: Padding(
+            padding: const EdgeInsets.all(18),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildInfoRow(Icons.home_work_rounded, unit.flatTypeName),
+                const SizedBox(height: 10),
+                _buildInfoRow(Icons.business, unit.buildingName),
+                const SizedBox(height: 10),
+                _buildInfoRow(Icons.location_on_rounded, "${unit.areaName}, ${unit.stateName}"),
+                const SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(30),
+                        border: Border.all(
+                          color: Colors.grey.withOpacity(0.2),
+                          width: 1,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.05),
+                            blurRadius: 8,
+                            offset: Offset(0, 3),
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          /*Icon(Icons.attach_money, size: 16, color: Colors.black87),
+                          SizedBox(width: 6),*/
+                          Text(
+                            unit.basicRent != null ? "AED ${unit.basicRent}" : "Rent N/A",
+                            style: GoogleFonts.poppins(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.black87,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+
+                    TextButton(
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) => AvailableUnitsDialog(
+                            unitno: unit.name,
+                            area: unit.areaName,
+                            emirate: unit.stateName,
+                            unittype: unit.flatTypeName,
+                            rent: unit.basicRent != null ? "AED ${unit.basicRent}" : "AED N/A",
+                            parking: unit.noOfParking.toString(),
+                            balcony: unit.amenities.contains("Balcony") ? "Yes" : "No",
+                            bathrooms: unit.noOfBathrooms.toString(),
+                            building_name: unit.buildingName,
+                            ownership: unit.ownership ?? "N/A",
+                            basicRent: unit.basicRent?.toString() ?? "N/A",
+                            basicSaleValue: unit.basicSaleValue?.toString() ?? "N/A",
+                            isExempt: unit.isExempt ? "true" : "false",
+                            amenities: unit.amenities,
+                          ),
+                        );
+                      },
+
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.info_outline, size: 26, color: appbar_color),
+
+                        ],
+                      ),
+                    )
+
+                  ],
+                )
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInfoRow(IconData icon, String text) {
+    return Row(
+      children: [
+        Icon(icon, size: 18, color: appbar_color.withOpacity(0.7)),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Text(
+            text,
+            style: GoogleFonts.poppins(fontSize: 14, color: Colors.black87),
+          ),
+        ),
+      ],
+    );
+  }
+
 }
 
 class AvailableUnitsDialog extends StatelessWidget {
@@ -1486,7 +1527,8 @@ class _ExpandableFabState extends State<ExpandableFab> with SingleTickerProvider
                       : const Icon(Icons.more_vert, color: Colors.white, size: 34),
                 ),
                 onPressed: _toggleFab,
-              ))))]);}}
+              ))))]);}
+}
 
 Widget _buildBadgeChip(IconData icon, String label, {VoidCallback? onTap}) {
   return GestureDetector(
@@ -1506,3 +1548,4 @@ Widget _buildBadgeChip(IconData icon, String label, {VoidCallback? onTap}) {
     ),
   );
 }
+

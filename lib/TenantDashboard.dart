@@ -412,12 +412,24 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
                 Container(
                     height: 280,
                     padding: EdgeInsets.all(16),
-                    decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12), boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 6)]),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [Colors.white, Colors.grey.shade100],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black12,
+                          blurRadius: 10,
+                          offset: Offset(0, 4),
+                        ),
+                      ],
+                    ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-
                       children: [
-
                         Text("Cheque Summary", style: GoogleFonts.poppins(fontSize: 17, fontWeight: FontWeight.bold)),
                         SizedBox(height: 15),
 
@@ -540,7 +552,8 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
                 ),
                 SizedBox(height: 10),
 
-                Container(
+               // invoice summary bar chart
+               /* Container(
                     height: 275,
                     padding: EdgeInsets.all(16),
                     decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12), boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 6)]),
@@ -629,7 +642,7 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
                       ],
                     )
                 ),
-                SizedBox(height: 10),
+                SizedBox(height: 10),*/
               ],
             ),
 

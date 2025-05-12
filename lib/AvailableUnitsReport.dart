@@ -852,7 +852,7 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    buildPriceChip(unit.basicRent, isBest: unit.basicRent == _getLowestRent()),
+                    buildPriceChip(unit.basicRent, isBest: _isBestRentInFlatType(unit)),
 
 
 
@@ -913,12 +913,18 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
     );
   }
 
-  int? _getLowestRent() {
-    final rents = filteredUnits.map((u) => u.basicRent).whereType<int>().toList();
-    if (rents.isEmpty) return null;
-    rents.sort();
-    return rents.first;
+
+  bool _isBestRentInFlatType(Flat unit) {
+    final type = unit.flatTypeName;
+    final typeUnits = filteredUnits.where((u) => u.flatTypeName == type).toList();
+    final typeRents = typeUnits.map((u) => u.basicRent).whereType<int>().toList();
+
+    if (typeRents.isEmpty || unit.basicRent == null) return false;
+
+    final minRent = typeRents.reduce((a, b) => a < b ? a : b);
+    return unit.basicRent == minRent;
   }
+
 
 }
 

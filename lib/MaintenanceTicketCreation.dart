@@ -84,75 +84,132 @@ late int loaded_flat_id;
 
   final ImagePicker _picker = ImagePicker();
 
-  void _showFlatPicker(BuildContext context) {
-    if (flats.isEmpty) {
-      print("Flats list is empty or null: $flats"); // Debugging statement
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("No flats available to select."))
-      );
-      return;
-    }
+  Future<void> _showFlatPicker(BuildContext context) async {
+    TextEditingController searchController = TextEditingController();
+    List<dynamic> filteredFlats = List.from(flats);
 
-    showCupertinoModalPopup(
+    final selected = await showModalBottomSheet(
       context: context,
-      builder: (context) => Container(
-        height: MediaQuery.of(context).size.height / 2,
-        width: double.infinity,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-        ),
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Unit(s)',
-                    style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold, color: appbar_color),
-                  ),
-                  GestureDetector(
-                    onTap: () => Navigator.pop(context),
-                    child: Text(
-                      'Done',
-                      style: GoogleFonts.poppins(fontSize: 16, color: appbar_color, fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                ],
-              ),
+      isScrollControlled: true,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setModalState) => Container(
+            height: MediaQuery.of(context).size.height * 0.75,
+            padding: EdgeInsets.all(16),
+            decoration: BoxDecoration(
+                color: Colors.white,
+              borderRadius: BorderRadius.circular(20), // Rounded corners
             ),
-            Divider(height: 1, color: Colors.grey[300]),
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: searchController,
+                        onChanged: (value) {
+                          setModalState(() {
+                            filteredFlats = flats
+                                .where((flat) =>
+                            flat['flat_name'].toLowerCase().contains(value.toLowerCase()) ||
+                                flat['tenant_name'].toLowerCase().contains(value.toLowerCase()) ||
+                                flat['building_name'].toLowerCase().contains(value.toLowerCase()))
+                                .toList();
+                          });
+                        },
+                        style: GoogleFonts.poppins(fontSize: 15, color: Colors.black87),
+                        decoration: InputDecoration(
+                          hintText: 'Search...',
+                          hintStyle: GoogleFonts.poppins(color: Colors.black45),
+                          prefixIcon: Icon(Icons.search, color: appbar_color),
+                          suffixIcon: searchController.text.isNotEmpty
+                              ? IconButton(
+                            icon: Icon(Icons.clear, color: Colors.grey),
+                            onPressed: () {
+                              searchController.clear();
+                              setModalState(() {
+                                filteredFlats = List.from(flats);
+                              });
+                            },
+                          )
+                              : null,
+                          filled: true,
+                          fillColor: Colors.white,
+                          contentPadding: EdgeInsets.symmetric(vertical: 14, horizontal: 20),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(30),
+                            borderSide: BorderSide(color: Colors.grey.shade300, width: 1),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(30),
+                            borderSide: BorderSide(color: appbar_color, width: 1.5),
+                          ),
+                        ),
+                      ),
 
-            Expanded(
-              child: CupertinoPicker(
-                scrollController: FixedExtentScrollController(
-                  initialItem: flats.indexWhere((flat) =>
-                  flat['flat_id'] == (selectedFlat?['flat_id'] ?? 0)),
-                ),
-                itemExtent: 40,
-                onSelectedItemChanged: (index) {
-                  setState(() {
-                    selectedFlat = flats[index];
-                    print('Selected Flat ID: ${flats[index]['flat_id']}');
-                    print('Selected Contract ID: ${flats[index]['contract_id']}');
-                  });
-                },
-                children: flats.map((flat) {
-                  // Extract building name if available
-                  String buildingName = flat['building_name'].toString() ?? "Unknown";
 
-                  return Center(
-                    child: Text(
-                      '${flat['tenant_name']} | ${flat['flat_name'] ?? "Unknown"} | '
-                          '$buildingName',
-                      style: GoogleFonts.poppins(fontSize: 16),
                     ),
-                  );
-                }).toList(),
-              ))])));
+                    SizedBox(width: 8),
+                    IconButton(
+                      icon: Icon(Icons.close),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 16),
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: filteredFlats.length,
+                    itemBuilder: (context, index) {
+                      final flat = filteredFlats[index];
+                       return Container(
+                        margin: EdgeInsets.symmetric(vertical: 4, horizontal: 0), // spacing between tiles
+                        decoration: BoxDecoration(
+                          color: selectedFlat != null && flat['flat_id'] == selectedFlat!['flat_id']
+                              ? appbar_color.withOpacity(0.1)
+                              : Colors.transparent,
+                          borderRadius: BorderRadius.circular(30), // Rounded corners
+                        ),
+                        child: ListTile(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30), // Optional: ripple effect also matches
+                          ),
+                          title: Text(
+                            '${flat['tenant_name']} | ${flat['flat_name']} | ${flat['building_name']}',
+                            style: GoogleFonts.poppins(
+                              fontWeight: selectedFlat != null && flat['flat_id'] == selectedFlat!['flat_id']
+                                  ? FontWeight.normal
+                                  : FontWeight.normal,
+                            ),
+                          ),
+                          trailing: selectedFlat != null && flat['flat_id'] == selectedFlat!['flat_id']
+                              ? Icon(Icons.check_circle, color: appbar_color)
+                              : null,
+                          onTap: () {
+                            Navigator.pop(context, flat); // Pass selected flat back
+                          },
+                        ),
+                      );
+
+
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+
+    if (selected != null) {
+      setState(() {
+        selectedFlat = selected;
+      });
+    }
   }
+
 
   Future<void> fetchMaintenanceTypes() async {
 
@@ -192,7 +249,6 @@ late int loaded_flat_id;
       print('Error fetching data: $e');
     }
   }
-
 
 
   Future<void> fetchUnits() async {
@@ -282,6 +338,9 @@ late int loaded_flat_id;
                 (flat) => flat['flat_id'] == loaded_flat_id ,
             orElse: () => flats.isNotEmpty ? flats[0] : {},
           );
+
+          flats.sort((a, b) => (a['flat_name'] ?? '').compareTo(b['flat_name'] ?? ''));
+
         });
       } else {
         print("Error: ${response.statusCode}");
@@ -765,46 +824,36 @@ late int loaded_flat_id;
                           ),
                         ),
 
-                        Container(
-                            margin: EdgeInsets.only(left: 0, right: 0, bottom: 10),
+                        GestureDetector(
+                          onTap: () => _showMaintenanceTypeSelector(context),
+                          child: Container(
+                            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                            margin: EdgeInsets.only(bottom: 10),
                             decoration: BoxDecoration(
-                              color: Colors.white,
-
-                              borderRadius: BorderRadius.circular(8),
+                              borderRadius: BorderRadius.circular(12),
                               border: Border.all(color: Colors.black54, width: 0.75),
+                              color: Colors.white,
                             ),
-                            child: MultiSelectDialogField<MaintanceType>(
-                              items: maintenance_types_list
-                                  .map((type) => MultiSelectItem<MaintanceType>(type, type.name))
-                                  .toList(),
-                              title: Text("Maintenance Types"),
-                              selectedColor: appbar_color,
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.all(Radius.circular(8))
-                              ),
-                              buttonIcon: Icon(
-                                Icons.arrow_drop_down,
-                                color: Colors.black,
-                              ),
-                              buttonText: Text(
-                                "Select Maintenance Type",
-                                style: GoogleFonts.poppins(
-                                  color: Colors.black,
-                                  fontSize: 16,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    selectedMaintenanceType!.isEmpty
+                                        ? "Select Maintenance Type"
+                                        : selectedMaintenanceType!.map((e) => e.name).join(', '),
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 16,
+                                      color: Colors.black87,
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
                                 ),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                                initialValue: selectedMaintenanceType!, // ✅ Keeps selected values
-
-                                onConfirm: (List<MaintanceType> values) {
-                                setState(() {
-                                  selectedMaintenanceType = values; // ✅ Stores selected values
-
-
-                                selectedMaintenanceTypeIds = values.map((type) => type.id).toList();
-                                });
-                              }))
+                                Icon(Icons.arrow_drop_down, color: Colors.black),
+                              ],
+                            ),
+                          ),
+                        ),
                         /* Container(
                           padding: EdgeInsets.symmetric(horizontal: 12),
                           margin: EdgeInsets.only(left: 00,right: 0,bottom: 20),
@@ -1323,6 +1372,179 @@ Widget _attachmentOption({required IconData icon, required String label, require
     ),
   );
 }
+  void _showMaintenanceTypeSelector(BuildContext context) {
+    TextEditingController searchController = TextEditingController();
+    List<MaintanceType> filteredList = List.from(maintenance_types_list);
+    List<MaintanceType> tempSelected = List.from(selectedMaintenanceType!);
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setModalState) => Padding(
+            padding: MediaQuery.of(context).viewInsets,
+            child: Container(
+              height: MediaQuery.of(context).size.height * 0.75,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20), // Rounded corners
+              ),              padding: EdgeInsets.all(16),
+              child: Column(
+                children: [
+                  // Search Bar
+                  TextField(
+                    controller: searchController,
+                    onChanged: (value) {
+                      setModalState(() {
+                        filteredList = maintenance_types_list
+                            .where((type) =>
+                        type.name.toLowerCase().contains(value.toLowerCase()) ||
+                            type.category.toLowerCase().contains(value.toLowerCase()))
+                            .toList();
+                      });
+                    },
+                    style: GoogleFonts.poppins(fontSize: 15),
+                    decoration: InputDecoration(
+                      hintText: 'Search Maintenance Type',
+                      hintStyle: GoogleFonts.poppins(color: Colors.black45),
+                      prefixIcon: Icon(Icons.search, color: appbar_color),
+                      suffixIcon: searchController.text.isNotEmpty
+                          ? IconButton(
+                        icon: Icon(Icons.clear, color: Colors.grey),
+                        onPressed: () {
+                          searchController.clear();
+                          setModalState(() {
+                            filteredList = List.from(maintenance_types_list);
+                          });
+                        },
+                      )
+                          : null,
+                      filled: true,
+                      fillColor: Colors.white,
+                      contentPadding: EdgeInsets.symmetric(vertical: 14, horizontal: 20),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(30),
+                        borderSide: BorderSide(color: Colors.grey.shade300, width: 1),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(30),
+                        borderSide: BorderSide(color: appbar_color, width: 1.5),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 16),
+
+                  // List of checkboxes
+                  Expanded(
+                    child: ListView(
+                      children: [
+                        // 🔹 Select All option
+                        Container(
+                          margin: EdgeInsets.symmetric(vertical: 0),
+                          decoration: BoxDecoration(
+                            color: Colors.transparent,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: CheckboxListTile(
+                            title: Text("Select All", style: GoogleFonts.poppins(fontWeight: FontWeight.normal)),
+                            value: tempSelected.length == maintenance_types_list.length,
+                            activeColor: appbar_color,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            onChanged: (bool? checked) {
+                              setModalState(() {
+                                if (checked == true) {
+                                  tempSelected = List.from(maintenance_types_list); // Select all
+                                } else {
+                                  tempSelected.clear(); // Deselect all
+                                }
+                              });
+                            },
+                          ),
+                        ),
+
+                        Divider(),
+
+                        // 🔹 Regular items
+                        ...filteredList.map((type) {
+                          final isSelected = tempSelected.contains(type);
+
+                          return Container(
+                            margin: EdgeInsets.symmetric(vertical: 4),
+                            decoration: BoxDecoration(
+                              color: Colors.transparent,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: CheckboxListTile(
+                              title: Text(type.name, style: GoogleFonts.poppins()),
+                              value: isSelected,
+                              activeColor: appbar_color,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              onChanged: (bool? checked) {
+                                setModalState(() {
+                                  if (checked == true) {
+                                    tempSelected.add(type);
+                                  } else {
+                                    tempSelected.remove(type);
+                                  }
+                                });
+                              },
+                            ),
+                          );
+                        }).toList(),
+                      ],
+                    ),
+                  ),
+
+
+                  // Done button
+                  Padding(
+                    padding: const EdgeInsets.only(top: 12, bottom: 24),
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          setState(() {
+                            selectedMaintenanceType = List.from(tempSelected);
+                            selectedMaintenanceTypeIds = selectedMaintenanceType!.map((e) => e.id).toList();
+                          });
+                          Navigator.pop(context);
+                        },
+                        icon: Icon(Icons.check, size: 20, color: Colors.white),
+                        label: Text(
+                          "Select",
+                          style: GoogleFonts.poppins(
+                            fontSize: 16,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: appbar_color,
+                          padding: EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                          elevation: 4,
+                        ),
+                      ),
+                    ),
+                  ),
+
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
 
 }
 

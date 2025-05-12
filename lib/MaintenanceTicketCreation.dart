@@ -120,7 +120,7 @@ late int loaded_flat_id;
                         },
                         style: GoogleFonts.poppins(fontSize: 15, color: Colors.black87),
                         decoration: InputDecoration(
-                          hintText: 'Search...',
+                          hintText: 'Search',
                           hintStyle: GoogleFonts.poppins(color: Colors.black45),
                           prefixIcon: Icon(Icons.search, color: appbar_color),
                           suffixIcon: searchController.text.isNotEmpty
@@ -1395,46 +1395,57 @@ Widget _attachmentOption({required IconData icon, required String label, require
               child: Column(
                 children: [
                   // Search Bar
-                  TextField(
-                    controller: searchController,
-                    onChanged: (value) {
-                      setModalState(() {
-                        filteredList = maintenance_types_list
-                            .where((type) =>
-                        type.name.toLowerCase().contains(value.toLowerCase()) ||
-                            type.category.toLowerCase().contains(value.toLowerCase()))
-                            .toList();
-                      });
-                    },
-                    style: GoogleFonts.poppins(fontSize: 15),
-                    decoration: InputDecoration(
-                      hintText: 'Search...',
-                      hintStyle: GoogleFonts.poppins(color: Colors.black45),
-                      prefixIcon: Icon(Icons.search, color: appbar_color),
-                      suffixIcon: searchController.text.isNotEmpty
-                          ? IconButton(
-                        icon: Icon(Icons.clear, color: Colors.grey),
-                        onPressed: () {
-                          searchController.clear();
+                  Row(children: [
+                    Expanded(
+                      child: TextField(
+                        controller: searchController,
+                        onChanged: (value) {
                           setModalState(() {
-                            filteredList = List.from(maintenance_types_list);
+                            filteredList = maintenance_types_list
+                                .where((type) =>
+                            type.name.toLowerCase().contains(value.toLowerCase()) ||
+                                type.category.toLowerCase().contains(value.toLowerCase()))
+                                .toList();
                           });
                         },
-                      )
-                          : null,
-                      filled: true,
-                      fillColor: Colors.white,
-                      contentPadding: EdgeInsets.symmetric(vertical: 14, horizontal: 20),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(30),
-                        borderSide: BorderSide(color: Colors.grey.shade300, width: 1),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(30),
-                        borderSide: BorderSide(color: appbar_color, width: 1.5),
+                        style: GoogleFonts.poppins(fontSize: 15),
+                        decoration: InputDecoration(
+                          hintText: 'Search',
+                          hintStyle: GoogleFonts.poppins(color: Colors.black45),
+                          prefixIcon: Icon(Icons.search, color: appbar_color),
+                          suffixIcon: searchController.text.isNotEmpty
+                              ? IconButton(
+                            icon: Icon(Icons.clear, color: Colors.grey),
+                            onPressed: () {
+                              searchController.clear();
+                              setModalState(() {
+                                filteredList = List.from(maintenance_types_list);
+                              });
+                            },
+                          )
+                              : null,
+                          filled: true,
+                          fillColor: Colors.white,
+                          contentPadding: EdgeInsets.symmetric(vertical: 14, horizontal: 20),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(30),
+                            borderSide: BorderSide(color: Colors.grey.shade300, width: 1),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(30),
+                            borderSide: BorderSide(color: appbar_color, width: 1.5),
+                          ),
+                        ),
                       ),
                     ),
-                  ),
+
+                    SizedBox(width: 8),
+                    IconButton(
+                      icon: Icon(Icons.close),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                  ],),
+
                   SizedBox(height: 16),
 
                   // List of checkboxes

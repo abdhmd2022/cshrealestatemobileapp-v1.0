@@ -553,7 +553,7 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
                 child: TextField(
                   onChanged: _updateSearchQuery,
                   decoration: InputDecoration(
-                    hintText: 'Search Units',
+                    hintText: 'Search',
                     hintStyle: GoogleFonts.poppins(fontSize: 14, color: Colors.grey),
                     prefixIcon: const Icon(Icons.search),
                     border: OutlineInputBorder(

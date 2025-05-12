@@ -993,9 +993,7 @@ Widget buildPriceChip(int? rent,String? flattype, {bool isBest = false}) {
         ),
     ],
   );
-
 }
-
 
 class AvailableUnitsDialog extends StatelessWidget {
   final String unitno;

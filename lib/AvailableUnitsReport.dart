@@ -521,6 +521,12 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
   void _sortUnitsByPrice({required bool ascending}) {
     setState(() {
       filteredUnits.sort((a, b) {
+        final aIsBest = _isBestRentInFlatType(a);
+        final bIsBest = _isBestRentInFlatType(b);
+
+        if (aIsBest && !bIsBest) return -1;
+        if (!aIsBest && bIsBest) return 1;
+
         int priceA = a.basicRent ?? 0;
         int priceB = b.basicRent ?? 0;
         return ascending ? priceA.compareTo(priceB) : priceB.compareTo(priceA);
@@ -528,10 +534,8 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
 
       selectedSort = ascending ? "low_to_high" : "high_to_low";
       selectedSortLabel = ascending ? "Price: Low → High" : "Price: High → Low";
-
     });
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -913,7 +917,6 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
     );
   }
 
-
   bool _isBestRentInFlatType(Flat unit) {
     final type = unit.flatTypeName;
     final typeUnits = filteredUnits.where((u) => u.flatTypeName == type).toList();
@@ -924,7 +927,6 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
     final minRent = typeRents.reduce((a, b) => a < b ? a : b);
     return unit.basicRent == minRent;
   }
-
 
 }
 

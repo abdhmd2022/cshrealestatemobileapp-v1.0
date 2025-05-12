@@ -1408,7 +1408,7 @@ Widget _attachmentOption({required IconData icon, required String label, require
                     },
                     style: GoogleFonts.poppins(fontSize: 15),
                     decoration: InputDecoration(
-                      hintText: 'Search Maintenance Type',
+                      hintText: 'Search...',
                       hintStyle: GoogleFonts.poppins(color: Colors.black45),
                       prefixIcon: Icon(Icons.search, color: appbar_color),
                       suffixIcon: searchController.text.isNotEmpty

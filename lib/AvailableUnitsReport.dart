@@ -856,7 +856,7 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    buildPriceChip(unit.basicRent, isBest: _isBestRentInFlatType(unit)),
+                    buildPriceChip(unit.basicRent,unit.flatTypeName, isBest: _isBestRentInFlatType(unit)),
 
 
 
@@ -930,7 +930,7 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
 
 }
 
-Widget buildPriceChip(int? rent, {bool isBest = false}) {
+Widget buildPriceChip(int? rent,String? flattype, {bool isBest = false}) {
   return Stack(
     clipBehavior: Clip.none,
     children: [
@@ -982,7 +982,7 @@ Widget buildPriceChip(int? rent, {bool isBest = false}) {
               borderRadius: BorderRadius.circular(12),
             ),
             child: Text(
-              "Best Price",
+              "Best Price for $flattype",
               style: GoogleFonts.poppins(
                 fontSize: 10.5,
                 fontWeight: FontWeight.w500,

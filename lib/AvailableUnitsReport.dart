@@ -532,6 +532,7 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
     });
   }
 
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -808,7 +809,10 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
           ],
         ),
       ),
+
     );
+
+
   }
 
   Widget _buildModernUnitCard(Flat unit) {
@@ -844,43 +848,12 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
                 _buildInfoRow(Icons.business, unit.buildingName),
                 const SizedBox(height: 10),
                 _buildInfoRow(Icons.location_on_rounded, "${unit.areaName}, ${unit.stateName}"),
-                const SizedBox(height: 16),
+                const SizedBox(height: 18),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Container(
-                      padding: EdgeInsets.symmetric(horizontal: 18, vertical: 10),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(30),
-                        border: Border.all(
-                          color: Colors.grey.withOpacity(0.2),
-                          width: 1,
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.05),
-                            blurRadius: 8,
-                            offset: Offset(0, 3),
-                          ),
-                        ],
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          /*Icon(Icons.attach_money, size: 16, color: Colors.black87),
-                          SizedBox(width: 6),*/
-                          Text(
-                            unit.basicRent != null ? "AED ${unit.basicRent}" : "Rent N/A",
-                            style: GoogleFonts.poppins(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.black87,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                    buildPriceChip(unit.basicRent, isBest: unit.basicRent == _getLowestRent()),
+
 
 
                     TextButton(
@@ -940,7 +913,81 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
     );
   }
 
+  int? _getLowestRent() {
+    final rents = filteredUnits.map((u) => u.basicRent).whereType<int>().toList();
+    if (rents.isEmpty) return null;
+    rents.sort();
+    return rents.first;
+  }
+
 }
+
+Widget buildPriceChip(int? rent, {bool isBest = false}) {
+  return Stack(
+    clipBehavior: Clip.none,
+    children: [
+      // Main chip
+
+      if(rent!=null)
+      Container(
+        padding: EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.45),
+          borderRadius: BorderRadius.circular(30),
+          border: Border.all(color: Colors.grey.withOpacity(0.2)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black12.withOpacity(0.06),
+              blurRadius: 10,
+              offset: Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            /*Icon(Icons.attach_money, size: 16, color: Colors.black87),
+            SizedBox(width: 6),*/
+
+            Text(
+              rent != null ? "AED $rent" : "Rent N/A",
+              style: GoogleFonts.poppins(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: Colors.black87,
+              ),
+            ),
+          ],
+        ),
+      ),
+
+      // "Best Price" ribbon
+      if (isBest)
+        Positioned(
+          top: -18,
+          right: -8,
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            decoration: BoxDecoration(
+              color: Colors.blue.shade400,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Text(
+              "Best Price",
+              style: GoogleFonts.poppins(
+                fontSize: 10.5,
+                fontWeight: FontWeight.w500,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ),
+    ],
+  );
+
+}
+
 
 class AvailableUnitsDialog extends StatelessWidget {
   final String unitno;

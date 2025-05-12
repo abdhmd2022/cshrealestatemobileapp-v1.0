@@ -1513,7 +1513,6 @@ Widget _attachmentOption({required IconData icon, required String label, require
                     ),
                   ),
 
-
                   // Done button
                   Padding(
                     padding: const EdgeInsets.only(top: 12, bottom: 24),
@@ -1546,16 +1545,5 @@ Widget _attachmentOption({required IconData icon, required String label, require
                         ),
                       ),
                     ),
-                  ),
-
-                ],
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-}
+                  )]))));});}}
 

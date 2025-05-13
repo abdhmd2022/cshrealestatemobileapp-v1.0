@@ -375,6 +375,20 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
     );
   }
 
+  void _sortUnitsByFlatType({required bool ascending}) {
+    setState(() {
+      filteredUnits.sort((a, b) {
+        return ascending
+            ? a.flatTypeName.toLowerCase().compareTo(b.flatTypeName.toLowerCase())
+            : b.flatTypeName.toLowerCase().compareTo(a.flatTypeName.toLowerCase());
+      });
+
+      selectedSort = ascending ? "flat_type_az" : "flat_type_za";
+      selectedSortLabel = ascending ? "Flat Type: A → Z" : "Flat Type: Z → A";
+    });
+  }
+
+
   void applyFilters() {
     if (allUnits.isEmpty) {
       print("⚠️ allUnits is empty. Skipping filters.");
@@ -511,6 +525,56 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
                   _sortUnitsByPrice(ascending: false);
                 },
               ),
+              Divider(height: 1, color: Colors.grey.shade200),
+
+              // Flat Type: A-Z
+              ListTile(
+                leading: Icon(
+                  Icons.sort_by_alpha,
+                  color: selectedSort == "flat_type_az" ? appbar_color : Colors.grey,
+                ),
+                title: Text(
+                  "Flat Type: A to Z",
+                  style: GoogleFonts.poppins(
+                    fontSize: 15,
+                    fontWeight: selectedSort == "flat_type_az" ? FontWeight.bold : FontWeight.normal,
+                    color: selectedSort == "flat_type_az" ? appbar_color : Colors.black87,
+                  ),
+                ),
+                trailing: selectedSort == "flat_type_az"
+                    ? Icon(Icons.check, color: appbar_color)
+                    : null,
+                onTap: () {
+                  Navigator.pop(context);
+                  _sortUnitsByFlatType(ascending: true);
+                },
+              ),
+              Divider(height: 1, color: Colors.grey.shade200),
+
+// Flat Type: Z-A
+              ListTile(
+                leading: Icon(
+                  Icons.sort_by_alpha,
+                  color: selectedSort == "flat_type_za" ? appbar_color : Colors.grey,
+                ),
+                title: Text(
+                  "Flat Type: Z to A",
+
+                  style: GoogleFonts.poppins(
+                    fontSize: 15,
+                    fontWeight: selectedSort == "flat_type_za" ? FontWeight.bold : FontWeight.normal,
+                    color: selectedSort == "flat_type_za" ? appbar_color : Colors.black87,
+                  ),
+                ),
+                trailing: selectedSort == "flat_type_za"
+                    ? Icon(Icons.check, color: appbar_color)
+                    : null,
+                onTap: () {
+                  Navigator.pop(context);
+                  _sortUnitsByFlatType(ascending: false);
+                },
+              ),
+
             ],
           ),
         );

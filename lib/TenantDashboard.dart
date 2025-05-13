@@ -193,7 +193,10 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
           Padding(
             padding: const EdgeInsets.only(right: 12.0),
             child: InkWell(
-              onTap: () => Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => TenantProfile())),
+              onTap: () {
+                // Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => TenantProfile())),
+              } ,
+
               child: Container(
                 width: 40,
                 height: 40,
@@ -202,7 +205,7 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
                   gradient: LinearGradient(colors: [appbar_color.shade200, appbar_color.shade700], begin: Alignment.topCenter, end: Alignment.bottomCenter),
                   boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 5, offset: Offset(0, 2))],
                 ),
-                child: Icon(Icons.person, color: Colors.white),
+                child: Icon(Icons.notifications_active_outlined, color: Colors.white),
               ),
             ),
           ),

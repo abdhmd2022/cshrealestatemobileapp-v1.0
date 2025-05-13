@@ -306,10 +306,10 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Ticker
             padding: const EdgeInsets.only(right: 12.0),
             child: InkWell(
               onTap: () {
-                Navigator.pushReplacement(
+                /*Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(builder: (context) => SalesProfileScreen()), // Navigate to the profile screen
-                );
+                );*/
               },
               child: Container(
                 width: 40,
@@ -330,7 +330,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Ticker
                   ],
                 ),
                 child: Icon(
-                  Icons.person,
+                  Icons.notifications_active_outlined,
                   color: Colors.white,
                 ),
               ),

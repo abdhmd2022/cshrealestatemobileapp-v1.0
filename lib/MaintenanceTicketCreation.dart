@@ -60,7 +60,7 @@ class _MaintenanceTicketCreationPageState extends State<MaintenanceTicketCreatio
   List<int> selectedMaintenanceTypeIds = []; // Store selected maintenance type IDs
 
 late int loaded_flat_id;
-  TextEditingController _descriptionController = TextEditingController();
+  Map<int, TextEditingController> _descriptionControllers = {};
   // TextEditingController _totalamountController = TextEditingController();
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -495,21 +495,36 @@ late int loaded_flat_id;
   }*/
 
   Future<void> _pickImages({bool fromCamera = false}) async {
+    if (_attachment.length >= 5) {
+      Fluttertoast.showToast(
+        msg: 'You can attach a maximum of 5 images',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.black,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
+      return; // Skip if already at limit
+    }
+
     List<XFile>? pickedFiles;
 
     if (fromCamera) {
-      // Capture a single image
       final XFile? file = await _picker.pickImage(source: ImageSource.camera);
-      if (file != null) {
-        pickedFiles = [file]; // Convert single file to a list
-      }
-    } else {
-      // Pick multiple images from gallery (works for Web & Mobile)
-      pickedFiles = await _picker.pickMultiImage();
-    }
 
-    if (pickedFiles != null && pickedFiles.isNotEmpty) {
-      for (var file in pickedFiles) {
+      if (file != null) {
+        if (_attachment.length >= 5) {
+          Fluttertoast.showToast(
+            msg: 'Maximum 5 attachments allowed',
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.BOTTOM,
+            backgroundColor: Colors.black,
+            textColor: Colors.white,
+            fontSize: 16.0,
+          );
+          return;
+        }
+
         setState(() {
           if (kIsWeb) {
             _handleWebFile(file);
@@ -517,6 +532,32 @@ late int loaded_flat_id;
             _handleMobileFile(file);
           }
         });
+      }
+    } else {
+      pickedFiles = await _picker.pickMultiImage();
+
+      if (pickedFiles != null && pickedFiles.isNotEmpty) {
+        for (var file in pickedFiles) {
+          if (_attachment.length >= 5) {
+            Fluttertoast.showToast(
+              msg: 'Maximum 5 attachments allowed',
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.BOTTOM,
+              backgroundColor: Colors.black,
+              textColor: Colors.white,
+              fontSize: 16.0,
+            );
+            break;
+          }
+
+          setState(() {
+            if (kIsWeb) {
+              _handleWebFile(file);
+            } else {
+              _handleMobileFile(file);
+            }
+          });
+        }
       }
     }
   }
@@ -556,7 +597,8 @@ late int loaded_flat_id;
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  _attachmentOption(
+                  if (_attachment.length < 5)
+                    _attachmentOption(
                     icon: Icons.upload,
                     label: 'Upload',
                     onTap: () {
@@ -564,7 +606,7 @@ late int loaded_flat_id;
                       _pickImages(); // Pick images from gallery (works for Web & Mobile)
                     },
                   ),
-                  if (!kIsWeb) // Camera option is not supported on Web
+                  if (!kIsWeb && _attachment.length < 5) // Camera option is not supported on Web
                     _attachmentOption(
                       icon: Icons.camera_alt,
                       label: 'Capture',
@@ -916,38 +958,32 @@ late int loaded_flat_id;
                                   left: 20,
                                   right: 20
                               ),
-                              child: TextFormField(
-                                  controller: _descriptionController,
-                                  keyboardType: TextInputType.multiline,
-                                  maxLength: 500, // Limit input to 500 characters
-                                  maxLines: 3, // A
-                                  decoration: InputDecoration(
-                                    hintText: 'Enter Description',
-                                    labelText: 'Description',
-                                    floatingLabelStyle: GoogleFonts.poppins(
-                                      color: appbar_color, // Change label color when focused
-                                      fontWeight: FontWeight.normal,
-                                    ),
-                                    contentPadding: EdgeInsets.all(15),
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(11), // Set the border radius
-                                      borderSide: BorderSide(
-                                        color: Colors.black, // Set the border color
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: selectedMaintenanceType!.map((type) {
+                                  return Padding(
+                                    padding: const EdgeInsets.only(left: 0, right: 0, bottom: 5),
+                                    child: TextFormField(
+                                      controller: _descriptionControllers[type.id],
+                                      maxLines: 2,
+                                      maxLength: 100,
+                                      decoration: InputDecoration(
+                                        labelText: '${type.name} Description',
+                                        hintText: 'Enter description for ${type.name}',
+                                        floatingLabelStyle: GoogleFonts.poppins(color: appbar_color),
+                                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(11)),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(11),
+                                          borderSide: BorderSide(color: appbar_color),
+                                        ),
+
                                       ),
+                                      style: GoogleFonts.poppins(fontSize: 15),
                                     ),
-                                    filled: true,
-                                    fillColor: Colors.white,
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(11), // Set the border radius
-                                      borderSide: BorderSide(
-                                        color:  appbar_color, // Set the focused border color
-                                      ),
-                                    ),
-                                  ),
-                                  style: GoogleFonts.poppins(
-                                    color: Colors.black,
-                                    fontSize: 15,
-                                  ))),
+                                  );
+                                }).toList(),
+                              ),
+                          ),
 
                           Container(
                             margin: EdgeInsets.only(left: 20, right: 20),
@@ -979,7 +1015,11 @@ late int loaded_flat_id;
                               children: [
                                 if (_attachment.isNotEmpty)
                                   Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
+
+
                                       Wrap(
                                         spacing: 12.0, // Horizontal space between items
                                         runSpacing: 12.0, // Vertical space between rows
@@ -1044,7 +1084,8 @@ late int loaded_flat_id;
                                                         color: Colors.white70, // Soft white color for the icon
                                                       ))))]);}).toList(),
 
-                                          ElevatedButton(
+                                          if (_attachment.length < 5)
+                                            ElevatedButton(
                                             style: ElevatedButton.styleFrom(
                                               shape: CircleBorder(),
                                               padding: EdgeInsets.all(16),
@@ -1058,11 +1099,24 @@ late int loaded_flat_id;
                                               Icons.add,
                                               size: 30,
                                               color: appbar_color,
-                                            ))])])
+                                            ))]),
+
+                                      Padding(
+                                        padding: const EdgeInsets.only(bottom: 0.0,top:10),
+                                        child: Text(
+                                          '${_attachment.length} of 5 attachments selected',
+                                          style: GoogleFonts.poppins(
+                                            fontSize: 14,
+                                            color: Colors.black54,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                      ),])
                                 else
                                   Column(
                                     children: [
-                                      ElevatedButton(
+                                      if (_attachment.length < 5)
+                                        ElevatedButton(
                                         style: ElevatedButton.styleFrom(
                                           shape: CircleBorder(),
                                           padding: EdgeInsets.all(16),
@@ -1159,7 +1213,7 @@ late int loaded_flat_id;
                                 fontSize: 16.0,
                               );
                             }
-                          else if(_descriptionController.text.isEmpty)
+                          else if(_descriptionControllers.isEmpty)
                             {
                               String message = 'Enter description';
                               Fluttertoast.showToast(
@@ -1173,7 +1227,7 @@ late int loaded_flat_id;
                             }
                           else if(_attachment.isEmpty)
                             {
-                              String message = 'Attachment is missing';
+                              String message = 'Attach at least 1 image';
                               Fluttertoast.showToast(
                                 msg: message,
                                 toastLength: Toast.LENGTH_SHORT,
@@ -1183,6 +1237,17 @@ late int loaded_flat_id;
                                 fontSize: 16.0,
                               );
                             }
+                          else if (_attachment.length > 5)
+                          {
+                            Fluttertoast.showToast(
+                              msg: 'You can attach a maximum of 5 images only',
+                              toastLength: Toast.LENGTH_SHORT,
+                              gravity: ToastGravity.BOTTOM,
+                              backgroundColor: Colors.black,
+                              textColor: Colors.white,
+                              fontSize: 16.0,
+                            );
+                          }
                           else
                             {
                               sendFormData(context);
@@ -1229,11 +1294,16 @@ late int loaded_flat_id;
 
             print('type list ${selectedMaintenanceTypeIds}');
 
+            final Map<String, dynamic> descriptionsMap = {
+              for (var type in selectedMaintenanceType!)
+                '${type.id}': _descriptionControllers[type.id]?.text ?? ""
+            };
+
             final Map<String, dynamic> requestBody = {
               "uuid": uuidValue,
-              "flat_id": selectedFlat?['flat_id'], // Updated key from flat_masterid to flat_id
-              "description": _descriptionController.text,
-              "types": selectedMaintenanceTypeIds, // Converts the list of objects to a list of IDs
+              "flat_id": selectedFlat?['flat_id'],
+              "description_per_type": descriptionsMap, // New structure
+              "types": selectedMaintenanceTypeIds,
               "contract_id": selectedFlat?['contract_id']
             };
 
@@ -1253,7 +1323,7 @@ late int loaded_flat_id;
               setState(() {
                 selectedMaintenanceType = [];
                 selectedMaintenanceTypeIds = [];
-                _descriptionController.clear();
+                _descriptionControllers.clear();
                 selectedFlat = flats[0];
                 _attachment.clear();
               });
@@ -1332,7 +1402,7 @@ late int loaded_flat_id;
         setState(() {
           selectedMaintenanceType = [];
           selectedMaintenanceTypeIds = [];
-          _descriptionController.clear();
+          _descriptionControllers.clear();
           selectedFlat = flats[0];
           _attachment.clear();
         });
@@ -1523,6 +1593,14 @@ Widget _attachmentOption({required IconData icon, required String label, require
                           setState(() {
                             selectedMaintenanceType = List.from(tempSelected);
                             selectedMaintenanceTypeIds = selectedMaintenanceType!.map((e) => e.id).toList();
+                            // Initialize controllers for each selected type
+                            for (var type in selectedMaintenanceType!) {
+                              _descriptionControllers.putIfAbsent(type.id, () => TextEditingController());
+                            }
+
+                            // Clean up controllers for unselected types
+                            _descriptionControllers.removeWhere((key, value) =>
+                            !selectedMaintenanceTypeIds.contains(key));
                           });
                           Navigator.pop(context);
                         },

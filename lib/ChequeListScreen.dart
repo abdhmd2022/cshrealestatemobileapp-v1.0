@@ -147,7 +147,7 @@ class _ChequeListScreenState extends State<ChequeListScreen> {
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            _buildDetailTile(Icons.credit_card, "Payment Type", payment['payment_type'] ?? '-'),
+                            _buildDetailTile(Icons.credit_card, "Type", payment['payment_type'] ?? '-'),
                             if (statusLabel.isNotEmpty)
                             _buildDetailTile(Icons.calendar_today, statusLabel, statusDate),
                             _buildDetailTile(Icons.text_snippet, "Description", payment['description'] ?? '-'),

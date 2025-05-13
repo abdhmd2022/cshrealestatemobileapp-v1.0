@@ -259,7 +259,6 @@ class _MaintenanceTypeMastersReportState extends State<MaintenanceTypeMastersRep
                               selectedCategory = newValue;
                               Navigator.of(context).pop();
                               showMaintenaceTypeDialog();
-
                             });
                           },
                         ),

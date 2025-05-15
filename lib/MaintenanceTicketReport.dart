@@ -1543,6 +1543,55 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                       SizedBox(width: 5),
                     ],
 
+                    _buildDecentButton(
+                      'Complaint',
+                      Icons.report_problem_outlined,
+                      Colors.redAccent,
+                          () {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                              backgroundColor: Colors.white,
+                              title: Row(
+                                children: [
+                                  Icon(Icons.construction, color: Colors.orangeAccent),
+                                  SizedBox(width: 10),
+                                  Expanded(
+                                    child: Text(
+                                      "Under Development",
+                                      style: GoogleFonts.poppins(),
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 1,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              content: Text(
+                                "This feature is currently under development.",
+                                style: GoogleFonts.poppins(fontSize: 14),
+                                softWrap: true,
+                              ),
+                              actions: [
+                                TextButton(
+                                  child: Text(
+                                    "OK",
+                                    style: GoogleFonts.poppins(color: Colors.blue),
+                                  ),
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      },
+                    ),
+
+                    SizedBox(width: 5),
+
 
 
                     if (!is_admin)...[

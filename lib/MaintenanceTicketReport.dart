@@ -1592,8 +1592,6 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
 
                     SizedBox(width: 5),
 
-
-
                     if (!is_admin)...[
                       if(ticket['status']=='Close')
                       _buildDecentButton(

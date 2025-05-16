@@ -70,9 +70,11 @@ class _ChequeListScreenState extends State<ChequeListScreen> {
 
       final isReceived = cheque['is_received'].toString().toLowerCase() == 'true';
       final isDeposited = cheque['is_deposited'].toString().toLowerCase() == 'true';
+
       final returnedOn = payment['returned_on'];
       final depositedOn = cheque['deposited_on'];
-      final receivedOn = cheque['received_on'];
+      final clearedOn = cheque['cleared_on'];
+      final receivedOn = payment['received_date'];
 
       String statusLabel = '';
       String statusDate = '';
@@ -80,9 +82,12 @@ class _ChequeListScreenState extends State<ChequeListScreen> {
       if (returnedOn != null) {
         statusLabel = "Returned On";
         statusDate = formatDate(returnedOn);
-      } else if (isReceived && isDeposited && depositedOn != null) {
-        statusLabel = "Cleared On";
+      } else if (isReceived && isDeposited && clearedOn == null && depositedOn != null) {
+        statusLabel = "Deposited On";
         statusDate = formatDate(depositedOn);
+      } else if (isReceived && isDeposited && clearedOn != null) {
+        statusLabel = "Cleared On";
+        statusDate = formatDate(clearedOn);
       } else if (isReceived && receivedOn != null) {
         statusLabel = "Received On";
         statusDate = formatDate(receivedOn);
@@ -149,7 +154,7 @@ class _ChequeListScreenState extends State<ChequeListScreen> {
                           children: [
                             _buildDetailTile(Icons.credit_card, "Type", payment['payment_type'] ?? '-'),
                             if (statusLabel.isNotEmpty)
-                            _buildDetailTile(Icons.calendar_today, statusLabel, statusDate),
+                              _buildDetailTile(Icons.calendar_today, statusLabel, statusDate),
                             _buildDetailTile(Icons.text_snippet, "Description", payment['description'] ?? '-'),
 
                             Padding(
@@ -177,7 +182,6 @@ class _ChequeListScreenState extends State<ChequeListScreen> {
                                           children: flats.map<Widget>((f) {
                                             final flatName = f['flat']['name'];
                                             return Container(
-                                              margin: EdgeInsets.only(right: 0, bottom: 0),
                                               padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                                               decoration: BoxDecoration(
                                                 color: Colors.white.withOpacity(0.2),
@@ -238,13 +242,12 @@ class _ChequeListScreenState extends State<ChequeListScreen> {
           ),
         ),
       );
-
-      return; // ✅ Make sure we return
     } catch (e) {
       print("Error showing cheque details: $e");
-      return; // ✅ Ensure return on all paths
+      return;
     }
   }
+
 
   Widget _buildDetailTile(IconData icon, String label, String value) {
     return Container(
@@ -357,8 +360,10 @@ class _ChequeListScreenState extends State<ChequeListScreen> {
         if (payment == null) return false;
 
         DateTime? returnedOn = _parseDate(payment['returned_on']);
-        DateTime? receivedOn = _parseDate(cheque['received_on']);
+        DateTime? receivedOn = _parseDate(payment['received_date']);
+        DateTime? clearedOn = _parseDate(cheque['cleared_on']);
         DateTime? depositedOn = _parseDate(cheque['deposited_on']);
+
         DateTime? chequeDate = _parseDate(cheque['date']);
 
         final isReceived = cheque['is_received'].toString().toLowerCase() == 'true';
@@ -370,17 +375,27 @@ class _ChequeListScreenState extends State<ChequeListScreen> {
             !returnedOn.isBefore(_startDate!) &&
             !returnedOn.isAfter(_endDate!)) {
           status = 'Returned';
-        } else if (isReceived && !isDeposited &&
+        }
+
+        else if (isReceived && isDeposited && clearedOn == null &&
+            depositedOn != null &&
+            !depositedOn.isBefore(_startDate!) &&
+            !depositedOn.isAfter(_endDate!)) {
+          status = 'Deposited';
+        }
+        else if (isReceived && !isDeposited &&
             receivedOn != null &&
             !receivedOn.isBefore(_startDate!) &&
             !receivedOn.isAfter(_endDate!)) {
           status = 'Received';
         } else if (isReceived && isDeposited &&
-            depositedOn != null &&
-            !depositedOn.isBefore(_startDate!) &&
-            !depositedOn.isAfter(_endDate!)) {
+            clearedOn != null &&
+            !clearedOn.isBefore(_startDate!) &&
+            !clearedOn.isAfter(_endDate!)) {
           status = 'Cleared';
-        } else if (chequeDate != null &&
+        }
+
+        else if (chequeDate != null &&
             !chequeDate.isBefore(_startDate!) &&
             !chequeDate.isAfter(_endDate!)) {
           status = 'Pending';
@@ -407,8 +422,10 @@ class _ChequeListScreenState extends State<ChequeListScreen> {
 
   String _getStatusLabel(Map<String, dynamic> cheque) {
     DateTime? returnedOn = _parseDate(cheque['payment']?['returned_on']);
-    DateTime? receivedOn = _parseDate(cheque['received_on']);
+    DateTime? receivedOn = _parseDate(cheque['payment']?['received_date']);
+    DateTime? clearedOn = _parseDate(cheque['cleared_on']);
     DateTime? depositedOn = _parseDate(cheque['deposited_on']);
+
     DateTime? chequeDate = _parseDate(cheque['date']);
 
     final isReceived = cheque['is_received'].toString().toLowerCase() == 'true';
@@ -426,6 +443,13 @@ class _ChequeListScreenState extends State<ChequeListScreen> {
       return 'Returned';
     }
 
+    if (isReceived && isDeposited && clearedOn == null &&
+        depositedOn != null &&
+        !depositedOn.isBefore(_startDate!) &&
+        !depositedOn.isAfter(_endDate!)) {
+      return 'Deposited';
+    }
+
     if (isReceived && !isDeposited &&
         receivedOn != null &&
         !normalize(receivedOn).isBefore(start) &&
@@ -434,9 +458,9 @@ class _ChequeListScreenState extends State<ChequeListScreen> {
     }
 
     if (isReceived && isDeposited &&
-        depositedOn != null &&
-        !normalize(depositedOn).isBefore(start) &&
-        !normalize(depositedOn).isAfter(end)) {
+        clearedOn != null &&
+        !normalize(clearedOn).isBefore(start) &&
+        !normalize(clearedOn).isAfter(end)) {
       return 'Cleared';
     }
 
@@ -476,6 +500,10 @@ class _ChequeListScreenState extends State<ChequeListScreen> {
       case 'Received':
         icon = Icons.check;
         color = Colors.green.shade700;
+        break;
+      case 'Deposited':
+        icon = Icons.inventory_2;
+        color = Colors.teal.shade600;
         break;
       case 'Cleared':
         icon = Icons.verified;
@@ -618,8 +646,10 @@ class _ChequeListScreenState extends State<ChequeListScreen> {
                     final isReceived = cheque['is_received'].toString().toLowerCase() == 'true';
                     final isDeposited = cheque['is_deposited'].toString().toLowerCase() == 'true';
                     final returnedOn = cheque['payment']?['returned_on'];
-                    final depositedOn = cheque['deposited_on'];
+                    final clearedOn = cheque['cleared_on'];
                     final receivedOn = cheque['received_on'];
+                    final depositedOn = cheque['deposited_on'];
+
 
                     String dateLabel = "Pending";
                     String dateValue = "-";
@@ -627,10 +657,15 @@ class _ChequeListScreenState extends State<ChequeListScreen> {
                     if (returnedOn != null) {
                       dateLabel = "Returned On";
                       dateValue = formatDate(returnedOn);
-                    } else if (isReceived && isDeposited && depositedOn != null) {
+                    } if (isReceived && isDeposited && clearedOn != null) {
                       dateLabel = "Cleared On";
+                      dateValue = formatDate(clearedOn);
+                    }
+                    else if (isReceived && isDeposited && clearedOn == null && depositedOn != null) {
+                      dateLabel = "Deposited On";
                       dateValue = formatDate(depositedOn);
-                    } else if (isReceived && receivedOn != null) {
+                    }
+                    else if (isReceived && receivedOn != null) {
                       dateLabel = "Received On";
                       dateValue = formatDate(receivedOn);
                     }

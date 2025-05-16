@@ -45,6 +45,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Ticker
   int received = 0;
   int pending = 0;
   int cleared = 0;
+  int deposited = 0;
   late SharedPreferences prefs;
 
   @override
@@ -145,14 +146,19 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Ticker
     received = 0;
     pending = 0;
     cleared = 0;
+    deposited = 0;
+
 
     for (var cheque in cheques) {
       final payment = cheque['payment'];
       if (payment == null) continue;
 
       DateTime? returnedOn = _parseDate(payment['returned_on']);
-      DateTime? receivedOn = _parseDate(cheque['received_on']);
+      DateTime? receivedOn = _parseDate(payment['received_date']);
+      DateTime? clearedOn = _parseDate(cheque['cleared_on']);
       DateTime? depositedOn = _parseDate(cheque['deposited_on']);
+
+
       DateTime? chequeDate = _parseDate(cheque['date']);
 
       final isReceived = cheque['is_received'].toString().toLowerCase() == 'true';
@@ -160,33 +166,31 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Ticker
 
       bool counted = false;
 
-      // Returned cheque in range
       if (returnedOn != null &&
           !returnedOn.isBefore(selectedRange!.start) &&
           !returnedOn.isAfter(selectedRange!.end)) {
         returned++;
         counted = true;
       }
-      // Received but not deposited in range
+      else if (isReceived && isDeposited && clearedOn == null && depositedOn != null &&
+          !depositedOn.isBefore(selectedRange!.start) &&
+          !depositedOn.isAfter(selectedRange!.end)) {
+        deposited++; // ✅ newly added
+        counted = true;
+      }
       else if (isReceived && !isDeposited &&
           receivedOn != null &&
           !receivedOn.isBefore(selectedRange!.start) &&
           !receivedOn.isAfter(selectedRange!.end)) {
         received++;
         counted = true;
-      }
-      // Received and deposited in range
-      else if (isReceived && isDeposited &&
-          depositedOn != null &&
-          !depositedOn.isBefore(selectedRange!.start) &&
-          !depositedOn.isAfter(selectedRange!.end)) {
+      } else if (isReceived && isDeposited &&
+          clearedOn != null &&
+          !clearedOn.isBefore(selectedRange!.start) &&
+          !clearedOn.isAfter(selectedRange!.end)) {
         cleared++;
         counted = true;
-      }
-
-      // If not counted in any above, check if cheque date falls in range to consider as pending
-      if (!counted &&
-          chequeDate != null &&
+      } else if (!counted && !isReceived && !isDeposited && chequeDate != null &&
           !chequeDate.isBefore(selectedRange!.start) &&
           !chequeDate.isAfter(selectedRange!.end)) {
         pending++;
@@ -198,6 +202,8 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Ticker
     print('Received: $received');
     print('Pending: $pending');
     print('Cleared: $cleared');
+    print('Deposited: $deposited');
+
     print('----------------------------');
 
     setState(() {});
@@ -282,6 +288,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Ticker
     addBarIfCountPositive(received, "Received", Colors.green.shade400, Colors.green.shade700);
     addBarIfCountPositive(pending, "Pending", Colors.orangeAccent.shade200, Colors.deepOrange.shade400);
     addBarIfCountPositive(cleared, "Cleared", appbar_color.shade100, appbar_color.shade400);
+    addBarIfCountPositive(deposited, "Deposited", Colors.teal.shade100,  Colors.teal.shade400);
 
     return Scaffold(
       key: _scaffoldKey,

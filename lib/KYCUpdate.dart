@@ -19,6 +19,21 @@ import 'package:http_parser/http_parser.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:path_provider/path_provider.dart';
 
+class DocumentType {
+  final int id;
+  final String name;
+  final bool isMandatory;
+
+  DocumentType({required this.id, required this.name, required this.isMandatory});
+
+  factory DocumentType.fromJson(Map<String, dynamic> json) {
+    return DocumentType(
+      id: json['id'],
+      name: json['name'],
+      isMandatory: json['is_mandatory'].toString().toLowerCase() == 'true',
+    );
+  }
+}
 
 
 class DecentTenantKYCForm extends StatefulWidget {
@@ -84,26 +99,66 @@ class DecentTenantKYCForm extends StatefulWidget {
 
 class _DecentTenantKYCFormState extends State<DecentTenantKYCForm> {
   final _formKey = GlobalKey<FormState>();
-  String? selectedDocumentType;
   String? emiratesIdFrontFile, emiratesIdBackFile, passportFile, visaFile;
 
   final TextEditingController _expiryDateController = TextEditingController();
   final TextEditingController documentNoController = TextEditingController();
   DateTime? _selectedExpiryDate;
+  String? selectedDocumentType;
 
   final RegExp emiratesIdRegex = RegExp(r'^784-\d{4}-\d{7}-\d{1}$');
 
 
-  final List<String> documentTypes = [
-    'Emirates ID',
-    'Passport',
-    'Visa',
-    'Trade License (Optional)',
-    'Vat Certificate (Optional)',
-  ];
+  List<DocumentType> documentTypes = [];
+  DocumentType? selectedDocument;
   bool _isUploading = false;
-  String? tradeLicenseFile, vatCertificateFile;
+  String? tradeLicenseFile, vatCertificateFile,documentFile;
 
+  @override
+  void initState() {
+    super.initState();
+    fetchDocumentTypes();
+  }
+
+  Future<void> fetchDocumentTypes() async {
+    int currentPage = 1;
+    int pageSize = 10;
+    bool hasMore = true;
+    List<DocumentType> allTypes = [];
+
+    try {
+      while (hasMore) {
+        final response = await http.get(
+          Uri.parse('$baseurl/tenant/kycDoc?page=$currentPage&size=$pageSize'),
+          headers: {"Authorization": "Bearer $Company_Token"},
+        );
+
+        if (response.statusCode == 200) {
+          final data = jsonDecode(response.body);
+          final List list = data['data']['doc_types'];
+          final int total = data['meta']['totalCount'];
+
+          allTypes.addAll(list.map((e) => DocumentType.fromJson(e)).toList());
+
+          // Stop if we've fetched all
+          if (allTypes.length >= total) {
+            hasMore = false;
+          } else {
+            currentPage++;
+          }
+        } else {
+          print('Failed to fetch page $currentPage');
+          break;
+        }
+      }
+
+      setState(() {
+        documentTypes = allTypes;
+      });
+    } catch (e) {
+      print('Error fetching paginated doc types: $e');
+    }
+  }
 
   Future<void> pickFile({bool isFront = true}) async {
     if (selectedDocumentType == null) {
@@ -127,10 +182,13 @@ class _DecentTenantKYCFormState extends State<DecentTenantKYCForm> {
         } else if (selectedDocumentType == 'Visa') {
           visaFile = file.path;
         }
-       else if (selectedDocumentType == 'Trade License (Optional)') {
+       else if (selectedDocumentType == 'Trade License') {
           tradeLicenseFile = file.path;
-        } else if (selectedDocumentType == 'Vat Certificate (Optional)') {
+        } else if (selectedDocumentType == 'VAT Certificate') {
           vatCertificateFile = file.path;
+        }
+        else {
+          documentFile = file.path;
         }
 
       });
@@ -157,10 +215,13 @@ class _DecentTenantKYCFormState extends State<DecentTenantKYCForm> {
         } else if (selectedDocumentType == 'Visa') {
           visaFile = file.path;
         }
-        else if (selectedDocumentType == 'Trade License (Optional)') {
+        else if (selectedDocumentType == 'Trade License') {
           tradeLicenseFile = file.path;
-        } else if (selectedDocumentType == 'Vat Certificate (Optional)') {
+        } else if (selectedDocumentType == 'VAT Certificate') {
           vatCertificateFile = file.path;
+        }
+        else{
+          documentFile = file.path;
         }
 
       });
@@ -209,7 +270,7 @@ class _DecentTenantKYCFormState extends State<DecentTenantKYCForm> {
 
     return pdfFile;
   }
-  Future<void> sendFormData(File file, String docType, String expiryDate, {required bool isPdf,  required String documentNumber,
+  Future<void> sendFormData(File file, String docType, String expiryDate, {required bool isPdf,  required String documentNumber, required int doc_type_id
   }) async {
     if (!file.existsSync()) {
       print("🚨 No file found.");
@@ -232,6 +293,7 @@ class _DecentTenantKYCFormState extends State<DecentTenantKYCForm> {
       request.fields['doc_type'] = docType;
       request.fields['expiry_date'] = expiryDate;
       request.fields['doc_no'] = documentNumber;
+      request.fields['doc_type_id'] = doc_type_id.toString();
 
 
       // Attach the file (PDF or Image)
@@ -291,10 +353,13 @@ class _DecentTenantKYCFormState extends State<DecentTenantKYCForm> {
           } else if (selectedDocumentType == 'Visa') {
             visaFile =  null;
           }
-          else if (selectedDocumentType == 'Trade License (Optional)') {
+          else if (selectedDocumentType == 'Trade License') {
             tradeLicenseFile = null;
-          } else if (selectedDocumentType == 'Vat Certificate (Optional)') {
+          } else if (selectedDocumentType == 'VAT Certificate') {
             vatCertificateFile = null;
+          }
+          else{
+            documentFile = file.path;
           }
 
           selectedDocumentType = null;
@@ -345,10 +410,10 @@ class _DecentTenantKYCFormState extends State<DecentTenantKYCForm> {
         return 'Passport Number';
       case 'Visa':
         return 'Visa Number';
-      case 'Trade License (Optional)':
+      case 'Trade License':
         return 'Trade License Number';
-      case 'Vat Certificate (Optional)':
-        return 'Vat Certificate Number';
+      case 'VAT Certificate':
+        return 'VAT Certificate Number';
       default:
         return 'Document Number';
     }
@@ -362,10 +427,10 @@ class _DecentTenantKYCFormState extends State<DecentTenantKYCForm> {
         return 'Enter Passport Number';
       case 'Visa':
         return 'Enter Visa Number';
-      case 'Trade License (Optional)':
+      case 'Trade License':
         return 'Enter Trade License Number';
-      case 'Vat Certificate (Optional)':
-        return 'Enter Vat Certificate Number';
+      case 'VAT Certificate':
+        return 'Enter VAT Certificate Number';
       default:
         return 'Enter Document Number';
     }
@@ -400,7 +465,7 @@ class _DecentTenantKYCFormState extends State<DecentTenantKYCForm> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              DropdownButtonFormField<String>(
+              DropdownButtonFormField<DocumentType>(
                 isExpanded: true,
                 decoration: InputDecoration(
                   labelText: "Document Type",
@@ -409,10 +474,7 @@ class _DecentTenantKYCFormState extends State<DecentTenantKYCForm> {
                   filled: true,
                   fillColor: Colors.white,
                   contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: Colors.grey),
-                  ),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide(color: Colors.grey, width: 1),
@@ -422,20 +484,20 @@ class _DecentTenantKYCFormState extends State<DecentTenantKYCForm> {
                     borderSide: BorderSide(color: appbar_color, width: 1),
                   ),
                 ),
-                value: selectedDocumentType,
-                items: documentTypes.map((String doc) {
-                  return DropdownMenuItem<String>(
+                value: selectedDocument,
+                items: documentTypes.map((doc) {
+                  return DropdownMenuItem<DocumentType>(
                     value: doc,
-                    child: Text(
-                      doc,
-                      style: GoogleFonts.poppins(),
-                      overflow: TextOverflow.ellipsis,
-                    ),
+                  child: Text(
+                  doc.isMandatory ? "${doc.name} *" : doc.name,
+                    style: GoogleFonts.poppins(),
+                  ),
                   );
                 }).toList(),
-                onChanged: (String? newValue) {
+                onChanged: (DocumentType? newValue) {
                   setState(() {
-                    selectedDocumentType = newValue;
+                    selectedDocument = newValue;
+                    selectedDocumentType = newValue?.name;
                     _selectedExpiryDate = null;
                     _expiryDateController.clear();
                     documentNoController.clear();
@@ -443,6 +505,7 @@ class _DecentTenantKYCFormState extends State<DecentTenantKYCForm> {
                   });
                 },
               ),
+
               SizedBox(height: 15),
 
               TextFormField(
@@ -560,11 +623,14 @@ class _DecentTenantKYCFormState extends State<DecentTenantKYCForm> {
                       buildDocumentCard(title: 'Passport', filePath: passportFile),
                     ] else if (selectedDocumentType == 'Visa') ...[
                       buildDocumentCard(title: 'Visa', filePath: visaFile),
-                    ] else if (selectedDocumentType == 'Trade License (Optional)') ...[
-                      buildDocumentCard(title: 'Trade License (Optional)', filePath: tradeLicenseFile),
-                    ] else if (selectedDocumentType == 'Vat Certificate (Optional)') ...[
-                      buildDocumentCard(title: 'Vat Certificate (Optional)', filePath: vatCertificateFile),
+                    ] else if (selectedDocumentType == 'Trade License') ...[
+                      buildDocumentCard(title: 'Trade License', filePath: tradeLicenseFile),
+                    ] else if (selectedDocumentType == 'Vat Certificate') ...[
+                      buildDocumentCard(title: 'Vat Certificate', filePath: vatCertificateFile),
                     ]
+                    else ...[
+                        buildDocumentCard(title: selectedDocumentType!, filePath: documentFile),
+                      ]
                   ],
                 ),
               SizedBox(height: 30),
@@ -653,9 +719,9 @@ class _DecentTenantKYCFormState extends State<DecentTenantKYCForm> {
                           fileType = "Visa";
                           break;
 
-                        case 'Trade License (Optional)':
+                        case 'Trade License':
                           if (tradeLicenseFile == null) {
-                            _showSnackBar("Please upload the Trade License (Optional)");
+                            _showSnackBar("Please upload the Trade License");
                             setState(() => _isUploading = false);
                             return;
                           }
@@ -663,9 +729,12 @@ class _DecentTenantKYCFormState extends State<DecentTenantKYCForm> {
                           fileType = "Trade_License";
                           break;
 
-                        case 'Vat Certificate (Optional)':
+
+
+
+                        case 'VAT Certificate':
                           if (vatCertificateFile == null) {
-                            _showSnackBar("Please upload the Vat Certificate (Optional)");
+                            _showSnackBar("Please upload the VAT Certificate");
                             setState(() => _isUploading = false);
                             return;
                           }
@@ -673,11 +742,17 @@ class _DecentTenantKYCFormState extends State<DecentTenantKYCForm> {
                           fileType = "VAT_Certificate";
                           break;
 
-
-                        default:
-                          _showSnackBar("Invalid document type selected.");
-                          setState(() => _isUploading = false);
+                        default :
+                          if (documentFile == null) {
+                            _showSnackBar("Please upload document");
+                            setState(() => _isUploading = false);
+                            return;
+                          }
+                          fileToSend = File(documentFile!);
+                          fileType = "VAT_Certificate";
                           return;
+
+
                       }
 
                       if (fileToSend != null) {
@@ -689,6 +764,7 @@ class _DecentTenantKYCFormState extends State<DecentTenantKYCForm> {
                               : "",
                           isPdf: isPdf,
                           documentNumber: documentNoController.text,
+                          doc_type_id: selectedDocument!.id
                         );
                       } else {
                         _showSnackBar("Error processing the file.");

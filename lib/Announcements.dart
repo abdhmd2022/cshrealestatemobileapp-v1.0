@@ -137,7 +137,7 @@ class _AnnouncementScreenState extends State<AnnouncementScreen> {
       )
 
         : Container(
-        margin: const EdgeInsets.all(16),
+        margin: const EdgeInsets.all(12),
         padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
         decoration: BoxDecoration(
           color: Colors.white,

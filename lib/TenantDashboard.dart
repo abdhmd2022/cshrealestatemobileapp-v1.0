@@ -334,6 +334,7 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
                Column(
               children: [
                 Container(
+
                   padding: EdgeInsets.all(16),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(

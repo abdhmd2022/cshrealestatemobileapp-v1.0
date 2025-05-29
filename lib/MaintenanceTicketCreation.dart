@@ -1518,7 +1518,8 @@ late int loaded_flat_id;
                     ])
                     )
                     )
-                    );}
+                    );
+  }
 
 
           bool isValidImage(dynamic file) {
@@ -1580,7 +1581,7 @@ late int loaded_flat_id;
                   return;
                 }
 
-// 🛡 Validate: from must be in future
+                // 🛡 Validate: from must be in future
                 final now = DateTime.now();
                 if (from.isBefore(now)) {
                   Fluttertoast.showToast(
@@ -1591,13 +1592,10 @@ late int loaded_flat_id;
                   return;
                 }
 
-// ✅ Passed validation — format
+    // ✅ Passed validation — format
                 availableFromStr = dateTimeFormatter.format(from);
                 availableToStr = dateTimeFormatter.format(to);
               }
-
-
-
 
             try {
 
@@ -1627,9 +1625,7 @@ late int loaded_flat_id;
               "available_to": availableToStr,
             };
 
-
             print('request body -> $requestBody');
-
 
             final response = await http.post(
               Uri.parse(url),

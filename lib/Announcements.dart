@@ -240,7 +240,8 @@ class _AnnouncementScreenState extends State<AnnouncementScreen> {
     final attachments = a['attachments'] as List<dynamic>? ?? [];
 
     final postedOn = a['created_at'] != null
-        ? DateFormat('dd-MMM-yyyy hh:mm a').format(DateTime.parse(a['created_at']))
+        ? DateFormat('dd-MMM-yyyy hh:mm a').format(DateTime.parse(a['created_at']).toLocal())
+
         : 'N/A';
 
     final isExpired = expiryDate == null || expiryDate.isBefore(DateTime.now());
@@ -340,9 +341,8 @@ class _AnnouncementScreenState extends State<AnnouncementScreen> {
                         final fullImageUrl = '$baseurl/uploads/$imagePath';
 
                         print('fullImageUrl -> $fullImageUrl');
-
-
-
+                        
+                        if(imagePath !=null)
                         return GestureDetector(
                           onTap: () {
                             showDialog(

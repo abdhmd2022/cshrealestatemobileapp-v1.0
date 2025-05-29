@@ -1251,7 +1251,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      backgroundColor: const Color(0xFFF2F4F8),
+      backgroundColor: Colors.white,
       appBar: AppBar(
         elevation: 0,
         bottom: PreferredSize(
@@ -1798,8 +1798,11 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
             padding: const EdgeInsets.only(bottom: 8.0),
             child: LayoutBuilder(
               builder: (context, constraints) {
-                final availableFrom = DateFormat('dd-MMM-yyyy hh:mm a').format(DateTime.parse(ticket['availableFrom']));
-                final availableTo = DateFormat('dd-MMM-yyyy hh:mm a').format(DateTime.parse(ticket['availableTo']));
+                final availableFrom = DateFormat('dd-MMM-yyyy hh:mm a')
+                    .format(DateTime.parse(ticket['availableFrom']).toLocal());
+
+                final availableTo = DateFormat('dd-MMM-yyyy hh:mm a')
+                    .format(DateTime.parse(ticket['availableTo']).toLocal());
                 final combinedText = '$availableFrom → $availableTo';
                 final fitsInline = combinedText.length < (constraints.maxWidth / 7);
 

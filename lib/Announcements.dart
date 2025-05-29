@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'constants.dart';
@@ -28,7 +29,16 @@ class _AnnouncementScreenState extends State<AnnouncementScreen> {
 
 
   Future<void> fetchAnnouncements() async {
-    const int pageSize = 10; // match your API's default page size
+    final prefs = await SharedPreferences.getInstance();
+    final String? userBuildingName = prefs.getString('building'); // replace with actual key
+
+    if (userBuildingName == null || userBuildingName.isEmpty) {
+      print('No building name found in SharedPreferences');
+      setState(() => isLoading = false);
+      return;
+    }
+
+    const int pageSize = 10;
     int currentPage = 1;
     bool hasMore = true;
 
@@ -53,21 +63,29 @@ class _AnnouncementScreenState extends State<AnnouncementScreen> {
 
           if (pageData.isEmpty) break;
 
-          // Filter announcements that are not expired more than 1 month ago
           final filtered = pageData.where((a) {
             final expiryStr = a['expiry'];
-            if (expiryStr == null) return true; // if no expiry, include
+            final buildingName = a['building']?['name'] ?? '';
+
+            // Filter by building
+            if (buildingName != userBuildingName) return false;
+
+            // Include if no expiry
+            if (expiryStr == null) return true;
+
             final expiryDate = DateTime.tryParse(expiryStr);
-            return expiryDate != null && expiryDate.isAfter(oneMonthAgo);
+            if (expiryDate == null) return false;
+
+            final endOfExpiry = DateTime(expiryDate.year, expiryDate.month, expiryDate.day, 23, 59, 59);
+            return endOfExpiry.isAfter(oneMonthAgo);
           }).map((a) => a as Map<String, dynamic>).toList();
 
           allValidAnnouncements.addAll(filtered);
 
           final meta = jsonBody['meta'];
           final totalCount = meta?['totalCount'] ?? 0;
-
-          // Stop when we’ve fetched all records
           final totalPages = (totalCount / pageSize).ceil();
+
           currentPage++;
           hasMore = currentPage <= totalPages;
         } else {
@@ -75,7 +93,7 @@ class _AnnouncementScreenState extends State<AnnouncementScreen> {
         }
       }
 
-      // Sort by latest created_at on top
+      // Sort by latest
       allValidAnnouncements.sort((a, b) =>
           DateTime.parse(b['created_at']).compareTo(DateTime.parse(a['created_at'])));
 
@@ -120,23 +138,32 @@ class _AnnouncementScreenState extends State<AnnouncementScreen> {
           children: [
             Icon(
               Icons.announcement_rounded,
-              size: 48,
+              size: 52,
               color: Colors.grey.shade400,
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 14),
             Text(
-              'No announcements available',
+              'No Announcements',
               style: GoogleFonts.poppins(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-                color: Colors.grey.shade600,
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: Colors.grey.shade700,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Check back later for the latest updates',
+              textAlign: TextAlign.center,
+              style: GoogleFonts.poppins(
+                fontSize: 14,
+                color: Colors.grey.shade500,
               ),
             ),
           ],
         ),
       )
 
-        : Container(
+          : Container(
         margin: const EdgeInsets.all(12),
         padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
         decoration: BoxDecoration(

@@ -1543,29 +1543,6 @@ late int loaded_flat_id;
             String? availableToStr;
             final DateFormat dateTimeFormatter = DateFormat('yyyy-MM-dd HH:mm:ss');
 
-
-            if (selectedDateRange != null && startTime != null && endTime != null) {
-              final from = DateTime(
-                selectedDateRange!.start.year,
-                selectedDateRange!.start.month,
-                selectedDateRange!.start.day,
-                startTime!.hour,
-                startTime!.minute,
-              );
-
-              final to = DateTime(
-                selectedDateRange!.end.year,
-                selectedDateRange!.end.month,
-                selectedDateRange!.end.day,
-                endTime!.hour,
-                endTime!.minute,
-              );
-
-              availableFromStr = dateTimeFormatter.format(from); // ✅ formatted as yyyy-MM-dd HH:mm:ss
-              availableToStr = dateTimeFormatter.format(to);
-            }
-
-
             if (selectedDateRange == null || startTime == null || endTime == null) {
               Fluttertoast.showToast(
                 msg: 'Please select both date and time range.',
@@ -1575,46 +1552,51 @@ late int loaded_flat_id;
               return;
             }
 
-// Combine date + time
-            final from = DateTime(
-              selectedDateRange!.start.year,
-              selectedDateRange!.start.month,
-              selectedDateRange!.start.day,
-              startTime!.hour,
-              startTime!.minute,
-            );
-            final to = DateTime(
-              selectedDateRange!.end.year,
-              selectedDateRange!.end.month,
-              selectedDateRange!.end.day,
-              endTime!.hour,
-              endTime!.minute,
-            );
+            else
+              {
+                // Combine date + time
+                final from = DateTime(
+                  selectedDateRange!.start.year,
+                  selectedDateRange!.start.month,
+                  selectedDateRange!.start.day,
+                  startTime!.hour,
+                  startTime!.minute,
+                );
+                final to = DateTime(
+                  selectedDateRange!.end.year,
+                  selectedDateRange!.end.month,
+                  selectedDateRange!.end.day,
+                  endTime!.hour,
+                  endTime!.minute,
+                );
 
-            // 🛡   Validate: from must be before to
-            if (!from.isBefore(to)) {
-              Fluttertoast.showToast(
-                msg: 'Start time must be before end time.',
-                backgroundColor: Colors.red,
-                textColor: Colors.white,
-              );
-              return;
-            }
+                // 🛡   Validate: from must be before to
+                if (!from.isBefore(to)) {
+                  Fluttertoast.showToast(
+                    msg: 'Start time must be before end time.',
+                    backgroundColor: Colors.red,
+                    textColor: Colors.white,
+                  );
+                  return;
+                }
 
 // 🛡 Validate: from must be in future
-            final now = DateTime.now();
-            if (from.isBefore(now)) {
-              Fluttertoast.showToast(
-                msg: 'Start time must be in the future.',
-                backgroundColor: Colors.red,
-                textColor: Colors.white,
-              );
-              return;
-            }
+                final now = DateTime.now();
+                if (from.isBefore(now)) {
+                  Fluttertoast.showToast(
+                    msg: 'Start time must be in the future.',
+                    backgroundColor: Colors.red,
+                    textColor: Colors.white,
+                  );
+                  return;
+                }
 
 // ✅ Passed validation — format
-            availableFromStr = dateTimeFormatter.format(from);
-            availableToStr = dateTimeFormatter.format(to);
+                availableFromStr = dateTimeFormatter.format(from);
+                availableToStr = dateTimeFormatter.format(to);
+              }
+
+
 
 
             try {

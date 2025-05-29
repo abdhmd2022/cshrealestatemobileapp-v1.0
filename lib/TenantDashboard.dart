@@ -7,6 +7,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:cshrealestatemobile/constants.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'Sidebar.dart';
 import 'TenantProfile.dart';
 import 'AvailableUnitsReport.dart';
@@ -318,18 +319,45 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
             )
             )
                 : contracts.isEmpty ?
-              Center(
-                      child: Column(
-              children: [
-              Icon(Icons.search_off, size: 60, color: Colors.grey),
-              SizedBox(height: 16),
-              Text(
-              "No contracts found",
-              style: GoogleFonts.poppins(fontSize: 16, color: Colors.grey.shade600),
+
+            Column(
+              children: [ Container(
+
+                  padding: EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+
+                      colors: [Colors.white, Colors.white],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black12,
+                        blurRadius: 10,
+                        offset: Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child:  Center(
+                    child:
+                    Column(
+                      children: [
+                        Icon(Icons.search_off, size: 60, color: Colors.grey),
+                        SizedBox(height: 16),
+                        Text(
+                          "No contracts found",
+                          style: GoogleFonts.poppins(fontSize: 16, color: Colors.grey.shade600),
+                        ),
+                      ],
+                    ),
+                  )
               ),
-              ],
-              ),
-              ) :
+              SizedBox(height: 10,)],
+            )
+           :
+
 
                Column(
               children: [
@@ -780,8 +808,16 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
     );
   }
   Future<List<dynamic>> fetchAllValidAnnouncements() async {
-     String url = '$baseurl/master/Announcement'; // Replace with your actual URL
-    final String token = '$Company_Token'; // Replace with your actual token
+    final prefs = await SharedPreferences.getInstance();
+    final String? userBuildingName = prefs.getString('building'); // your key
+
+    if (userBuildingName == null || userBuildingName.isEmpty) {
+      print('No building name found in SharedPreferences');
+      return [];
+    }
+
+    String url = '$baseurl/master/Announcement';
+    final String token = '$Company_Token';
 
     int currentPage = 1;
     int totalPages = 1;
@@ -801,20 +837,23 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
           final json = jsonDecode(response.body);
           final List<dynamic> announcements = json['data']?['announcements'] ?? [];
 
-          // Filter valid ones (not expired till end of that day)
+          final now = DateTime.now();
+
           for (var a in announcements) {
             final expiry = a['expiry'];
-            if (expiry != null) {
+            final buildingName = a['building']?['name'] ?? '';
+
+            // Expiry date check
+            if (expiry != null && buildingName == userBuildingName) {
               final expiryDate = DateTime.parse(expiry);
-              final now = DateTime.now();
               final endOfExpiry = DateTime(expiryDate.year, expiryDate.month, expiryDate.day, 23, 59, 59);
+
               if (endOfExpiry.isAfter(now)) {
                 validAnnouncements.add(a);
               }
             }
           }
 
-          // Determine total pages
           final meta = json['meta'];
           if (meta != null && meta['totalCount'] != null && meta['size'] != null) {
             final int totalCount = meta['totalCount'];
@@ -824,7 +863,7 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
 
           currentPage++;
         } else {
-          print('Failed to fetch announcements page $currentPage: ${response.statusCode}');
+          print('Failed to fetch page $currentPage: ${response.statusCode}');
           break;
         }
       }

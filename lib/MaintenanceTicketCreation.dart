@@ -9,6 +9,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:multi_select_flutter/dialog/multi_select_dialog_field.dart';
 import 'package:multi_select_flutter/util/multi_select_item.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -71,6 +72,14 @@ late int loaded_flat_id;
       isUserVisible = true,
       isRolesEnable = true,
       isVisibleNoRoleFound = false;
+
+  final DateFormat dateFormatter = DateFormat('dd-MMM-yyyy');
+
+
+  DateTimeRange? selectedDateRange;
+  TimeOfDay? startTime;
+  TimeOfDay? endTime;
+
 
   String name = "",email = "";
 
@@ -833,6 +842,265 @@ late int loaded_flat_id;
                       ),
                     ),
 
+                    Padding(
+                      padding: const EdgeInsets.only(left: 16.0,right:16, top: 0,bottom:12),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // 📅 DATE RANGE CARD
+                          Container(
+                            margin: const EdgeInsets.only(bottom: 8),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(color: Colors.grey.shade300),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.05),
+                                  blurRadius: 6,
+                                  offset: Offset(0, 3),
+                                ),
+                              ],
+                            ),
+                            padding: const EdgeInsets.all(14),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Icon(Icons.calendar_today_outlined, size: 18, color: appbar_color),
+                                    SizedBox(width: 8),
+                                    Expanded(
+                                      child: Text(
+                                        "Available Date",
+                                        style: GoogleFonts.poppins(
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: 15,
+                                          color: Colors.black87,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 12),
+                                GestureDetector(
+                                  onTap: () async {
+                                    final picked = await showDateRangePicker(
+                                      context: context,
+                                      firstDate: DateTime.now(),
+                                      lastDate: DateTime(2100),
+                                      initialDateRange: selectedDateRange,
+                                      builder: (context, child) {
+                                        return Theme(
+                                          data: ThemeData.light().copyWith(
+                                            primaryColor: appbar_color, // ✅ Header & buttons color
+                                            scaffoldBackgroundColor: Colors.white,
+                                            colorScheme: ColorScheme.light(
+                                              primary: appbar_color, // ✅ Start & End date circle color
+                                              onPrimary: Colors.white, // ✅ Text inside Start & End date
+                                              secondary: appbar_color.withOpacity(0.6), // ✅ In-Between date highlight color
+                                              onSecondary: Colors.white, // ✅ Text color inside In-Between dates
+                                              surface: Colors.white, // ✅ Background color
+                                              onSurface: Colors.black, // ✅ Default text color
+                                            ),
+                                            dialogBackgroundColor: Colors.white,
+                                          ),
+                                          child: child!,
+                                        );
+                                      },
+
+
+                                    );
+                                    if (picked != null) {
+                                      setState(() {
+                                        selectedDateRange = picked;
+                                      });
+                                    }
+                                  },
+                                  child: Container(
+                                    width: double.infinity,
+                                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(12),
+                                      color: Colors.white,
+                                      border: Border.all(color: Colors.grey.shade300),
+                                    ),
+                                    child: Text(
+                                      selectedDateRange != null
+                                          ? "${dateFormatter.format(selectedDateRange!.start)} → ${dateFormatter.format(selectedDateRange!.end)}"
+                                          : "Select date range",
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 14,
+                                        color: Colors.black87,
+                                      ),
+                                    ),
+
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          // ⏰ TIME RANGE CARD
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(color: Colors.grey.shade300),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.05),
+                                  blurRadius: 6,
+                                  offset: Offset(0, 3),
+                                ),
+                              ],
+                            ),
+                            padding: const EdgeInsets.all(14),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Icon(Icons.access_time_outlined, size: 18, color: appbar_color),
+                                    SizedBox(width: 8),
+                                    Expanded(
+                                      child: Text(
+                                        "Available Time",
+                                        style: GoogleFonts.poppins(
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: 15,
+                                          color: Colors.black87,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 12),
+                                GestureDetector(
+                                  onTap: () async {
+                                    final TimeOfDay? start = await showTimePicker(
+                                      context: context,
+                                      initialTime: const TimeOfDay(hour: 9, minute: 0), // ✅ hardcoded default
+                                      builder: (context, child) {
+                                        return Theme(
+                                          data: ThemeData.light().copyWith(
+                                            dialogBackgroundColor: Colors.white,
+                                            timePickerTheme: TimePickerThemeData(
+                                              backgroundColor: Colors.white,
+                                              hourMinuteTextColor: appbar_color,
+                                              hourMinuteShape: RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.circular(12),
+                                                side: BorderSide(color: appbar_color, width: 1),
+                                              ),
+                                              dialHandColor: appbar_color,
+                                              dialTextColor: Colors.black,
+                                              entryModeIconColor: appbar_color,
+                                              dayPeriodTextColor: MaterialStateColor.resolveWith((states) =>
+                                              states.contains(MaterialState.selected) ? Colors.white : appbar_color),
+                                              dayPeriodShape: RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.circular(8),
+                                                side: BorderSide(color: appbar_color),
+                                              ),
+                                              dayPeriodColor: MaterialStateColor.resolveWith((states) =>
+                                              states.contains(MaterialState.selected) ? appbar_color : Colors.white),
+                                              helpTextStyle: TextStyle(
+                                                color: appbar_color,
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                              cancelButtonStyle: TextButton.styleFrom(foregroundColor: appbar_color),
+                                              confirmButtonStyle: TextButton.styleFrom(foregroundColor: appbar_color),
+                                            ),
+                                            colorScheme: ColorScheme.light(
+                                              primary: Colors.white,
+                                              onSurface: Colors.white,
+                                            ),
+                                          ),
+                                          child: child!,
+                                        );
+                                      },
+
+                                    );
+                                    if (start != null) {
+                                      final TimeOfDay? end = await showTimePicker(
+                                        context: context,
+                                        initialTime: const TimeOfDay(hour: 19, minute: 0), // ✅ 7 PM
+                                        builder: (context, child) {
+                                          return Theme(
+                                            data: ThemeData.light().copyWith(
+                                              dialogBackgroundColor: Colors.white,
+                                              timePickerTheme: TimePickerThemeData(
+                                                backgroundColor: Colors.white,
+                                                hourMinuteTextColor: appbar_color,
+                                                hourMinuteShape: RoundedRectangleBorder(
+                                                  borderRadius: BorderRadius.circular(12),
+                                                  side: BorderSide(color: appbar_color, width: 1),
+                                                ),
+                                                dialHandColor: appbar_color,
+                                                dialTextColor: Colors.black,
+                                                entryModeIconColor: appbar_color,
+                                                dayPeriodTextColor: MaterialStateColor.resolveWith((states) =>
+                                                states.contains(MaterialState.selected) ? Colors.white : appbar_color),
+                                                dayPeriodShape: RoundedRectangleBorder(
+                                                  borderRadius: BorderRadius.circular(8),
+                                                  side: BorderSide(color: appbar_color),
+                                                ),
+                                                dayPeriodColor: MaterialStateColor.resolveWith((states) =>
+                                                states.contains(MaterialState.selected) ? appbar_color : Colors.white),
+                                                helpTextStyle: TextStyle(
+                                                  color: appbar_color,
+                                                  fontWeight: FontWeight.w600,
+                                                ),
+                                                cancelButtonStyle: TextButton.styleFrom(foregroundColor: appbar_color),
+                                                confirmButtonStyle: TextButton.styleFrom(foregroundColor: appbar_color),
+                                              ),
+                                              colorScheme: ColorScheme.light(
+                                                primary: Colors.white,
+                                                onSurface: Colors.white,
+                                              ),
+                                            ),
+                                            child: child!,
+                                          );
+                                        },
+
+                                      );
+                                      if (end != null) {
+                                        setState(() {
+                                          startTime = start;
+                                          endTime = end;
+                                        });
+                                      }
+                                    }
+                                  },
+                                  child: Container(
+                                    width: double.infinity,
+                                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(12),
+                                      color: Colors.white,
+                                      border: Border.all(color: Colors.grey.shade300),
+                                    ),
+                                    child: Text(
+                                      (startTime != null && endTime != null)
+                                          ? "${startTime!.format(context)} → ${endTime!.format(context)}"
+                                          : "Select time range",
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 14,
+                                        color: Colors.black87,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+
+
+
 
 
                     Container(
@@ -1212,30 +1480,19 @@ late int loaded_flat_id;
                                 fontSize: 16.0,
                               );
                             }
-                          else if(_descriptionControllers.isEmpty)
-                            {
-                              String message = 'Enter description';
-                              Fluttertoast.showToast(
-                                msg: message,
-                                toastLength: Toast.LENGTH_SHORT,
-                                gravity: ToastGravity.BOTTOM, // Change to CENTER or TOP if needed
-                                backgroundColor: Colors.black,
-                                textColor: Colors.white,
-                                fontSize: 16.0,
-                              );
-                            }
-                          else if(_attachment.isEmpty)
-                            {
-                              String message = 'Attach at least 1 image';
-                              Fluttertoast.showToast(
-                                msg: message,
-                                toastLength: Toast.LENGTH_SHORT,
-                                gravity: ToastGravity.BOTTOM, // Change to CENTER or TOP if needed
-                                backgroundColor: Colors.black,
-                                textColor: Colors.white,
-                                fontSize: 16.0,
-                              );
-                            }
+                          else if (selectedMaintenanceType!.any((type) =>
+                          _descriptionControllers[type.id]?.text.trim().isEmpty ?? true)) {
+                            Fluttertoast.showToast(
+                              msg: 'Please enter description for all selected types.',
+                              toastLength: Toast.LENGTH_SHORT,
+                              gravity: ToastGravity.BOTTOM,
+                              backgroundColor: Colors.black,
+                              textColor: Colors.white,
+                              fontSize: 16.0,
+                            );
+                          }
+
+
                           else if (_attachment.length > 5)
                           {
                             Fluttertoast.showToast(
@@ -1282,7 +1539,85 @@ late int loaded_flat_id;
 
           Future<void> sendFormData(BuildContext context) async {
 
-          try {
+            String? availableFromStr;
+            String? availableToStr;
+            final DateFormat dateTimeFormatter = DateFormat('yyyy-MM-dd HH:mm:ss');
+
+
+            if (selectedDateRange != null && startTime != null && endTime != null) {
+              final from = DateTime(
+                selectedDateRange!.start.year,
+                selectedDateRange!.start.month,
+                selectedDateRange!.start.day,
+                startTime!.hour,
+                startTime!.minute,
+              );
+
+              final to = DateTime(
+                selectedDateRange!.end.year,
+                selectedDateRange!.end.month,
+                selectedDateRange!.end.day,
+                endTime!.hour,
+                endTime!.minute,
+              );
+
+              availableFromStr = dateTimeFormatter.format(from); // ✅ formatted as yyyy-MM-dd HH:mm:ss
+              availableToStr = dateTimeFormatter.format(to);
+            }
+
+
+            if (selectedDateRange == null || startTime == null || endTime == null) {
+              Fluttertoast.showToast(
+                msg: 'Please select both date and time range.',
+                backgroundColor: Colors.black,
+                textColor: Colors.white,
+              );
+              return;
+            }
+
+// Combine date + time
+            final from = DateTime(
+              selectedDateRange!.start.year,
+              selectedDateRange!.start.month,
+              selectedDateRange!.start.day,
+              startTime!.hour,
+              startTime!.minute,
+            );
+            final to = DateTime(
+              selectedDateRange!.end.year,
+              selectedDateRange!.end.month,
+              selectedDateRange!.end.day,
+              endTime!.hour,
+              endTime!.minute,
+            );
+
+            // 🛡   Validate: from must be before to
+            if (!from.isBefore(to)) {
+              Fluttertoast.showToast(
+                msg: 'Start time must be before end time.',
+                backgroundColor: Colors.red,
+                textColor: Colors.white,
+              );
+              return;
+            }
+
+// 🛡 Validate: from must be in future
+            final now = DateTime.now();
+            if (from.isBefore(now)) {
+              Fluttertoast.showToast(
+                msg: 'Start time must be in the future.',
+                backgroundColor: Colors.red,
+                textColor: Colors.white,
+              );
+              return;
+            }
+
+// ✅ Passed validation — format
+            availableFromStr = dateTimeFormatter.format(from);
+            availableToStr = dateTimeFormatter.format(to);
+
+
+            try {
 
             String url = is_admin
                 ? "$baseurl/maintenance/ticket"
@@ -1301,10 +1636,18 @@ late int loaded_flat_id;
             final Map<String, dynamic> requestBody = {
               "uuid": uuidValue,
               "flat_id": selectedFlat?['flat_id'],
-              "description_per_type": descriptionsMap, // New structure
-              "types": selectedMaintenanceTypeIds,
-              "contract_id": selectedFlat?['contract_id']
+              "contract_id": selectedFlat?['contract_id'],
+              "types": selectedMaintenanceType!.map((type) => {
+                "id": type.id,
+                "description": _descriptionControllers[type.id]?.text ?? ""
+              }).toList(),
+              "available_from": availableFromStr,
+              "available_to": availableToStr,
             };
+
+
+            print('request body -> $requestBody');
+
 
             final response = await http.post(
               Uri.parse(url),
@@ -1325,6 +1668,9 @@ late int loaded_flat_id;
                 _descriptionControllers.clear();
                 selectedFlat = flats[0];
                 _attachment.clear();
+                selectedDateRange = null;
+                startTime = null;
+                endTime = null;
               });
               showResponseSnackbar(context, decodedResponse);
 

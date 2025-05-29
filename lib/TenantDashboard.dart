@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:cshrealestatemobile/Announcements.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -24,12 +25,21 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
   int selectedContractIndex = 0;
   List<Map<String, dynamic>> contracts = [];
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  int announcementCount = 0;
 
 
   @override
   void initState() {
     super.initState();
+    loadAnnouncementCount();
     fetchDashboardData();
+
+  }
+  void loadAnnouncementCount() async {
+    final count = await fetchAnnouncementCount();
+    setState(() {
+      announcementCount = count;
+    });
   }
 
   Future<void> fetchDashboardData() async {
@@ -190,26 +200,99 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
           onPressed: () => _scaffoldKey.currentState!.openDrawer(),
         ),
         actions: [
+          // 📢 Announcement Icon with count badge
           Padding(
             padding: const EdgeInsets.only(right: 12.0),
             child: InkWell(
               onTap: () {
-                // Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => TenantProfile())),
-              } ,
+                Navigator.push(context, MaterialPageRoute(builder: (_) => AnnouncementScreen()));
 
+                },
+              child: Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: LinearGradient(
+                        colors: [appbar_color.shade200, appbar_color.shade700],
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.2),
+                          blurRadius: 5,
+                          offset: const Offset(0, 2),
+                        )
+                      ],
+                    ),
+                    child: const Icon(Icons.campaign_outlined, color: Colors.white),
+                  ),
+
+                  // 🔴 Count Badge
+                  if (announcementCount > 0)
+                    Positioned(
+                      top: -4,
+                      right: -4,
+                      child: Container(
+                        padding: const EdgeInsets.all(3),
+                        decoration: BoxDecoration(
+                          color: Colors.red,
+                          shape: BoxShape.circle,
+                          border: Border.all(color: Colors.white, width: 1.5),
+                        ),
+                        constraints: const BoxConstraints(minWidth: 18, minHeight: 18),
+                        child: Text(
+                          '$announcementCount',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ),
+
+          // 🔔 Notification Icon (existing)
+          Padding(
+            padding: const EdgeInsets.only(right: 12.0),
+            child: InkWell(
+              onTap: () {
+                // Navigate to notifications screen
+              },
               child: Container(
                 width: 40,
                 height: 40,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  gradient: LinearGradient(colors: [appbar_color.shade200, appbar_color.shade700], begin: Alignment.topCenter, end: Alignment.bottomCenter),
-                  boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 5, offset: Offset(0, 2))],
+                  gradient: LinearGradient(
+                    colors: [appbar_color.shade200, appbar_color.shade700],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.2),
+                      blurRadius: 5,
+                      offset: const Offset(0, 2),
+                    )
+                  ],
                 ),
-                child: Icon(Icons.notifications_active_outlined, color: Colors.white),
+                child: const Icon(Icons.notifications_active_outlined, color: Colors.white),
               ),
             ),
           ),
         ],
+
+
       ),
       drawer: Sidebar(isDashEnable: true, isRolesVisible: true, isRolesEnable: true, isUserEnable: true, isUserVisible: true),
       body: SingleChildScrollView(
@@ -662,6 +745,7 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
               _buildDashboardButton(Icons.upload_file, 'KYC Update', Colors.tealAccent, () => Navigator.push(context, MaterialPageRoute(builder: (_) => DecentTenantKYCForm()))),
               _buildDashboardButton(Icons.info_outline, 'Complaints/Suggestions', Colors.redAccent, () => Navigator.push(context, MaterialPageRoute(builder: (_) => ComplaintListScreen()))),
             ]),
+
             SizedBox(height: 20),
           ],
         ),
@@ -693,4 +777,31 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
       ),
     );
   }
+  Future<int> fetchAnnouncementCount() async {
+     String url = '$baseurl/master/Announcement'; // replace with your actual URL
+    final token = '$Company_Token'; // replace with your actual bearer token
+
+    try {
+      final response = await http.get(
+        Uri.parse(url),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final json = jsonDecode(response.body);
+        final count = json['meta']?['totalCount'] ?? 0;
+        return count;
+      } else {
+        print('Failed to load announcement count: ${response.statusCode}');
+        return 0;
+      }
+    } catch (e) {
+      print('Error fetching announcements: $e');
+      return 0;
+    }
+  }
+
 }

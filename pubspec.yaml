@@ -53,6 +53,7 @@ dependencies:
   flutter_signature_pad:
   dio:
   signature:
+  carousel_slider: ^4.2.1
   flutter_rating_bar:
   provider:
   flutter_switch:

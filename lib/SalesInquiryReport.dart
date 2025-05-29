@@ -1284,8 +1284,7 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
                       ),
                       SizedBox(width: 10),
                       Icon(
-                        _expandedinquirys[index] ? Icons.expand_less : Icons
-                            .expand_more,
+                        _expandedinquirys[index] ? Icons.expand_less : Icons.expand_more,
                         color: Colors.black26,
                         size: 16,
                       ),

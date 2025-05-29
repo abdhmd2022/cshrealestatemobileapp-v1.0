@@ -236,14 +236,14 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
                   // 🔴 Count Badge
                   if (announcementCount > 0)
                     Positioned(
-                      top: -4,
+                      top: -8,
                       right: -4,
                       child: Container(
                         padding: const EdgeInsets.all(3),
                         decoration: BoxDecoration(
                           color: Colors.red,
                           shape: BoxShape.circle,
-                          border: Border.all(color: Colors.white, width: 1.5),
+                          border: Border.all(color: Colors.red, width: 1.5),
                         ),
                         constraints: const BoxConstraints(minWidth: 18, minHeight: 18),
                         child: Text(
@@ -263,34 +263,34 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
           ),
 
           // 🔔 Notification Icon (existing)
-          Padding(
-            padding: const EdgeInsets.only(right: 12.0),
-            child: InkWell(
-              onTap: () {
-                // Navigate to notifications screen
-              },
-              child: Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: LinearGradient(
-                    colors: [appbar_color.shade200, appbar_color.shade700],
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.2),
-                      blurRadius: 5,
-                      offset: const Offset(0, 2),
-                    )
-                  ],
-                ),
-                child: const Icon(Icons.notifications_active_outlined, color: Colors.white),
-              ),
-            ),
-          ),
+          // Padding(
+          //   padding: const EdgeInsets.only(right: 12.0),
+          //   child: InkWell(
+          //     onTap: () {
+          //       // Navigate to notifications screen
+          //     },
+          //     child: Container(
+          //       width: 40,
+          //       height: 40,
+          //       decoration: BoxDecoration(
+          //         shape: BoxShape.circle,
+          //         gradient: LinearGradient(
+          //           colors: [appbar_color.shade200, appbar_color.shade700],
+          //           begin: Alignment.topCenter,
+          //           end: Alignment.bottomCenter,
+          //         ),
+          //         boxShadow: [
+          //           BoxShadow(
+          //             color: Colors.black.withOpacity(0.2),
+          //             blurRadius: 5,
+          //             offset: const Offset(0, 2),
+          //           )
+          //         ],
+          //       ),
+          //       child: const Icon(Icons.notifications_active_outlined, color: Colors.white),
+          //     ),
+          //   ),
+          // ),
         ],
 
 

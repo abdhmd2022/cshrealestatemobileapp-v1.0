@@ -1302,21 +1302,28 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
 
   Widget _buildinquiryHeader(InquiryModel inquiry) {
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.start, // Align text and icon to the top
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Row(
-          children: [
-            Icon(FontAwesomeIcons.userCircle, color: Colors.teal, size: 22.0),
-            SizedBox(width: 8.0),
-            Text(
-              inquiry.customerName.toString(),
-              style: GoogleFonts.poppins(
-                fontSize: 18.0,
-                fontWeight: FontWeight.bold,
+        Expanded(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Icon(FontAwesomeIcons.userCircle, color: Colors.teal, size: 22.0),
+              SizedBox(width: 8.0),
+              Flexible(
+                child: Text(
+                  inquiry.customerName.toString(),
+                  style: GoogleFonts.poppins(
+                    fontSize: 18.0,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
+        SizedBox(width: 8),
         _getStatusBadge(inquiry.leadStatusCategory, inquiry.status),
       ],
     );

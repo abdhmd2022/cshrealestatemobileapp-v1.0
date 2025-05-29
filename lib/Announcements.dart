@@ -154,6 +154,8 @@ class _AnnouncementScreenState extends State<AnnouncementScreen> {
         ),
         child: Column(
           children: [
+
+
             // Horizontally swipeable cards
             Expanded(
               child: PageView.builder(

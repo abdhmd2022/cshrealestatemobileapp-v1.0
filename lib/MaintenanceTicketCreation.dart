@@ -1003,7 +1003,7 @@ late int loaded_flat_id;
                                               ),
                                               dayPeriodColor: MaterialStateColor.resolveWith((states) =>
                                               states.contains(MaterialState.selected) ? appbar_color : Colors.white),
-                                              helpTextStyle: TextStyle(
+                                              helpTextStyle: GoogleFonts.poppins(
                                                 color: appbar_color,
                                                 fontWeight: FontWeight.w600,
                                               ),
@@ -1046,7 +1046,7 @@ late int loaded_flat_id;
                                                 ),
                                                 dayPeriodColor: MaterialStateColor.resolveWith((states) =>
                                                 states.contains(MaterialState.selected) ? appbar_color : Colors.white),
-                                                helpTextStyle: TextStyle(
+                                                helpTextStyle: GoogleFonts.poppins(
                                                   color: appbar_color,
                                                   fontWeight: FontWeight.w600,
                                                 ),

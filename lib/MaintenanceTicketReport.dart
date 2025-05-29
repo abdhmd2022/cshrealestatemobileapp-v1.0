@@ -800,11 +800,14 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
               final area = building['area'];
               final state = area['state'];
 
+
               return {
                 'ticketNumber': "${apiTicket['id']}",
                 'unitNumber': flat['name'] ?? 'N/A',
                 'buildingName': building['name'] ?? 'N/A',
                 'emirate': state['name'] ?? 'N/A',
+                'availableFrom': apiTicket['available_from'] ?? '',
+                'availableTo': apiTicket['available_to'] ?? '',
                 /*'status': apiTicket['sub_tickets'].isNotEmpty
                     ? apiTicket['sub_tickets'][0]['followps'].isNotEmpty
                     ? apiTicket['sub_tickets'][0]['followps'][0]['status']['name']
@@ -1752,7 +1755,9 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
   }
 
   Widget _buildTicketHeader(Map<String, dynamic> ticket) {
-    return Row(
+    return Column(
+      children: [
+      Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
 
@@ -1772,6 +1777,13 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
 
         _getStatusBadge(ticket['status']),
       ],
+    ),
+
+
+
+
+
+      ],
     );
   }
 
@@ -1779,6 +1791,92 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+
+        if (ticket['availableFrom'] != null && ticket['availableFrom'].toString().isNotEmpty &&
+            ticket['availableTo'] != null && ticket['availableTo'].toString().isNotEmpty && is_admin)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 8.0),
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final availableFrom = DateFormat('dd-MMM-yyyy hh:mm a').format(DateTime.parse(ticket['availableFrom']));
+                final availableTo = DateFormat('dd-MMM-yyyy hh:mm a').format(DateTime.parse(ticket['availableTo']));
+                final combinedText = '$availableFrom → $availableTo';
+                final fitsInline = combinedText.length < (constraints.maxWidth / 7);
+
+                return Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                  decoration: BoxDecoration(
+                    color: Colors.red.withOpacity(0.05),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.red, width: 1),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+
+                      Text('Availability',
+                        style: GoogleFonts.poppins(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.red,
+                        ),),
+                      SizedBox(height: 3),
+
+
+                      Row(
+
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Icon(Icons.access_time_rounded, size: 18, color: Colors.red),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: fitsInline
+                                  ? [
+                                Text(
+                                  combinedText,
+                                  textAlign: TextAlign.center,
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w400,
+                                    color: Colors.red,
+                                  ),
+                                ),
+                              ]
+                                  : [
+                                Text(
+                                  availableFrom,
+                                  textAlign: TextAlign.center,
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w400,
+                                    color: Colors.red,
+                                  ),
+                                ),
+                                Text(
+                                  '→ $availableTo',
+                                  textAlign: TextAlign.center,
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w400,
+                                    color: Colors.red,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+
+                );
+              },
+            ),
+          ),
+
         _buildInfoRow('Unit:', ticket['unitNumber']),
         _buildInfoRow('Building:', '${ticket['buildingName']}, ${ticket['emirate']}'),
        /* _buildInfoRow('Emirate:', ticket['emirate']),*/
@@ -1788,7 +1886,12 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
               ? ticket['maintenanceTypesAll'].map((type) => type['type'] ?? 'Unknown').join(', ')
               : 'N/A',
         ),
-        _buildInfoRow('Date:', DateFormat('dd-MMM-yyyy').format(DateTime.parse(ticket['date']))),
+
+        _buildInfoRow('Submitted On:', DateFormat('dd-MMM-yyyy').format(DateTime.parse(ticket['date']))),
+
+
+
+
       ],
     );
   }

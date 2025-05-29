@@ -28,31 +28,61 @@ class _AnnouncementScreenState extends State<AnnouncementScreen> {
 
 
   Future<void> fetchAnnouncements() async {
+    const int pageSize = 10; // match your API's default page size
+    int currentPage = 1;
+    bool hasMore = true;
+
+    final DateTime now = DateTime.now();
+    final DateTime oneMonthAgo = now.subtract(Duration(days: 30));
+
+    List<Map<String, dynamic>> allValidAnnouncements = [];
+
     try {
-      final response = await http.get(
-        Uri.parse('$baseurl/master/Announcement'),
-        headers: {
-          'Authorization': 'Bearer $Company_Token',
-          'Content-Type': 'application/json',
-        },
-      );
+      while (hasMore) {
+        final response = await http.get(
+          Uri.parse('$baseurl/master/Announcement?page=$currentPage&size=$pageSize'),
+          headers: {
+            'Authorization': 'Bearer $Company_Token',
+            'Content-Type': 'application/json',
+          },
+        );
 
-      if (response.statusCode == 200) {
-        final Map<String, dynamic> jsonBody = json.decode(response.body);
-        final List<dynamic> apiData = jsonBody['data']['announcements'];
+        if (response.statusCode == 200) {
+          final Map<String, dynamic> jsonBody = json.decode(response.body);
+          final List<dynamic> pageData = jsonBody['data']['announcements'] ?? [];
 
-        setState(() {
-          announcements = apiData.map((a) => a as Map<String, dynamic>).toList();
+          if (pageData.isEmpty) break;
 
-          // Sort by latest created_at on top
-          announcements.sort((a, b) =>
-              DateTime.parse(b['created_at']).compareTo(DateTime.parse(a['created_at'])));
+          // Filter announcements that are not expired more than 1 month ago
+          final filtered = pageData.where((a) {
+            final expiryStr = a['expiry'];
+            if (expiryStr == null) return true; // if no expiry, include
+            final expiryDate = DateTime.tryParse(expiryStr);
+            return expiryDate != null && expiryDate.isAfter(oneMonthAgo);
+          }).map((a) => a as Map<String, dynamic>).toList();
 
-          isLoading = false;
-        });
-      } else {
-        throw Exception('Failed to load announcements');
+          allValidAnnouncements.addAll(filtered);
+
+          final meta = jsonBody['meta'];
+          final totalCount = meta?['totalCount'] ?? 0;
+
+          // Stop when we’ve fetched all records
+          final totalPages = (totalCount / pageSize).ceil();
+          currentPage++;
+          hasMore = currentPage <= totalPages;
+        } else {
+          throw Exception('Failed to load announcements');
+        }
       }
+
+      // Sort by latest created_at on top
+      allValidAnnouncements.sort((a, b) =>
+          DateTime.parse(b['created_at']).compareTo(DateTime.parse(a['created_at'])));
+
+      setState(() {
+        announcements = allValidAnnouncements;
+        isLoading = false;
+      });
     } catch (e) {
       print("Error fetching announcements: $e");
       setState(() => isLoading = false);

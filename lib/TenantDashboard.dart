@@ -36,11 +36,12 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
 
   }
   void loadAnnouncementCount() async {
-    final count = await fetchAnnouncementCount();
+    List<dynamic> announcements = await fetchAllValidAnnouncements();
     setState(() {
-      announcementCount = count;
+      announcementCount = announcements.length;
     });
   }
+
 
   Future<void> fetchDashboardData() async {
 
@@ -777,31 +778,60 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
       ),
     );
   }
-  Future<int> fetchAnnouncementCount() async {
-     String url = '$baseurl/master/Announcement'; // replace with your actual URL
-    final token = '$Company_Token'; // replace with your actual bearer token
+  Future<List<dynamic>> fetchAllValidAnnouncements() async {
+     String url = '$baseurl/master/Announcement'; // Replace with your actual URL
+    final String token = '$Company_Token'; // Replace with your actual token
+
+    int currentPage = 1;
+    int totalPages = 1;
+    List<dynamic> validAnnouncements = [];
 
     try {
-      final response = await http.get(
-        Uri.parse(url),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
-      );
+      while (currentPage <= totalPages) {
+        final response = await http.get(
+          Uri.parse('$url?page=$currentPage'),
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token',
+          },
+        );
 
-      if (response.statusCode == 200) {
-        final json = jsonDecode(response.body);
-        final count = json['meta']?['totalCount'] ?? 0;
-        return count;
-      } else {
-        print('Failed to load announcement count: ${response.statusCode}');
-        return 0;
+        if (response.statusCode == 200) {
+          final json = jsonDecode(response.body);
+          final List<dynamic> announcements = json['data']?['announcements'] ?? [];
+
+          // Filter valid ones (not expired till end of that day)
+          for (var a in announcements) {
+            final expiry = a['expiry'];
+            if (expiry != null) {
+              final expiryDate = DateTime.parse(expiry);
+              final now = DateTime.now();
+              final endOfExpiry = DateTime(expiryDate.year, expiryDate.month, expiryDate.day, 23, 59, 59);
+              if (endOfExpiry.isAfter(now)) {
+                validAnnouncements.add(a);
+              }
+            }
+          }
+
+          // Determine total pages
+          final meta = json['meta'];
+          if (meta != null && meta['totalCount'] != null && meta['size'] != null) {
+            final int totalCount = meta['totalCount'];
+            final int pageSize = meta['size'];
+            totalPages = (totalCount / pageSize).ceil();
+          }
+
+          currentPage++;
+        } else {
+          print('Failed to fetch announcements page $currentPage: ${response.statusCode}');
+          break;
+        }
       }
     } catch (e) {
       print('Error fetching announcements: $e');
-      return 0;
     }
+
+    return validAnnouncements;
   }
 
 }

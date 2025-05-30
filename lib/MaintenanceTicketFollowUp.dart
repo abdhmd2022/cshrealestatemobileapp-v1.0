@@ -149,10 +149,15 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
 
         print('follow up without image successfull');
 
-        /* selectedStatus = null;
-         selectedSubTicketId = null;
-         _remarksController.clear();
-         nextFollowupDate = null;*/
+        setState(() {
+          _amountController.clear();
+          selectedStatus = null;
+          selectedSubTicketId = null;
+          _remarksController.clear();
+          nextFollowupDate = null;
+          _signatureController.clear();
+          _attachment.clear();
+        });
 
         sendImageData(followupId);
 
@@ -1488,18 +1493,7 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
                               {
                                 _saveSignature(widget.ticketid,context);
                               }
-                            else if(_attachment.isEmpty)
-                            {
-                              String message = 'Attachment is missing';
-                              Fluttertoast.showToast(
-                                msg: message,
-                                toastLength: Toast.LENGTH_SHORT,
-                                gravity: ToastGravity.BOTTOM, // Change to CENTER or TOP if needed
-                                backgroundColor: Colors.black,
-                                textColor: Colors.white,
-                                fontSize: 16.0,
-                              );
-                            }
+
                             else
                               {
                                 sendFormData();

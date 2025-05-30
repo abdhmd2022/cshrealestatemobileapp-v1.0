@@ -2445,14 +2445,18 @@ class _ComplaintBottomSheetState extends State<ComplaintBottomSheet> {
                         ],
                       ),
                     ),
-                    Divider(height: 24),
 
-                    // Input
-                    _buildInputField(),
+                    if(!is_admin)...[
+                      Divider(height: 24),
 
-                    SizedBox(height: 12),
-                    _buildSubmitButton(),
-                    SizedBox(height: 8),
+                      // Input
+                      _buildInputField(),
+
+                      SizedBox(height: 12),
+                      _buildSubmitButton(),
+                      SizedBox(height: 8),
+                    ]
+
                   ],
                 )
 
@@ -2557,13 +2561,17 @@ class _ComplaintBottomSheetState extends State<ComplaintBottomSheet> {
                         ),
                       ),
 
-                    Divider(height: 24),
+                    if(!is_admin)...[
+                      Divider(height: 24),
 
-                    // Input + Button
-                    _buildInputField(),
-                    SizedBox(height: 12),
-                    _buildSubmitButton(),
-                    SizedBox(height: 8),
+                      // Input + Button
+                      _buildInputField(),
+                      SizedBox(height: 12),
+                      _buildSubmitButton(),
+                      SizedBox(height: 8),
+                    ]
+
+
                   ],
                 ),
 

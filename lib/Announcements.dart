@@ -21,10 +21,20 @@ class _AnnouncementScreenState extends State<AnnouncementScreen> {
   final CarouselController _carouselController = CarouselController();
   int _current = 0;
 
+  List<String> buildingNames = []; // All building names from announcements
+  String selectedBuilding = 'All'; // Default selection
+
+
   @override
   void initState() {
     super.initState();
     fetchAnnouncements();
+  }
+
+
+  List<Map<String, dynamic>> get filteredAnnouncements {
+    if (selectedBuilding == 'All') return announcements;
+    return announcements.where((a) => a['building']?['name'] == selectedBuilding).toList();
   }
 
 
@@ -97,10 +107,25 @@ class _AnnouncementScreenState extends State<AnnouncementScreen> {
       allValidAnnouncements.sort((a, b) =>
           DateTime.parse(b['created_at']).compareTo(DateTime.parse(a['created_at'])));
 
+      // Get unique building names from announcements
+      final uniqueBuildings = {
+        for (var a in allValidAnnouncements)
+          if (a['building']?['name'] != null) a['building']['name'].toString()
+      }.toList();
+
+      final pills = uniqueBuildings.length > 1
+          ? ['All', ...uniqueBuildings]
+          : uniqueBuildings; // No 'All' if only one building
+
       setState(() {
         announcements = allValidAnnouncements;
+        buildingNames = pills;
+        selectedBuilding = pills.first; // Default to first pill
         isLoading = false;
       });
+
+
+
     } catch (e) {
       print("Error fetching announcements: $e");
       setState(() => isLoading = false);
@@ -182,20 +207,66 @@ class _AnnouncementScreenState extends State<AnnouncementScreen> {
         child: Column(
           children: [
 
+            SizedBox(
+              height: 42,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                itemCount: buildingNames.length,
+                separatorBuilder: (_, __) => const SizedBox(width: 8),
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                itemBuilder: (context, index) {
+                  final name = buildingNames[index];
+                  final isSelected = name == selectedBuilding;
+
+                  return GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        selectedBuilding = name;
+                        _currentPage = 0;
+                        _pageController.jumpToPage(0);
+                      });
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: Colors.white, // ✅ always white background
+                        border: Border.all(
+                          color: isSelected ? appbar_color : Colors.grey.shade300,
+                          width: 1.5,
+                        ),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Center(
+                        child: Text(
+                          name,
+                          style: GoogleFonts.poppins(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: isSelected ? appbar_color : Colors.grey.shade600,
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+            const Divider(height: 25),
 
             // Horizontally swipeable cards
             Expanded(
               child: PageView.builder(
                 controller: _pageController,
                 scrollDirection: Axis.horizontal,
-                itemCount: announcements.length,
+            itemCount: filteredAnnouncements.length,
+            itemBuilder: (context, index) {
+              final a = filteredAnnouncements[index];
+              return _buildAnnouncementCard(context, a, index, isTablet);
+            },
                 onPageChanged: (index) {
                   setState(() => _currentPage = index);
                 },
-                itemBuilder: (context, index) {
-                  final a = announcements[index];
-                  return _buildAnnouncementCard(context, a, index, isTablet);
-                },
+
               ),
             ),
 
@@ -204,7 +275,7 @@ class _AnnouncementScreenState extends State<AnnouncementScreen> {
               padding: const EdgeInsets.only(bottom: 16),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: List.generate(announcements.length, (index) {
+                children: List.generate(filteredAnnouncements.length, (index) {
                   bool isActive = index == _currentPage;
                   return AnimatedContainer(
                     duration: const Duration(milliseconds: 300),
@@ -221,10 +292,7 @@ class _AnnouncementScreenState extends State<AnnouncementScreen> {
             ),
           ],
         ),
-
-
       ),
-
     );
   }
 

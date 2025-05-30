@@ -34,7 +34,12 @@ class _AnnouncementScreenState extends State<AnnouncementScreen> {
 
   List<Map<String, dynamic>> get filteredAnnouncements {
     if (selectedBuilding == 'All') return announcements;
-    return announcements.where((a) => a['building']?['name'] == selectedBuilding).toList();
+
+    return announcements.where((a) {
+      final building = a['building']?['name'];
+      final emirate = a['building']?['area']?['state']?['name'];
+      return '$building, $emirate' == selectedBuilding;
+    }).toList();
   }
 
 
@@ -107,10 +112,11 @@ class _AnnouncementScreenState extends State<AnnouncementScreen> {
       allValidAnnouncements.sort((a, b) =>
           DateTime.parse(b['created_at']).compareTo(DateTime.parse(a['created_at'])));
 
-      // Get unique building names from announcements
+      // Get unique building + emirate combinations from announcements
       final uniqueBuildings = {
         for (var a in allValidAnnouncements)
-          if (a['building']?['name'] != null) a['building']['name'].toString()
+          if (a['building']?['name'] != null && a['building']?['area']?['state']?['name'] != null)
+            '${a['building']['name']}, ${a['building']['area']['state']['name']}'
       }.toList();
 
       final pills = uniqueBuildings.length > 1
@@ -123,6 +129,7 @@ class _AnnouncementScreenState extends State<AnnouncementScreen> {
         selectedBuilding = pills.first; // Default to first pill
         isLoading = false;
       });
+
 
 
 

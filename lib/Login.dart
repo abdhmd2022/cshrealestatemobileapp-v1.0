@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:cshrealestatemobile/TenantDashboard.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:cshrealestatemobile/AdminDashboard.dart';
 import 'package:flutter/cupertino.dart';
@@ -66,6 +67,9 @@ class _LoginPageState extends State<Login> {
   Color _buttonColor = Colors.grey;
 
   bool isAdmin = false; // Toggle state
+
+  bool isOwner = false;
+
 
   final _formKey = GlobalKey<FormState>();
 
@@ -669,8 +673,9 @@ class _LoginPageState extends State<Login> {
                                 child: Column(
                                     children: [
                                       Container(
-                                        margin: EdgeInsets.symmetric(vertical: 20, horizontal: 50),
-                                        padding: EdgeInsets.all(8),
+                                        margin: const EdgeInsets.symmetric(vertical: 20, horizontal: 8),
+                                        padding: const EdgeInsets.all(12),
+                                        width: MediaQuery.of(context).size.width,
                                         decoration: BoxDecoration(
                                           color: Colors.white,
                                           borderRadius: BorderRadius.circular(30),
@@ -679,22 +684,39 @@ class _LoginPageState extends State<Login> {
                                               color: Colors.black26,
                                               blurRadius: 8,
                                               offset: Offset(0, 4),
-                                            )
+                                            ),
                                           ],
                                         ),
-                                        child: ToggleButtons(
-                                          isSelected: [!isAdmin, isAdmin],
-                                          onPressed: (index) => setState(() => isAdmin = index == 1),
-                                          borderRadius: BorderRadius.circular(30),
-                                          selectedColor: Colors.white,
-                                          color: Colors.black54,
-                                          fillColor: appbar_color,
+                                        child: Wrap(
+                                          alignment: WrapAlignment.center,
+                                          spacing: 8.0,
+                                          runSpacing: 12.0,
                                           children: [
-                                            Padding(padding: EdgeInsets.symmetric(horizontal: 20), child: Text("Tenant")),
-                                            Padding(padding: EdgeInsets.symmetric(horizontal: 20), child: Text("Admin")),
+                                            _buildToggleChip("Tenant", !isAdmin && !isOwner, () {
+                                              setState(() {
+                                                isAdmin = false;
+                                                isOwner = false;
+                                              });
+                                            }),
+                                            _buildToggleChip("Admin", isAdmin, () {
+                                              setState(() {
+                                                isAdmin = true;
+                                                isOwner = false;
+                                              });
+                                            }),
+                                            _buildToggleChip("Owner", isOwner, () {
+                                              Fluttertoast.showToast(
+                                                msg: "Owner access is under development",
+                                                toastLength: Toast.LENGTH_SHORT,
+                                                gravity: ToastGravity.BOTTOM,
+                                              );
+                                            }),
                                           ],
                                         ),
                                       ),
+
+
+
                                       Container(padding: EdgeInsets.only(top: 5),
                                         child: TextFormField(
                                           controller: emailController,
@@ -1187,4 +1209,30 @@ class _LoginPageState extends State<Login> {
                   ])
             ),
            )
-        );}}
+        );}
+  Widget _buildToggleChip(String label, bool isSelected, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        decoration: BoxDecoration(
+          color: isSelected ? appbar_color : Colors.white,
+          borderRadius: BorderRadius.circular(30),
+          border: Border.all(color: isSelected ? appbar_color : Colors.grey.withOpacity(0.5)),
+          boxShadow: isSelected
+              ? [BoxShadow(color: appbar_color.withOpacity(0.3), blurRadius: 6)]
+              : [],
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: isSelected ? Colors.white : Colors.black54,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
+    );
+  }
+
+}

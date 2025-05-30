@@ -1469,6 +1469,9 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
     );
   }
 
+
+
+
   Widget _buildTicketCard(Map<String, dynamic> ticket, int index) {
     return GestureDetector(
       onTap: () {
@@ -1551,45 +1554,15 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                       Icons.report_problem_outlined,
                       Colors.redAccent,
                           () {
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                              backgroundColor: Colors.white,
-                              title: Row(
-                                children: [
-                                  Icon(Icons.construction, color: Colors.orangeAccent),
-                                  SizedBox(width: 10),
-                                  Expanded(
-                                    child: Text(
-                                      "Under Development",
-                                      style: GoogleFonts.poppins(),
-                                      overflow: TextOverflow.ellipsis,
-                                      maxLines: 1,
-                                    ),
-                                  ),
-                                ],
+                            showModalBottomSheet(
+                              context: context,
+                              isScrollControlled: true,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
                               ),
-                              content: Text(
-                                "This feature is currently under development.",
-                                style: GoogleFonts.poppins(fontSize: 14),
-                                softWrap: true,
-                              ),
-                              actions: [
-                                TextButton(
-                                  child: Text(
-                                    "OK",
-                                    style: GoogleFonts.poppins(color: Colors.blue),
-                                  ),
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                ),
-                              ],
+                              builder: (_) => ComplaintBottomSheet(ticketId: ticket['ticketNumber']),
                             );
-                          },
-                        );
+
                       },
                     ),
 
@@ -2329,5 +2302,317 @@ Widget _buildDecentButtonWithLabel(String label, IconData icon, Color color,
   );
 }
 
+class ComplaintBottomSheet extends StatefulWidget {
+  final String ticketId;
+
+  const ComplaintBottomSheet({Key? key, required this.ticketId}) : super(key: key);
+
+  @override
+  State<ComplaintBottomSheet> createState() => _ComplaintBottomSheetState();
+}
+
+class _ComplaintBottomSheetState extends State<ComplaintBottomSheet> {
+  List<dynamic> complaintList = [];
+  bool isLoading = true;
+  bool isSubmitting = false;
+  final TextEditingController _controller = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchComplaintHistory();
+  }
+
+  Future<void> _fetchComplaintHistory() async {
+    final token = Company_Token;
+
+    final response = await http.get(
+      Uri.parse('$baseurl/maintenance/complaint/?ticket_id=${widget.ticketId}'),
+      headers: {'Authorization': 'Bearer $token'},
+    );
+
+    if (response.statusCode == 200) {
+      final json = jsonDecode(response.body);
+      setState(() {
+        complaintList = json['data']['complaints'] ?? [];
+        isLoading = false;
+      });
+    } else {
+      setState(() => isLoading = false);
+    }
+  }
+
+  Future<void> _submitComplaint() async {
+    final description = _controller.text.trim();
+    if (description.isEmpty) return;
+
+    setState(() => isSubmitting = true);
+    final token = Company_Token;
+
+    final response = await http.post(
+      Uri.parse('$baseurl/maintenance/complaint'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode({
+        "ticket_id": widget.ticketId,
+        "description": description,
+      }),
+    );
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      _controller.clear();
+      await _fetchComplaintHistory(); // Refresh the list
+    }
+
+    setState(() => isSubmitting = false);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isEmpty = !isLoading && complaintList.isEmpty;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      padding: EdgeInsets.only(
+        left: 20,
+        right: 20,
+        bottom: MediaQuery.of(context).viewInsets.bottom + 16,
+        top: 20,
+      ),
+      child: isEmpty
+          ? LayoutBuilder(
+        builder: (context, constraints) {
+          return SingleChildScrollView(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                minHeight: constraints.minHeight,
+              ),
+              child: IntrinsicHeight(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Header
+                    Row(
+                      children: [
+                        Icon(Icons.chat_rounded, color: appbar_color),
+                        SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            "Complaints",
+                            style: GoogleFonts.poppins(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.close, color: Colors.grey),
+                          onPressed: () => Navigator.pop(context),
+                        ),
+                      ],
+                    ),
+                    Divider(),
+
+
+
+                    // Empty State
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 32),
+                      child: Column(
+                        children: [
+                          Icon(Icons.inbox_outlined, size: 64, color: Colors.grey.shade300),
+                          SizedBox(height: 12),
+                          Text("No complaints yet", style: GoogleFonts.poppins(color: Colors.grey)),
+                        ],
+                      ),
+                    ),
+                    Divider(height: 24),
+
+                    // Input
+                    _buildInputField(),
+
+                    SizedBox(height: 12),
+                    _buildSubmitButton(),
+                    SizedBox(height: 8),
+                  ],
+                )
+
+              ),
+            ),
+          );
+        },
+      )
+
+
+          : LayoutBuilder(
+        builder: (context, constraints) {
+          return SingleChildScrollView(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                minHeight: constraints.minHeight,
+              ),
+              child: IntrinsicHeight(
+                child: Column(
+                  children: [
+                    // Header
+                    Row(
+                      children: [
+                        Icon(Icons.chat_rounded, color: appbar_color),
+                        SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            "Complaints",
+                            style: GoogleFonts.poppins(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.close, color: Colors.grey),
+                          onPressed: () => Navigator.pop(context),
+                        ),
+                      ],
+                    ),
+                    Divider(),
+
+                    // Complaint List
+                    if (isLoading)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 40),
+                        child: Center(child: CircularProgressIndicator.adaptive()),
+                      )
+                    else
+                      SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.3,
+                        child: ListView.separated(
+                          itemCount: complaintList.length,
+                          separatorBuilder: (_, __) => SizedBox(height: 12),
+                          itemBuilder: (context, index) {
+                            final item = complaintList[index];
+                            return Container(
+                              padding: EdgeInsets.all(14),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(16),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.04),
+                                    blurRadius: 6,
+                                    offset: Offset(0, 2),
+                                  )
+                                ],
+                              ),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Icon(Icons.comment_bank_rounded, color: appbar_color),
+                                  SizedBox(width: 12),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(item['description'] ?? '',
+                                            style: GoogleFonts.poppins(fontSize: 14)),
+                                        SizedBox(height: 6),
+                                        Container(
+                                          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                          decoration: BoxDecoration(
+                                            color: appbar_color.withOpacity(0.1),
+                                            borderRadius: BorderRadius.circular(12),
+                                          ),
+                                          child: Text(
+                                            DateFormat('dd-MMM-yyyy hh:mm a').format(
+                                              DateTime.parse(item['created_at'].toString()).toLocal(),
+                                            ),
+                                            style: TextStyle(fontSize: 12, color: appbar_color),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+
+                    Divider(height: 24),
+
+                    // Input + Button
+                    _buildInputField(),
+                    SizedBox(height: 12),
+                    _buildSubmitButton(),
+                    SizedBox(height: 8),
+                  ],
+                ),
+
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+  Widget _buildInputField() {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.grey.withOpacity(0.5), width: 1),
+        color: Colors.white,
+      ),
+      child: TextField(
+        controller: _controller,
+        maxLines: 3,
+        maxLength: 100,
+        style: GoogleFonts.poppins(fontSize: 14, color: Colors.black87),
+        decoration: InputDecoration(
+          counterText: '',
+          prefixIcon: Icon(Icons.mode_comment_outlined, color: appbar_color),
+          hintText: "Type your complaint here...",
+          hintStyle: GoogleFonts.poppins(color: Colors.grey.shade500),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
+          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          filled: true,
+          fillColor: Colors.white,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSubmitButton() {
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton.icon(
+        icon: Icon(Icons.send_rounded, color: Colors.white),
+        label: isSubmitting
+            ? SizedBox(
+          height: 20,
+          width: 20,
+          child: CircularProgressIndicator(
+            strokeWidth: 2,
+            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+          ),
+        )
+            : Text("Submit", style: GoogleFonts.poppins(fontSize: 16, color: Colors.white)),
+        onPressed: isSubmitting ? null : _submitComplaint,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: appbar_color,
+          padding: EdgeInsets.symmetric(vertical: 14),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        ),
+      ),
+    );
+  }
+
+
+
+}
 
 

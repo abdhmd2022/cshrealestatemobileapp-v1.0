@@ -472,37 +472,48 @@ class _MaintenanceStatusReportState extends State<MaintenanceStatusReport> {
 
 
   Future<void> fetchMaintenanceStatus() async {
-
-    print('fetching Maintenance status');
+    print('Fetching all maintenance statuses...');
     maintenanceStatuses.clear();
 
-    final url = '$baseurl/maintenance/status'; // Replace with your API endpoint
-    String token = 'Bearer $Company_Token'; // auth token for request
-
-    print('fetch url $url');
-    Map<String, String> headers = {
-      'Authorization': token,
-      "Content-Type": "application/json"
+    final baseUrl = '$baseurl/maintenance/status';
+    final headers = {
+      'Authorization': 'Bearer $Company_Token',
+      'Content-Type': 'application/json',
     };
+
+    int currentPage = 1;
+    bool hasMoreData = true;
+
     try {
-      final response = await http.get(Uri.parse(url),
-        headers: headers,);
-      if (response.statusCode == 200) {
+      while (hasMoreData) {
+        final response = await http.get(
+          Uri.parse('$baseUrl?page=$currentPage'),
+          headers: headers,
+        );
 
-        final data = json.decode(response.body);
+        if (response.statusCode == 200) {
+          final data = json.decode(response.body);
+          final List<dynamic> pageData = data['data']['maintenanceStatus'];
 
-        setState(() {
-          print('response ${response.body}');
-          maintenanceStatuses = data['data']['maintenanceStatus'];
-        });
-      } else {
-        throw Exception('Failed to load data');
+          print('Page $currentPage fetched, items: ${pageData.length}');
+
+          setState(() {
+            maintenanceStatuses.addAll(pageData);
+          });
+
+          // Stop if no more data
+          if (pageData.isEmpty || pageData.length < (data['data']['page_size'] ?? 20)) {
+            hasMoreData = false;
+          } else {
+            currentPage++;
+          }
+        } else {
+          throw Exception('Failed to load page $currentPage');
+        }
       }
     } catch (e) {
-
-      print('Error fetching data: $e');
+      print('Error while fetching paginated data: $e');
     }
-
     setState(() {
       isLoading = false;
     });

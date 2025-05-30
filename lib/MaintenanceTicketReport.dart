@@ -2325,21 +2325,35 @@ class _ComplaintBottomSheetState extends State<ComplaintBottomSheet> {
 
   Future<void> _fetchComplaintHistory() async {
     final token = Company_Token;
+    int currentPage = 1;
+    bool hasMore = true;
+    List<dynamic> allComplaints = [];
 
-    final response = await http.get(
-      Uri.parse('$baseurl/maintenance/complaint/?ticket_id=${widget.ticketId}'),
-      headers: {'Authorization': 'Bearer $token'},
-    );
+    while (hasMore) {
+      final response = await http.get(
+        Uri.parse('$baseurl/maintenance/complaint/?ticket_id=${widget.ticketId}&page=$currentPage'),
+        headers: {'Authorization': 'Bearer $token'},
+      );
 
-    if (response.statusCode == 200) {
-      final json = jsonDecode(response.body);
-      setState(() {
-        complaintList = json['data']['complaints'] ?? [];
-        isLoading = false;
-      });
-    } else {
-      setState(() => isLoading = false);
+      if (response.statusCode == 200) {
+        final json = jsonDecode(response.body);
+        final List<dynamic> complaints = json['data']['complaints'] ?? [];
+
+        if (complaints.isEmpty) {
+          hasMore = false;
+        } else {
+          allComplaints.addAll(complaints);
+          currentPage++;
+        }
+      } else {
+        hasMore = false;
+      }
     }
+
+    setState(() {
+      complaintList = allComplaints.reversed.toList(); // Latest first
+      isLoading = false;
+    });
   }
 
   Future<void> _submitComplaint() async {

@@ -2029,25 +2029,35 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                 return Container(
                   padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                   decoration: BoxDecoration(
-                    color: isClosed ? Colors.green.withOpacity(0.2) : Colors.grey.shade200,
+                    color: isClosed ? Colors.green.withOpacity(0.2) : Colors.orange.withOpacity(0.2),
+
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
+
+                      if (isClosed)
+                        Padding(
+                          padding: const EdgeInsets.only(right: 6.0),
+                          child:
+                          Icon(Icons.check_circle, color:Colors.green, size: 14),
+                        ),
+                      if (!isClosed)
+                        Padding(
+                          padding: const EdgeInsets.only(right: 6.0),
+                          child:
+                          Icon(Icons.access_time, color:Colors.orange, size: 14),
+                        ),
                       Text(
                         subTicket['type'] ?? 'Unknown',
                         style: GoogleFonts.poppins(
                           fontSize: 13,
-                          color: isClosed ? Colors.green : Colors.grey.shade800,
+                          color: isClosed ? Colors.green : Colors.orange.shade800,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
-                      if (isClosed)
-                        Padding(
-                          padding: const EdgeInsets.only(left: 6.0),
-                          child: Icon(Icons.check_circle, color: Colors.green, size: 14),
-                        ),
+
                     ],
                   ),
                 );

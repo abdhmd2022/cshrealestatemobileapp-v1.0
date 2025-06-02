@@ -792,59 +792,76 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
 
                       // Tenant & Flat Info
                       Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                        child: Wrap(
+                          runSpacing: 8,
+                          spacing: 16,
+                          crossAxisAlignment: WrapCrossAlignment.center,
                           children: [
-                            /*Text(
-                              tenantFlatDetails!["tenantName"],
-                              style: GoogleFonts.poppins(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold),
-                            ),*/
 
-                            if(tenantFlatDetails!["tenantMobile"].toString().isNotEmpty)...[
-                              Text(
-                                tenantFlatDetails!["tenantMobile"],
-                                style: GoogleFonts.poppins(fontSize: 12),
+
+                            if(widget.ticketid!='null')
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(Icons.confirmation_number, size: 16, color: Colors.teal),
+                                  SizedBox(width: 4),
+                                  Text(
+                                    "MT-${widget.ticketid}",
+                                    style: GoogleFonts.poppins(fontSize: 12),
+                                  ),
+                                ],
                               ),
-                              SizedBox(height: 4),
 
-                            ],
+                            if (tenantFlatDetails!["tenantMobile"].toString().isNotEmpty)
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(Icons.phone, size: 16, color: Colors.green),
+                                  SizedBox(width: 4),
+                                  Text(
+                                    tenantFlatDetails!["tenantMobile"],
+                                    style: GoogleFonts.poppins(fontSize: 12),
+                                  ),
+                                ],
+                              ),
 
                             Row(
+                              mainAxisSize: MainAxisSize.min,
                               children: [
-                                Icon(Icons.apartment,
-                                    size: 16, color: Colors.blue),
+                                Icon(Icons.apartment, size: 16, color: Colors.blue),
                                 SizedBox(width: 4),
                                 Text(
-                                  "${tenantFlatDetails!["flatName"]}",
+                                  tenantFlatDetails!["flatName"],
                                   style: GoogleFonts.poppins(fontSize: 12),
                                 ),
-                                SizedBox(width: 12),
-                                Icon(Icons.business,
-                                    size: 16, color: Colors.orange),
-                                SizedBox(width: 4),
-                                Expanded(
-                                  child: Text(
-                                    "${tenantFlatDetails!["buildingName"]}",
-                                    style:
-                                    GoogleFonts.poppins(fontSize: 12),
-                                    overflow: TextOverflow.ellipsis,
-                                  ))]),
-                            SizedBox(height: 4),
+                              ],
+                            ),
+
                             Row(
+                              mainAxisSize: MainAxisSize.min,
                               children: [
-                                Icon(Icons.location_on,
-                                    size: 16, color: Colors.red),
+                                Icon(Icons.business, size: 16, color: Colors.orange),
                                 SizedBox(width: 4),
-                                Expanded(
-                                  child: Text(
-                                    "${tenantFlatDetails!["areaName"]}, ${tenantFlatDetails!["stateName"]}",
-                                    style:
-                                    GoogleFonts.poppins(fontSize: 12),
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),],),],),),],),),)
+                                Text(
+                                  tenantFlatDetails!["buildingName"],
+                                  style: GoogleFonts.poppins(fontSize: 12),
+                                ),
+                              ],
+                            ),
+
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(Icons.location_on, size: 16, color: Colors.red),
+                                SizedBox(width: 4),
+                                Text(
+                                  "${tenantFlatDetails!["areaName"]}, ${tenantFlatDetails!["stateName"]}",
+                                  style: GoogleFonts.poppins(fontSize: 12),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),),],),),)
                  : Center(child: platformLoader()),
 
               /*SizedBox(height: 10),
@@ -1331,14 +1348,14 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
                       style: GoogleFonts.poppins(fontSize: 16,
                         fontWeight: FontWeight.bold,),
                     ),
-                    SizedBox(width: 2),
+                    /*SizedBox(width: 2),
                     Text(
                       '*', // Red asterisk for required field
                       style: GoogleFonts.poppins(
                         fontSize: 20,
                         color: Colors.red, // Red color for the asterisk
                       ),
-                    ),
+                    ),*/
 
                   ],
                 ),

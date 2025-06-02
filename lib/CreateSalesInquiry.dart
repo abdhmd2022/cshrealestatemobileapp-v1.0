@@ -706,7 +706,36 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
     print('entered whatsapp $_selectedCountryCodeWhatsapp${whatsappnocontroller.text}');
 
     // Constructing the JSON body
-    final Map<String, dynamic> requestBody = {
+
+    Map<String, dynamic> requestBody = {};
+
+    if(is_admin && !is_admin_from_api)
+      {
+        requestBody = {
+          "uuid": uuidValue,
+          "name": customernamecontroller.text,
+          "email": emailcontroller.text,
+          "mobile_no": '$_selectedCountryCode${customercontactnocontroller.text}',
+          "areas": areasIds,
+          "flatTypes": selectedUnitIds,
+          "status_id": selectedinquiry_status!.id,
+          "next_followup_date": formattedDate,
+          "property_type": selectedPropertyType,
+          "interest_type": interestTypes[selectedInterestType ?? 0],
+          "max_price": _currentRangeValues.end.round().toString(),
+          "min_price": _currentRangeValues.start.round().toString(),
+          "amenities": amenitiesList,
+          "description" : descriptioncontroller.text,
+          'activity_source_id' : selectedactivity_source!.id,
+          'whatsapp_no' : '$_selectedCountryCodeWhatsapp${whatsappnocontroller.text}',
+          'assigned_to' : user_id
+        };
+      }
+
+
+    if(is_admin && is_admin_from_api)
+    {
+      requestBody = {
       "uuid": uuidValue,
       "name": customernamecontroller.text,
       "email": emailcontroller.text,
@@ -722,11 +751,15 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
       "amenities": amenitiesList,
       "description" : descriptioncontroller.text,
       'activity_source_id' : selectedactivity_source!.id,
-      'whatsapp_no' : '$_selectedCountryCodeWhatsapp${whatsappnocontroller.text}'
+      'whatsapp_no' : '$_selectedCountryCodeWhatsapp${whatsappnocontroller.text}',
     };
 
+    }
 
-    print('create request body $requestBody');
+
+
+
+      print('create request body $requestBody');
 
     try {
       final response = await http.post(
@@ -2684,7 +2717,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                 children: [
                                                   // Column to display selected emirates
                                                   Expanded(
-                                                    child: selectedEmiratesString.isNotEmpty
+                                                    child: selectedEmiratesList.isNotEmpty
                                                         ? Column(
                                                       crossAxisAlignment: CrossAxisAlignment.start,
                                                       children: selectedEmiratesString.split(', ').map((emirate) {
@@ -2696,7 +2729,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                     )
                                                         : Text(
                                                       'Select Emirate', // Placeholder text when no emirates are selected
-                                                      style: GoogleFonts.poppins(fontSize: 16, color: Colors.grey[800]),
+                                                      style: GoogleFonts.poppins(fontSize: 16, color: Colors.grey),
                                                     ),
                                                   ),
                                                   // Down arrow icon
@@ -2755,7 +2788,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                           children: [
                                              // Column to display selected emirates
                                              Expanded(
-                                              child: selectedAreasString.isNotEmpty
+                                              child: selectedAreas.isNotEmpty
                                                   ? Column(
                                                 crossAxisAlignment: CrossAxisAlignment.start,
                                                 children: selectedAreasString.split(', ').map((emirate) {
@@ -2767,7 +2800,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                               )
                                                   : Text(
                                                 'Select Area(s)', // Placeholder text when no emirates are selected
-                                                style: GoogleFonts.poppins(fontSize: 16, color: Colors.grey[800]),
+                                                style: GoogleFonts.poppins(fontSize: 16, color: Colors.grey),
 
                                               ),
                                             ),
@@ -2842,6 +2875,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                     ),
                                                   ),
                                                   Icon(Icons.arrow_drop_down, color: Colors.grey),
+
                                                 ],
                                               ),
                                             ),

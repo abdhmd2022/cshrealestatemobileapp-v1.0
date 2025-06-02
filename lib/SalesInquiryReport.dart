@@ -649,6 +649,19 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
                                       ),
                                     )])]]))));}))]));});}
 
+  bool shouldRestrictAction(InquiryModel inquiry) {
+    if (is_admin && is_admin_from_api) return false; // Superadmin can always act
+
+    final createdBy = inquiry.created_by.trim().toLowerCase();
+    final assignedTo = inquiry.assigned_to.trim().toLowerCase();
+    final current = user_name.trim().toLowerCase();
+
+    return createdBy == current && assignedTo != current && assignedTo.isNotEmpty;
+  }
+
+
+
+
   Future<List<dynamic>> fetchLeadHistory(String id) async {
 
     leadFollowupHistoryList.clear();
@@ -684,67 +697,64 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
   DateTime endDate = DateTime(DateTime.now().year, DateTime.now().month + 1, 0); // ✅ Last day of current month
   bool showFilters = false; // ✅ Toggle filter visibility
 
-  Future<void> fetchInquiries({int page = 1}) async {
-    if (isFetchingMoreInquiries) return; // 🛡 Prevent double requests
+  Future<void> fetchInquiries() async {
+    setState(() {
+      isLoading = true;
+    });
 
-    if (page == 1) {
-      setState(() {
-        isLoading = true;
-      });
-    } else {
-      setState(() {
-        isFetchingMoreInquiries = true;
-      });
-    }
+    List<InquiryModel> allInquiries = [];
+    int currentPage = 1;
+    int totalPages = 1; // default to 1, will update after first call
 
-    print('Fetching inquiries page $page...');
-
-    final url = '$baseurl/lead?page=$page';
-    String token = 'Bearer $Company_Token'; // Auth token
-    print("Inquiry URL: $url");
-
+    String token = 'Bearer $Company_Token';
     Map<String, String> headers = {
       'Authorization': token,
       "Content-Type": "application/json"
     };
 
     try {
-      final response = await http.get(Uri.parse(url), headers: headers);
+      while (currentPage <= totalPages) {
+        print('Fetching inquiries page $currentPage...');
+        final url = '$baseurl/lead?page=$currentPage';
 
-      if (response.statusCode == 200) {
-        final jsonResponse = json.decode(response.body);
-        List<dynamic> allLeads = jsonResponse['data']['leads'] ?? [];
+        final response = await http.get(Uri.parse(url), headers: headers);
 
+        if (response.statusCode == 200) {
+          final jsonResponse = json.decode(response.body);
+          final List<dynamic> leads = jsonResponse['data']['leads'] ?? [];
 
+          List<dynamic> filteredLeads = leads;
+          if (is_admin && !is_admin_from_api) {
+            filteredLeads = leads.where((lead) {
+              final assignedTo = lead['assigned_to'];
+              final createdBy = lead['created_by'];
+              return assignedTo == user_id || createdBy == user_id;
+            }).toList();
+          }
 
-        if (is_admin && !is_admin_from_api) {
-          allLeads = allLeads.where((lead) => lead['assigned_to'] == user_id).toList();
-        }
+          final parsedLeads = filteredLeads
+              .map<InquiryModel>((lead) => InquiryModel.fromJson(lead))
+              .toList();
 
-        final parsedLeads = allLeads
-            .map<InquiryModel>((lead) => InquiryModel.fromJson(lead))
-            .toList()
-            .reversed
-            .toList();
+          allInquiries.addAll(parsedLeads);
 
+          // set totalPages from meta only once
+          if (currentPage == 1 && jsonResponse.containsKey('meta')) {
+            final meta = jsonResponse['meta'];
+            totalPages = (meta['totalCount'] / meta['size']).ceil();
+          }
 
-        if (page == 1) {
-          salesinquiry = parsedLeads;
+          currentPage++;
         } else {
-          salesinquiry.addAll(parsedLeads);
+          throw Exception('Failed to load page $currentPage');
         }
-
-        if (jsonResponse.containsKey('meta')) {
-          totalInquiryPages = (jsonResponse['meta']['totalCount'] / jsonResponse['meta']['size']).ceil();
-        }
-
-        _expandedinquirys = List.generate(salesinquiry.length, (index) => false);
-
-        filterInquiries();
-      } else {
-        print("Error: ${response.statusCode}");
-        throw Exception('Failed to load data');
       }
+
+      // Reverse once after all data is collected
+      salesinquiry = allInquiries;
+      _expandedinquirys = List.generate(salesinquiry.length, (index) => false);
+
+      filterInquiries();
     } catch (e) {
       print('Error fetching inquiries: $e');
     }
@@ -815,7 +825,7 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
         bool statusMatches = selectedStatus == null || selectedStatus == "All" || inquiry.status == selectedStatus;
 
         return withinDateRange && statusMatches;
-      }).toList();
+      }).toList().reversed.toList();
     });
 
     print("Total Filtered Inquiries: ${filteredInquiries.length}"); // ✅ Debugging
@@ -1086,7 +1096,7 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
                             scrollInfo.metrics.pixels >= scrollInfo.metrics.maxScrollExtent - 50 &&
                             inquiryCurrentPage < totalInquiryPages) {
                           inquiryCurrentPage++;
-                          fetchInquiries(page: inquiryCurrentPage);
+                          fetchInquiries();
                         }
                         return false;
                       },
@@ -1146,6 +1156,24 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
   }
 
   Widget _buildinquiryCard(InquiryModel inquiry, int index) {
+
+    final String createdBy = inquiry.created_by.trim().toLowerCase();
+    final String assignedTo = inquiry.assigned_to.trim().toLowerCase();
+    final String currentUser = user_name.trim().toLowerCase();
+
+
+
+    final bool shouldDisableActions =
+    // ✅ Super admin: full access, no disabling
+    !(is_admin && is_admin_from_api) &&
+        // 🔒 Admin with restrictions: apply filter
+        is_admin && !is_admin_from_api &&
+        createdBy == currentUser &&
+        assignedTo.isNotEmpty &&
+        assignedTo != currentUser;
+
+
+
     return GestureDetector(
       onTap: () {
         setState(() {
@@ -1171,6 +1199,9 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
             Divider(color: Colors.grey[300]),
             _buildinquiryDetails(inquiry),
 
+
+
+
             Container(
                 width: MediaQuery
                     .of(context)
@@ -1179,93 +1210,77 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
                 child: Center(
                     child: SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
-                      child: Row(
+                      child:
+
+
+
+                      Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
+                          // Show Follow Up and Transfer only if lead is Normal AND action is allowed
+                          if (inquiry.leadStatusCategory == 'Normal' && !shouldRestrictAction(inquiry)) ...[
+                            _buildDecentButton(
+                              'Follow Up',
+                              Icons.schedule,
+                              Colors.blue,
+                                  () {
+                                String name = inquiry.customerName;
+                                List<String> emiratesList = inquiry.emirate.split(',').map((e) => e.trim()).toList();
+                                List<String> areaList = inquiry.area.split(',').map((e) => e.trim()).toList();
+                                List<String> unittype = inquiry.unitType.split(',').map((e) => e.trim()).toList();
+                                String contactno = inquiry.contactNo;
+                                String whatsapp_no = inquiry.whatsapp_no;
+                                String email = inquiry.email;
+                                String id = inquiry.inquiryNo;
 
-                          if(inquiry.leadStatusCategory == 'Normal' )
-                            Row(children: [
-                              _buildDecentButton(
-                                'Follow Up',
-                                Icons.schedule,
-                                Colors.blue,
-                                    () {
-                                  String name = inquiry.customerName;
-                                  List<String> emiratesList = inquiry.emirate
-                                      .split(',').map((e) => e.trim()).toList();
-                                  List<String> areaList = inquiry.area.split(
-                                      ',').map((e) => e.trim()).toList();
-                                  List<String> unittype = inquiry.unitType
-                                      .split(',').map((e) => e.trim()).toList();
-                                  String contactno = inquiry.contactNo;
-                                  String whatsapp_no = inquiry.whatsapp_no;
+                                final RegExp regExp = RegExp(r"^\+\d{1,3}");
+                                String processedNumber = contactno.replaceAll(regExp, "");
 
-                                  String email = inquiry.email;
-                                  String id = inquiry.inquiryNo;
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => FollowupSalesInquiry(
+                                      id: id,
+                                      name: name,
+                                      unittype: unittype,
+                                      existingAreaList: areaList,
+                                      existingEmirateList: emiratesList,
+                                      contactno: contactno,
+                                      whatsapp_no: whatsapp_no,
+                                      email: email,
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                            SizedBox(width: 5),
+                            _buildDecentButton(
+                              'Transfer',
+                              Icons.swap_horiz,
+                              Colors.orange,
+                                  () => _showTransferDialog(context, inquiry.inquiryNo),
+                            ),
+                            SizedBox(width: 5),
+                          ],
 
-                                  final RegExp regExp = RegExp(r"^\+\d{1,3}");
-
-                                  // Remove the country code
-                                  String processedNumber = contactno.replaceAll(
-                                      regExp, "");
-
-                                  // Print the result
-                                  print(
-                                      'number $processedNumber'); // Output: 9876543210
-
-                                  Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(builder: (context) =>
-                                          FollowupSalesInquiry(id: id,
-                                              name: name,
-                                              unittype: unittype,
-                                              existingAreaList: areaList,
-                                              existingEmirateList: emiratesList,
-                                              contactno: contactno,
-                                              whatsapp_no: whatsapp_no,
-
-                                              email: email)));
-                                },
-                              ),
-                              SizedBox(width: 5),
-
-                              // hide for sometime
-                              _buildDecentButton(
-                                'Transfer',
-                                Icons.swap_horiz,
-                                Colors.orange,
-                                    () {
-                                  String name = inquiry.customerName;
-                                  String id = inquiry.inquiryNo;
-                                  String email = inquiry.email;
-                                  _showTransferDialog(context, id);
-
-                                },
-                              ),
-                              SizedBox(width: 5)
-                            ],),
-
+                          // View is always visible
                           _buildDecentButton(
                             'View',
                             Icons.visibility,
                             Colors.black87,
-                                () {
-                                  _showPopup(context,inquiry.inquiryNo);
-                            },
+                                () => _showPopup(context, inquiry.inquiryNo),
                           ),
 
-                          /*_buildDecentButton(
-                          'Delete',
-                          Icons.delete,
-                          Colors.red,
-                              () {
-                            // Delete action
-                            // Add your delete functionality here
-                          },
-                        ),*/
+
                         ],
-                      ),
+                      )
+
+
+
+
+
+
                     )
                 )
             ),
@@ -1346,56 +1361,153 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
     );
   }
 
+  void _showInfoPopover(BuildContext context, String assignedToName) {
+    showModalBottomSheet(
+      backgroundColor: Colors.white,
+      context: context,
+      isScrollControlled: true, // ✅ ensures full height if needed
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (_) {
+        return SafeArea(
+          child: SingleChildScrollView(
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).viewInsets.bottom,
+              top: 24,
+              left: 20,
+              right: 20,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.info_outline, color: Colors.redAccent, size: 28),
+                SizedBox(height: 12),
+                Text(
+                  "Restricted Actions",
+                  style: GoogleFonts.poppins(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black87,
+                  ),
+                ),
+                SizedBox(height: 8),
+                Text(
+                  "You created this lead but it's assigned to $assignedToName.\n\nOnly the assigned person can take actions like follow-up or transfer.",
+                  style: GoogleFonts.poppins(fontSize: 13, color: Colors.grey[800]),
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: 20),
+                ElevatedButton.icon(
+                  onPressed: () => Navigator.pop(context),
+                  icon: Icon(Icons.check_circle_outline),
+                  label: Text("Got it"),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.redAccent,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  ),
+                )
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+
   Widget _buildinquiryDetails(InquiryModel inquiry) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildInfoRow(Icons.numbers,"", inquiry.inquiryNo),
-        _buildInfoRow(FontAwesomeIcons.building,"", inquiry.unitType),
-        // _buildInfoRow('Email:', inquiry.email),
-        _buildInfoRow(FontAwesomeIcons.map, "",_formatAreasWithEmirates(inquiry.preferredAreas)),
-        _buildInfoRow(FontAwesomeIcons.clock, "",DateFormat('dd-MMM-yyyy').format(DateTime.parse(inquiry.lastFollowupDate))),
+        _buildInfoRow(Icons.numbers, "", inquiry.inquiryNo),
+        _buildInfoRow(FontAwesomeIcons.building, "", inquiry.unitType),
+        _buildInfoRow(FontAwesomeIcons.map, "", _formatAreasWithEmirates(inquiry.preferredAreas)),
+        _buildInfoRow(FontAwesomeIcons.clock, "", DateFormat('dd-MMM-yyyy').format(DateTime.parse(inquiry.lastFollowupDate))),
 
-        if(is_admin && is_admin_from_api)...[
+        // 👇 Case 1: Superadmin → show both
+        if (is_admin && is_admin_from_api) ...[
           SizedBox(height: 10),
           _buildCreatedAssignedCard(inquiry.created_by, inquiry.assigned_to),
         ]
 
-        // _buildInfoRow(FontAwesomeIcons.person,'Created By:', inquiry.created_by.toString()),
-        //_buildInfoRow('Assigned To (using for testing):', inquiry.assigned_to.toString()),
+        // 👇 Case 2: Restricted admin → created = current, assigned ≠ current → show only assigned
+        else if (is_admin && !is_admin_from_api &&
+            inquiry.created_by.trim().toLowerCase() == user_name.trim().toLowerCase() &&
+            inquiry.assigned_to.trim().isNotEmpty &&
+            inquiry.assigned_to.trim().toLowerCase() != user_name.trim().toLowerCase()) ...[
+          SizedBox(height: 10),
+          _buildCreatedAssignedCard(null, inquiry.assigned_to, showInfoIcon: true),
+        ]
+
+        // 👇 Case 3: created ≠ current, assigned = current → show only created
+        else if (is_admin && !is_admin_from_api &&
+              inquiry.created_by.trim().toLowerCase() != user_name.trim().toLowerCase() &&
+              inquiry.assigned_to.trim().toLowerCase() == user_name.trim().toLowerCase()) ...[
+            SizedBox(height: 10),
+            _buildCreatedAssignedCard(inquiry.created_by, ''), // assigned hidden
+          ]
       ],
     );
   }
-  Widget _buildCreatedAssignedCard(String createdBy, String assignedTo) {
+  Widget _buildCreatedAssignedCard(String? createdBy, String assignedTo, {bool showInfoIcon = false}) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
       margin: EdgeInsets.only(top: 0),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
         color: Colors.white.withOpacity(1),
-
       ),
       child: Wrap(
         spacing: 12,
         runSpacing: 5,
         children: [
-          _buildUserInfoBadge(
-            icon: Icons.person_outline,
-            label: "Created by",
-            value: createdBy,
-            bgColor: Colors.blue.shade50,
-            textColor: Colors.blue.shade800,
-            iconColor: Colors.blue,
-          ),
+          if (createdBy != null && createdBy.trim().isNotEmpty)
+            _buildUserInfoBadge(
+              icon: Icons.person_outline,
+              label: "Created by",
+              value: createdBy,
+              bgColor: Colors.blue.shade50,
+              textColor: Colors.blue.shade800,
+              iconColor: Colors.blue,
+            ),
 
-          _buildUserInfoBadge(
-            icon: Icons.assignment_ind_outlined,
-            label: "Assigned to",
-            value: assignedTo.isNotEmpty ? assignedTo : "Unassigned",
-            bgColor: assignedTo.isNotEmpty ? Colors.green.shade50 : Colors.orange.shade50,
-            textColor: assignedTo.isNotEmpty ? Colors.green.shade800 : Colors.orange.shade800,
-            iconColor: assignedTo.isNotEmpty ? Colors.green : Colors.orange,
-          ),
+          if (assignedTo != null && assignedTo.trim().isNotEmpty)
+            if (assignedTo.trim().isNotEmpty)
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _buildUserInfoBadge(
+                    icon: Icons.assignment_ind_outlined,
+                    label: "Assigned to",
+                    value: assignedTo,
+                    bgColor: Colors.green.shade50,
+                    textColor: Colors.green.shade800,
+                    iconColor: Colors.green,
+                  ),
+                  if (showInfoIcon)
+                    GestureDetector(
+                      onTap: () => _showInfoPopover(context, assignedTo),
+                      child: Container(
+                        margin: EdgeInsets.only(left: 6),
+                        padding: EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.red.shade50,
+                          boxShadow: [
+                            BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(0, 2))
+                          ],
+                        ),
+                        child: Icon(Icons.info_outline_rounded, size: 16, color: Colors.redAccent),
+                      ),
+                    ),
+                ],
+              ),
+
         ],
       ),
     );
@@ -1414,23 +1526,50 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
         color: bgColor,
         borderRadius: BorderRadius.circular(20),
       ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 16, color: iconColor),
-          SizedBox(width: 6),
-          Text(
-            "$label: ",
-            style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.w500, color: textColor),
-          ),
-          Text(
-            value,
-            style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.bold, color: textColor),
-          ),
-        ],
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          return ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.6),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(icon, size: 16, color: iconColor),
+                SizedBox(width: 6),
+                Flexible(
+                  child: Text.rich(
+                    TextSpan(
+                      children: [
+                        TextSpan(
+                          text: "$label: ",
+                          style: GoogleFonts.poppins(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                            color: textColor,
+                          ),
+                        ),
+                        TextSpan(
+                          text: value,
+                          style: GoogleFonts.poppins(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            color: textColor,
+                          ),
+                        ),
+                      ],
+                    ),
+                    softWrap: true,
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
       ),
     );
   }
+
+
 
 
   String _formatAreasWithEmirates(List<Map<String, dynamic>> preferredAreas) {

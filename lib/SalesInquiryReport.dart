@@ -1388,7 +1388,6 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
             iconColor: Colors.blue,
           ),
 
-
           _buildUserInfoBadge(
             icon: Icons.assignment_ind_outlined,
             label: "Assigned to",

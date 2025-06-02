@@ -35,6 +35,7 @@ late String flat_name;
 late String flatsJson ;
 late List<dynamic> flatsList;
 late String baseurl,adminurl,license_expiry,building;
+late bool is_admin_from_api;
 
 /// Load tokens from SharedPreferences
 Future<void> loadTokens() async {
@@ -52,6 +53,8 @@ Future<void> loadTokens() async {
   serial_id = prefs.getInt("serial_id") ?? 0;
   user_id = prefs.getInt("user_id") ?? 0;
   is_admin = prefs.getBool("is_admin") ?? false;
+  is_admin_from_api = prefs.getBool("is_admin_from_api") ?? false;
+
   flat_id = prefs.getInt("flat_id") ?? 0;
   flat_name = prefs.getString("flat_name") ?? '';
   flatsJson = prefs.getString("flats_list") ?? '';
@@ -71,6 +74,7 @@ Future<void> loadTokens() async {
   print("Loaded Company ID: $company_id");
   print("Loaded User ID: $user_id");
   print("Loading Admin Status: $is_admin");
+  print("Loading Admin from API Status: $is_admin_from_api");
   print("Loaded User Email: $user_email");
   print("Loaded User Name: $user_name");
   print("Loaded BaseURL: $baseurl");

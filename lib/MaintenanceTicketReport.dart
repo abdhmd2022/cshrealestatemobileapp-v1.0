@@ -766,7 +766,17 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
   int totalPages = 1;
   bool isFetchingMore = false;
 
+  void _filterSubTicketsIfNeeded(Map<String, dynamic> ticket, bool isAdmin, bool isAdminFromApi, int userId) {
+    if (isAdmin && !isAdminFromApi) {
+      final allSubs = ticket['sub_tickets'] ?? [];
+      ticket['sub_tickets'] = allSubs.where((sub) => sub['assigned_to'] == userId).toList();
+    }
+  }
+
   Future<void> fetchAllTickets() async {
+
+
+
     List<Map<String, dynamic>> allFormattedTickets = [];
     int page = 1;
     bool hasMore = true;
@@ -791,7 +801,25 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
           final Map<String, dynamic> responseBody = json.decode(response.body);
 
           if (responseBody['success'] == true) {
-            final List<dynamic> apiTickets = responseBody['data']['tickets'];
+            final List<dynamic> rawTickets = responseBody['data']['tickets'];
+            List<dynamic> apiTickets = [];
+
+            if (is_admin && !is_admin_from_api) {
+              for (var ticket in rawTickets) {
+                final List<dynamic> subtickets = ticket['sub_tickets'] ?? [];
+                final assignedSubtickets = subtickets
+                    .where((sub) => sub['assigned_to'] == user_id)
+                    .toList();
+
+                if (assignedSubtickets.isNotEmpty) {
+                  // Replace full subtickets with only assigned ones
+                  ticket['sub_tickets'] = assignedSubtickets;
+                  apiTickets.add(ticket);
+                }
+              }
+            } else {
+              apiTickets = rawTickets;
+            }
 
             final List<Map<String, dynamic>> formattedTickets = apiTickets.map((apiTicket) {
               final contractFlat = apiTicket['contract_flat'];
@@ -799,6 +827,8 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
               final building = flat['building'];
               final area = building['area'];
               final state = area['state'];
+
+              final List<dynamic> subTickets = apiTicket['sub_tickets'] ?? [];
 
 
               return {
@@ -808,13 +838,18 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                 'emirate': state['name'] ?? 'N/A',
                 'availableFrom': apiTicket['available_from'] ?? '',
                 'availableTo': apiTicket['available_to'] ?? '',
+                'sub_tickets': subTickets,
+
                 /*'status': apiTicket['sub_tickets'].isNotEmpty
                     ? apiTicket['sub_tickets'][0]['followps'].isNotEmpty
                     ? apiTicket['sub_tickets'][0]['followps'][0]['status']['name']
                     : 'N/A'
                     : 'N/A',*/
                 'status': (() {
-                  final subTickets = apiTicket['sub_tickets'] as List<dynamic>;
+
+
+                  // print("sub tickets -> $subTickets");
+
                   if (subTickets.isEmpty) return null;
 
                   bool allFollowupsMissing = true;
@@ -844,18 +879,19 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
 
                 'date': apiTicket['created_at']?.split('T')[0] ?? '',
 
-                'maintenanceTypesAll': (apiTicket['sub_tickets'] as List<dynamic>)
+                'maintenanceTypesAll': subTickets
                     .map((subTicket) {
                   final type = subTicket['type'];
                   return {
                     'subTicketId': subTicket['id'].toString(),
                     'type': type['name'],
                     'category': type['category'] ?? 'N/A',
+                    'followps': subTicket['followps'] ?? [], // ✅ Add followups
                   };
                 }).toList(),
 
-                'maintenanceTypesFiltered': (apiTicket['sub_tickets'] as List<dynamic>)
-                    .where((subTicket) {
+
+                'maintenanceTypesFiltered': subTickets.where((subTicket) {
                   final followUps = subTicket['followps'] as List<dynamic>;
                   if (followUps.isEmpty) return true; // Include if no followups
                   final firstFollowUp = followUps.first;
@@ -872,8 +908,13 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
 
 
 
-                'description': apiTicket['description'] ?? '',
-              };
+                'description': subTickets.map((sub) {
+                  final type = sub['type']?['name'] ?? 'Unknown';
+                  final desc = sub['description'] ?? 'No description';
+                  return '• $type: $desc';
+                }).join('\n'),              };
+
+
             }).toList();
 
             allFormattedTickets.addAll(formattedTickets);
@@ -1598,6 +1639,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
             if(is_admin && ticket['status']!='Close')
             Column(
             children: ticket['maintenanceTypesFiltered'].map<Widget>((subTicket) {
+
       return Container(
       margin: EdgeInsets.symmetric(vertical: 3, horizontal: 0),
       padding: EdgeInsets.symmetric(vertical: 14, horizontal: 18),
@@ -1748,7 +1790,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
           ],
         ),
 
-        _getStatusBadge(ticket['status']),
+        _getStatusBadge(ticket['status'] ?? "Pending"),
       ],
     ),
 
@@ -1856,14 +1898,12 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
         _buildInfoRow('Unit:', ticket['unitNumber']),
         _buildInfoRow('Building:', '${ticket['buildingName']}, ${ticket['emirate']}'),
        /* _buildInfoRow('Emirate:', ticket['emirate']),*/
-        _buildInfoRow_subtype(
-          'Type:',
-          (ticket['maintenanceTypesAll'] != null && ticket['maintenanceTypesAll'].isNotEmpty)
-              ? ticket['maintenanceTypesAll'].map((type) => type['type'] ?? 'Unknown').join(', ')
-              : 'N/A',
-        ),
+    if (ticket['maintenanceTypesAll'] != null && ticket['maintenanceTypesAll'].isNotEmpty)
+    _buildInfoRow_subtype('Type:', ticket['maintenanceTypesAll']),
 
-        _buildInfoRow('Submitted On:', DateFormat('dd-MMM-yyyy').format(DateTime.parse(ticket['date']))),
+
+
+    _buildInfoRow('Submitted On:', DateFormat('dd-MMM-yyyy').format(DateTime.parse(ticket['date']))),
 
 
 
@@ -1872,10 +1912,68 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
     );
   }
 
+  Widget buildSubticketDescriptions(List<dynamic> subtickets) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Descriptions:',
+          style: GoogleFonts.poppins(
+            fontWeight: FontWeight.bold,
+            color: Colors.grey[700],
+          ),
+        ),
+        const SizedBox(height: 6),
+        ...subtickets.map((sub) {
+          final type = sub['type']?['name'] ?? 'Unknown';
+          final desc = sub['description'] ?? 'No description';
+          return Container(
+            margin: const EdgeInsets.only(bottom: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            decoration: BoxDecoration(
+              color: Colors.grey.shade100,
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.03),
+                  blurRadius: 4,
+                  offset: Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(Icons.info_outline, size: 18, color: Colors.blueGrey),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: RichText(
+                    text: TextSpan(
+                      style: GoogleFonts.poppins(color: Colors.black87, fontSize: 13),
+                      children: [
+                        TextSpan(
+                          text: '$type: ',
+                          style: TextStyle(fontWeight: FontWeight.w600),
+                        ),
+                        TextSpan(text: desc),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        }),
+      ],
+    );
+  }
+
+
   Widget _buildInfoRow(String label, String value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start, // ✅ Align text top-to-top
         children: [
           Text(
             label,
@@ -1901,10 +1999,11 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
     );
   }
 
-  Widget _buildInfoRow_subtype(String label, String? value) {
+  Widget _buildInfoRow_subtype(String label, List<Map<String, dynamic>> subtickets) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Text(
             label,
@@ -1915,15 +2014,46 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
           ),
           SizedBox(width: 8.0),
           Expanded(
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Text(
-                value ?? 'N/A', // Ensure a fallback for null values
-                style: GoogleFonts.poppins(
-                  color: Colors.black87,
-                ),
-              ),
+            child: Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: subtickets.map<Widget>((subTicket) {
+                bool isClosed = false;
+                if (subTicket['followps'] != null &&
+                    subTicket['followps'] is List &&
+                    subTicket['followps'].isNotEmpty) {
+                  final firstFollowUp = subTicket['followps'][0];
+                  isClosed = firstFollowUp['status']['category'] == 'Close';
+                }
+
+                return Container(
+                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  decoration: BoxDecoration(
+                    color: isClosed ? Colors.green.withOpacity(0.2) : Colors.grey.shade200,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        subTicket['type'] ?? 'Unknown',
+                        style: GoogleFonts.poppins(
+                          fontSize: 13,
+                          color: isClosed ? Colors.green : Colors.grey.shade800,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      if (isClosed)
+                        Padding(
+                          padding: const EdgeInsets.only(left: 6.0),
+                          child: Icon(Icons.check_circle, color: Colors.green, size: 14),
+                        ),
+                    ],
+                  ),
+                );
+              }).toList(),
             ),
+
           ),
         ],
       ),
@@ -1981,7 +2111,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildInfoRow('Description:', ticket['description']),
+          buildSubticketDescriptions(ticket['sub_tickets'] ?? []),
         ],
       ),
     );

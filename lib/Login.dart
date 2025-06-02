@@ -27,6 +27,8 @@ class User {
   final String token;
   final int? companyId;
   final String? companyName; // Now added to extract company name
+  final String? is_admin; // Now added to extract company name
+
   final String? baseurl;
   final String? adminurl;
   final int? allowed_companies;
@@ -36,7 +38,7 @@ class User {
   final int? allowed_flats_per_company;
   final String? license_expiry;
 
-  User({required this.id, required this.name, required this.email, required this.token, this.companyId,
+  User({required this.id, required this.name, required this.email, required this.token, this.companyId,this.is_admin,
     this.companyName, this.baseurl,this.adminurl,this.allowed_buildings_per_company, this.allowed_companies,
   this.allowed_flats_per_company,this.allowed_tenants_per_company,this.allowed_users_per_company,this.license_expiry
   });
@@ -48,6 +50,7 @@ class User {
       email: json['email'] ?? "Unknown",
       token: json['accessToken'] ?? "",
       companyId: json['company_id'],
+      is_admin:  json["is_admin"],
       companyName: json['company'] != null ? json['company']['name'] : "Unknown Company", // Extracts company name correctly
       baseurl: json['company'] != null ? json['company']['hosting']['baseurl'] : "Unknown baseURL",
       adminurl: json['company'] != null ? json['company']['hosting']['adminurl'] : "Unknown adminurl",
@@ -204,11 +207,11 @@ class _LoginPageState extends State<Login> {
           await prefs.setString("scope", responseData["scope"]);
           await prefs.setString("user_name", firstUser.name);
           await prefs.setString("password", password);
-
           await prefs.setString("user_email", firstUser.email);
           await prefs.setString("company_token", firstUser.token);
           await prefs.setInt("company_id", firstUser.companyId ?? 0);
           await prefs.setBool('is_admin', isAdmin==true ? true : false);
+          await prefs.setBool('is_admin_from_api',firstUser.is_admin.toString().toLowerCase() == "true" ? true : false );
           await prefs.setString("baseurl", firstUser.baseurl ?? "");
           await prefs.setString("adminurl", firstUser.adminurl ?? "");
           await prefs.setString("license_expiry", firstUser.license_expiry ?? "");
@@ -244,8 +247,7 @@ class _LoginPageState extends State<Login> {
 
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) =>
-              isAdmin ? AdminDashboard() : TenantDashboard()),
+              MaterialPageRoute(builder: (context) => AdminDashboard()),
             );
           }
         }
@@ -411,6 +413,10 @@ class _LoginPageState extends State<Login> {
       await prefs.setString("company_token", token);
       await prefs.setInt("company_id", user['company_id'] ?? 0);
       await prefs.setBool('is_admin', false);
+
+      // no admin from api
+      await prefs.remove('is_admin_from_api');
+
       await prefs.setString("license_expiry", hosting['license_expiry']);
       await prefs.setString("baseurl", hosting['baseurl']);
       await prefs.setString("adminurl", hosting['adminurl']);

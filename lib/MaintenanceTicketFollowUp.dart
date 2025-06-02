@@ -548,6 +548,8 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
     final url = '$baseurl/maintenance/status'; // Replace with your API endpoint
     String token = 'Bearer $Company_Token'; // auth token for request
 
+
+
     Map<String, String> headers = {
       'Authorization': token,
       "Content-Type": "application/json"
@@ -600,16 +602,42 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
           var jsonData = responseBody['data']['ticket'];
 
           // Extract sub_tickets
-          var tickets = jsonData['sub_tickets'] as List;
+          final subTicketList = List<Map<String, dynamic>>.from(jsonData['sub_tickets'] ?? []);
 
           setState(() {
-            subTickets = tickets.map((ticket) {
+            subTickets = subTicketList.where((ticket) {
+              // ✅ Filter by assigned user if needed
+              if (is_admin && !is_admin_from_api && ticket['assigned_to'] != user_id) {
+                return false;
+              }
+
+              final followups = ticket['followps'] as List<dynamic>? ?? [];
+
+              if (followups.isNotEmpty) {
+                // Sort to get latest follow-up
+                followups.sort((a, b) {
+                  final dateA = DateTime.tryParse(a['created_at'] ?? '') ?? DateTime(2000);
+                  final dateB = DateTime.tryParse(b['created_at'] ?? '') ?? DateTime(2000);
+                  return dateB.compareTo(dateA); // Newest first
+                });
+
+                final latestFollowup = followups.first;
+                final latestCategory = latestFollowup['status']?['category']?.toString().toLowerCase();
+
+                // ✅ Exclude if closed
+                return latestCategory != 'close';
+              }
+
+              return true; // Keep if no followups
+            }).map((ticket) {
               return {
                 "id": ticket["id"],
-                "name": ticket["type"]["name"],
+                "name": ticket["type"]["name"] ?? "Unknown",
+                "description": ticket["description"] ?? "",
                 "followps": ticket["followps"] ?? []
               };
             }).toList();
+
 
             // Extract contract_flat details
             var contractFlat = jsonData['contract_flat'];

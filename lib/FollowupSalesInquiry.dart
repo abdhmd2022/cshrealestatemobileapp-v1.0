@@ -3529,7 +3529,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                               backgroundColor: Colors.white, // Button background color
                                               foregroundColor: Colors.black,
                                               shape: RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.circular(5), // Rounded corners
+                                                borderRadius: BorderRadius.circular(30), // Rounded corners
                                                 side: BorderSide(
                                                   color: Colors.grey, // Border color
                                                   width: 0.5, // Border width
@@ -3559,7 +3559,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
                                               backgroundColor: appbar_color, // Button background color
                                               foregroundColor: Colors.white,
                                               shape: RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.circular(5), // Rounded corners
+                                                borderRadius: BorderRadius.circular(30), // Rounded corners
                                                 side: BorderSide(
                                                   color: Colors.grey, // Border color
                                                   width: 0.5, // Border width

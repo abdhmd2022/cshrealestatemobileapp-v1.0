@@ -2285,7 +2285,7 @@ void _showTransferDialog(BuildContext context, String subTicketId) {
                   backgroundColor: appbar_color,
                   foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(30),
                   ),
                   padding:
                   EdgeInsets.symmetric(vertical: 10, horizontal: 15),

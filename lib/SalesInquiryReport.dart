@@ -353,7 +353,7 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
                     backgroundColor: appbar_color,
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(30),
                     ),
                     padding:
                     EdgeInsets.symmetric(vertical: 10, horizontal: 15),

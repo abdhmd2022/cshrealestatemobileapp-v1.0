@@ -178,6 +178,317 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
   String _hintTextWhatsapp = 'Enter Whatsapp No'; // Default hint text
 
+  void _openAmenitiesSelector(BuildContext context) {
+    TextEditingController searchController = TextEditingController();
+    List<Map<String, dynamic>> filteredList = List.from(amenities);
+    List<int> tempSelected = selectedAmenities.toList();
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setModalState) => Padding(
+            padding: MediaQuery.of(context).viewInsets,
+            child: Container(
+              height: MediaQuery.of(context).size.height * 0.75,
+              padding: EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Column(
+                children: [
+                  // 🔍 Search + Close
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: searchController,
+                          onChanged: (value) {
+                            setModalState(() {
+                              filteredList = amenities
+                                  .where((a) =>
+                                  a['name'].toLowerCase().contains(value.toLowerCase()))
+                                  .toList();
+                            });
+                          },
+                          style: GoogleFonts.poppins(fontSize: 15),
+                          decoration: InputDecoration(
+                            hintText: 'Search Amenities',
+                            hintStyle: GoogleFonts.poppins(color: Colors.black45),
+                            prefixIcon: Icon(Icons.search, color: appbar_color),
+                            suffixIcon: searchController.text.isNotEmpty
+                                ? IconButton(
+                              icon: Icon(Icons.clear, color: Colors.grey),
+                              onPressed: () {
+                                searchController.clear();
+                                setModalState(() {
+                                  filteredList = List.from(amenities);
+                                });
+                              },
+                            )
+                                : null,
+                            filled: true,
+                            fillColor: Colors.white,
+                            contentPadding: EdgeInsets.symmetric(vertical: 14, horizontal: 20),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(30),
+                              borderSide: BorderSide(color: Colors.grey.shade300),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(30),
+                              borderSide: BorderSide(color: appbar_color, width: 1.5),
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 8),
+                      IconButton(
+                        icon: Icon(Icons.close),
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                    ],
+                  ),
+
+                  SizedBox(height: 16),
+
+                  // ☑️ Select All
+                  CheckboxListTile(
+                    title: Text("Select All", style: GoogleFonts.poppins()),
+                    value: tempSelected.length == amenities.length,
+                    activeColor: appbar_color,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    onChanged: (checked) {
+                      setModalState(() {
+                        if (checked == true) {
+                          tempSelected = amenities.map<int>((a) => a['id']).toList();
+                        } else {
+                          tempSelected.clear();
+                        }
+                      });
+                    },
+                  ),
+
+                  Divider(),
+
+                  // ✅ Amenities List
+                  Expanded(
+                    child: ListView(
+                      children: filteredList.map((amenity) {
+                        final isSelected = tempSelected.contains(amenity['id']);
+                        return Container(
+                          margin: EdgeInsets.symmetric(vertical: 4),
+                          decoration: BoxDecoration(borderRadius: BorderRadius.circular(12)),
+                          child: CheckboxListTile(
+                            title: Text(amenity['name'], style: GoogleFonts.poppins()),
+                            value: isSelected,
+                            activeColor: appbar_color,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                            contentPadding: EdgeInsets.symmetric(horizontal: 20),
+                            onChanged: (checked) {
+                              setModalState(() {
+                                if (checked == true) {
+                                  tempSelected.add(amenity['id']);
+                                } else {
+                                  tempSelected.remove(amenity['id']);
+                                }
+                              });
+                            },
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ),
+
+                  // ✅ Confirm Button
+                  Padding(
+                    padding: const EdgeInsets.only(top: 12, bottom: 24),
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          setState(() {
+                            selectedAmenities = Set<int>.from(tempSelected);
+                          });
+                          Navigator.pop(context);
+                        },
+                        icon: Icon(Icons.check, color: Colors.white),
+                        label: Text("Select", style: GoogleFonts.poppins(color: Colors.white, fontWeight: FontWeight.w500)),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: appbar_color,
+                          padding: EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                          elevation: 4,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _openPreferencesSelector(BuildContext context) {
+    TextEditingController searchController = TextEditingController();
+    List<Map<String, dynamic>> filteredList = List.from(preferences);
+    List<int> tempSelected = selectedPreferences.toList();
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setModalState) => Padding(
+            padding: MediaQuery.of(context).viewInsets,
+            child: Container(
+              height: MediaQuery.of(context).size.height * 0.75,
+              padding: EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Column(
+                children: [
+                  // 🔍 Search + Close
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: searchController,
+                          onChanged: (value) {
+                            setModalState(() {
+                              filteredList = preferences
+                                  .where((p) => p['name'].toLowerCase().contains(value.toLowerCase()))
+                                  .toList();
+                            });
+                          },
+                          style: GoogleFonts.poppins(fontSize: 15),
+                          decoration: InputDecoration(
+                            hintText: 'Search Preferences',
+                            hintStyle: GoogleFonts.poppins(color: Colors.black45),
+                            prefixIcon: Icon(Icons.search, color: appbar_color),
+                            suffixIcon: searchController.text.isNotEmpty
+                                ? IconButton(
+                              icon: Icon(Icons.clear, color: Colors.grey),
+                              onPressed: () {
+                                searchController.clear();
+                                setModalState(() {
+                                  filteredList = List.from(preferences);
+                                });
+                              },
+                            )
+                                : null,
+                            filled: true,
+                            fillColor: Colors.white,
+                            contentPadding: EdgeInsets.symmetric(vertical: 14, horizontal: 20),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(30),
+                              borderSide: BorderSide(color: Colors.grey.shade300),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(30),
+                              borderSide: BorderSide(color: appbar_color, width: 1.5),
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 8),
+                      IconButton(
+                        icon: Icon(Icons.close),
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                    ],
+                  ),
+
+                  SizedBox(height: 16),
+
+                  // ☑️ Select All
+                  CheckboxListTile(
+                    title: Text("Select All", style: GoogleFonts.poppins()),
+                    value: tempSelected.length == preferences.length,
+                    activeColor: appbar_color,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    onChanged: (checked) {
+                      setModalState(() {
+                        if (checked == true) {
+                          tempSelected = preferences.map<int>((p) => p['id']).toList();
+                        } else {
+                          tempSelected.clear();
+                        }
+                      });
+                    },
+                  ),
+
+                  Divider(),
+
+                  // ✅ Preferences List
+                  Expanded(
+                    child: ListView(
+                      children: filteredList.map((pref) {
+                        final isSelected = tempSelected.contains(pref['id']);
+                        return Container(
+                          margin: EdgeInsets.symmetric(vertical: 4),
+                          decoration: BoxDecoration(borderRadius: BorderRadius.circular(12)),
+                          child: CheckboxListTile(
+                            title: Text(pref['name'], style: GoogleFonts.poppins()),
+                            value: isSelected,
+                            activeColor: appbar_color,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                            contentPadding: EdgeInsets.symmetric(horizontal: 20),
+                            onChanged: (checked) {
+                              setModalState(() {
+                                if (checked == true) {
+                                  tempSelected.add(pref['id']);
+                                } else {
+                                  tempSelected.remove(pref['id']);
+                                }
+                              });
+                            },
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ),
+
+                  // ✅ Confirm Button
+                  Padding(
+                    padding: const EdgeInsets.only(top: 12, bottom: 24),
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          setState(() {
+                            selectedPreferences = Set<int>.from(tempSelected);
+                          });
+                          Navigator.pop(context);
+                        },
+                        icon: Icon(Icons.check, color: Colors.white),
+                        label: Text("Select", style: GoogleFonts.poppins(color: Colors.white, fontWeight: FontWeight.w500)),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: appbar_color,
+                          padding: EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                          elevation: 4,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   void updateAreasDisplay() {
     areasToDisplay.clear();
 
@@ -727,301 +1038,370 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
   }
 
   void _openUnitTypeDropdown(BuildContext context) async {
+    TextEditingController searchController = TextEditingController();
+    List<Map<String, dynamic>> filteredList = List.from(unitTypes); // Make a fresh copy
+    List<Map<String, dynamic>> tempSelected = List.from(unitTypes.where((e) => e['isSelected'] == true));
+
     final selectedItems = await showModalBottomSheet<Map<String, List<dynamic>>>(
       context: context,
-      isDismissible: false, // Prevent closing by tapping outside
-      enableDrag: false,    // Prevent closing by dragging
-      builder: (BuildContext context) {
-        TextEditingController searchController = TextEditingController();
-        List<Map<String, dynamic>> filteredUnitTypes = List.from(unitTypes); // Make a copy of the original list
-
+      isScrollControlled: true,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
+      builder: (context) {
         return StatefulBuilder(
-          builder: (context, setState) {
-            return Column(
-              children: [
-                SizedBox(height: 10),
-                Text(
-                  "Unit Type(s)",
-                  style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: TextField(
-                    controller: searchController,
-                    onChanged: (query) {
-                      setState(() {
-                        filteredUnitTypes = unitTypes
-                            .where((unit) =>
-                            unit['label']
-                                .toLowerCase()
-                                .contains(query.toLowerCase()))
-                            .toList();
+          builder: (context, setModalState) => Padding(
+            padding: MediaQuery.of(context).viewInsets,
+            child: Container(
+              height: MediaQuery.of(context).size.height * 0.75,
+              padding: EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Column(
+                children: [
+                  // 🔍 Search Bar + Close Button
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: searchController,
+                          onChanged: (value) {
+                            setModalState(() {
+                              filteredList = unitTypes
+                                  .where((unit) =>
+                                  unit['label'].toLowerCase().contains(value.toLowerCase()))
+                                  .toList();
+                            });
+                          },
+                          style: GoogleFonts.poppins(fontSize: 15),
+                          decoration: InputDecoration(
+                            hintText: 'Search Unit Types',
+                            hintStyle: GoogleFonts.poppins(color: Colors.black45),
+                            prefixIcon: Icon(Icons.search, color: appbar_color),
+                            suffixIcon: searchController.text.isNotEmpty
+                                ? IconButton(
+                              icon: Icon(Icons.clear, color: Colors.grey),
+                              onPressed: () {
+                                searchController.clear();
+                                setModalState(() {
+                                  filteredList = List.from(unitTypes);
+                                });
+                              },
+                            )
+                                : null,
+                            filled: true,
+                            fillColor: Colors.white,
+                            contentPadding: EdgeInsets.symmetric(vertical: 14, horizontal: 20),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(30),
+                              borderSide: BorderSide(color: Colors.grey.shade300),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(30),
+                              borderSide: BorderSide(color: appbar_color, width: 1.5),
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 8),
+                      IconButton(
+                        icon: Icon(Icons.close),
+                        onPressed: () {
+
+                          Navigator.pop(context, {
+                            'ids': selectedUnitIds,
+                            'names': tempSelected.map((e) => e['label'] as String).toList()
+                          });
+                        }
+                      ),
+                    ],
+                  ),
+
+                  SizedBox(height: 16),
+
+                  // 🟦 Select All
+                  CheckboxListTile(
+                    title: Text("Select All", style: GoogleFonts.poppins(fontWeight: FontWeight.normal)),
+                    value: tempSelected.length == unitTypes.length,
+                    activeColor: appbar_color,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    onChanged: (checked) {
+                      setModalState(() {
+                        if (checked == true) {
+                          tempSelected = List.from(unitTypes);
+                        } else {
+                          tempSelected.clear();
+                        }
                       });
                     },
-                    decoration: InputDecoration(
-                      labelText: 'Search Unit Types',
-                      labelStyle: GoogleFonts.poppins(color: Colors.black54),
-                      prefixIcon: Icon(Icons.search),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
+                  ),
 
-                        borderSide: BorderSide(color: appbar_color.withOpacity(0.5)), // BlueGrey border color
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(color: appbar_color.withOpacity(0.5)),
-                        // BlueGrey focused border color
-                      ),
+                  Divider(),
+
+                  // ✅ Checkboxes List
+                  Expanded(
+                    child: ListView(
+                      children: filteredList.map((unit) {
+                        final isSelected = tempSelected.contains(unit);
+
+                        return Container(
+                          margin: EdgeInsets.symmetric(vertical: 4),
+                          decoration: BoxDecoration(borderRadius: BorderRadius.circular(12)),
+                          child: CheckboxListTile(
+                            title: Text(unit['label'], style: GoogleFonts.poppins()),
+                            value: isSelected,
+                            activeColor: appbar_color,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                            onChanged: (checked) {
+                              setModalState(() {
+                                if (checked == true) {
+                                  tempSelected.add(unit);
+                                } else {
+                                  tempSelected.remove(unit);
+                                }
+                              });
+                            },
+                          ),
+                        );
+                      }).toList(),
                     ),
                   ),
-                ),
-                // Conditionally show Select All only if there is no search query
-                if (searchController.text.isEmpty)
+
+                  // ✅ Done Button
                   Padding(
-                    padding: const EdgeInsets.only(top: 16.0),
-                    child: Align(
-                      alignment: Alignment.topRight,
-                      child: CheckboxListTile(
-                        title: Text("Select All",
-                          style: GoogleFonts.poppins(color: Colors.black),
-                        ),
-                        activeColor: appbar_color,
-
-                        value: isAllUnitsSelected,
-                        onChanged: (bool? value) {
+                    padding: const EdgeInsets.only(top: 12, bottom: 24),
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        onPressed: () {
                           setState(() {
-                            isAllUnitsSelected = value ?? false;
-                            // Update all unit types based on Select All
+                            selectedUnitIds = tempSelected.map((e) => e['id'] as int).toList();
                             for (var unit in unitTypes) {
-                              unit['isSelected'] = isAllUnitsSelected;
+                              unit['isSelected'] = tempSelected.contains(unit);
                             }
-                          });}))),
-                SizedBox(height: 15),
-                Expanded(
-                  child: ListView(
-                    children: filteredUnitTypes.map((unit) {
-                      return CheckboxListTile(
-                        title: Text(unit['label']),
-                        activeColor: appbar_color,
-                        value: unit['isSelected'],
-                        onChanged: (bool? value) {
-                          setState(() {
-                            unit['isSelected'] = value!;
-                            // If an individual unit is deselected, unselect 'Select All'
-                            if (!unit['isSelected']) {
-                              isAllUnitsSelected = false;
-                            }
-                            // If all units are selected, select 'Select All'
-                            if (unitTypes.every((u) => u['isSelected'])) {
-                              isAllUnitsSelected = true;
-                            }
+                            selectedUnitType = tempSelected.map((e) => e['label']).join(', ');
+                            isUnitSelected = selectedUnitIds.isNotEmpty;
                           });
+
+                          if (selectedUnitIds.isEmpty) {
+                            Navigator.pop(context, null);
+                          } else {
+                            Navigator.pop(context, {
+                              'ids': selectedUnitIds,
+                              'names': tempSelected.map((e) => e['label'] as String).toList()
+                            });
+                          }
                         },
-                      );
-                    }).toList(),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: appbar_color, // Button background color
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(5), // Rounded corners
-                        side: BorderSide(
-                          color: Colors.grey, // Border color
-                          width: 0.5, // Border width
+                        icon: Icon(Icons.check, color: Colors.white, size: 20),
+                        label: Text("Select", style: GoogleFonts.poppins(color: Colors.white, fontWeight: FontWeight.w500)),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: appbar_color,
+                          padding: EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                          elevation: 4,
                         ),
                       ),
                     ),
-                    onPressed: () {
-                      // Extract the IDs of all selected unit types
-                      selectedUnitIds = unitTypes
-                          .where((unit) => unit['isSelected'])
-                          .map((unit) => unit['id'] as int)
-                          .toList();
-
-                      // Extract names of selected items
-                      List<String> selectedNames = unitTypes
-                          .where((unit) => unit['isSelected'])
-                          .map((unit) => unit['label'] as String)
-                          .toList();
-
-                      if (selectedUnitIds.isEmpty) {
-                        Navigator.of(context).pop(null); // Return null if no selection
-                      } else {
-                        // Return both IDs and names
-                        Navigator.of(context).pop({'ids': selectedUnitIds, 'names': selectedNames});
-                      }
-                    },
-                    child: Text('OK'),
                   ),
-                ),
-              ],
-            );
-          },
+                ],
+              ),
+            ),
+          ),
         );
       },
     );
 
-    // Update the selected items and set the background color
+    // ✅ Handle Selection Results
     if (selectedItems != null && selectedItems.isNotEmpty) {
       setState(() {
         selectedUnitType = selectedItems['names']!.join(', ');
-        print('unit types id $selectedUnitIds');
-        isUnitSelected = true;  // Mark as selected
+        isUnitSelected = true;
       });
     } else {
       setState(() {
-        selectedUnitType = "Select Unit Types";  // Reset if no selection
-        isUnitSelected = false;  // Mark as not selected
+        selectedUnitType = "Select Unit Types";
+        isUnitSelected = false;
       });
     }
   }
 
   void _openEmirateDropdown(BuildContext context) async {
+    TextEditingController searchController = TextEditingController();
+    List<Map<String, dynamic>> filteredList = List.from(emirates);
+    List<Map<String, dynamic>> tempSelected = List.from(emirates.where((e) => e['isSelected'] == true));
+
     final selectedItems = await showModalBottomSheet<List<Map<String, dynamic>>>(
       context: context,
-      isDismissible: false,
-      enableDrag: false,
-      builder: (BuildContext context) {
-        TextEditingController searchController = TextEditingController();
-        filteredEmirates = List.from(emirates);
-        isAllEmiratesSelected = filteredEmirates!.every((a) => a['isSelected']);
-
+      isScrollControlled: true,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
+      builder: (context) {
         return StatefulBuilder(
-          builder: (context, setState) {
-            return Column(
-              children: [
-                SizedBox(height: 10),
-                Text(
-                  "Emirate(s)",
-                  style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: TextField(
-                    controller: searchController,
-                    onChanged: (query) {
-                      setState(() {
-                        filteredEmirates = emirates
-                            .where((emirate) => emirate['label']
-                            .toLowerCase()
-                            .contains(query.toLowerCase()))
-                            .toList();
+          builder: (context, setModalState) => Padding(
+            padding: MediaQuery.of(context).viewInsets,
+            child: Container(
+              height: MediaQuery.of(context).size.height * 0.75,
+              padding: EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Column(
+                children: [
+                  // 🔍 Search Bar + Close
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: searchController,
+                          onChanged: (value) {
+                            setModalState(() {
+                              filteredList = emirates
+                                  .where((e) => e['label'].toLowerCase().contains(value.toLowerCase()))
+                                  .toList();
+                            });
+                          },
+                          style: GoogleFonts.poppins(fontSize: 15),
+                          decoration: InputDecoration(
+                            hintText: 'Search Emirate(s)',
+                            hintStyle: GoogleFonts.poppins(color: Colors.black45),
+                            prefixIcon: Icon(Icons.search, color: appbar_color),
+                            suffixIcon: searchController.text.isNotEmpty
+                                ? IconButton(
+                              icon: Icon(Icons.clear, color: Colors.grey),
+                              onPressed: () {
+                                searchController.clear();
+                                setModalState(() {
+                                  filteredList = List.from(emirates);
+                                });
+                              },
+                            )
+                                : null,
+                            filled: true,
+                            fillColor: Colors.white,
+                            contentPadding: EdgeInsets.symmetric(vertical: 14, horizontal: 20),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(30),
+                              borderSide: BorderSide(color: Colors.grey.shade300),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(30),
+                              borderSide: BorderSide(color: appbar_color, width: 1.5),
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 8),
+                      IconButton(
+                        icon: Icon(Icons.close),
+                        onPressed: () {
+                          Navigator.pop(context, selectedEmiratesList.isEmpty ? null : selectedEmiratesList);
+
+                        }
+                      ),
+                    ],
+                  ),
+
+                  SizedBox(height: 16),
+
+                  // ☑️ Select All
+                  CheckboxListTile(
+                    title: Text("Select All", style: GoogleFonts.poppins()),
+                    value: tempSelected.length == emirates.length,
+                    activeColor: appbar_color,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    onChanged: (checked) {
+                      setModalState(() {
+                        if (checked == true) {
+                          tempSelected = List.from(emirates);
+                        } else {
+                          tempSelected.clear();
+                        }
                       });
                     },
-                    decoration: InputDecoration(
-                      labelText: 'Search Emirate(s)',
-                      labelStyle: GoogleFonts.poppins(color: Colors.black54),
-                      prefixIcon: Icon(Icons.search, color: Colors.black54),
-
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(color: Colors.black54),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(color: Colors.black54),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(color: appbar_color.withOpacity(0.5), width: 2.0),
-                      ),
-                    ),
-                    cursorColor: appbar_color,
                   ),
-                ),
-                CheckboxListTile(
-                  title: Text("Select All"),
-                  value: isAllEmiratesSelected,
-                  activeColor: appbar_color,
 
-                  onChanged: (bool? value) {
-                    setState(() {
-                      isAllEmiratesSelected = value ?? false;
+                  Divider(),
 
-                      // Update all emirates based on "Select All"
-                      for (var emirate in filteredEmirates!) {
-                        emirate['isSelected'] = isAllEmiratesSelected;
-                      }
-                    });
-                  },
-                ),
-                Expanded(
-                  child: ListView(
-                    children: filteredEmirates!.map((emirate) {
-                      return CheckboxListTile(
-                        activeColor: appbar_color,
-                        title: Text(emirate['label']),
-                        value: emirate['isSelected'],
-                        onChanged: (bool? value) {
+                  // ✅ List of Emirates
+                  Expanded(
+                    child: ListView(
+                      children: filteredList.map((emirate) {
+                        final isSelected = tempSelected.contains(emirate);
+
+                        return Container(
+                          margin: EdgeInsets.symmetric(vertical: 4),
+                          decoration: BoxDecoration(borderRadius: BorderRadius.circular(12)),
+                          child: CheckboxListTile(
+                            title: Text(emirate['label'], style: GoogleFonts.poppins()),
+                            value: isSelected,
+                            activeColor: appbar_color,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                            contentPadding: EdgeInsets.symmetric(horizontal: 20),
+                            onChanged: (checked) {
+                              setModalState(() {
+                                if (checked == true) {
+                                  tempSelected.add(emirate);
+                                } else {
+                                  tempSelected.remove(emirate);
+                                }
+                              });
+                            },
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ),
+
+                  // ✅ Done Button
+                  Padding(
+                    padding: const EdgeInsets.only(top: 12, bottom: 24),
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        onPressed: () {
                           setState(() {
-                            emirate['isSelected'] = value!;
+                            for (var e in emirates) {
+                              e['isSelected'] = tempSelected.contains(e);
+                            }
 
-                            // Update the "Select All" checkbox
-                            isAllEmiratesSelected = emirates.every((e) => e['isSelected']);
+                            selectedEmiratesList = List.from(tempSelected);
+                            selectedEmiratesString = selectedEmiratesList.map((e) => e['label']).join(', ');
 
-                            // Dynamically update the areas list
                             updateAreasDisplay();
                           });
+
+                          Navigator.pop(context, selectedEmiratesList.isEmpty ? null : selectedEmiratesList);
                         },
-                        contentPadding: EdgeInsets.symmetric(vertical: 0.0,horizontal: 20.0), // Adjust padding as needed
-                      );
-                    }).toList(),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: appbar_color,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(5),
-                        side: BorderSide(color: Colors.grey, width: 0.5),
+                        icon: Icon(Icons.check, color: Colors.white),
+                        label: Text("Select", style: GoogleFonts.poppins(color: Colors.white, fontWeight: FontWeight.w500)),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: appbar_color,
+                          padding: EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                          elevation: 4,
+                        ),
                       ),
                     ),
-                    onPressed: () {
-                      final selectedItems = emirates
-                          .where((emirate) => emirate['isSelected'])
-                          .map((emirate) => {
-                        'id': emirate['id'],
-                        'label': emirate['label'],
-                      })
-                          .toList();
-
-                      Navigator.of(context).pop(selectedItems.isEmpty ? null : selectedItems);
-                    },
-                    child: Text('OK'),
                   ),
-                ),
-              ],
-            );
-          },
+                ],
+              ),
+            ),
+          ),
         );
       },
     );
 
+    // 🔄 Handle result
     if (selectedItems != null && selectedItems.isNotEmpty) {
       setState(() {
         selectedEmiratesList = selectedItems;
-
-        // Update the selectedEmirates string
         selectedEmiratesString = selectedItems.map((item) => item['label'] as String).join(', ');
-
-        print('emirates list $selectedEmiratesList');
-
-        // Refresh areas to display
         updateAreasDisplay();
       });
     } else {
       setState(() {
         selectedEmiratesList.clear();
         selectedEmiratesString = "Select Emirate";
-
-        // Clear areas to display
         updateAreasDisplay();
       });
     }
@@ -1029,146 +1409,186 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
   // Area Dropdown based on selected emirates
 
   void _openAreaDropdown(BuildContext context) async {
-    updateAreasDisplay(); // Ensure areasToDisplay is updated before opening
+    updateAreasDisplay(); // Ensure latest data
+
+    TextEditingController searchController = TextEditingController();
+    List<Map<String, dynamic>> filteredList = List.from(areasToDisplay);
+    List<Map<String, dynamic>> tempSelected = List.from(areasToDisplay.where((a) => a['isSelected'] == true));
 
     final selectedItems = await showModalBottomSheet<List<Map<String, dynamic>>>(
       context: context,
-      isDismissible: false,
-      enableDrag: false,
-      builder: (BuildContext context) {
-        TextEditingController searchController = TextEditingController();
-         filteredAreas = List.from(areasToDisplay);
-        isAllAreasSelected = filteredAreas!.every((a) => a['isSelected']);
-
+      isScrollControlled: true,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
+      builder: (context) {
         return StatefulBuilder(
-          builder: (context, setState) {
-            return Column(
-              children: [
-                SizedBox(height: 10),
-                Text(
-                  "Select Area(s)",
-                  style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: TextField(
-                    controller: searchController,
-                    onChanged: (query) {
-                      setState(() {
-                        filteredAreas = areasToDisplay
-                            .where((area) => area['label']
-                            .toLowerCase()
-                            .contains(query.toLowerCase()))
-                            .toList();
-                      });
-                    },
-                    decoration: InputDecoration(
-                      labelText: 'Search Areas',
-                      labelStyle: GoogleFonts.poppins(color: Colors.black54),
+          builder: (context, setModalState) => Padding(
+            padding: MediaQuery.of(context).viewInsets,
+            child: Container(
+              height: MediaQuery.of(context).size.height * 0.75,
+              padding: EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Column(
+                children: [
+                  // 🔍 Search Bar + Close
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: searchController,
+                          onChanged: (value) {
+                            setModalState(() {
+                              filteredList = areasToDisplay
+                                  .where((a) => a['label'].toLowerCase().contains(value.toLowerCase()))
+                                  .toList();
+                            });
+                          },
+                          style: GoogleFonts.poppins(fontSize: 15),
+                          decoration: InputDecoration(
+                            hintText: 'Search Areas',
+                            hintStyle: GoogleFonts.poppins(color: Colors.black45),
+                            prefixIcon: Icon(Icons.search, color: appbar_color),
+                            suffixIcon: searchController.text.isNotEmpty
+                                ? IconButton(
+                              icon: Icon(Icons.clear, color: Colors.grey),
+                              onPressed: () {
+                                searchController.clear();
+                                setModalState(() {
+                                  filteredList = List.from(areasToDisplay);
+                                });
+                              },
+                            )
+                                : null,
+                            filled: true,
+                            fillColor: Colors.white,
+                            contentPadding: EdgeInsets.symmetric(vertical: 14, horizontal: 20),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(30),
+                              borderSide: BorderSide(color: Colors.grey.shade300),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(30),
+                              borderSide: BorderSide(color: appbar_color, width: 1.5),
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 8),
+                      IconButton(
+                        icon: Icon(Icons.close),
+                        onPressed: () {
 
-                      prefixIcon: Icon(Icons.search, color: Colors.black54),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(color: Colors.black54),
+                          Navigator.pop(context, selectedAreas.isEmpty ? null : selectedAreas);
+
+                        }
                       ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(color: Colors.black54),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(color: appbar_color.withOpacity(0.5), width: 2.0),
-                      ),
-                    ),
-                    cursorColor: appbar_color,
+                    ],
                   ),
-                ),
-                CheckboxListTile(
-                  title: Text("Select All"),
-                  value: isAllAreasSelected,
-                  activeColor: appbar_color,
 
-                  onChanged: (bool? value) {
-                    setState(() {
-                      isAllAreasSelected = value ?? false;
+                  SizedBox(height: 16),
 
-                      // Update all areas based on "Select All"
-                      for (var area in filteredAreas!) {
-                        area['isSelected'] = isAllAreasSelected;
-                      }
-                    });
-                  },
-                ),
-                Expanded(
-                  child: ListView(
-                    children: filteredAreas!.map((area) {
-                      String? emirateName;
-                      areas.forEach((key, value) {
-                        if (value.contains(area)) {
-                          emirateName = key;
+                  // ☑️ Select All
+                  CheckboxListTile(
+                    title: Text("Select All", style: GoogleFonts.poppins()),
+                    value: tempSelected.length == areasToDisplay.length,
+                    activeColor: appbar_color,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    onChanged: (checked) {
+                      setModalState(() {
+                        if (checked == true) {
+                          tempSelected = List.from(areasToDisplay);
+                        } else {
+                          tempSelected.clear();
                         }
                       });
-                      return CheckboxListTile(
-                        activeColor: appbar_color,
-                        title: Text('${area['label']} - ${emirateName ?? "Unknown"}'), // Label with emirate name
-                        value: area['isSelected'],
-                        onChanged: (bool? value) {
-                          setState(() {
-                            area['isSelected'] = value!;
-                            isAllAreasSelected = filteredAreas!.every((a) => a['isSelected']);
-                            updateSelectedAreasString(filteredAreas!);
-                          });
-                        },
-                        contentPadding: EdgeInsets.symmetric(vertical: 0.0,horizontal: 20.0), // Adjust padding as needed
-
-                      );
-                    }).toList(),
+                    },
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: appbar_color,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(5),
-                        side: BorderSide(color: Colors.grey, width: 0.5),
+
+                  Divider(),
+
+                  // ✅ List of Areas with Emirates
+                  Expanded(
+                    child: ListView(
+                      children: filteredList.map((area) {
+                        String? emirateName;
+                        areas.forEach((key, value) {
+                          if (value.contains(area)) emirateName = key;
+                        });
+                        final isSelected = tempSelected.contains(area);
+
+                        return Container(
+                          margin: EdgeInsets.symmetric(vertical: 4),
+                          decoration: BoxDecoration(borderRadius: BorderRadius.circular(12)),
+                          child: CheckboxListTile(
+                            title: Text('${area['label']} - ${emirateName ?? "Unknown"}',
+                                style: GoogleFonts.poppins()),
+                            value: isSelected,
+                            activeColor: appbar_color,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                            contentPadding: EdgeInsets.symmetric(horizontal: 20),
+                            onChanged: (checked) {
+                              setModalState(() {
+                                if (checked == true) {
+                                  tempSelected.add(area);
+                                } else {
+                                  tempSelected.remove(area);
+                                }
+                              });
+                            },
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ),
+
+                  // ✅ Confirm Button
+                  Padding(
+                    padding: const EdgeInsets.only(top: 12, bottom: 24),
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          setState(() {
+                            for (var a in areasToDisplay) {
+                              a['isSelected'] = tempSelected.contains(a);
+                            }
+                            selectedAreas = List.from(tempSelected);
+                            selectedAreasString = selectedAreas.map((e) => e['label']).join(', ');
+                          });
+
+                          Navigator.pop(context, selectedAreas.isEmpty ? null : selectedAreas);
+                        },
+                        icon: Icon(Icons.check, color: Colors.white),
+                        label: Text("Select", style: GoogleFonts.poppins(color: Colors.white, fontWeight: FontWeight.w500)),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: appbar_color,
+                          padding: EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                          elevation: 4,
+                        ),
                       ),
                     ),
-                    onPressed: () {
-                      final selectedItems = filteredAreas!
-                          .where((area) => area['isSelected'])
-                          .map((area) => {
-                        'id': area['id'],
-                        'label': area['label'],
-                      }).toList();
-
-                      Navigator.of(context).pop(selectedItems.isEmpty ? null : selectedItems);
-                    },
-                    child: Text('OK'),
                   ),
-                ),
-              ],
-            );
-          },
+                ],
+              ),
+            ),
+          ),
         );
       },
     );
 
+    // Handle result
     if (selectedItems != null && selectedItems.isNotEmpty) {
       setState(() {
         selectedAreas = selectedItems;
         selectedAreasString = selectedItems.map((item) => item['label'] as String).join(', ');
-
-        print('select areas $selectedAreas');
-
       });
     } else {
       setState(() {
         selectedAreas.clear();
         selectedAreasString = 'Select Area(s)';
-
       });
     }
   }
@@ -2126,49 +2546,50 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                   Padding(
                                     padding: EdgeInsets.only(top: 0, left: 20, right: 20, bottom: 0),
                                     child: GestureDetector(
-                                      onTap: () => _openUnitTypeDropdown(context), // Open the custom dropdown
-                                      child: TextFormField(
-                                        controller: TextEditingController(text: selectedUnitType),
-                                        decoration: InputDecoration(
-                                          floatingLabelStyle: GoogleFonts.poppins(
-                                            color: appbar_color, // Change label color when focused
-                                            fontWeight: FontWeight.normal,
-                                          ),
-                                          hintText: 'Select Unit Type(s)',
-                                          contentPadding: EdgeInsets.all(15),
-                                          fillColor: isUnitSelected ? Colors.transparent : Colors.transparent, // Set to black if selected
-                                          filled: true, // Ensure the field is filled but transparent or black based on isSelected
-                                          border: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(10),
-                                            borderSide: BorderSide(color: Colors.black54), // Black border
-                                          ),
-                                          enabledBorder: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(10),
-                                            borderSide: BorderSide(color: Colors.black54), // Black border when enabled
-                                          ),
-                                          disabledBorder: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(10),
-                                            borderSide: BorderSide(color: Colors.black54), // Black border when disabled
-                                          ),
-                                          focusedBorder: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(10),
-                                            borderSide: BorderSide(color:appbar_color), // Black focused border
-                                          ),
-                                          labelStyle: GoogleFonts.poppins(color: Colors.black),
-                                          hintStyle: GoogleFonts.poppins(color: Colors.black), // Hint text color (white for better contrast)
+                                      onTap: () => _openUnitTypeDropdown(context),
+                                      child: Container(
+                                        width: double.infinity,
+                                        padding: EdgeInsets.all(15),
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(10),
+                                          color: Colors.transparent,
+                                          border: Border.all(color: Colors.black54),
                                         ),
-                                        enabled: false, //// Disable direct editing
-                                        validator: (value) {
-                                          // If no unit type is selected, show error
-                                          bool isAnySelected = unitTypes.any((unit) => unit['isSelected']);
-                                          if (!isAnySelected) {
-                                            return 'Unit type is required';
-                                          }
-                                          return null; // No error
-                                        },
+                                        child: Row(
+                                          crossAxisAlignment: CrossAxisAlignment.center,
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            // ▼ Show selected unit types (one per line)
+                                            Expanded(
+                                              child: selectedUnitIds.isNotEmpty
+                                                  ? Column(
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: selectedUnitIds.map((id) {
+                                                  final name = unitTypes.firstWhere((u) => u['id'] == id)['label'];
+                                                  return Padding(
+                                                    padding: const EdgeInsets.symmetric(vertical: 2.0),
+                                                    child: Text(
+                                                      name,
+                                                      style: GoogleFonts.poppins(fontSize: 16, color: Colors.grey[800]),
+                                                    ),
+                                                  );
+                                                }).toList(),
+                                              )
+                                                  : Text(
+                                                'Select Unit Type(s)',
+                                                style: GoogleFonts.poppins(fontSize: 16, color: Colors.grey),
+                                              ),
+                                            ),
+
+                                            // ▼ Dropdown icon
+                                            Icon(Icons.arrow_drop_down, color: Colors.grey),
+                                          ],
+                                        ),
                                       ),
                                     ),
                                   ),
+
+
 
                                   /*Padding(padding: EdgeInsets.only(top:0,left: 20,right: 20,bottom: 0),
                                     child: TextFormField(
@@ -2269,13 +2690,13 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                       children: selectedEmiratesString.split(', ').map((emirate) {
                                                         return Text(
                                                           emirate, // Display each emirate on a new line
-                                                          style: GoogleFonts.poppins(fontSize: 16, color: Colors.grey),
+                                                          style: GoogleFonts.poppins(fontSize: 16, color: Colors.grey[800]),
                                                         );
                                                       }).toList(),
                                                     )
                                                         : Text(
                                                       'Select Emirate', // Placeholder text when no emirates are selected
-                                                      style: GoogleFonts.poppins(fontSize: 16, color: Colors.grey),
+                                                      style: GoogleFonts.poppins(fontSize: 16, color: Colors.grey[800]),
                                                     ),
                                                   ),
                                                   // Down arrow icon
@@ -2289,51 +2710,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                           ),
                                         )
 
-                                        /*Padding(
-                                        padding: EdgeInsets.only(top:0,left:20,right:20,bottom :0),
-                                        child: DropdownButtonFormField<dynamic>(
-                                          decoration: InputDecoration(
-                                            border: OutlineInputBorder(
-                                              borderSide: BorderSide(color: Colors.black),
-                                              borderRadius: BorderRadius.circular(10.0),
-                                            ),
-                                            focusedBorder: OutlineInputBorder(
-                                              borderSide: BorderSide(color: appbar_color),
-                                              borderRadius: BorderRadius.circular(10.0),
-                                            ),
-                                            enabledBorder: OutlineInputBorder(
-                                              borderRadius: BorderRadius.circular(10.0),
-                                              borderSide: BorderSide(color: Colors.black),
-                                            ),
-                                            contentPadding: EdgeInsets.symmetric(horizontal: 10),
-                                          ),
-
-                                          hint: Text('Select Emirate'), // Add a hint
-                                          value: selectedEmirate,
-                                          items: emirate.map((item) {
-                                            return DropdownMenuItem<dynamic>(
-                                              value: item,
-                                              child: Text(item),
-                                            );
-                                          }).toList(),
-                                          onChanged: (value) async {
-                                            selectedEmirate = value!;
-                                          },
-                                          onTap: ()
-                                          {
-                                            setState(() {
-                                              _isFocused_email = false;
-                                              _isFocus_name = false;
-                                            });
-                                          },
-                                          validator: (value) {
-                                            if (value == null || value.isEmpty) {
-                                              return 'Emirate is required'; // Error message
-                                            }
-                                            return null; // No error if a value is selected
-                                          },
-                                        ),
-                                      ),*/
                                       ],
                                     ),
                                   ),
@@ -2385,13 +2761,14 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                 children: selectedAreasString.split(', ').map((emirate) {
                                                   return Text(
                                                     emirate, // Display each emirate on a new line
-                                                    style: GoogleFonts.poppins(fontSize: 16, color: Colors.grey),
+                                                    style: GoogleFonts.poppins(fontSize: 16, color: Colors.grey[800]),
                                                   );
                                                 }).toList(),
                                               )
                                                   : Text(
                                                 'Select Area(s)', // Placeholder text when no emirates are selected
-                                                style: GoogleFonts.poppins(fontSize: 16, color: Colors.grey),
+                                                style: GoogleFonts.poppins(fontSize: 16, color: Colors.grey[800]),
+
                                               ),
                                             ),
                                             // Down arrow icon
@@ -2429,64 +2806,51 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                             ),
                                           ],
                                         ),
-                                        SizedBox(height: 5),
 
-                                        Container(
-                                          padding: EdgeInsets.symmetric(horizontal: 12),
-                                          margin: EdgeInsets.only(left: 0, right: 0, bottom: 10),
-                                          decoration: BoxDecoration(
-                                            color: Colors.white,
-
-                                            borderRadius: BorderRadius.circular(8),
-                                            border: Border.all(color: Colors.black54, width: 0.75),
+                                        Padding(
+                                          padding: EdgeInsets.only(left: 0, right: 00, bottom: 10),
+                                          child: GestureDetector(
+                                            onTap: () => _openAmenitiesSelector(context),
+                                            child: Container(
+                                              width: double.infinity,
+                                              padding: EdgeInsets.all(15),
+                                              decoration: BoxDecoration(
+                                                borderRadius: BorderRadius.circular(10),
+                                                color: Colors.transparent,
+                                                border: Border.all(color: Colors.black54),
+                                              ),
+                                              child: Row(
+                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                crossAxisAlignment: CrossAxisAlignment.center, // Align text and icon vertically
+                                                children: [
+                                                  // Column for each selected amenity or placeholder
+                                                  Expanded(
+                                                    child: selectedAmenities.isNotEmpty
+                                                        ? Column(
+                                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                                      children: selectedAmenities.map((id) {
+                                                        final name = amenities.firstWhere((a) => a['id'] == id)['name'];
+                                                        return Text(
+                                                          name,
+                                                          style: GoogleFonts.poppins(fontSize: 16, color: Colors.grey[800]),
+                                                        );
+                                                      }).toList(),
+                                                    )
+                                                        : Text(
+                                                      'Select Amenities',
+                                                      style: GoogleFonts.poppins(fontSize: 16, color: Colors.grey),
+                                                    ),
+                                                  ),
+                                                  Icon(Icons.arrow_drop_down, color: Colors.grey),
+                                                ],
+                                              ),
+                                            ),
                                           ),
-                                          child: MultiSelectDialogField(
-                                            items: amenities
-                                                .map((amenity) =>
-                                                MultiSelectItem<int>(amenity['id'], amenity['name']))
-                                                .toList(),
-
-                                            initialValue: selectedAmenities.toList(),
-                                            title: Text("Amenities"),
-                                            searchable: true,
-                                            selectedColor: appbar_color,
-                                            checkColor: Colors.white,
-                                            confirmText: Text(
-                                              "Confirm",
-
-                                              style: GoogleFonts.poppins(color: appbar_color), // Custom confirm button
-                                            ),
-                                            cancelText: Text(
-                                              "Cancel",
-                                              style: GoogleFonts.poppins(color: appbar_color), // Custom cancel button
-                                            ),
-                                            buttonIcon: Icon(Icons.arrow_drop_down, color: Colors.black54),
-                                            buttonText: Text(
-                                              "Select Amenities",
-                                              style: GoogleFonts.poppins(color: Colors.black54, fontSize: 16),
-                                            ),
-                                            onConfirm: (values) {
-                                              setState(() {
-                                                selectedAmenities = Set<int>.from(values);
-                                              });
-                                            },
+                                        )
 
 
-
-                                            chipDisplay: MultiSelectChipDisplay(
-                                              items: selectedAmenities
-                                                  .map((id) => MultiSelectItem<int>(
-                                                  id, amenities.firstWhere((item) => item['id'] == id)['name']))
-                                                  .toList(),
-                                              onTap: (value) {
-                                                setState(() {
-                                                  selectedAmenities.remove(value);
-                                                });
-                                              },
-                                            ),
-                                            decoration: BoxDecoration(
-                                              border: Border.all(color: Colors.transparent),
-                                            )))])),
+                                      ])
+                                  ),
 
                                   Container(
                                     padding: const EdgeInsets.only(left: 20.0, right: 20, top: 0),
@@ -2511,61 +2875,55 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                             ),
                                           ],
                                         ),
-                                    SizedBox(height: 5),
 
-                                    Container(
-                                      padding: EdgeInsets.symmetric(horizontal: 12),
-                                      margin: EdgeInsets.only(left: 0, right: 0, bottom: 10),
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius: BorderRadius.circular(8),
-                                        border: Border.all(color: Colors.black54, width: 0.75),
-                                      ),
-                                      child:  MultiSelectDialogField(
-                                        items: preferences
-                                            .map((amenity) =>
-                                            MultiSelectItem<int>(amenity['id'], amenity['name']))
-                                            .toList(),
-                                        initialValue: selectedPreferences.toList(),
-                                        title: Text("Preference"),
-                                        searchable: true,
-                                        selectedColor: appbar_color,
-                                        checkColor: Colors.white,
-                                        confirmText: Text(
-                                          "Confirm",
-                                          style: GoogleFonts.poppins(color: appbar_color),
-                                        ),
-                                        cancelText: Text(
-                                          "Cancel",
-                                          style: GoogleFonts.poppins(color: appbar_color),
-                                        ),
-                                        buttonIcon: Icon(Icons.arrow_drop_down, color: Colors.black54),
-                                        buttonText: Text(
-                                          "Select Preferences",
-                                          style: GoogleFonts.poppins(color: Colors.black54, fontSize: 16),
-                                        ),
-                                        onConfirm: (values) {
-                                          setState(() {
-                                            selectedPreferences = Set<int>.from(values);
-                                          });
-                                        },
-                                        chipDisplay: MultiSelectChipDisplay(
 
-                                          items: selectedPreferences
-                                              .map((id) => MultiSelectItem<int>(
-                                              id,
-                                              preferences
-                                                  .firstWhere((feature) => feature['id'] == id)['name']))
-                                              .toList(),
-                                          onTap: (value) {
-                                            setState(() {
-                                              selectedPreferences.remove(value);
-                                            });
-                                          },
-                                        ),
-                                        decoration: BoxDecoration(
-                                          border: Border.all(color: Colors.transparent),
-                                        )))])),
+
+
+
+
+                                        Padding(
+                                          padding: EdgeInsets.only(top: 0, left: 0, right: 0, bottom: 10),
+                                          child: GestureDetector(
+                                            onTap: () => _openPreferencesSelector(context),
+                                            child: Container(
+                                              width: double.infinity,
+                                              padding: EdgeInsets.all(15),
+                                              decoration: BoxDecoration(
+                                                borderRadius: BorderRadius.circular(10),
+                                                color: Colors.transparent,
+                                                border: Border.all(color: Colors.black54),
+                                              ),
+                                              child: Row(
+                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                crossAxisAlignment: CrossAxisAlignment.center, // To align icon top with text
+                                                children: [
+                                                  // Column of selected preferences or placeholder
+                                                  Expanded(
+                                                    child: selectedPreferences.isNotEmpty
+                                                        ? Column(
+                                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                                      children: selectedPreferences.map((id) {
+                                                        final name = preferences.firstWhere((p) => p['id'] == id)['name'];
+                                                        return Text(
+                                                          name,
+                                                          style: GoogleFonts.poppins(fontSize: 16, color: Colors.grey[800]),
+                                                        );
+                                                      }).toList(),
+                                                    )
+                                                        : Text(
+                                                      'Select Preferences',
+                                                      style: GoogleFonts.poppins(fontSize: 16, color: Colors.grey),
+                                                    ),
+                                                  ),
+                                                  Icon(Icons.arrow_drop_down, color: Colors.grey),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        )
+
+                                      ])),
+
 
                                   Container(
                                     padding: const EdgeInsets.only(left: 20.0, right: 20, top: 0),
@@ -2921,7 +3279,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                 backgroundColor: Colors.white, // Button background color
                                                 foregroundColor: Colors.black,
                                                 shape: RoundedRectangleBorder(
-                                                  borderRadius: BorderRadius.circular(5), // Rounded corners
+                                                  borderRadius: BorderRadius.circular(30), // Rounded corners
                                                   side: BorderSide(
                                                     color: Colors.grey, // Border color
                                                     width: 0.5, // Border width
@@ -2993,7 +3351,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                 backgroundColor: appbar_color, // Button background color
                                                 foregroundColor: Colors.white,
                                                 shape: RoundedRectangleBorder(
-                                                  borderRadius: BorderRadius.circular(5), // Rounded corners
+                                                  borderRadius: BorderRadius.circular(30), // Rounded corners
                                                   side: BorderSide(
                                                     color: Colors.grey, // Border color
                                                     width: 0.5, // Border width

@@ -102,7 +102,7 @@ class InquiryModel {
 
     final created_by = (json['created_user'] as Map<String, dynamic>?)?['name'] ?? 'N/A';
 
-    final assigned_to = (json['assigned_to_user'] as Map<String, dynamic>?)?['name'] ?? 'N/A';
+    final assigned_to = (json['assigned_to_user'] as Map<String, dynamic>?)?['name'] ?? '';
 
     if (leadsFollowup != null && leadsFollowup.isNotEmpty) {
 
@@ -129,8 +129,8 @@ class InquiryModel {
       contactNo: json['mobile_no'] ?? 'N/A',
       whatsapp_no : json['whatsapp_no'] ?? 'N/A',
       email: json['email'] ?? 'N/A',
-      created_by: created_by ?? 'N/A',
-      assigned_to: assigned_to ?? 'N/A',
+      created_by: created_by ?? '',
+      assigned_to: assigned_to ?? '',
       lastFollowupRemarks: lastFollowupRemarks,
       lastFollowupDate: lastFollowupDate ,
       // color: leadStatusColor,
@@ -169,222 +169,7 @@ class InquiryModel {
   }
 }
 
-void _showTransferDialog(BuildContext context, String inquiryId) {
-  String? selectedUserId;
-  List<Map<String, dynamic>> users = [];
-  bool isLoading = true;
 
-  // Fetch User List
-  Future<void> fetchUsers(StateSetter setState) async {
-    try {
-      final response = await http.get(
-        Uri.parse("$baseurl/user"),
-        headers: {
-          'Authorization': 'Bearer $Company_Token',
-          'Content-Type': 'application/json',
-        },
-      );
-
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        if (data['success'] == true) {
-          final List<dynamic> usersJson = data['data']['users'];
-
-          users = usersJson
-              .where((user) => user['id'] != user_id) // 👈 Exclude current user
-              .map((userJson) {
-            return {
-              'id': userJson['id'].toString(),
-              'name': userJson['name'],
-            };
-          }).toList();
-        }
-      }
-    } catch (e) {
-      print("Error fetching users: $e");
-    } finally {
-      setState(() {
-        isLoading = false;
-      });
-    }
-  }
-
-  // Show Dialog
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return StatefulBuilder(
-        builder: (context, setState) {
-          // Fetch only once after first build
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (isLoading) fetchUsers(setState);
-          });
-
-          return AlertDialog(
-            backgroundColor: Colors.white,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12.0),
-            ),
-            title: Text(
-              "Transfer Inquiry",
-              style: GoogleFonts.poppins(
-                fontWeight: FontWeight.w500,
-                color: Colors.black,
-              ),
-            ),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (isLoading)
-                  Center(
-                    child: Platform.isIOS
-                        ? CupertinoActivityIndicator(radius: 15)
-                        : CircularProgressIndicator(
-                      strokeWidth: 3,
-                      valueColor:
-                      AlwaysStoppedAnimation<Color>(appbar_color),
-                    ),
-                  )
-                else if (users.isEmpty)
-                  Text(
-                    "No users available.",
-                    style: GoogleFonts.poppins(color: Colors.black87),
-                  )
-                else
-                  DropdownButtonFormField<String>(
-                    value: selectedUserId,
-                    isExpanded: true,
-                    decoration: InputDecoration(
-                      labelText: "Select User",
-                      labelStyle: GoogleFonts.poppins(color: Colors.grey),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide:
-                        BorderSide(color: Colors.grey.shade400, width: 1),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide:
-                        BorderSide(color: Colors.grey.shade400, width: 1),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide:
-                        BorderSide(color: appbar_color, width: 1),
-                      ),
-                      filled: true,
-                      fillColor: Colors.white,
-                      contentPadding:
-                      EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                    ),
-                    dropdownColor: Colors.white,
-                    style: GoogleFonts.poppins(
-                        fontSize: 16, color: Colors.black87),
-                    icon: Icon(Icons.keyboard_arrow_down, color: Colors.black),
-                    items: users.map<DropdownMenuItem<String>>((user) {
-                      return DropdownMenuItem<String>(
-                        value: user['id'].toString(),
-                        child: Text(
-                          user['name'],
-                          style: GoogleFonts.poppins(
-                              fontSize: 16, fontWeight: FontWeight.w500),
-                        ),
-                      );
-                    }).toList(),
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        selectedUserId = newValue;
-                      });
-                    },
-                  ),
-              ],
-            ),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: Text(
-                  "Cancel",
-                  style: GoogleFonts.poppins(
-                      color: Colors.red, fontWeight: FontWeight.w500),
-                ),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  if (selectedUserId == null) {
-                    Fluttertoast.showToast(msg: "Please select user!");
-                    return;
-                  }
-                  _submitTransfer(inquiryId, selectedUserId!);
-                  Navigator.of(context).pop();
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: appbar_color,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  padding:
-                  EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-                  elevation: 3,
-                ),
-                child: Text(
-                  "Submit",
-                  style: GoogleFonts.poppins(fontWeight: FontWeight.w500),
-                ),
-              ),
-            ],
-          );
-        },
-      );
-    },
-  );
-}
-
-Future<void> _submitTransfer(String inquiryId, String userId) async {
-  try {
-    final response = await http.patch(
-      Uri.parse("$baseurl/lead/$inquiryId"),
-      headers: {
-        'Authorization': 'Bearer $Company_Token',
-        'Content-Type': 'application/json',
-      },
-      body: jsonEncode({
-        'assigned_to': userId,
-      }),
-    );
-    final data = json.decode(response.body);
-    if (response.statusCode == 200) {
-
-
-      String successMessage = data['message'] ?? "Transfer successful!"; // Extract message
-
-      // Show toast with the response message
-      Fluttertoast.showToast(
-        msg: successMessage,
-        toastLength: Toast.LENGTH_LONG,
-        gravity: ToastGravity.BOTTOM,
-        backgroundColor: appbar_color,
-        textColor: Colors.white,
-      );
-
-    } else {
-      String successMessage = data['message'] ?? "Transfer successful!"; // Extract message
-
-      // Show toast with the response message
-      Fluttertoast.showToast(
-        msg: successMessage,
-        toastLength: Toast.LENGTH_LONG,
-        gravity: ToastGravity.BOTTOM,
-        backgroundColor: appbar_color,
-        textColor: Colors.white,
-      );
-    }
-  } catch (e) {
-    Fluttertoast.showToast(msg: "Error: $e");
-  }
-}
 
 class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProviderStateMixin {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -412,6 +197,225 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
   void initState() {
     super.initState();
     fetchLeadStatus();
+  }
+
+  void _showTransferDialog(BuildContext context, String inquiryId) {
+    String? selectedUserId;
+    List<Map<String, dynamic>> users = [];
+    bool isLoading = true;
+
+    // Fetch User List
+    Future<void> fetchUsers(StateSetter setState) async {
+      try {
+        final response = await http.get(
+          Uri.parse("$baseurl/user"),
+          headers: {
+            'Authorization': 'Bearer $Company_Token',
+            'Content-Type': 'application/json',
+          },
+        );
+
+        if (response.statusCode == 200) {
+          final data = json.decode(response.body);
+          if (data['success'] == true) {
+            final List<dynamic> usersJson = data['data']['users'];
+
+            users = usersJson
+                .where((user) => user['id'] != user_id) // 👈 Exclude current user
+                .map((userJson) {
+              return {
+                'id': userJson['id'].toString(),
+                'name': userJson['name'],
+              };
+            }).toList();
+          }
+        }
+      } catch (e) {
+        print("Error fetching users: $e");
+      } finally {
+        setState(() {
+          isLoading = false;
+        });
+      }
+    }
+
+    // Show Dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            // Fetch only once after first build
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (isLoading) fetchUsers(setState);
+            });
+
+            return AlertDialog(
+              backgroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12.0),
+              ),
+              title: Text(
+                "Transfer Inquiry",
+                style: GoogleFonts.poppins(
+                  fontWeight: FontWeight.w500,
+                  color: Colors.black,
+                ),
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (isLoading)
+                    Center(
+                      child: Platform.isIOS
+                          ? CupertinoActivityIndicator(radius: 15)
+                          : CircularProgressIndicator(
+                        strokeWidth: 3,
+                        valueColor:
+                        AlwaysStoppedAnimation<Color>(appbar_color),
+                      ),
+                    )
+                  else if (users.isEmpty)
+                    Text(
+                      "No users available.",
+                      style: GoogleFonts.poppins(color: Colors.black87),
+                    )
+                  else
+                    DropdownButtonFormField<String>(
+                      value: selectedUserId,
+                      isExpanded: true,
+                      decoration: InputDecoration(
+                        labelText: "Select User",
+                        labelStyle: GoogleFonts.poppins(color: Colors.grey),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide:
+                          BorderSide(color: Colors.grey.shade400, width: 1),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide:
+                          BorderSide(color: Colors.grey.shade400, width: 1),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide:
+                          BorderSide(color: appbar_color, width: 1),
+                        ),
+                        filled: true,
+                        fillColor: Colors.white,
+                        contentPadding:
+                        EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                      ),
+                      dropdownColor: Colors.white,
+                      style: GoogleFonts.poppins(
+                          fontSize: 16, color: Colors.black87),
+                      icon: Icon(Icons.keyboard_arrow_down, color: Colors.black),
+                      items: users.map<DropdownMenuItem<String>>((user) {
+                        return DropdownMenuItem<String>(
+                          value: user['id'].toString(),
+                          child: Text(
+                            user['name'],
+                            style: GoogleFonts.poppins(
+                                fontSize: 16, fontWeight: FontWeight.w500),
+                          ),
+                        );
+                      }).toList(),
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          selectedUserId = newValue;
+                        });
+                      },
+                    ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text(
+                    "Cancel",
+                    style: GoogleFonts.poppins(
+                        color: Colors.red, fontWeight: FontWeight.w500),
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    if (selectedUserId == null) {
+                      Fluttertoast.showToast(msg: "Please select user!");
+                      return;
+                    }
+                    _submitTransfer(inquiryId, selectedUserId!);
+                    Navigator.of(context).pop();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: appbar_color,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    padding:
+                    EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                    elevation: 3,
+                  ),
+                  child: Text(
+                    "Submit",
+                    style: GoogleFonts.poppins(fontWeight: FontWeight.w500),
+                  ),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Future<void> _submitTransfer(String inquiryId, String userId) async {
+    try {
+      final response = await http.patch(
+        Uri.parse("$baseurl/lead/$inquiryId"),
+        headers: {
+          'Authorization': 'Bearer $Company_Token',
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({
+          'assigned_to': userId,
+        }),
+      );
+      final data = json.decode(response.body);
+      if (response.statusCode == 200) {
+
+
+        String successMessage = data['message'] ?? "Transfer successful!"; // Extract message
+
+        // Show toast with the response message
+        Fluttertoast.showToast(
+          msg: successMessage,
+          toastLength: Toast.LENGTH_LONG,
+          gravity: ToastGravity.BOTTOM,
+          backgroundColor: appbar_color,
+          textColor: Colors.white,
+        );
+
+        fetchInquiries();
+
+      } else {
+        String successMessage = data['message'] ?? "Transfer successful!"; // Extract message
+
+        // Show toast with the response message
+        Fluttertoast.showToast(
+          msg: successMessage,
+          toastLength: Toast.LENGTH_LONG,
+          gravity: ToastGravity.BOTTOM,
+          backgroundColor: appbar_color,
+          textColor: Colors.white,
+        );
+      }
+    } catch (e) {
+      Fluttertoast.showToast(msg: "Error: $e");
+    }
   }
 
   Future<void> fetchLeadStatus() async {
@@ -709,11 +713,25 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
 
       if (response.statusCode == 200) {
         final jsonResponse = json.decode(response.body);
+        List<dynamic> allLeads = jsonResponse['data']['leads'] ?? [];
+
+
+
+        if (is_admin && !is_admin_from_api) {
+          allLeads = allLeads.where((lead) => lead['assigned_to'] == user_id).toList();
+        }
+
+        final parsedLeads = allLeads
+            .map<InquiryModel>((lead) => InquiryModel.fromJson(lead))
+            .toList()
+            .reversed
+            .toList();
+
 
         if (page == 1) {
-          salesinquiry = parseInquiries(jsonResponse).reversed.toList();
+          salesinquiry = parsedLeads;
         } else {
-          salesinquiry.addAll(parseInquiries(jsonResponse).reversed.toList());
+          salesinquiry.addAll(parsedLeads);
         }
 
         if (jsonResponse.containsKey('meta')) {
@@ -1332,17 +1350,89 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildInfoRow(Icons.numbers, inquiry.inquiryNo),
-        _buildInfoRow(FontAwesomeIcons.building, inquiry.unitType),
+        _buildInfoRow(Icons.numbers,"", inquiry.inquiryNo),
+        _buildInfoRow(FontAwesomeIcons.building,"", inquiry.unitType),
         // _buildInfoRow('Email:', inquiry.email),
-        _buildInfoRow(FontAwesomeIcons.map, _formatAreasWithEmirates(inquiry.preferredAreas)),
-        _buildInfoRow(FontAwesomeIcons.clock, DateFormat('dd-MMM-yyyy').format(DateTime.parse(inquiry.lastFollowupDate))),
-        // _buildInfoRow('Created By (using for testing):', inquiry.created_by.toString()),
+        _buildInfoRow(FontAwesomeIcons.map, "",_formatAreasWithEmirates(inquiry.preferredAreas)),
+        _buildInfoRow(FontAwesomeIcons.clock, "",DateFormat('dd-MMM-yyyy').format(DateTime.parse(inquiry.lastFollowupDate))),
 
+        if(is_admin && is_admin_from_api)...[
+          SizedBox(height: 10),
+          _buildCreatedAssignedCard(inquiry.created_by, inquiry.assigned_to),
+        ]
+
+        // _buildInfoRow(FontAwesomeIcons.person,'Created By:', inquiry.created_by.toString()),
         //_buildInfoRow('Assigned To (using for testing):', inquiry.assigned_to.toString()),
       ],
     );
   }
+  Widget _buildCreatedAssignedCard(String createdBy, String assignedTo) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+      margin: EdgeInsets.only(top: 0),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        color: Colors.white.withOpacity(1),
+
+      ),
+      child: Wrap(
+        spacing: 12,
+        runSpacing: 5,
+        children: [
+          _buildUserInfoBadge(
+            icon: Icons.person_outline,
+            label: "Created by",
+            value: createdBy,
+            bgColor: Colors.blue.shade50,
+            textColor: Colors.blue.shade800,
+            iconColor: Colors.blue,
+          ),
+
+
+          _buildUserInfoBadge(
+            icon: Icons.assignment_ind_outlined,
+            label: "Assigned to",
+            value: assignedTo.isNotEmpty ? assignedTo : "Unassigned",
+            bgColor: assignedTo.isNotEmpty ? Colors.green.shade50 : Colors.orange.shade50,
+            textColor: assignedTo.isNotEmpty ? Colors.green.shade800 : Colors.orange.shade800,
+            iconColor: assignedTo.isNotEmpty ? Colors.green : Colors.orange,
+          ),
+        ],
+      ),
+    );
+  }
+  Widget _buildUserInfoBadge({
+    required IconData icon,
+    required String label,
+    required String value,
+    required Color bgColor,
+    required Color textColor,
+    required Color iconColor,
+  }) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 16, color: iconColor),
+          SizedBox(width: 6),
+          Text(
+            "$label: ",
+            style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.w500, color: textColor),
+          ),
+          Text(
+            value,
+            style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.bold, color: textColor),
+          ),
+        ],
+      ),
+    );
+  }
+
 
   String _formatAreasWithEmirates(List<Map<String, dynamic>> preferredAreas) {
     if (preferredAreas.isEmpty) {
@@ -1356,7 +1446,7 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
     }).join(' • '); // Using a bullet separator for clarity
   }
 
-  Widget _buildInfoRow(IconData label, String value) {
+  Widget _buildInfoRow(IconData label,String heading, String value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0),
       child: Row(
@@ -1367,11 +1457,23 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
           Expanded(
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
-                child: Text(
-                  value,
-                  style: GoogleFonts.poppins(
-                    color: Colors.black87,
-                  ),
+                child: Row(
+                  children: [
+                    Text(
+                      heading,
+                      style: GoogleFonts.poppins(
+                        color: Colors.black87,
+
+                      ),
+                    ),
+                    SizedBox(width: 2,),
+                    Text(
+                      value,
+                      style: GoogleFonts.poppins(
+                        color: Colors.black87,
+                      ),
+                    )
+                  ],
                 )))]));
   }
 

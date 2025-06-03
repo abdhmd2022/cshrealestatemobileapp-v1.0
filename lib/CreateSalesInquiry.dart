@@ -4,9 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
-import 'package:multi_select_flutter/chip_display/multi_select_chip_display.dart';
-import 'package:multi_select_flutter/dialog/multi_select_dialog_field.dart';
-import 'package:multi_select_flutter/util/multi_select_item.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 import 'SalesInquiryReport.dart';
@@ -153,7 +150,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
    Set<int> selectedAmenities = {};
 
   final List<String> interestTypes = ["Rent", "Buy"]; // List of options
-
 
   final List<String> propertyType = [
     'Residential',
@@ -652,7 +648,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
     }
   }
 
-
   void _updateRangeFromTextFields() {
     // Parse start and end values, defaulting to range_min and range_max if invalid
     double start = double.tryParse(startController.text) ?? range_min!;
@@ -752,11 +747,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
       'activity_source_id' : selectedactivity_source!.id,
       'whatsapp_no' : '$_selectedCountryCodeWhatsapp${whatsappnocontroller.text}',
     };
-
     }
-
-
-
 
       print('create request body $requestBody');
 
@@ -802,8 +793,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
           // Reset areas automatically
           clearAreas();
 
-
-
           updateAreasDisplay();
 
           updateAreasSelection();
@@ -830,7 +819,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
           _selectedCountryCodeWhatsapp = '+971'; // Default to UAE country code
           _selectedCountryFlagWhatsapp = '🇦🇪'; // Default UAE flag emoji
 
-
           customernamecontroller.clear();
           whatsappnocontroller.clear();
 
@@ -852,7 +840,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
       print("Exception: $error");
     }
   }
-
 
   Future<void> fetchUnitTypes() async {
 

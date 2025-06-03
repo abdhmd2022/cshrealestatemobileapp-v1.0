@@ -732,7 +732,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
         };
       }
 
-
     if(is_admin && is_admin_from_api)
     {
       requestBody = {

@@ -671,7 +671,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
   Future<void> sendCreateInquiryRequest() async {
 
-
     // converting amenities set to list
     final List<int> amenitiesList = selectedPreferences.union(selectedAmenities).toList();
 
@@ -870,8 +869,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
       print('Error fetching data: $e');
     }
-
-
   }
 
   Future<void> fetchActivitySources() async {
@@ -1424,8 +1421,8 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
       });
     }
   }
-  // Area Dropdown based on selected emirates
 
+  // Area Dropdown based on selected emirates
   void _openAreaDropdown(BuildContext context) async {
     updateAreasDisplay(); // Ensure latest data
 
@@ -1614,7 +1611,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
   @override
   void initState() {
     super.initState();
-
     _initSharedPreferences();
   }
 
@@ -1644,7 +1640,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
         appBar: AppBar(
           backgroundColor: appbar_color.withOpacity(0.9),
@@ -1680,41 +1675,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                   ),
                 child: Column(
                   children: [
-                    /*Container(
-                        width: double.infinity,
-                        margin: EdgeInsets.only(
-                          left: 20,
-                          top: 20,
-                          right: 30,
-                          bottom: 20,
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Create Inquiry',
-                              textAlign: TextAlign.start,
-                              style: GoogleFonts.poppins(
-                                color: Colors.black,
-                                fontSize: 30,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-
-                            SizedBox(height: 5,),
-                            Text(
-                              'Create your sales inquiry',
-                              textAlign: TextAlign.start,
-                              style: GoogleFonts.poppins(
-                                color: Colors.black,
-                                fontSize: 15,
-                                fontWeight: FontWeight.normal,
-                              ),
-                            ),
-                          ],
-                        )
-                    ),*/
 
                     Container(
                         child:  Form(
@@ -1722,7 +1682,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.start,
                               crossAxisAlignment: CrossAxisAlignment.start,
-                              /*physics: NeverScrollableScrollPhysics(),*/
                                 children: [
 
                                   Container(
@@ -1738,7 +1697,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
                                         Padding(
                                           padding: EdgeInsets.only(top:10,left: 20,right: 20,bottom: 10),
-
                                           child:  Column(
                                           mainAxisAlignment: MainAxisAlignment.start,
                                           crossAxisAlignment: CrossAxisAlignment.start,

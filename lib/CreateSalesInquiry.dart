@@ -786,6 +786,8 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
 
 
+
+
           for (var unit in unitTypes) {
             unit['isSelected'] = false;
           }

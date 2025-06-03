@@ -780,7 +780,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
           selectedEmiratesList.clear();
           _useContactAsWhatsapp = true;
 
-
           for (var emirate in emirates) {
             emirate['isSelected'] = false;
           }

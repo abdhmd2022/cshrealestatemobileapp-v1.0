@@ -1886,9 +1886,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                       });
                                                     },
                                                   )
-
-                                                  // Switch for isQualified
-
                                                 ])),
 
 
@@ -2044,15 +2041,11 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                             ),
                             SizedBox(width: 8),
 
-
                             Icon(FontAwesomeIcons.whatsapp,
                                 color: Colors.green
                             ),
 
                             SizedBox(width: 8),
-
-
-
                           ],
                         ),
                       ),

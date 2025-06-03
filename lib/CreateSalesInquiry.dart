@@ -784,6 +784,8 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
             emirate['isSelected'] = false;
           }
 
+
+
           for (var unit in unitTypes) {
             unit['isSelected'] = false;
           }

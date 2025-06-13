@@ -617,6 +617,7 @@ class _LoginPageState extends State<Login> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
         appBar: AppBar(
           centerTitle: true,
           backgroundColor: appbar_color.withOpacity(0.9),
@@ -710,9 +711,9 @@ class _LoginPageState extends State<Login> {
                                                 isOwner = false;
                                               });
                                             }),
-                                            _buildToggleChip("Owner", isOwner, () {
+                                            _buildToggleChip("Landlord", isOwner, () {
                                               Fluttertoast.showToast(
-                                                msg: "Owner access is under development",
+                                                msg: "Landlord access is under development",
                                                 toastLength: Toast.LENGTH_SHORT,
                                                 gravity: ToastGravity.BOTTOM,
                                               );

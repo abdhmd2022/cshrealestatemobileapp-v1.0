@@ -16,7 +16,7 @@ const String BASE_URL_config = "http://192.168.2.185:7750/api";
 
 const String OAuth_URL = "http://192.168.2.185:4555";
 
-const String client_id_constant = "262d59daa7ec95e07090cad7fcda24f8be197921";
+const String client_id_constant = "90be135cf5302354e29d64c2dc1259011fcca0b8";
 
 const String client_password_constant = "internal@001";
 

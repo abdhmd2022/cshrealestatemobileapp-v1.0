@@ -1795,9 +1795,6 @@ late int loaded_flat_id;
 
       if (response.statusCode == 201) {
 
-
-
-
         setState(() {
           selectedMaintenanceType = [];
           selectedMaintenanceTypeIds = [];

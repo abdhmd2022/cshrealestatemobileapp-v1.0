@@ -774,9 +774,6 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
   }
 
   Future<void> fetchAllTickets() async {
-
-
-
     List<Map<String, dynamic>> allFormattedTickets = [];
     int page = 1;
     bool hasMore = true;
@@ -788,7 +785,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
 
     try {
       while (hasMore) {
-        String url = is_admin
+        final url = is_admin
             ? "$baseurl/maintenance/ticket?page=$page"
             : "$baseurl/maintenance/ticket/?tenant_id=$user_id&flat_id=$flat_id&page=$page";
 
@@ -798,123 +795,111 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
         });
 
         if (response.statusCode == 200) {
-          final Map<String, dynamic> responseBody = json.decode(response.body);
+          final responseBody = json.decode(response.body);
 
           if (responseBody['success'] == true) {
-            final List<dynamic> rawTickets = responseBody['data']['tickets'];
-            List<dynamic> apiTickets = [];
+            final rawTickets = responseBody['data']['tickets'] as List<dynamic>;
+            List<dynamic> filteredTickets = [];
 
             if (is_admin && !is_admin_from_api) {
               for (var ticket in rawTickets) {
-                final List<dynamic> subtickets = ticket['sub_tickets'] ?? [];
-                final assignedSubtickets = subtickets
-                    .where((sub) => sub['assigned_to'] == user_id)
-                    .toList();
-
-                if (assignedSubtickets.isNotEmpty) {
-                  // Replace full subtickets with only assigned ones
-                  ticket['sub_tickets'] = assignedSubtickets;
-                  apiTickets.add(ticket);
+                final subtickets = ticket['sub_tickets'] ?? [];
+                final assigned = subtickets.where((sub) => sub['assigned_to'] == user_id).toList();
+                if (assigned.isNotEmpty) {
+                  ticket['sub_tickets'] = assigned;
+                  filteredTickets.add(ticket);
                 }
               }
             } else {
-              apiTickets = rawTickets;
+              filteredTickets = rawTickets;
             }
 
-            final List<Map<String, dynamic>> formattedTickets = apiTickets.map((apiTicket) {
-              final contractFlat = apiTicket['contract_flat'];
-              final flat = contractFlat['flat'];
-              final building = flat['building'];
-              final area = building['area'];
-              final state = area['state'];
+            final formattedTickets = filteredTickets.map((ticket) {
+              final subTickets = ticket['sub_tickets'] ?? [];
 
-              final List<dynamic> subTickets = apiTicket['sub_tickets'] ?? [];
+              // Handle rental flat
+              Map<String, dynamic>? rental = ticket['rental_flat'];
+              Map<String, dynamic>? sold = ticket['sold_flat'];
 
+              final rentalFlat = rental?['flat'];
+              final soldFlat = sold?['flat'];
 
-              return {
-                'ticketNumber': "${apiTicket['id']}",
-                'unitNumber': flat['name'] ?? 'N/A',
-                'buildingName': building['name'] ?? 'N/A',
-                'emirate': state['name'] ?? 'N/A',
-                'availableFrom': apiTicket['available_from'] ?? '',
-                'availableTo': apiTicket['available_to'] ?? '',
-                'sub_tickets': subTickets,
+              final rentalBuilding = rentalFlat?['building'];
+              final soldBuilding = soldFlat?['building'];
 
-                /*'status': apiTicket['sub_tickets'].isNotEmpty
-                    ? apiTicket['sub_tickets'][0]['followps'].isNotEmpty
-                    ? apiTicket['sub_tickets'][0]['followps'][0]['status']['name']
-                    : 'N/A'
-                    : 'N/A',*/
-                'status': (() {
+              final rentalState = rentalBuilding?['area']?['state'];
+              final soldState = soldBuilding?['area']?['state'];
 
+              final status = () {
+                if (subTickets.isEmpty) return null;
 
-                  // print("sub tickets -> $subTickets");
+                bool allFollowupsMissing = true;
+                bool allClosed = true;
 
-                  if (subTickets.isEmpty) return null;
-
-                  bool allFollowupsMissing = true;
-                  bool allClosed = true;
-                  var category = '';
-                  for (var sub in subTickets) {
-                    final followUps = sub['followps'] as List<dynamic>;
-
-                    if (followUps.isEmpty) {
-                      allClosed = false;
-                      continue;
-                    }
-
-                    allFollowupsMissing = false;
-
-                    final lastFollowUp = followUps.first;
-                    category = lastFollowUp['status']['category'];
-
-                    if (category != "Close") {
-                      allClosed = false;
-                    }
+                for (var sub in subTickets) {
+                  final followUps = sub['followps'] as List<dynamic>;
+                  if (followUps.isEmpty) {
+                    allClosed = false;
+                    continue;
                   }
 
-                  if (allFollowupsMissing) return "Pending";
-                  return allClosed ? "Close" : 'Normal';
-                })(),
+                  allFollowupsMissing = false;
+                  if (followUps.first['status']['category'] != "Close") {
+                    allClosed = false;
+                  }
+                }
 
-                'date': apiTicket['created_at']?.split('T')[0] ?? '',
+                if (allFollowupsMissing) return "Pending";
+                return allClosed ? "Close" : "Normal";
+              }();
 
-                'maintenanceTypesAll': subTickets
-                    .map((subTicket) {
-                  final type = subTicket['type'];
+              return {
+                'ticketNumber': ticket['id'].toString(),
+                'availableFrom': ticket['available_from'] ?? '',
+                'availableTo': ticket['available_to'] ?? '',
+                'sub_tickets': subTickets,
+                'status': status,
+                'date': ticket['created_at']?.split('T')[0] ?? '',
+
+                // Rental data
+                'unitNumber_rental': rentalFlat?['name'] ?? '',
+                'buildingName_rental': rentalBuilding?['name'] ?? '',
+                'emirate_rental': rentalState?['name'] ?? '',
+
+                // Sold data
+                'unitNumber_sold': soldFlat?['name'] ?? '',
+                'buildingName_sold': soldBuilding?['name'] ?? '',
+                'emirate_sold': soldState?['name'] ?? '',
+
+                'maintenanceTypesAll': subTickets.map((sub) {
+                  final type = sub['type'];
                   return {
-                    'subTicketId': subTicket['id'].toString(),
+                    'subTicketId': sub['id'].toString(),
                     'type': type['name'],
                     'category': type['category'] ?? 'N/A',
-                    'followps': subTicket['followps'] ?? [], // ✅ Add followups
+                    'followps': sub['followps'] ?? [],
                   };
                 }).toList(),
 
-
-                'maintenanceTypesFiltered': subTickets.where((subTicket) {
-                  final followUps = subTicket['followps'] as List<dynamic>;
-                  if (followUps.isEmpty) return true; // Include if no followups
-                  final firstFollowUp = followUps.first;
-                  return firstFollowUp['status']['category'] != 'Close';
-                })
-                    .map((subTicket) {
-                  final type = subTicket['type'];
+                'maintenanceTypesFiltered': subTickets.where((sub) {
+                  final followUps = sub['followps'] as List<dynamic>;
+                  if (followUps.isEmpty) return true;
+                  return followUps.first['status']['category'] != 'Close';
+                }).map((sub) {
+                  final type = sub['type'];
                   return {
-                    'subTicketId': subTicket['id'].toString(),
+                    'subTicketId': sub['id'].toString(),
                     'type': type['name'],
                     'category': type['category'] ?? 'N/A',
                   };
                 }).toList(),
-
-
 
                 'description': subTickets.map((sub) {
-                  final type = sub['type']?['name'] ?? 'Unknown';
+                  final typeName = sub['type']?['name'] ?? 'Unknown';
                   final desc = sub['description'] ?? 'No description';
-                  return '• $type: $desc';
-                }).join('\n'),              };
-
-
+                  return '• $typeName: $desc';
+                }).join('\n'),
+              };
             }).toList();
 
             allFormattedTickets.addAll(formattedTickets);
@@ -930,16 +915,16 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
           }
         } else {
           hasMore = false;
-          print("Error: ${response.statusCode}, ${response.body}");
+          print("HTTP Error ${response.statusCode}: ${response.body}");
         }
       }
 
       setState(() {
         tickets = allFormattedTickets;
-        filterTickets(); // optional if you’re filtering
+        filterTickets(); // Optional
       });
     } catch (e) {
-      print("Error fetching all tickets: $e");
+      print("Exception in fetchAllTickets: $e");
     } finally {
       setState(() {
         isLoading = false;
@@ -1243,20 +1228,30 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
   void _applySearchFilter(List<Map<String, dynamic>> listToFilter) {
     setState(() {
       filteredTickets = listToFilter.where((ticket) {
-        // Ensure 'maintenanceTypes' is a List before using `.any()`
+        final searchLower = searchQuery.toLowerCase();
+
         bool hasMatchingSubTicket = ticket['maintenanceTypesAll'] is List &&
             (ticket['maintenanceTypesAll'] as List).any((subTicket) =>
             subTicket is Map &&
                 subTicket.containsKey('type') &&
                 subTicket['type'] is String &&
-                subTicket['type'].toLowerCase().contains(searchQuery.toLowerCase()));
+                subTicket['type'].toLowerCase().contains(searchLower));
 
-        return ticket['ticketNumber'].toLowerCase().contains(searchQuery.toLowerCase()) ||
-            ticket['unitNumber'].toLowerCase().contains(searchQuery.toLowerCase()) ||
-            ticket['buildingName'].toLowerCase().contains(searchQuery.toLowerCase()) ||
-            ticket['emirate'].toLowerCase().contains(searchQuery.toLowerCase()) ||
-            ticket['status'].toLowerCase().contains(searchQuery.toLowerCase()) ||
-            hasMatchingSubTicket; // ✅ Uses the correct `any()` check
+        bool unitMatch = (ticket['unitNumber_rental'] ?? '').toLowerCase().contains(searchLower) ||
+            (ticket['unitNumber_sold'] ?? '').toLowerCase().contains(searchLower);
+
+        bool buildingMatch = (ticket['buildingName_rental'] ?? '').toLowerCase().contains(searchLower) ||
+            (ticket['buildingName_sold'] ?? '').toLowerCase().contains(searchLower);
+
+        bool emirateMatch = (ticket['emirate_rental'] ?? '').toLowerCase().contains(searchLower) ||
+            (ticket['emirate_sold'] ?? '').toLowerCase().contains(searchLower);
+
+        return (ticket['ticketNumber'] ?? '').toLowerCase().contains(searchLower) ||
+            unitMatch ||
+            buildingMatch ||
+            emirateMatch ||
+            (ticket['status'] ?? '').toLowerCase().contains(searchLower) ||
+            hasMatchingSubTicket;
       }).toList().reversed.toList();
 
       _expandedTickets = List<bool>.filled(filteredTickets.length, false);
@@ -1287,6 +1282,19 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
 
     _applySearchFilter(dateFilteredTickets);
   }
+
+  String _getTicketLocation(Map ticket) {
+    final unit = ticket['unitNumber_rental']?.isNotEmpty == true
+        ? ticket['unitNumber_rental']
+        : ticket['unitNumber_sold'] ?? 'Unit';
+
+    final building = ticket['buildingName_rental']?.isNotEmpty == true
+        ? ticket['buildingName_rental']
+        : ticket['buildingName_sold'] ?? 'Building';
+
+    return "$unit - $building";
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -1574,7 +1582,9 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                             () {
                           commentController.clear();
                           _showViewCommentPopup(context, ticket['ticketNumber'], scope, ticket['status']);
-                        },
+
+                            },
+
                       ),
                       SizedBox(width: 5),
                     ] else if (ticket['status'] != 'Close') ...[
@@ -1895,11 +1905,20 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
             ),
           ),
 
-        _buildInfoRow('Unit:', ticket['unitNumber']),
-        _buildInfoRow('Building:', '${ticket['buildingName']}, ${ticket['emirate']}'),
+        _buildInfoRow('Unit:', ticket['unitNumber_rental'].isNotEmpty
+            ? ticket['unitNumber_rental']
+            : ticket['unitNumber_sold']),
+        _buildInfoRow(
+          'Building:',
+          '${ticket['buildingName_rental']?.isNotEmpty == true ? ticket['buildingName_rental'] : ticket['buildingName_sold'] ?? 'N/A'}, '
+              '${ticket['emirate_rental']?.isNotEmpty == true ? ticket['emirate_rental'] : ticket['emirate_sold'] ?? 'N/A'}',
+        ),
        /* _buildInfoRow('Emirate:', ticket['emirate']),*/
     if (ticket['maintenanceTypesAll'] != null && ticket['maintenanceTypesAll'].isNotEmpty)
-    _buildInfoRow_subtype('Type:', ticket['maintenanceTypesAll']),
+      _buildInfoRow_subtype(
+        'Type:',
+        (ticket['maintenanceTypesAll'] as List).cast<Map<String, dynamic>>(),
+      ),
 
 
 
@@ -2519,6 +2538,10 @@ class _ComplaintBottomSheetState extends State<ComplaintBottomSheet> {
       _controller.clear();
       await _fetchComplaintHistory(); // Refresh the list
     }
+    else
+      {
+        print('error in creating complaint');
+      }
 
     setState(() => isSubmitting = false);
   }
@@ -2599,7 +2622,6 @@ class _ComplaintBottomSheetState extends State<ComplaintBottomSheet> {
 
                   ],
                 )
-
               ),
             ),
           );

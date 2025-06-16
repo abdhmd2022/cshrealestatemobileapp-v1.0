@@ -583,6 +583,88 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
 
   Future<void> fetchTickets(String ticketID) async {
     subTickets.clear();
+    String url = is_admin ? "$baseurl/maintenance/ticket/$ticketID" : '';
+
+    try {
+      final headers = {
+        'Authorization': 'Bearer $Company_Token',
+        'Content-Type': 'application/json',
+      };
+
+      final response = await http.get(Uri.parse(url), headers: headers);
+
+      if (response.statusCode == 200) {
+        final responseBody = json.decode(response.body);
+
+        if (responseBody['success'] == true) {
+          final jsonData = responseBody['data']['ticket'];
+
+          final subTicketList = List<Map<String, dynamic>>.from(jsonData['sub_tickets'] ?? []);
+
+          setState(() {
+            subTickets = subTicketList.where((ticket) {
+              if (is_admin && !is_admin_from_api && ticket['assigned_to'] != user_id) {
+                return false;
+              }
+
+              final followups = ticket['followps'] as List<dynamic>? ?? [];
+
+              if (followups.isNotEmpty) {
+                followups.sort((a, b) {
+                  final dateA = DateTime.tryParse(a['created_at'] ?? '') ?? DateTime(2000);
+                  final dateB = DateTime.tryParse(b['created_at'] ?? '') ?? DateTime(2000);
+                  return dateB.compareTo(dateA);
+                });
+
+                final latestFollowup = followups.first;
+                final latestCategory = latestFollowup['status']?['category']?.toString().toLowerCase();
+
+                return latestCategory != 'close';
+              }
+
+              return true;
+            }).map((ticket) {
+              return {
+                "id": ticket["id"],
+                "name": ticket["type"]?["name"] ?? "Unknown",
+                "description": ticket["description"] ?? "",
+                "followps": ticket["followps"] ?? []
+              };
+            }).toList();
+
+            final rentalFlat = jsonData['rental_flat'] ?? {};
+            final contract = rentalFlat['contract'] ?? {};
+            final tenant = contract['tenant'] ?? {};
+            final flats = List.from(contract['flats'] ?? []);
+            final flat = flats.isNotEmpty ? flats[0]['flat'] ?? {} : {};
+            final building = flat['building'] ?? {};
+            final area = building['area'] ?? {};
+            final state = area['state'] ?? {};
+
+            tenantFlatDetails = {
+              "tenantName": tenant["name"] ?? "N/A",
+              "tenantMobile": tenant["email"] ?? "", // Replace with mobile_no if available
+              "flatName": flat["name"] ?? "N/A",
+              "buildingName": building["name"] ?? "N/A",
+              "areaName": area["name"] ?? "N/A",
+              "stateName": state["name"] ?? "N/A"
+            };
+          });
+        } else {
+          print("API returned success: false");
+        }
+      } else {
+        print("Error fetching data: ${response.statusCode}");
+        print("Response: ${response.body}");
+      }
+    } catch (e) {
+      print("Error fetching data: $e");
+    }
+  }
+
+
+  /*Future<void> fetchTickets(String ticketID) async {
+    subTickets.clear();
     String url = is_admin
         ? "$baseurl/maintenance/ticket/$ticketID"
         : '';
@@ -665,66 +747,9 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
     } catch (e) {
       print("Error fetching data: $e");
     }
-  }
-
-  /*Future<void> fetchTickets(String ticketID) async {
-
-    subTickets.clear();
-    String url = is_admin
-        ? "$baseurl/maintenance/ticket/$ticketID"
-        : '';
-
-    *//*final String url = "$BASE_URL_config/v1/maintenance"; // will change it for tenant*//*
-
-    *//*print('url $url');*//*
-
-    try {
-      final Map<String, String> headers = {
-        'Authorization': 'Bearer $Company_Token', // Example of an Authorization header
-        'Content-Type': 'application/json', // Example Content-Type header
-        // Add other headers as required
-      };
-      final response = await http.get(Uri.parse(url), headers: headers);
-      if (response.statusCode == 200) {
-        final Map<String, dynamic> responseBody = json.decode(response.body);
-        if (responseBody['success'] == true) {
-
-          var jsonData = json.decode(response.body);
-          var tickets = jsonData['data']['ticket']['sub_tickets'] as List;
-          var tenantFlat = jsonData['data']['ticket']['tenant_flat'];
-
-
-          setState(() {
-            subTickets = tickets.map((ticket) {
-              return {
-                "id": ticket["id"],
-                "name": ticket["type"]["name"],
-                "followps": ticket["followps"] as List
-              };
-            }).toList();
-
-            tenantFlatDetails = {
-              "tenantName": tenantFlat["tenent"]["name"],
-              "tenantMobile": tenantFlat["tenent"]["mobile"] ?? "",
-              "flatName": tenantFlat["flat"]["name"],
-              "buildingName": tenantFlat["flat"]["building"]["name"],
-              "areaName": tenantFlat["flat"]["building"]["area"]["name"],
-              "stateName": tenantFlat["flat"]["building"]["area"]["state"]["name"]
-            };
-          });
-        } else {
-          print("API returned success: false");
-        }
-      } else {
-        print("Error fetching data: ${response.statusCode}");
-        print("Error fetching data: ${response.body}");
-
-      }
-    } catch (e) {
-      print("Error fetching data: $e");
-    }
-
   }*/
+
+
 
   Widget platformLoader() {
     return Platform.isIOS

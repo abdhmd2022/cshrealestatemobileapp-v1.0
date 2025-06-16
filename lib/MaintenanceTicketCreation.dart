@@ -259,8 +259,113 @@ late int loaded_flat_id;
     }
   }
 
-
   Future<void> fetchUnits() async {
+    flats.clear();
+    print('user id $user_id');
+
+    String url = is_admin
+        ? '$baseurl/tenant'
+        : '$baseurl/tenant/$user_id';
+
+    String token = 'Bearer $Company_Token';
+
+    Map<String, String> headers = {
+      'Authorization': token,
+      "Content-Type": "application/json"
+    };
+
+    try {
+      final response = await http.get(Uri.parse(url), headers: headers);
+
+      print('code ${response.statusCode}');
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = json.decode(response.body);
+        print('data: $data');
+
+        setState(() {
+          flats.clear();
+
+          if (is_admin) {
+            // ✅ Admin: iterate all tenants
+            List<dynamic> tenants = data['data']['tenants'] ?? [];
+
+            for (var tenant in tenants) {
+              String tenantName = tenant['name'] ?? '';
+
+              List<dynamic> contracts = tenant['contracts'] ?? [];
+              for (var contract in contracts) {
+                int contractId = contract['id'];
+
+                List<dynamic> contractFlats = contract['flats'] ?? [];
+                for (var flatData in contractFlats) {
+                  var flat = flatData['flat'];
+
+                  if (flat != null) {
+                    flats.add({
+                      'tenant_name': tenantName,
+                      'flat_id': flat['id'],
+                      'flat_name': flat['name'],
+                      'building_name': flat['building']['name'],
+                      'area_name': flat['building']['area']['name'],
+                      'emirate': flat['building']['area']['state']['name'],
+                      'flat_type': flat['flat_type']['name'],
+                      'contract_id': contractId,
+                    });
+                  }
+                }
+              }
+            }
+
+          } else {
+            // ✅ Tenant: single tenant object
+            var tenant = data['data']['tenant'];
+            if (tenant != null) {
+              String tenantName = tenant['name'] ?? '';
+
+              List<dynamic> contracts = tenant['contracts'] ?? [];
+              for (var contract in contracts) {
+                int contractId = contract['id'];
+
+                List<dynamic> contractFlats = contract['flats'] ?? [];
+                for (var flatData in contractFlats) {
+                  var flat = flatData['flat'];
+
+                  if (flat != null) {
+                    flats.add({
+                      'tenant_name': tenantName,
+                      'flat_id': flat['id'],
+                      'flat_name': flat['name'],
+                      'building_name': flat['building']['name'],
+                      'area_name': flat['building']['area']['name'],
+                      'emirate': flat['building']['area']['state']['name'],
+                      'flat_type': flat['flat_type']['name'],
+                      'contract_id': contractId,
+                    });
+                  }
+                }
+              }
+            }
+          }
+
+          // ✅ Set default selected flat
+          selectedFlat = flats.firstWhere(
+                (flat) => flat['flat_id'] == loaded_flat_id,
+            orElse: () => flats.isNotEmpty ? flats[0] : {},
+          );
+
+          // ✅ Sort by flat name
+          flats.sort((a, b) => (a['flat_name'] ?? '').compareTo(b['flat_name'] ?? ''));
+        });
+      } else {
+        print("Error: ${response.statusCode}");
+        print("Message: ${response.body}");
+      }
+    } catch (e) {
+      print('Error fetching data: $e');
+    }
+  }
+
+  /*Future<void> fetchUnits() async {
     flats.clear();
 
     print('user id $user_id');
@@ -358,7 +463,7 @@ late int loaded_flat_id;
     } catch (e) {
       print('Error fetching data: $e');
     }
-  }
+  }*/
 
   Future<void> fetchContracts() async {
     flats.clear();
@@ -1262,14 +1367,14 @@ late int loaded_flat_id;
                                   style: GoogleFonts.poppins(fontSize: 16,
                                     fontWeight: FontWeight.bold,),
                                 ),
-                                SizedBox(width: 2),
+                                /*SizedBox(width: 2),
                                 Text(
                                   '*', // Red asterisk for required field
                                   style: GoogleFonts.poppins(
                                     fontSize: 20,
                                     color: Colors.red, // Red color for the asterisk
                                   ),
-                                ),
+                                ),*/
                               ],
                             ),
                           ),
@@ -1468,19 +1573,7 @@ late int loaded_flat_id;
                       ),
                       onPressed: () {
                         {
-                          if(maintenance_types_list.isEmpty)
-                            {
-                              String message = 'Select atleast 1 maintenance type';
-                              Fluttertoast.showToast(
-                                msg: message,
-                                toastLength: Toast.LENGTH_SHORT,
-                                gravity: ToastGravity.BOTTOM, // Change to CENTER or TOP if needed
-                                backgroundColor: Colors.black,
-                                textColor: Colors.white,
-                                fontSize: 16.0,
-                              );
-                            }
-                          else if (selectedMaintenanceType!.any((type) =>
+                          if (selectedMaintenanceType!.any((type) =>
                           _descriptionControllers[type.id]?.text.trim().isEmpty ?? true)) {
                             Fluttertoast.showToast(
                               msg: 'Please enter description for all selected types.',
@@ -1538,138 +1631,121 @@ late int loaded_flat_id;
             return false;
           }
 
-          Future<void> sendFormData(BuildContext context) async {
+  Future<void> sendFormData(BuildContext context) async {
+    String? availableFromStr;
+    String? availableToStr;
+    final DateFormat dateTimeFormatter = DateFormat('yyyy-MM-dd HH:mm:ss');
 
-            String? availableFromStr;
-            String? availableToStr;
-            final DateFormat dateTimeFormatter = DateFormat('yyyy-MM-dd HH:mm:ss');
+    if (selectedDateRange == null || startTime == null || endTime == null) {
+      Fluttertoast.showToast(
+        msg: 'Please select both date and time range.',
+        backgroundColor: Colors.black,
+        textColor: Colors.white,
+      );
+      return;
+    } else {
+      final from = DateTime(
+        selectedDateRange!.start.year,
+        selectedDateRange!.start.month,
+        selectedDateRange!.start.day,
+        startTime!.hour,
+        startTime!.minute,
+      );
+      final to = DateTime(
+        selectedDateRange!.end.year,
+        selectedDateRange!.end.month,
+        selectedDateRange!.end.day,
+        endTime!.hour,
+        endTime!.minute,
+      );
 
-            if (selectedDateRange == null || startTime == null || endTime == null) {
-              Fluttertoast.showToast(
-                msg: 'Please select both date and time range.',
-                backgroundColor: Colors.black,
-                textColor: Colors.white,
-              );
-              return;
-            }
+      if (!from.isBefore(to)) {
+        Fluttertoast.showToast(
+          msg: 'Start time must be before end time.',
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+        );
+        return;
+      }
 
-            else
-              {
-                // Combine date + time
-                final from = DateTime(
-                  selectedDateRange!.start.year,
-                  selectedDateRange!.start.month,
-                  selectedDateRange!.start.day,
-                  startTime!.hour,
-                  startTime!.minute,
-                );
-                final to = DateTime(
-                  selectedDateRange!.end.year,
-                  selectedDateRange!.end.month,
-                  selectedDateRange!.end.day,
-                  endTime!.hour,
-                  endTime!.minute,
-                );
+      if (from.isBefore(DateTime.now())) {
+        Fluttertoast.showToast(
+          msg: 'Start time must be in the future.',
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+        );
+        return;
+      }
 
-                // 🛡   Validate: from must be before to
-                if (!from.isBefore(to)) {
-                  Fluttertoast.showToast(
-                    msg: 'Start time must be before end time.',
-                    backgroundColor: Colors.red,
-                    textColor: Colors.white,
-                  );
-                  return;
-                }
+      availableFromStr = dateTimeFormatter.format(from);
+      availableToStr = dateTimeFormatter.format(to);
+    }
 
-                // 🛡 Validate: from must be in future
-                final now = DateTime.now();
-                if (from.isBefore(now)) {
-                  Fluttertoast.showToast(
-                    msg: 'Start time must be in the future.',
-                    backgroundColor: Colors.red,
-                    textColor: Colors.white,
-                  );
-                  return;
-                }
+    try {
+      String url = "$baseurl/maintenance/ticket";
+      var uuid = Uuid();
+      String uuidValue = uuid.v4();
 
-    // ✅ Passed validation — format
-                availableFromStr = dateTimeFormatter.format(from);
-                availableToStr = dateTimeFormatter.format(to);
-              }
+      print('type list ${selectedMaintenanceTypeIds}');
 
-            try {
+      final Map<String, dynamic> requestBody = {
+        "uuid": uuidValue,
+        "flat_id": selectedFlat?['flat_id'],
+        "rental_contract_id": selectedFlat?['contract_id'], // ✅ new key
+        "types": selectedMaintenanceType!.map((type) => {
+          "id": type.id,
+          "description": _descriptionControllers[type.id]?.text ?? ""
+        }).toList(),
+        "available_from": availableFromStr,
+        "available_to": availableToStr,
+      };
 
-            String url = is_admin
-                ? "$baseurl/maintenance/ticket"
-                : "$baseurl/maintenance/ticket";
+      print('request body -> $requestBody');
 
-            var uuid = Uuid();
-            String uuidValue = uuid.v4();
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $Company_Token",
+        },
+        body: jsonEncode(requestBody),
+      );
 
-            print('type list ${selectedMaintenanceTypeIds}');
+      print('body: ${jsonEncode(requestBody)}');
+      Map<String, dynamic> decodedResponse = jsonDecode(response.body);
 
-            final Map<String, dynamic> descriptionsMap = {
-              for (var type in selectedMaintenanceType!)
-                '${type.id}': _descriptionControllers[type.id]?.text ?? ""
-            };
+      if (response.statusCode == 201) {
+        setState(() {
+          selectedMaintenanceType = [];
+          selectedMaintenanceTypeIds = [];
+          _descriptionControllers.clear();
+          selectedFlat = flats[0];
+          _attachment.clear();
+          selectedDateRange = null;
+          startTime = null;
+          endTime = null;
+        });
 
-            final Map<String, dynamic> requestBody = {
-              "uuid": uuidValue,
-              "flat_id": selectedFlat?['flat_id'],
-              "contract_id": selectedFlat?['contract_id'],
-              "types": selectedMaintenanceType!.map((type) => {
-                "id": type.id,
-                "description": _descriptionControllers[type.id]?.text ?? ""
-              }).toList(),
-              "available_from": availableFromStr,
-              "available_to": availableToStr,
-            };
+        showResponseSnackbar(context, decodedResponse);
 
-            print('request body -> $requestBody');
-
-            final response = await http.post(
-              Uri.parse(url),
-              headers: {
-                "Content-Type": "application/json",
-                "Authorization": "Bearer $Company_Token",
-              },
-              body: jsonEncode(requestBody),
-            );
-
-            print('body: ${jsonEncode(requestBody)}');
-            Map<String, dynamic> decodedResponse = jsonDecode(response.body);
-            if (response.statusCode == 201) {
-
-              setState(() {
-                selectedMaintenanceType = [];
-                selectedMaintenanceTypeIds = [];
-                _descriptionControllers.clear();
-                selectedFlat = flats[0];
-                _attachment.clear();
-                selectedDateRange = null;
-                startTime = null;
-                endTime = null;
-              });
-              showResponseSnackbar(context, decodedResponse);
-
-              int ticketId = decodedResponse['data']['ticket']['id'];
-
-              // ✅ Call sendImageData in a separate request
-              await sendImageData(ticketId,context);
-            } else {
-
-              showResponseSnackbar(context, decodedResponse);
-
-              /*showSnackBar("Status Code: ${response.statusCode} and Response: ${response.body}");*/
-              print('Upload failed with status code: ${response.statusCode}');
-              print('Upload failed with response: ${response.body}');
-            }
-          } catch (e) {
-            print('Error during upload: $e');
+        int ticketId = decodedResponse['data']['ticket']['id'];
+        if(_attachment.length>0)
+          {
+            await sendImageData(ticketId, context); // ✅ separate request for attachments
           }
-        }
 
-        String getMimeType(String path) {
+      } else {
+        showResponseSnackbar(context, decodedResponse);
+        print('Upload failed with status code: ${response.statusCode}');
+        print('Upload failed with response: ${response.body}');
+      }
+    } catch (e) {
+      print('Error during upload: $e');
+    }
+  }
+
+
+  String getMimeType(String path) {
           final mimeType = lookupMimeType(path);
           return mimeType?.split('/').last ?? 'jpeg'; // Default to JPEG
         }

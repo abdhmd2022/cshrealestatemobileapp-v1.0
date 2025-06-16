@@ -203,10 +203,12 @@ class _SidebarState extends State<Sidebar> {
                 children: [
                   if(is_admin)
                     _buildDrawerItem(Icons.dashboard, "Dashboard", widget.isDashEnable, () {
+                      Navigator.of(context).pop();
                     _navigateTo(context, AdminDashboard());
                   }),
                   if(!is_admin)
                     _buildDrawerItem(Icons.dashboard, "Dashboard", true, () {
+                      Navigator.of(context).pop();
                     _navigateTo(context, TenantDashboard());
                   }),
                   /*if(is_admin)
@@ -215,14 +217,17 @@ class _SidebarState extends State<Sidebar> {
                   }),*/
                   if(is_admin)
                     _buildDrawerItem(Icons.business, "Companies", true, () {
+                      Navigator.of(context).pop();
                     _navigateTo(context, CompanySelection());
                   }),
                   if(!is_admin)
                     _buildDrawerItem(Icons.business, "Unit(s)", true, () {
+                      Navigator.of(context).pop();
                       _navigateTo(context, FlatSelection());
                     }),
                   if(is_admin)
                     _buildDrawerItem(Icons.settings, "Settings", true, () {
+                      Navigator.of(context).pop();
                     _navigateTo(context, SettingsScreen());
                   }),
                   Divider(),
@@ -258,7 +263,7 @@ class _SidebarState extends State<Sidebar> {
   /// ✅ Reusable Drawer Menu Item
   Widget _buildDrawerItem(IconData icon, String title, bool enabled, VoidCallback onTap) {
     return ListTile(
-      leading: Icon(icon, color: enabled ? Colors.indigo : Colors.grey),
+      leading: Icon(icon, color: enabled ? Colors.black : Colors.grey),
       title: Text(title, style: GoogleFonts.poppins(color: enabled ? Colors.black : Colors.grey)),
       enabled: enabled,
       onTap: enabled ? onTap : null,

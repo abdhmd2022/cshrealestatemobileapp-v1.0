@@ -10,8 +10,6 @@ import 'package:flutter/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
-import 'package:multi_select_flutter/dialog/multi_select_dialog_field.dart';
-import 'package:multi_select_flutter/util/multi_select_item.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 import 'Sidebar.dart';
@@ -21,7 +19,6 @@ import 'package:http/http.dart' as http;
 import 'package:path/path.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:google_fonts/google_fonts.dart';
-
 
 class MaintanceType {
   final int id;
@@ -650,7 +647,7 @@ late int loaded_flat_id;
     } else {
       pickedFiles = await _picker.pickMultiImage();
 
-      if (pickedFiles != null && pickedFiles.isNotEmpty) {
+      if (pickedFiles.isNotEmpty) {
         for (var file in pickedFiles) {
           if (_attachment.length >= 5) {
             Fluttertoast.showToast(
@@ -1791,7 +1788,6 @@ late int loaded_flat_id;
       // ✅ Send request & handle response
       var streamedResponse = await request.send();
       var response = await http.Response.fromStream(streamedResponse);
-      Map<String, dynamic> decodedResponse = jsonDecode(response.body);
 
       if (response.statusCode == 201) {
 

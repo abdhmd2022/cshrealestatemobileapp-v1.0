@@ -404,7 +404,6 @@ class _LoginPageState extends State<Login> {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setInt("user_id", tenantId);
       await prefs.setBool('remember_me', true);
-
       await prefs.setString("user_name", user['name']);
       await prefs.setString("scope", loginData["scope"]);
       await prefs.setString("user_email", user['email']);
@@ -439,7 +438,7 @@ class _LoginPageState extends State<Login> {
 
       var tenantData = json.decode(tenantResponse.body);
 
-      print('response -> ${tenantResponse.body}');
+      print('response 2 tenant login-> ${tenantResponse.body}');
 
       if (!tenantData['success']) {
         final errorMsg = "${tenantData['message']}" ?? "Failed to fetch tenant details.";

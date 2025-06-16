@@ -1,4 +1,5 @@
 import 'package:cshrealestatemobile/FlatSelection.dart';
+import 'package:cshrealestatemobile/Help.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'constants.dart';
@@ -226,7 +227,9 @@ class _SidebarState extends State<Sidebar> {
                   }),
                   Divider(),
                   _buildDrawerItem(Icons.contact_support, "Help", true, () {
-                    _showHelpDialog(context);
+                    Navigator.of(context).pop();
+                    _navigateTopush(context, HelpSupportScreen());
+                   // _showHelpDialog(context);
                   }),
                   _buildDrawerItem(Icons.logout, "Logout", true, () {
                     _showLogoutDialog(context);
@@ -255,7 +258,7 @@ class _SidebarState extends State<Sidebar> {
   /// ✅ Reusable Drawer Menu Item
   Widget _buildDrawerItem(IconData icon, String title, bool enabled, VoidCallback onTap) {
     return ListTile(
-      leading: Icon(icon, color: enabled ? Colors.black : Colors.grey),
+      leading: Icon(icon, color: enabled ? Colors.indigo : Colors.grey),
       title: Text(title, style: GoogleFonts.poppins(color: enabled ? Colors.black : Colors.grey)),
       enabled: enabled,
       onTap: enabled ? onTap : null,
@@ -265,6 +268,10 @@ class _SidebarState extends State<Sidebar> {
   /// ✅ Function to Navigate to Different Screens
   void _navigateTo(BuildContext context, Widget screen) {
     Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => screen));
+  }
+
+  void _navigateTopush(BuildContext context, Widget screen) {
+    Navigator.push(context, MaterialPageRoute(builder: (context) => screen));
   }
 
   /// ✅ Logout Confirmation Dialog

@@ -158,7 +158,6 @@ class InquiryModel {
   }
 
   /// Helper method to safely extract nested values
-
   static String _formatDate(String rawDate) {
     try {
       final parsedDate = DateTime.parse(rawDate);
@@ -168,8 +167,6 @@ class InquiryModel {
     }
   }
 }
-
-
 
 class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProviderStateMixin {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();

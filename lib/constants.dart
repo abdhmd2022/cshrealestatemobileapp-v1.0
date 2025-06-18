@@ -29,7 +29,7 @@ late int company_id;
 late int serial_id;
 late int user_id;
 late String scope;
-late bool is_admin;
+late bool is_admin,is_landlord;
 late int flat_id;
 late String flat_name;
 late String flatsJson ;
@@ -53,6 +53,8 @@ Future<void> loadTokens() async {
   serial_id = prefs.getInt("serial_id") ?? 0;
   user_id = prefs.getInt("user_id") ?? 0;
   is_admin = prefs.getBool("is_admin") ?? false;
+  is_landlord= prefs.getBool('is_landlord')?? false;
+
   is_admin_from_api = prefs.getBool("is_admin_from_api") ?? false;
 
   flat_id = prefs.getInt("flat_id") ?? 0;

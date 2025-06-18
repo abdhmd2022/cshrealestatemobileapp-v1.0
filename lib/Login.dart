@@ -71,7 +71,7 @@ class _LoginPageState extends State<Login> {
 
   bool isAdmin = false; // Toggle state
 
-  bool isOwner = false;
+  bool isLandlord = false;
 
 
   final _formKey = GlobalKey<FormState>();
@@ -213,6 +213,9 @@ class _LoginPageState extends State<Login> {
           await prefs.setBool('is_admin', isAdmin==true ? true : false);
           await prefs.setBool('is_admin_from_api',firstUser.is_admin.toString().toLowerCase() == "true" ? true : false );
           await prefs.setString("baseurl", firstUser.baseurl ?? "");
+          await prefs.setBool('is_landlord', false);
+
+
           await prefs.setString("adminurl", firstUser.adminurl ?? "");
           await prefs.setString("license_expiry", firstUser.license_expiry ?? "");
           await prefs.setString("company_name", firstUser.companyName ?? "");
@@ -412,6 +415,8 @@ class _LoginPageState extends State<Login> {
       await prefs.setString("company_token", token);
       await prefs.setInt("company_id", user['company_id'] ?? 0);
       await prefs.setBool('is_admin', false);
+      await prefs.setBool('is_landlord', false);
+
 
       // no admin from api
       await prefs.remove('is_admin_from_api');
@@ -501,11 +506,150 @@ class _LoginPageState extends State<Login> {
     }
   }
 
+  Future<void> landlordLogin(String email, String password) async {
+    prefs!.clear();
 
-  void loginUser(String email, String password, bool isAdmin) {
+    String loginUrl = "$OAuth_URL/oauth/token";
+    setState(() => _isLoading = true);
+
+    try {
+      // Step 1: Get token and user info
+      var loginResponse = await http.post(
+        Uri.parse(loginUrl),
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: {
+          'username': email,
+          'password': password,
+          'client_id': client_id_constant,
+          'client_secret': client_password_constant,
+          'scope': "landlord",
+          "grant_type": "password",
+        },
+      );
+
+      var loginData = json.decode(loginResponse.body);
+      if (loginResponse.statusCode != 200 || !loginData.containsKey('user')) {
+        showErrorSnackbar(context, "${loginData['message']}" ?? 'Login failed');
+        return;
+      }
+
+      final user = loginData['user'][0];
+      final company = user['company'];
+      final hosting = company['hosting'];
+      final token = user['accessToken'];
+      final landlordId = user['id']; // landlord_id
+
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setInt("user_id", landlordId);
+      await prefs.setBool('remember_me', true);
+      await prefs.setString("user_name", user['name']);
+      await prefs.setString("scope", loginData["scope"]);
+      await prefs.setString("user_email", user['email']);
+      await prefs.setString("password", password);
+
+      await prefs.setString("company_token", token);
+      await prefs.setInt("company_id", user['company_id'] ?? 0);
+      await prefs.setBool('is_admin', false);
+      await prefs.setBool('is_landlord', true);
+
+      // no admin from api
+      await prefs.remove('is_admin_from_api');
+
+      await prefs.setString("license_expiry", hosting['license_expiry']);
+      await prefs.setString("baseurl", hosting['baseurl']);
+      await prefs.setString("adminurl", hosting['adminurl']);
+
+      await Future.delayed(Duration(seconds: 1));
+
+      // Step 2: Get tenant + flats details using tenantId
+      final landlordUrl = "${hosting['baseurl']}/landlord/$landlordId";
+
+      print('landlord url $landlordUrl');
+      print('token -> $token');
+
+      var tenantResponse = await http.get(
+        Uri.parse(landlordUrl),
+        headers: {
+          "Authorization": "Bearer $token",
+          "Accept": "application/json",
+        },
+      );
+
+      var landlordData = json.decode(tenantResponse.body);
+
+      print('response 2 landlord login-> ${tenantResponse.body}');
+
+      if (!landlordData['success']) {
+        final errorMsg = "${landlordData['message']}" ?? "Failed to fetch tenant details.";
+        showErrorSnackbar(context, errorMsg);
+        return;
+      }
+
+      var landlord = landlordData['data']['landlord'];
+      var contracts = landlord['contracts'] as List<dynamic>;
+
+      List<Map<String, dynamic>> flatsList = contracts.expand((contract) {
+        return (contract['flats'] as List<dynamic>).map((flatData) {
+          var flat = flatData['flat'];
+          return {
+            'landlord_id': landlord['id'],
+            'id': flat['id'],
+            'name': flat['name'],
+            'building': flat['building']['name'] ?? 'Unknown Building',
+            'company_id': landlord['company_id'],
+            'baseurl': hosting['baseurl'],
+            'adminurl': hosting['adminurl'],
+            'license_expiry': hosting['license_expiry'],
+            'accessToken': token,
+          };
+        });
+      }).toList();
+
+      await prefs.setString("flats_list", jsonEncode(flatsList));
+
+
+      // Step 3: Redirect user
+      if (flatsList.length > 1) {
+        loadTokens();
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => FlatSelection()),
+        );
+      } else if (flatsList.isNotEmpty) {
+
+        var flat = flatsList.first;
+        await prefs.setInt("flat_id", flat['id']);
+        await prefs.setString("flat_name", flat['name']);
+        await prefs.setString("building", flat['building']);
+        loadTokens();
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => TenantDashboard()),
+        );
+      } else {
+        await prefs!.setBool('remember_me', false);
+
+        showErrorSnackbar(context, "No flats found for this landlord.");
+      }
+    } catch (e) {
+      await prefs!.setBool('remember_me', false);
+
+      showErrorSnackbar(context, "Something went wrong during login.");
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
+
+
+  void loginUser(String email, String password, bool isAdmin, bool isLandlord) {
     if (isAdmin) {
       _adminlogin(email, password);
-    } else {
+    } else if(isLandlord)
+      {
+        landlordLogin(email, password);
+      }else {
       tenantLogin(email, password);
     }
   }
@@ -698,24 +842,28 @@ class _LoginPageState extends State<Login> {
                                           spacing: 8.0,
                                           runSpacing: 12.0,
                                           children: [
-                                            _buildToggleChip("Tenant", !isAdmin && !isOwner, () {
+                                            _buildToggleChip("Tenant", !isAdmin && !isLandlord, () {
                                               setState(() {
                                                 isAdmin = false;
-                                                isOwner = false;
+                                                isLandlord = false;
                                               });
                                             }),
                                             _buildToggleChip("Admin", isAdmin, () {
                                               setState(() {
                                                 isAdmin = true;
-                                                isOwner = false;
+                                                isLandlord = false;
                                               });
                                             }),
-                                            _buildToggleChip("Landlord", isOwner, () {
-                                              Fluttertoast.showToast(
+                                            _buildToggleChip("Landlord", isLandlord, () {
+                                              setState(() {
+                                                isAdmin = false;
+                                                isLandlord = true;
+                                              });
+                                              /*Fluttertoast.showToast(
                                                 msg: "Landlord access is under development",
                                                 toastLength: Toast.LENGTH_SHORT,
                                                 gravity: ToastGravity.BOTTOM,
-                                              );
+                                              );*/
                                             }),
                                           ],
                                         ),
@@ -883,7 +1031,7 @@ class _LoginPageState extends State<Login> {
 
                                             String email = emailController.text;
                                             String pass = passwordController.text;
-                                            loginUser(email,pass,isAdmin);
+                                            loginUser(email,pass,isAdmin,isLandlord);
                                             /*_adminlogin(email,pass,isAdmin);*/
                                           }
                                           },

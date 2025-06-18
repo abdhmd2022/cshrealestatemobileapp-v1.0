@@ -841,7 +841,7 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
                               Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Icon(Icons.phone, size: 16, color: Colors.green),
+                                  Icon(Icons.email_outlined, size: 16, color: Colors.green),
                                   SizedBox(width: 4),
                                   Text(
                                     tenantFlatDetails!["tenantMobile"],

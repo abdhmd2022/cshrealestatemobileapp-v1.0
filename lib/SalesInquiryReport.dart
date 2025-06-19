@@ -650,7 +650,9 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
                                         color: followUpDateColor,
                                         fontWeight: FontWeight.w500,
                                       ),
-                                    )])]]))));}))]));});}
+                                    )])]]))));}))]));
+      });
+  }
 
   bool shouldRestrictAction(InquiryModel inquiry) {
     if (is_admin && is_admin_from_api) return false; // Superadmin can always act
@@ -661,9 +663,6 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
 
     return createdBy == current && assignedTo != current && assignedTo.isNotEmpty;
   }
-
-
-
 
   Future<List<dynamic>> fetchLeadHistory(String id) async {
 

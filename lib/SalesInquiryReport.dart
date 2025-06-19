@@ -1422,7 +1422,6 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
     );
   }
 
-
   Widget _buildinquiryDetails(InquiryModel inquiry) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -1467,6 +1466,7 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
       ],
     );
   }
+
   Widget _buildCreatedAssignedCard(String? createdBy, String assignedTo, {bool showInfoIcon = false}) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
@@ -1520,11 +1520,11 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
                     ),
                 ],
               ),
-
         ],
       ),
     );
   }
+
   Widget _buildUserInfoBadge({
     required IconData icon,
     required String label,
@@ -1581,9 +1581,6 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
       ),
     );
   }
-
-
-
 
   List<Widget> formatAreasAsChips(List<Map<String, dynamic>> preferredAreas) {
     if (preferredAreas.isEmpty) {

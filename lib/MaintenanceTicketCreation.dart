@@ -1688,7 +1688,7 @@ late int loaded_flat_id;
       final Map<String, dynamic> requestBody = {
         "uuid": uuidValue,
         "flat_id": selectedFlat?['flat_id'],
-        "rental_contract_id": selectedFlat?['contract_id'], // ✅ new key
+        "rental_contract_id": selectedFlat?['contract_id'],  // ✅ new key
         "types": selectedMaintenanceType!.map((type) => {
           "id": type.id,
           "description": _descriptionControllers[type.id]?.text ?? ""

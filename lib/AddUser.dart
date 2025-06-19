@@ -1046,7 +1046,6 @@ class _AddUserPageState extends State<AddUser> with TickerProviderStateMixin {
                                                 });
                                                 /*userRegistration(serial_no!,fetched_email,fetched_password,fetched_role,fetched_name);*/
 
-
                                               }},
                                             child: Text('Register'),
                                           ),

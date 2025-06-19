@@ -1604,7 +1604,7 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
       return Container(
           padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
           decoration: BoxDecoration(
-            color: appbar_color.withOpacity(0.2),
+            color: Colors.deepOrangeAccent.withOpacity(0.2),
 
             borderRadius: BorderRadius.circular(20),
           ),
@@ -1616,13 +1616,13 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
                 Padding(
                   padding: const EdgeInsets.only(right: 6.0),
                   child:
-                  Icon(Icons.area_chart, color:appbar_color, size: 14),
+                  Icon(Icons.area_chart, color:Colors.deepOrangeAccent, size: 14),
                 ),
               Text(
                 label ?? 'Unknown',
                 style: GoogleFonts.poppins(
                   fontSize: 13,
-                  color: appbar_color,
+                  color: Colors.deepOrangeAccent,
                   fontWeight: FontWeight.w500,
                 ),
               ),

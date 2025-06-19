@@ -1049,16 +1049,10 @@ class _AddUserPageState extends State<AddUser> with TickerProviderStateMixin {
                                               }},
                                             child: Text('Register'),
                                           ),
-
-                                        ],)
-
-
-                                  ),)
-
+                                        ])
+                                  ))
                               ]))
                   )
-
-
                 ],
               ),)
           ],

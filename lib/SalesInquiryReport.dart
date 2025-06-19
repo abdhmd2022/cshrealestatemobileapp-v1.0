@@ -1604,7 +1604,7 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
       return Container(
           padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
           decoration: BoxDecoration(
-            color: Colors.deepOrangeAccent.withOpacity(0.2),
+            color: Colors.deepOrangeAccent.withOpacity(0.1),
 
             borderRadius: BorderRadius.circular(20),
           ),
@@ -1651,9 +1651,9 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
     return unitList.map((unit) {
       return Container(
         padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-        margin: EdgeInsets.only(right: 4),
+        margin: EdgeInsets.only(right: 0),
         decoration: BoxDecoration(
-          color: Colors.teal.withOpacity(0.2),
+          color: Colors.teal.withOpacity(0.1),
           borderRadius: BorderRadius.circular(20),
         ),
         child: Row(

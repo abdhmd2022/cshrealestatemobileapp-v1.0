@@ -614,7 +614,6 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
 
                               if (followup_type.isNotEmpty) ...[
                                 SizedBox(height: 8),
-
                                 Text(
                                   "Follow-up Type: ${followup_type}",
                                   style: GoogleFonts.poppins(color: Colors.grey.shade700),

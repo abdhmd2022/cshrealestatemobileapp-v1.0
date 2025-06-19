@@ -574,9 +574,7 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(12), // Rounded corners
-
                       ),
-
                         child: Card(
                         margin: EdgeInsets.symmetric(vertical: 8),
                         shape: RoundedRectangleBorder(

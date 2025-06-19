@@ -1427,12 +1427,12 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildInfoRow(Icons.numbers, "", inquiry.inquiryNo),
-        _buildInfoRow(Icons.type_specimen_outlined, "", inquiry.interest_type),
 
-        _buildInfoRow(FontAwesomeIcons.building, "", inquiry.unitType),
-        _buildInfoRow(FontAwesomeIcons.map, "", _formatAreasWithEmirates(inquiry.preferredAreas)),
-        _buildInfoRow(FontAwesomeIcons.clock, "", DateFormat('dd-MMM-yyyy').format(DateTime.parse(inquiry.lastFollowupDate))),
+        _buildInfoRow(Icons.numbers, "", inquiry.inquiryNo,Colors.orange),
+        _buildInfoRow(Icons.type_specimen_outlined, "", inquiry.interest_type,Colors.red),
+        _buildInfoRow(FontAwesomeIcons.building, "", inquiry.unitType,Colors.deepPurple),
+        _buildInfoRow(FontAwesomeIcons.map, "", _formatAreasWithEmirates(inquiry.preferredAreas),Colors.green),
+        _buildInfoRow(FontAwesomeIcons.clock, "", DateFormat('dd-MMM-yyyy').format(DateTime.parse(inquiry.lastFollowupDate)),Colors.blue),
 
         // 👇 Case 1: Superadmin → show both
         if (is_admin && is_admin_from_api) ...[
@@ -1589,12 +1589,12 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
     }).join(' • '); // Using a bullet separator for clarity
   }
 
-  Widget _buildInfoRow(IconData label,String heading, String value) {
+  Widget _buildInfoRow(IconData label,String heading, String value,Color color) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0),
       child: Row(
         children: [
-          FaIcon(label, color: appbar_color, size: 20.0),
+          FaIcon(label, color: color, size: 20.0),
 
           SizedBox(width: 8.0),
           Expanded(

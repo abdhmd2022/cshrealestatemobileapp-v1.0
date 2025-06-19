@@ -128,7 +128,7 @@ class _SpecialRequestScreenState extends State<SpecialRequestScreen> {
           'Content-Type': 'application/json',
         },
         body: json.encode({
-          "contract_id": selectedContractId,
+          "rental_contract_id": selectedContractId,
           "flat_id": selectedFlatId,
           "type_id": selectedRequestTypeId,
           "uuid": uuid,

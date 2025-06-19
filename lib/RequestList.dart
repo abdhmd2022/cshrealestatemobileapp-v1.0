@@ -57,6 +57,62 @@ class _RequestListScreenState extends State<RequestListScreen> {
           final requestsPage = data['data']['requests'] as List;
           final meta = data['meta'];
 
+          // ✅ Updated filtering: match nested flat ID
+          final filteredPage = requestsPage.where((req) {
+            final nestedFlatId = req['rental_flat']?['flat']?['id'];
+            return nestedFlatId == flat_id;
+          }).toList();
+
+          allRequests.addAll(filteredPage);
+
+          int currentPage = meta['page'];
+          int pageSize = meta['size'];
+          int totalCount = meta['totalCount'];
+          int totalPages = (totalCount / pageSize).ceil();
+
+          hasMore = currentPage < totalPages;
+          page++;
+        } else {
+          hasMore = false;
+        }
+      }
+
+      setState(() {
+        requests = allRequests.reversed.toList();
+        _filterComplaintsByDate(); // still applicable
+      });
+    } catch (e) {
+      print("Error fetching requests: $e");
+    } finally {
+      setState(() => isLoading = false);
+    }
+  }
+
+
+/*
+  Future<void> fetchRequests() async {
+    List<dynamic> allRequests = [];
+    int page = 1;
+    bool hasMore = true;
+
+    setState(() => isLoading = true);
+
+    try {
+      while (hasMore) {
+        final response = await http.get(
+          Uri.parse('$baseurl/tenant/request?page=$page'),
+          headers: {
+            'Authorization': 'Bearer $Company_Token',
+            'Content-Type': 'application/json',
+          },
+        );
+
+        final data = json.decode(response.body);
+
+        if (data['success'] == true) {
+          final requestsPage = data['data']['requests'] as List;
+          final meta = data['meta'];
+
           // Append filtered requests only (where flat_id matches)
           final filteredPage = requestsPage.where((req) => req['flat_id'] == flat_id).toList();
           allRequests.addAll(filteredPage);
@@ -83,6 +139,7 @@ class _RequestListScreenState extends State<RequestListScreen> {
       setState(() => isLoading = false);
     }
   }
+*/
   void _filterComplaintsByDate() {
     if (_startDate == null || _endDate == null) {
       filteredComplaints = requests;
@@ -298,7 +355,8 @@ class _RequestListScreenState extends State<RequestListScreen> {
                 itemBuilder: (context, index) {
                   final req = filteredComplaints[index];
                   final req_id = req["id"];
-                  final flat = req['contract_flat']['flat'];
+                  final flat = req['rental_flat']?['flat'];
+
                   final building = flat['building'];
                   final area = building['area'];
                   final state = area['state'];

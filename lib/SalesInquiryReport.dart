@@ -38,6 +38,7 @@ class InquiryModel {
   final String status;
   final String leadStatusCategory;
   final String lastFollowupRemarks;
+  final String interest_type;
   final String lastFollowupDate;
   // final String color;
   final List<Map<String, dynamic>> preferredAreas;
@@ -60,6 +61,8 @@ class InquiryModel {
     required this.inquiryNo,
     required this.leadStatusCategory,
     required this.creationDate,
+    required this.interest_type,
+
     required this.minPrice,
     required this.maxPrice,
     required this.status,
@@ -72,6 +75,8 @@ class InquiryModel {
 
   factory InquiryModel.fromJson(Map<String, dynamic> json) {
     final rawDate = json['created_at'] ?? '';
+    final interest_type = json['interest_type'] ?? '';
+
     final formattedDate = _formatDate(rawDate);
     final areas = (json['preferred_areas'] as List<dynamic>?)
         ?.map((area) => area['area']['name'])
@@ -124,6 +129,7 @@ class InquiryModel {
       customerName: json['name'] ?? 'Unknown',
       unitType: flatTypes,
       area: areas,
+      interest_type: interest_type,
       emirate: emirates,
       description: json['description'] ?? 'No description',
       contactNo: json['mobile_no'] ?? 'N/A',
@@ -1422,6 +1428,8 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _buildInfoRow(Icons.numbers, "", inquiry.inquiryNo),
+        _buildInfoRow(Icons.type_specimen_outlined, "", inquiry.interest_type),
+
         _buildInfoRow(FontAwesomeIcons.building, "", inquiry.unitType),
         _buildInfoRow(FontAwesomeIcons.map, "", _formatAreasWithEmirates(inquiry.preferredAreas)),
         _buildInfoRow(FontAwesomeIcons.clock, "", DateFormat('dd-MMM-yyyy').format(DateTime.parse(inquiry.lastFollowupDate))),

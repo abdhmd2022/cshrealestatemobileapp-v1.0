@@ -1741,11 +1741,10 @@ late int loaded_flat_id;
     }
   }
 
-
   String getMimeType(String path) {
-          final mimeType = lookupMimeType(path);
-          return mimeType?.split('/').last ?? 'jpeg'; // Default to JPEG
-        }
+     final mimeType = lookupMimeType(path);
+     return mimeType?.split('/').last ?? 'jpeg'; // Default to JPEG
+  }
 
   Future<void> sendImageData(int id,BuildContext context) async {
     try {

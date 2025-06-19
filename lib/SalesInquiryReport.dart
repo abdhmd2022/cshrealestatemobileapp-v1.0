@@ -1428,11 +1428,19 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
 
-        _buildInfoRow(Icons.numbers, "", inquiry.inquiryNo,Colors.orange),
-        _buildInfoRow(Icons.type_specimen_outlined, "", inquiry.interest_type,Colors.red),
-        _buildInfoRow(FontAwesomeIcons.building, "", inquiry.unitType,Colors.deepPurple),
-        _buildInfoRow(FontAwesomeIcons.map, "", _formatAreasWithEmirates(inquiry.preferredAreas),Colors.green),
-        _buildInfoRow(FontAwesomeIcons.clock, "", DateFormat('dd-MMM-yyyy').format(DateTime.parse(inquiry.lastFollowupDate)),Colors.blue),
+        _buildInfoRow("Inquiry No:", "", inquiry.inquiryNo,Colors.orange),
+        _buildInfoRow("Interest Type:", "", inquiry.interest_type,Colors.red),
+        _buildInfoRowChip("Unit(s):", "", Wrap(
+          spacing: 6,
+          runSpacing: 6,
+          children: formatUnitsAsChips(inquiry.unitType),
+        ),Colors.deepPurple),
+        _buildInfoRowChip("Area(s):", "",  Wrap(
+          spacing: 6,
+          runSpacing: 6,
+          children: formatAreasAsChips(inquiry.preferredAreas),
+        ),Colors.green),
+        _buildInfoRow("Last Followup:", "", DateFormat('dd-MMM-yyyy').format(DateTime.parse(inquiry.lastFollowupDate)),Colors.blue),
 
         // 👇 Case 1: Superadmin → show both
         if (is_admin && is_admin_from_api) ...[
@@ -1577,25 +1585,109 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
 
 
 
-  String _formatAreasWithEmirates(List<Map<String, dynamic>> preferredAreas) {
+  List<Widget> formatAreasAsChips(List<Map<String, dynamic>> preferredAreas) {
     if (preferredAreas.isEmpty) {
-      return 'No areas specified';
+      return [
+        Chip(
+          label: Text('No areas specified'),
+          backgroundColor: Colors.grey.shade200,
+          labelStyle: TextStyle(color: Colors.black54),
+        ),
+      ];
     }
 
     return preferredAreas.map((area) {
       final areaName = area['area']['name'] ?? 'Unknown Area';
       final emirateName = area['area']['state']['name'] ?? 'Unknown Emirate';
-      return '$areaName, $emirateName';
-    }).join(' • '); // Using a bullet separator for clarity
+      final label = '$areaName, $emirateName';
+
+      return Container(
+          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+          decoration: BoxDecoration(
+            color: appbar_color.withOpacity(0.2),
+
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+
+
+                Padding(
+                  padding: const EdgeInsets.only(right: 6.0),
+                  child:
+                  Icon(Icons.area_chart, color:appbar_color, size: 14),
+                ),
+              Text(
+                label ?? 'Unknown',
+                style: GoogleFonts.poppins(
+                  fontSize: 13,
+                  color: appbar_color,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+
+            ],
+          ),
+        );
+      
+    }).toList();
   }
 
-  Widget _buildInfoRow(IconData label,String heading, String value,Color color) {
+  List<Widget> formatUnitsAsChips(String unitTypeString) {
+    if (unitTypeString.trim().isEmpty) {
+      return [
+        Chip(
+          label: Text('No unit types specified'),
+          backgroundColor: Colors.grey.shade200,
+          labelStyle: TextStyle(color: Colors.black54),
+        ),
+      ];
+    }
+
+    // Split the string by comma, trim each unit
+    final unitList = unitTypeString.split(',').map((e) => e.trim()).toList();
+
+    return unitList.map((unit) {
+      return Container(
+        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        margin: EdgeInsets.only(right: 4),
+        decoration: BoxDecoration(
+          color: Colors.teal.withOpacity(0.2),
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.home_work, color: Colors.teal, size: 14),
+            SizedBox(width: 6),
+            Text(
+              unit,
+              style: GoogleFonts.poppins(
+                fontSize: 13,
+                color: Colors.teal,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+      );
+    }).toList();
+  }
+
+
+  Widget _buildInfoRow(String label,String heading, String value,Color color) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0),
       child: Row(
         children: [
-          FaIcon(label, color: color, size: 20.0),
-
+          Text(
+            label,
+            style: GoogleFonts.poppins(
+              fontWeight: FontWeight.bold,
+              color: Colors.grey[700],
+            ),
+          ),
           SizedBox(width: 8.0),
           Expanded(
               child: SingleChildScrollView(
@@ -1618,6 +1710,45 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
                     )
                   ],
                 )))]));
+  }
+
+  Widget _buildInfoRowChip(String label, String heading, Widget valueWidget, Color color) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text(
+            label,
+            style: GoogleFonts.poppins(
+              fontWeight: FontWeight.bold,
+              color: Colors.grey[700],
+            ),
+          ),
+          SizedBox(width: 8.0),
+          Expanded(
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  if (heading.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.only(right: 4.0),
+                      child: Text(
+                        heading,
+                        style: GoogleFonts.poppins(
+                          color: Colors.black87,
+                        ),
+                      ),
+                    ),
+                  valueWidget
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _buildInfoRowExpandedView(String label, String value) {

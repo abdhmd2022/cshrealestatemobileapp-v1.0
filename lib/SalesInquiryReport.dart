@@ -1675,7 +1675,6 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
     }).toList();
   }
 
-
   Widget _buildInfoRow(String label,String heading, String value,Color color) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0),

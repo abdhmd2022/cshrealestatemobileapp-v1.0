@@ -71,6 +71,8 @@ class _TenantComplaintPageState extends State<TenantComplaint> with TickerProvid
           },
           body: jsonEncode({
             'tenant_id' : user_id,
+            'status_id':1,
+
             'uuid':uuidValue,
             'type': selectedType,
             'description': _descriptionController.text.trim(),

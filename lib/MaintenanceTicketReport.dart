@@ -2530,6 +2530,7 @@ class _ComplaintBottomSheetState extends State<ComplaintBottomSheet> {
       },
       body: jsonEncode({
         "ticket_id": widget.ticketId,
+        'status_id' : 1,
         "description": description,
       }),
     );

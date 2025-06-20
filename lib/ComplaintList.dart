@@ -91,6 +91,8 @@ class _ComplaintListScreenState extends State<ComplaintListScreen> {
       return;
     }
 
+    print('complaint ->${filteredComplaints}');
+
     filteredComplaints = complaints.where((comp) {
       final createdAt = DateTime.tryParse(comp['created_at'] ?? '');
       if (createdAt == null) return false;

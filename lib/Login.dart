@@ -855,15 +855,15 @@ class _LoginPageState extends State<Login> {
                                               });
                                             }),
                                             _buildToggleChip("Landlord", isLandlord, () {
-                                              setState(() {
+                                             /* setState(() {
                                                 isAdmin = false;
                                                 isLandlord = true;
-                                              });
-                                              /*Fluttertoast.showToast(
+                                              });*/
+                                              Fluttertoast.showToast(
                                                 msg: "Landlord access is under development",
                                                 toastLength: Toast.LENGTH_SHORT,
                                                 gravity: ToastGravity.BOTTOM,
-                                              );*/
+                                              );
                                             }),
                                           ],
                                         ),

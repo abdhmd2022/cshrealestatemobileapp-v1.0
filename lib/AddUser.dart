@@ -1007,9 +1007,6 @@ class _AddUserPageState extends State<AddUser> with TickerProviderStateMixin {
                                                 controller_email.clear();
                                                 controller_name.clear();
                                                 controller_password.clear();
-
-
-
                                               });
                                             },
                                             child: Text('Clear'),

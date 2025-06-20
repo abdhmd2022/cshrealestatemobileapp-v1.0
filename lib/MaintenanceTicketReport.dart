@@ -2535,7 +2535,8 @@ class _ComplaintBottomSheetState extends State<ComplaintBottomSheet> {
       }),
     );
 
-    if (response.statusCode == 200 || response.statusCode == 201) {
+    if (response.statusCode == 200 || response.statusCode == 201)
+    {
       _controller.clear();
       await _fetchComplaintHistory(); // Refresh the list
     }

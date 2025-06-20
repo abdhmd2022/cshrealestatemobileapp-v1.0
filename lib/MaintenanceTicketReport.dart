@@ -2540,9 +2540,9 @@ class _ComplaintBottomSheetState extends State<ComplaintBottomSheet> {
       await _fetchComplaintHistory(); // Refresh the list
     }
     else
-      {
+    {
         print('error in creating complaint');
-      }
+    }
 
     setState(() => isSubmitting = false);
   }

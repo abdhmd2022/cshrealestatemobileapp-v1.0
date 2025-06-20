@@ -1026,7 +1026,6 @@ class _AddUserPageState extends State<AddUser> with TickerProviderStateMixin {
                                               ),
                                             ),
                                             onPressed: () {
-
                                               if (_formKey.currentState != null &&
                                                   _formKey.currentState!.validate()) {
                                                 _formKey.currentState!.save();
@@ -1042,7 +1041,6 @@ class _AddUserPageState extends State<AddUser> with TickerProviderStateMixin {
                                                   _isFocused_password = false;
                                                 });
                                                 /*userRegistration(serial_no!,fetched_email,fetched_password,fetched_role,fetched_name);*/
-
                                               }},
                                             child: Text('Register'),
                                           ),

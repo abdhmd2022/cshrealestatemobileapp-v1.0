@@ -2551,7 +2551,6 @@ class _ComplaintBottomSheetState extends State<ComplaintBottomSheet> {
   @override
   Widget build(BuildContext context) {
     final isEmpty = !isLoading && complaintList.isEmpty;
-
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,

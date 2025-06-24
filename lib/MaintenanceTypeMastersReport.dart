@@ -16,7 +16,7 @@ class MaintenanceTypeMastersReport extends StatefulWidget {
 
 class _MaintenanceTypeMastersReportState extends State<MaintenanceTypeMastersReport> {
   List<dynamic> maintenance_types_list = [];
-  bool isLoading = true;
+  bool isLoading = false;
 
   TextEditingController maintenanceTypeController = TextEditingController();
 
@@ -32,7 +32,10 @@ class _MaintenanceTypeMastersReportState extends State<MaintenanceTypeMastersRep
   @override
   void initState() {
     super.initState();
-    fetchMaintenanceType();
+    if(hasPermission('canViewMaintenanceTypes')){
+      fetchMaintenanceType();
+    }
+
   }
 
   Future<void> sendMaintenanceType() async {
@@ -476,6 +479,9 @@ class _MaintenanceTypeMastersReportState extends State<MaintenanceTypeMastersRep
 
 
   Future<void> fetchMaintenanceType() async {
+    setState(() {
+      isLoading = true;
+    });
 
     print('fetching maintenance type');
     maintenance_types_list.clear();
@@ -551,6 +557,7 @@ class _MaintenanceTypeMastersReportState extends State<MaintenanceTypeMastersRep
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         leading: GestureDetector(
           onTap: ()
@@ -571,29 +578,30 @@ class _MaintenanceTypeMastersReportState extends State<MaintenanceTypeMastersRep
         backgroundColor: appbar_color.withOpacity(0.9),
 
       ),
-      body: isLoading
+      body: hasPermission('canViewMaintenanceTypes') ? (
+      isLoading
           ? Center(
-        child:Container(
-          color: Colors.white,
-          child: Platform.isIOS
-            ? CupertinoActivityIndicator(radius: 15.0)
-            : CircularProgressIndicator(
-          valueColor: AlwaysStoppedAnimation<Color>(appbar_color),
-          strokeWidth: 4.0,
-        ),
-      ))
+          child:Container(
+            color: Colors.white,
+            child: Platform.isIOS
+                ? CupertinoActivityIndicator(radius: 15.0)
+                : CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(appbar_color),
+              strokeWidth: 4.0,
+            ),
+          ))
           : maintenance_types_list.isEmpty
           ? Center(
-        child: Container(
-          color: Colors.white,
-          child: Text(
-          'No data available',
-          style: GoogleFonts.poppins(color: appbar_color.withOpacity(0.9), fontSize: 18),
-        ),
-      ))
+          child: Container(
+            color: Colors.white,
+            child: Text(
+              'No data available',
+              style: GoogleFonts.poppins(color: appbar_color.withOpacity(0.9), fontSize: 18),
+            ),
+          ))
           : Container(
-          color: Colors.white,
-          padding: EdgeInsets.only(top: 10),
+        color: Colors.white,
+        padding: EdgeInsets.only(top: 10),
         child: ListView.builder(
           itemCount: maintenance_types_list.length,
           itemBuilder: (context, index) {
@@ -668,27 +676,31 @@ class _MaintenanceTypeMastersReportState extends State<MaintenanceTypeMastersRep
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
 
-                            _buildDecentButton(
-                              'Edit',
-                              Icons.edit,
-                              Colors.blue,
-                                  () {
-                                selectedCategory = type['category'] ?? categories_list.first;
-                                showEditMaintenanceTypeDialog(type['id'],type['name']);
-                              },
-                            ),
-                            SizedBox(width:5),
-                            _buildDecentButton(
-                              'Delete',
-                              Icons.delete,
-                              Colors.redAccent,
-                                  () {
+                            if(hasPermission('canUpdateMaintenanceTypes'))...[
+                              _buildDecentButton(
+                                'Edit',
+                                Icons.edit,
+                                Colors.blue,
+                                    () {
+                                  selectedCategory = type['category'] ?? categories_list.first;
+                                  showEditMaintenanceTypeDialog(type['id'],type['name']);
+                                },
+                              ),
+                              SizedBox(width:5),
+                            ],
 
-                                deleteMaintenanceType(type['id']); },
-                            ),
-                            SizedBox(width:5)
+                            if(hasPermission('canDeleteMaintenanceTypes'))...[
+                              _buildDecentButton(
+                                'Delete',
+                                Icons.delete,
+                                Colors.redAccent,
+                                    () {
+
+                                  deleteMaintenanceType(type['id']); },
+                              ),
+                              SizedBox(width:5)
+                            ]
                           ],),
-
                       ],),
                   ),
 
@@ -699,9 +711,32 @@ class _MaintenanceTypeMastersReportState extends State<MaintenanceTypeMastersRep
             );
           },
         ),
+      )
+      ) :
+      Expanded(
+        child: Center(
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.lock_outline, size: 48, color: Colors.grey),
+                  SizedBox(height: 10),
+                  Text(
+                    "Access Denied",
+                    style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    "You don’t have permission to view maintenance types.",
+                    style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            )
+        ),
       ),
 
-      floatingActionButton: FloatingActionButton(
+        floatingActionButton: hasPermission('canCreateMaintenanceTypes') ? FloatingActionButton(
         onPressed:()
         {
           maintenanceTypeController.clear();
@@ -711,7 +746,7 @@ class _MaintenanceTypeMastersReportState extends State<MaintenanceTypeMastersRep
         backgroundColor: appbar_color.withOpacity(0.9),
         child: Icon(Icons.add,
             color: Colors.white),
-      ),
+      ) : null
     );
   }
 

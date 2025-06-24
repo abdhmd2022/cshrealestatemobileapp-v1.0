@@ -79,12 +79,13 @@ class _SidebarState extends State<Sidebar> {
                 borderRadius: BorderRadius.circular(12),
               ),
               elevation: 4,
-              margin: EdgeInsets.only(top:70,left: 16,right: 16),
+              margin: EdgeInsets.only(top: 70, left: 10, right: 10),
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
+                    // Avatar/Icon
                     Container(
                       width: 50,
                       height: 50,
@@ -108,85 +109,39 @@ class _SidebarState extends State<Sidebar> {
                         color: appbar_color,
                       ),
                     ),
+
                     SizedBox(width: 15),
-                    Expanded(  // Ensures the Column takes available space and wraps text properly
+
+                    // Info block
+                    Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            userName,
+                            user_name,
                             style: GoogleFonts.poppins(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
                               color: Colors.white,
                             ),
-                            overflow: TextOverflow.ellipsis, // Optional: Adds '...' if text is too long
-                            maxLines: 1,
                           ),
                           SizedBox(height: 2),
                           Text(
-                            userEmail,
+                            user_email,
                             style: GoogleFonts.poppins(fontSize: 14, color: Colors.white),
                             overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
                           ),
                           SizedBox(height: 2),
                           Text(
-                            'ID: $userID (for testing purpose)',
-                            style: GoogleFonts.poppins(fontSize: 14, color: Colors.white),
-                            softWrap: true, // Allows text to wrap instead of overflowing
+                            role_name,
+                            style: GoogleFonts.poppins(fontSize: 13, color: Colors.white70),
                           ),
-
                           SizedBox(height: 2),
-                          if(is_admin)
                           Text(
-                            'Admin (for testing purpose)',
-                            style: GoogleFonts.poppins(fontSize: 14, color: Colors.white),
-                            softWrap: true, // Allows text to wrap instead of overflowing
+                            companyName,
+                            style: GoogleFonts.poppins(fontSize: 13, color: Colors.white70),
                           ),
-                          if(!is_admin)
-                            Text(
-                              'Tenant (for testing purpose)',
-                              style: GoogleFonts.poppins(fontSize: 14, color: Colors.white),
-                              softWrap: true, // Allows text to wrap instead of overflowing
-                            ),
-                            ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            SizedBox(height: 10),
-
-            Card(
-              color: appbar_color,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              elevation: 4,
-              margin: EdgeInsets.symmetric(vertical: 0, horizontal: 16),
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    /*Text(
-                      '$serialNo (ID: $serialID (for testing purpose only)',
-                      style: GoogleFonts.poppins(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                    Divider(),*/
-
-                    Text(
-                      '$companyName (ID: $companyID (for testing purpose only)',
-                      style: GoogleFonts.poppins(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                        ],
                       ),
                     ),
                   ],
@@ -194,7 +149,11 @@ class _SidebarState extends State<Sidebar> {
               ),
             ),
 
+
+            SizedBox(height: 20),
+            Divider(),
             SizedBox(height: 10),
+
 
             // ✅ Sidebar Menu Items
             Expanded(

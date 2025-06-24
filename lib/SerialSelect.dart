@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:cshrealestatemobile/BuildingDetailsScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -56,14 +57,14 @@ class _CompanySelectionState extends State<CompanySelection> {
     await prefs.setString("company_name", selectedCompany!.name);
     await prefs.setString("baseurl", selectedCompany!.baseurl);
     await prefs.setString("adminurl", selectedCompany!.adminurl);
-    await prefs.setString("license_expiry", selectedCompany!.license_expiry);
+    await prefs.setString("license_expiry", selectedCompany!.licenseExpiry);
 
 
     print("✅ Selected Company: ${selectedCompany!.name}");
     print("🔑 Company Token: ${selectedCompany!.token}");
     print("🔑 Base URL: ${selectedCompany!.baseurl}");
     print("🔑 Admin URL: ${selectedCompany!.adminurl}");
-    print("🔑 Expiry: ${selectedCompany!.license_expiry}");
+    print("🔑 Expiry: ${selectedCompany!.licenseExpiry}");
     print("🔑 Company Name: ${selectedCompany!.name}");
 
     await loadTokens();
@@ -123,32 +124,65 @@ class _CompanySelectionState extends State<CompanySelection> {
                   _buildDropdown<RegisteredCompany>(
                     selectedCompany,
                     "Select Company",
-                    companies.map((company) => DropdownMenuItem(
+                      companies.map((company) => DropdownMenuItem(
                         value: company,
-                        child: Text(company.name))).toList(),
-                        (RegisteredCompany? newCompany) async {
-                      if (newCompany != null) {
+                        child: Text(
+                          company.name,
+                          style: TextStyle(
+                            color: company.isActive ? Colors.black : Colors.grey,
+                            fontStyle: company.isActive ? FontStyle.normal : FontStyle.italic,
+                          ),
+                        ),
+                      )).toList(),
+
+                      (RegisteredCompany? newCompany) async {
+                        if (newCompany == null) return;
+
+                        // Check license expiry
+                        final expiry = DateTime.tryParse(newCompany.licenseExpiry);
+                        if (expiry != null && expiry.isBefore(DateTime.now())) {
+                          showErrorSnackbar(
+                            context,
+                            'Your license against "${newCompany.name}" is expired. Please contact your service provider for renewal.',
+                          );
+                          return;
+                        }
+
+                        if (!newCompany.isActive) {
+                          showErrorSnackbar(context, 'This company is inactive for your account.');
+                          return;
+                        }
+
                         setState(() {
                           selectedCompany = newCompany;
                         });
+
                         SharedPreferences prefs = await SharedPreferences.getInstance();
 
+                        await prefs.setInt("company_id", newCompany.id);
+                        await prefs.setString("company_name", newCompany.name);
+                        await prefs.setString("access_token", newCompany.token); // updated key
+                        await prefs.setString("access_token_expiry", newCompany.tokenExpiry);
+                        await prefs.setString("baseurl", newCompany.baseurl);
+                        await prefs.setString("adminurl", newCompany.adminurl);
+                        await prefs.setString("license_expiry", newCompany.licenseExpiry);
+                        await prefs.setBool("is_admin", newCompany.isAdmin);
+                        await prefs.setBool("is_admin_from_api", newCompany.isAdmin);
+                        await prefs.setString("user_name", newCompany.userName);
+                        await prefs.setString("user_email", newCompany.userEmail);
+                        await prefs.setInt("user_id", newCompany.userId);
+                        await prefs.setString("user_permissions", jsonEncode(newCompany.permissions));
+                        await prefs.setString("role_name", newCompany.roleName);
 
-                        await prefs.setInt("company_id", newCompany!.id);
-                        await prefs.setString("company_token", newCompany!.token);
-                        await prefs.setString("company_name", newCompany!.name);
-                        await prefs.setString("baseurl", newCompany!.baseurl);
-                        await prefs.setString("adminurl", newCompany!.adminurl);
-                        await prefs.setString("license_expiry", newCompany!.license_expiry);
+                        loadTokens(); // ✅ To refresh globally used values
 
-                        print("✅ Selected Company: ${newCompany.name}");
-                        print("🔑 Company Token: ${newCompany.token}");
-                        print("🔑 Company ID: ${newCompany.id}");
-                        print("🔑 Base URL: ${newCompany.baseurl}");
-                        print("🔑 Admin URL: ${newCompany.adminurl}");
-                        print("🔑 License expiry: ${newCompany.license_expiry}");
+                        // Proceed to dashboard or next screen
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(builder: (context) => AdminDashboard()),
+                        );
                       }
-                    },
+
                   ),
                   SizedBox(height: 30),
                   Center(

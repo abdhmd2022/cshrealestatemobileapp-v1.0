@@ -70,7 +70,10 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
   void initState() {
     super.initState();
     // Initialize all tickets to be collapsed by default
-    fetchAllTickets();
+    if(hasPermission('canViewMaintenanceTickets')){
+      fetchAllTickets();
+    }
+
   }
 
 
@@ -258,7 +261,10 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
       }
     }
 
-    await fetchComments(); // 🔥 Load first page initially
+    if(hasPermission('canViewTicketComment')){
+      await fetchComments(); // 🔥 Load first page initially
+    }
+
 
     showModalBottomSheet(
       context: contextt,
@@ -317,238 +323,269 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                   Divider(),
 
                   // Comments List
-                  Expanded(
-                    child: filteredData.isEmpty
-                        ? Center(child: Text("No Comments Found", style: GoogleFonts.poppins()))
-                        : ListView.builder(
-                      controller: scrollController,
-                      itemCount: filteredData.length + (isLoadingMore ? 1 : 0),
-                        itemBuilder: (contextt, index) {
-                          if (isLoadingMore && index == filteredData.length) {
-                            return Center(
-                              child: Padding(
-                                padding: EdgeInsets.all(8),
-                                child: CircularProgressIndicator(),
-                              ),
-                            );
-                          }
-
-                          var item = filteredData[index];
-
-                          bool isCurrentUserComment = false;
-
-                          if (currentScope == 'user') {
-                            isCurrentUserComment = item['created_by'] != null;
-                          } else if (currentScope == 'tenant') {
-                            isCurrentUserComment = item['tenant_id'] != null;
-                          }
-
-                          String username = item['tenant_id'] != null
-                              ? (item["tenant"] != null ? (item["tenant"]["name"] ?? "Tenant") : "Tenant")
-                              : (item["created_user"] != null ? (item["created_user"]["name"] ?? "Admin") : "Admin");
-
-                          // Get current message date (only date part)
-                          DateTime messageDate = DateTime.parse(item["created_at"]).toLocal();
-                          String messageDateString = "${messageDate.year}-${messageDate.month}-${messageDate.day}";
-
-                          // Check if we need to show a date separator
-                          bool showDateSeparator = false;
-                          if (index == 0) {
-                            showDateSeparator = true;
-                          } else {
-                            var previousItem = filteredData[index - 1];
-                            DateTime previousDate = DateTime.parse(previousItem["created_at"]).toLocal();
-                            String previousDateString = "${previousDate.year}-${previousDate.month}-${previousDate.day}";
-                            if (messageDateString != previousDateString) {
-                              showDateSeparator = true;
+                  if(hasPermission('canViewTicketComment'))...[
+                    Expanded(
+                      child: filteredData.isEmpty
+                          ? Center(child: Text("No Comments Found", style: GoogleFonts.poppins()))
+                          : ListView.builder(
+                          controller: scrollController,
+                          itemCount: filteredData.length + (isLoadingMore ? 1 : 0),
+                          itemBuilder: (contextt, index) {
+                            if (isLoadingMore && index == filteredData.length) {
+                              return Center(
+                                child: Padding(
+                                  padding: EdgeInsets.all(8),
+                                  child: CircularProgressIndicator(),
+                                ),
+                              );
                             }
-                          }
 
-                          List<Widget> widgets = [];
+                            var item = filteredData[index];
 
-                          if (showDateSeparator) {
-                            widgets.add(
-                              Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 10),
-                                child: Center(
-                                  child: Container(
-                                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                                    decoration: BoxDecoration(
-                                      color: Colors.grey.shade300,
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    child: Text(
-                                      getFormattedDateLabel(messageDate),
-                                      style: GoogleFonts.poppins(
-                                        fontSize: 13,
-                                        fontWeight: FontWeight.w500,
-                                        color: Colors.black87,
+                            bool isCurrentUserComment = false;
+
+                            if (currentScope == 'user') {
+                              isCurrentUserComment = item['created_by'] != null;
+                            } else if (currentScope == 'tenant') {
+                              isCurrentUserComment = item['tenant_id'] != null;
+                            }
+
+                            String username = item['tenant_id'] != null
+                                ? (item["tenant"] != null ? (item["tenant"]["name"] ?? "Tenant") : "Tenant")
+                                : (item["created_user"] != null ? (item["created_user"]["name"] ?? "Admin") : "Admin");
+
+                            // Get current message date (only date part)
+                            DateTime messageDate = DateTime.parse(item["created_at"]).toLocal();
+                            String messageDateString = "${messageDate.year}-${messageDate.month}-${messageDate.day}";
+
+                            // Check if we need to show a date separator
+                            bool showDateSeparator = false;
+                            if (index == 0) {
+                              showDateSeparator = true;
+                            } else {
+                              var previousItem = filteredData[index - 1];
+                              DateTime previousDate = DateTime.parse(previousItem["created_at"]).toLocal();
+                              String previousDateString = "${previousDate.year}-${previousDate.month}-${previousDate.day}";
+                              if (messageDateString != previousDateString) {
+                                showDateSeparator = true;
+                              }
+                            }
+
+                            List<Widget> widgets = [];
+
+                            if (showDateSeparator) {
+                              widgets.add(
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(vertical: 10),
+                                  child: Center(
+                                    child: Container(
+                                      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                      decoration: BoxDecoration(
+                                        color: Colors.grey.shade300,
+                                        borderRadius: BorderRadius.circular(12),
                                       ),
-                                    ),
-
-                                  ),
-                                ),
-                              ),
-                            );
-                          }
-
-                          widgets.add(
-                            Container(
-                              alignment: isCurrentUserComment ? Alignment.centerRight : Alignment.centerLeft,
-                              margin: EdgeInsets.symmetric(vertical: 6),
-                              child: Container(
-                                constraints: BoxConstraints(
-                                  maxWidth: MediaQuery.of(contextt).size.width * 0.7,
-                                ),
-                                padding: EdgeInsets.all(12),
-                                decoration: BoxDecoration(
-                                  color: isCurrentUserComment ? appbar_color.withOpacity(0.9) : Colors.grey.shade300,
-                                  borderRadius: BorderRadius.only(
-                                    topLeft: Radius.circular(16),
-                                    topRight: Radius.circular(16),
-                                    bottomLeft: isCurrentUserComment ? Radius.circular(16) : Radius.circular(0),
-                                    bottomRight: isCurrentUserComment ? Radius.circular(0) : Radius.circular(16),
-                                  ),
-                                ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      username,
-                                      style: GoogleFonts.poppins(
-                                        fontSize: 13,
-                                        color: isCurrentUserComment ? Colors.white70 : Colors.black87,
-                                        fontWeight: FontWeight.w600,
+                                      child: Text(
+                                        getFormattedDateLabel(messageDate),
+                                        style: GoogleFonts.poppins(
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w500,
+                                          color: Colors.black87,
+                                        ),
                                       ),
+
                                     ),
-                                    SizedBox(height: 4),
-                                    Text(
-                                      item["description"] ?? "",
-                                      style: GoogleFonts.poppins(
-                                        fontSize: 15,
-                                        color: isCurrentUserComment ? Colors.white : Colors.black87,
-                                      ),
-                                    ),
-                                    SizedBox(height: 4),
-                                    Text(
-                                      DateFormat('hh:mm a').format(DateTime.parse(item["created_at"]).toLocal()),
-
-                                      style: GoogleFonts.poppins(
-                                        fontSize: 10,
-                                        color: isCurrentUserComment ? Colors.white60 : Colors.black54,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          );
-
-                          return Column(
-                            children: widgets,
-                          );
-                        }
-
-                    ),
-                  ),
-
-                  if(status!='Close')...[
-                    SizedBox(height: 10),
-
-                    // Comment input area
-                    Row(
-                      children: [
-                        Expanded(
-                          child: TextField(
-                            controller: commentController,
-                            maxLines: null,
-
-                            style: GoogleFonts.poppins(color: Colors.black),
-                            decoration: InputDecoration(
-                              hintText: "Type your message...",
-                              hintStyle: GoogleFonts.poppins(color: Colors.black54),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: BorderSide(color: Colors.grey.shade400),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: BorderSide(color: appbar_color),
-                              ),
-                              filled: true,
-                              fillColor: Colors.white,
-                              contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                            ),
-                          ),
-                        ),
-                        SizedBox(width: 8),
-                        InkWell(
-                          borderRadius: BorderRadius.circular(50),
-                          onTap: isSubmitting
-                              ? null
-                              : () async {
-                            if (commentController.text.trim().isEmpty) {
-                              ScaffoldMessenger.of(contextt).showSnackBar(
-                                SnackBar(
-                                  content: Text("Please enter a comment!", style: GoogleFonts.poppins()),
-                                  backgroundColor: Colors.red,
-                                  behavior: SnackBarBehavior.floating,
-                                  margin: EdgeInsets.all(16),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
                                   ),
                                 ),
                               );
-                              return;
                             }
 
-                            setState(() => isSubmitting = true);
+                            widgets.add(
+                              Container(
+                                alignment: isCurrentUserComment ? Alignment.centerRight : Alignment.centerLeft,
+                                margin: EdgeInsets.symmetric(vertical: 6),
+                                child: Container(
+                                  constraints: BoxConstraints(
+                                    maxWidth: MediaQuery.of(contextt).size.width * 0.7,
+                                  ),
+                                  padding: EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                    color: isCurrentUserComment ? appbar_color.withOpacity(0.9) : Colors.grey.shade300,
+                                    borderRadius: BorderRadius.only(
+                                      topLeft: Radius.circular(16),
+                                      topRight: Radius.circular(16),
+                                      bottomLeft: isCurrentUserComment ? Radius.circular(16) : Radius.circular(0),
+                                      bottomRight: isCurrentUserComment ? Radius.circular(0) : Radius.circular(16),
+                                    ),
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        username,
+                                        style: GoogleFonts.poppins(
+                                          fontSize: 13,
+                                          color: isCurrentUserComment ? Colors.white70 : Colors.black87,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                      SizedBox(height: 4),
+                                      Text(
+                                        item["description"] ?? "",
+                                        style: GoogleFonts.poppins(
+                                          fontSize: 15,
+                                          color: isCurrentUserComment ? Colors.white : Colors.black87,
+                                        ),
+                                      ),
+                                      SizedBox(height: 4),
+                                      Text(
+                                        DateFormat('hh:mm a').format(DateTime.parse(item["created_at"]).toLocal()),
 
-                            bool success = await saveComment(id, commentController.text.trim());
-
-                            if (success) {
-                              setState(() {
-                                filteredData.add({
-                                  "description": commentController.text.trim(),
-                                  "created_at": DateTime.now().toIso8601String(),
-                                  currentScope == 'user' ? "created_by" : "tenant_id": 1,
-                                  "tenant": currentScope == 'tenant' ? {"name": "You"} : null,
-                                  "created_user": currentScope == 'user' ? {"name": "You"} : null,
-                                });
-                                commentController.clear();
-                              });
-
-                              // 🔥 Smooth scroll to bottom after sending
-                              Future.delayed(Duration(milliseconds: 100), () {
-                                if (scrollController.hasClients) {
-                                  scrollController.animateTo(
-                                    scrollController.position.maxScrollExtent,
-                                    duration: Duration(milliseconds: 300),
-                                    curve: Curves.easeOut,
-                                  );
-                                }
-                              });
-                            }
-
-                            setState(() => isSubmitting = false);
-                          },
-                          child: CircleAvatar(
-                            radius: 24,
-                            backgroundColor: appbar_color,
-                            child: isSubmitting
-                                ? SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2.5,
-                                color: Colors.white,
+                                        style: GoogleFonts.poppins(
+                                          fontSize: 10,
+                                          color: isCurrentUserComment ? Colors.white60 : Colors.black54,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
                               ),
-                            )
-                                : Icon(Icons.send, color: Colors.white),
-                          ),
-                        ),
-                      ],
+                            );
+
+                            return Column(
+                              children: widgets,
+                            );
+                          }
+
+                      ),
                     ),
+                  ]
+                  else...[
+                    Expanded(
+                      child: Center(
+                        child: SingleChildScrollView(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.lock_outline, size: 48, color: Colors.grey),
+                          SizedBox(height: 10),
+                          Text(
+                            "Access Denied",
+                            style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            "You don’t have permission to view comments.",
+                            style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
+                      )
+                      ),
+                    ),
+                  ],
+
+
+                  if(status!='Close')...[
+
+
+                    // Comment input area
+                    if(hasPermission('canCreateTicketComment'))...[
+                      SizedBox(height: 10),
+            Row(
+            children: [
+            Expanded(
+            child: TextField(
+            controller: commentController,
+            maxLines: null,
+
+            style: GoogleFonts.poppins(color: Colors.black),
+            decoration: InputDecoration(
+            hintText: "Type your message...",
+            hintStyle: GoogleFonts.poppins(color: Colors.black54),
+            border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(color: Colors.grey.shade400),
+            ),
+            focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(color: appbar_color),
+            ),
+            filled: true,
+            fillColor: Colors.white,
+            contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            ),
+            ),
+            ),
+            SizedBox(width: 8),
+            InkWell(
+            borderRadius: BorderRadius.circular(50),
+            onTap: isSubmitting
+            ? null
+                : () async {
+            if (commentController.text.trim().isEmpty) {
+            ScaffoldMessenger.of(contextt).showSnackBar(
+            SnackBar(
+            content: Text("Please enter a comment!", style: GoogleFonts.poppins()),
+            backgroundColor: Colors.red,
+            behavior: SnackBarBehavior.floating,
+            margin: EdgeInsets.all(16),
+            shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+            ),
+            ),
+            );
+            return;
+            }
+
+            setState(() => isSubmitting = true);
+
+            bool success = await saveComment(id, commentController.text.trim());
+
+            if (success) {
+            setState(() {
+            filteredData.add({
+            "description": commentController.text.trim(),
+            "created_at": DateTime.now().toIso8601String(),
+            currentScope == 'user' ? "created_by" : "tenant_id": 1,
+            "tenant": currentScope == 'tenant' ? {"name": "You"} : null,
+            "created_user": currentScope == 'user' ? {"name": "You"} : null,
+            });
+            commentController.clear();
+            });
+
+            // 🔥 Smooth scroll to bottom after sending
+            Future.delayed(Duration(milliseconds: 100), () {
+            if (scrollController.hasClients) {
+            scrollController.animateTo(
+            scrollController.position.maxScrollExtent,
+            duration: Duration(milliseconds: 300),
+            curve: Curves.easeOut,
+            );
+            }
+            });
+            }
+
+            setState(() => isSubmitting = false);
+            },
+            child: CircleAvatar(
+            radius: 24,
+            backgroundColor: appbar_color,
+            child: isSubmitting
+            ? SizedBox(
+            width: 20,
+            height: 20,
+            child: CircularProgressIndicator(
+            strokeWidth: 2.5,
+            color: Colors.white,
+            ),
+            )
+                : Icon(Icons.send, color: Colors.white),
+            ),
+            ),
+            ],
+            )
+            ]
+
                   ],
 
 
@@ -1357,141 +1394,167 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
         child: Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 0.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  GestureDetector(
-                    onTap: () async {
-                      final DateTimeRange? picked = await showDateRangePicker(
-                        context: context,
-                        firstDate: DateTime(2020),
-                        lastDate: DateTime(2100),
-                        initialDateRange: DateTimeRange(start: startDate, end: endDate),
-                        builder: (context, child) {
-                          return Theme(
-                            data: ThemeData.light().copyWith(
-                              primaryColor: appbar_color, // ✅ Header & buttons color
-                              scaffoldBackgroundColor: Colors.white,
-                              colorScheme: ColorScheme.light(
-                                primary: appbar_color, // ✅ Start & End date circle color
-                                onPrimary: Colors.white, // ✅ Text inside Start & End date
-                                secondary: appbar_color.withOpacity(0.6), // ✅ In-Between date highlight color
-                                onSecondary: Colors.white, // ✅ Text color inside In-Between dates
-                                surface: Colors.white, // ✅ Background color
-                                onSurface: Colors.black, // ✅ Default text color
-                              ),
-                              dialogBackgroundColor: Colors.white,
-                            ),
-                            child: child!,
-                          );
-                        },
-                      );
-                      if (picked != null) {
-                        setState(() {
-                          startDate = picked.start;
-                          endDate = picked.end;
-                        });
-                        filterTickets(); // ✅ Apply date filter
-                      }
-                    },
-                    child: Container(
-                      padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: appbar_color, width: 1.5),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black12,
-                            blurRadius: 4,
-                            offset: Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Icon(Icons.calendar_today, color: appbar_color, size: 18),
-                          Expanded(
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  "${DateFormat('dd-MMM-yyyy').format(startDate)} - ${DateFormat('dd-MMM-yyyy').format(endDate)}",
-                                  style: GoogleFonts.poppins(fontSize: 14, color: Colors.black87),
+
+            if(hasPermission('canViewMaintenanceTickets'))...[
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 0.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    GestureDetector(
+                      onTap: () async {
+                        final DateTimeRange? picked = await showDateRangePicker(
+                          context: context,
+                          firstDate: DateTime(2020),
+                          lastDate: DateTime(2100),
+                          initialDateRange: DateTimeRange(start: startDate, end: endDate),
+                          builder: (context, child) {
+                            return Theme(
+                              data: ThemeData.light().copyWith(
+                                primaryColor: appbar_color, // ✅ Header & buttons color
+                                scaffoldBackgroundColor: Colors.white,
+                                colorScheme: ColorScheme.light(
+                                  primary: appbar_color, // ✅ Start & End date circle color
+                                  onPrimary: Colors.white, // ✅ Text inside Start & End date
+                                  secondary: appbar_color.withOpacity(0.6), // ✅ In-Between date highlight color
+                                  onSecondary: Colors.white, // ✅ Text color inside In-Between dates
+                                  surface: Colors.white, // ✅ Background color
+                                  onSurface: Colors.black, // ✅ Default text color
                                 ),
-                              ],
+                                dialogBackgroundColor: Colors.white,
+                              ),
+                              child: child!,
+                            );
+                          },
+                        );
+                        if (picked != null) {
+                          setState(() {
+                            startDate = picked.start;
+                            endDate = picked.end;
+                          });
+                          filterTickets(); // ✅ Apply date filter
+                        }
+                      },
+                      child: Container(
+                        padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(color: appbar_color, width: 1.5),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black12,
+                              blurRadius: 4,
+                              offset: Offset(0, 2),
                             ),
-                          ),
-                          Icon(Icons.calendar_today, color: appbar_color, size: 18),
-                        ],
+                          ],
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Icon(Icons.calendar_today, color: appbar_color, size: 18),
+                            Expanded(
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    "${DateFormat('dd-MMM-yyyy').format(startDate)} - ${DateFormat('dd-MMM-yyyy').format(endDate)}",
+                                    style: GoogleFonts.poppins(fontSize: 14, color: Colors.black87),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Icon(Icons.calendar_today, color: appbar_color, size: 18),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
 
-            isLoading
-                ? Expanded(child: Center(
-              child: Platform.isIOS
-                  ? CupertinoActivityIndicator(
-                radius: 15.0, // Adjust size if needed
+              isLoading
+                  ? Expanded(child: Center(
+                child: Platform.isIOS
+                    ? CupertinoActivityIndicator(
+                  radius: 15.0, // Adjust size if needed
+                )
+                    : CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(appbar_color), // Change color here
+                  strokeWidth: 4.0, // Adjust thickness if needed
+                ),
+              ))
+                  : filteredTickets.isEmpty
+                  ?  Expanded(
+                  child:  Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min, // center inside column
+                      children: [
+                        Icon(Icons.search_off, size: 48, color: Colors.grey),
+                        SizedBox(height: 10),
+                        Text(
+                          "No data available",
+                          style: GoogleFonts.poppins(
+                            fontSize: 16,
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+              ):
+              Expanded(
+                child: ListView.builder(
+                  itemCount: filteredTickets.length + (isFetchingMore ? 1 : 0), // 🔥 Corrected
+                  itemBuilder: (context, index) {
+                    if (isFetchingMore && index == filteredTickets.length) {
+                      return Padding(
+                        padding: EdgeInsets.all(12.0),
+                        child: Center(
+                          child: Platform.isAndroid
+                              ? CircularProgressIndicator(
+                            valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+                          )
+                              : CupertinoActivityIndicator(radius: 15),
+                        ),
+                      );
+                    }
+
+                    final ticket = filteredTickets[index];
+                    return _buildTicketCard(ticket, index);
+                  },
+                ),
               )
-                  : CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(appbar_color), // Change color here
-                strokeWidth: 4.0, // Adjust thickness if needed
-              ),
-            ))
-                : filteredTickets.isEmpty
-                ?  Expanded(
-                child:  Center(
+            ]
+            else...[
+              Expanded(
+                child: Center(
                   child: Column(
-                    mainAxisSize: MainAxisSize.min, // center inside column
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.search_off, size: 48, color: Colors.grey),
+                      Icon(Icons.lock_outline, size: 48, color: Colors.grey),
                       SizedBox(height: 10),
                       Text(
-                        "No data available",
-                        style: GoogleFonts.poppins(
-                          fontSize: 16,
-                          color: Colors.grey,
-                        ),
+                        "Access Denied",
+                        style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
+                      Text(
+                        "You don’t have permission to view maintenance tickets.",
+                        style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey),
+                        textAlign: TextAlign.center,
                       ),
                     ],
                   ),
-                )
-            ):
-            Expanded(
-              child: ListView.builder(
-                itemCount: filteredTickets.length + (isFetchingMore ? 1 : 0), // 🔥 Corrected
-                itemBuilder: (context, index) {
-                  if (isFetchingMore && index == filteredTickets.length) {
-                    return Padding(
-                      padding: EdgeInsets.all(12.0),
-                      child: Center(
-                        child: Platform.isAndroid
-                            ? CircularProgressIndicator(
-                          valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
-                        )
-                            : CupertinoActivityIndicator(radius: 15),
-                      ),
-                    );
-                  }
-
-                  final ticket = filteredTickets[index];
-                  return _buildTicketCard(ticket, index);
-                },
+                ),
               ),
-            )
+            ]
+
 
           ],
 
         ),
       ),
-    floatingActionButton: Container(
+    floatingActionButton: hasPermission('canCreateMaintenanceTicket') ? Container(
         decoration: BoxDecoration(
           color: appbar_color.withOpacity(1.0),
           borderRadius: BorderRadius.circular(30.0),
@@ -1514,7 +1577,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
           backgroundColor: Colors.transparent,
           elevation: 8,
         ),
-      ),
+      ) : null
     );
   }
 
@@ -1557,165 +1620,185 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     if (is_admin && ticket['status'] != 'Close')
-                      _buildDecentButton(
-                        'Follow Up',
-                        Icons.schedule,
-                        Colors.orange,
-                            () {
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => MaintenanceFollowUpScreen(
-                                ticketid: ticket['ticketNumber'],
+                      if(hasPermission('canFollowUpTicket'))...[
+                        _buildDecentButton(
+                          'Follow Up',
+                          Icons.schedule,
+                          Colors.orange,
+                              () {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => MaintenanceFollowUpScreen(
+                                  ticketid: ticket['ticketNumber'],
+                                ),
                               ),
+                            );
+                          },
+                        ),
+                        SizedBox(width: 5),
+                      ],
+
+                    
+                      if (ticket['status'] == 'Close' && is_admin) ...[
+                      if(hasPermission('canCreateTicketComment') || hasPermission('canViewTicketComment'))...[
+                        _buildDecentButton(
+                          'Comment',
+                          Icons.comment,
+                          Colors.green,
+                              () {
+                            commentController.clear();
+                            _showViewCommentPopup(context, ticket['ticketNumber'], scope, ticket['status']);
+                          },
+                        ),
+                        SizedBox(width: 5),
+                        ]
+
+                      ] else if (ticket['status'] != 'Close') ...[
+                      if(hasPermission('canCreateTicketComment') || hasPermission('canViewTicketComment'))...[
+                        _buildDecentButton(
+                          'Comment',
+                          Icons.comment,
+                          Colors.green,
+                              () {
+                            commentController.clear();
+                            _showViewCommentPopup(context, ticket['ticketNumber'], scope, ticket['status']);
+                          },
+                        ),
+                        SizedBox(width: 5),
+                        ]
+                      ],
+
+                    
+                    if(hasPermission('canViewTicketComplaint'))...[
+                      _buildDecentButton(
+                        'Complaint',
+                        Icons.report_problem_outlined,
+                        Colors.redAccent,
+                            () {
+                          showModalBottomSheet(
+                            context: context,
+                            isScrollControlled: true,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
                             ),
+                            builder: (_) => ComplaintBottomSheet(ticketId: ticket['ticketNumber']),
                           );
-                        },
-                      ),
-                    SizedBox(width: 5),
 
-                    if (ticket['status'] == 'Close' && is_admin) ...[
-                      _buildDecentButton(
-                        'Comment',
-                        Icons.comment,
-                        Colors.green,
-                            () {
-                          commentController.clear();
-                          _showViewCommentPopup(context, ticket['ticketNumber'], scope, ticket['status']);
-
-                            },
-
-                      ),
-                      SizedBox(width: 5),
-                    ] else if (ticket['status'] != 'Close') ...[
-                      _buildDecentButton(
-                        'Comment',
-                        Icons.comment,
-                        Colors.green,
-                            () {
-                          commentController.clear();
-                          _showViewCommentPopup(context, ticket['ticketNumber'], scope, ticket['status']);
                         },
                       ),
                       SizedBox(width: 5),
                     ],
 
-                    _buildDecentButton(
-                      'Complaint',
-                      Icons.report_problem_outlined,
-                      Colors.redAccent,
-                          () {
-                            showModalBottomSheet(
-                              context: context,
-                              isScrollControlled: true,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-                              ),
-                              builder: (_) => ComplaintBottomSheet(ticketId: ticket['ticketNumber']),
-                            );
 
-                      },
-                    ),
 
-                    SizedBox(width: 5),
 
                     if (!is_admin)...[
-                      if(ticket['status']=='Close')
-                      _buildDecentButton(
-                        'Feedback',
-                        Icons.feedback,
-                        Colors.blue,
-                            () {
-                          _showFeedbackDialog(int.parse(ticket['ticketNumber'])); // Existing Feedback Section
-                        },
-                      ),
+                      if(ticket['status']=='Close')...[
+
+                        _buildDecentButton(
+                          'Feedback',
+                          Icons.feedback,
+                          Colors.blue,
+                              () {
+                            _showFeedbackDialog(int.parse(ticket['ticketNumber'])); // Existing Feedback Section
+                          },
+                        ),
+                      ]
+
                     ],
 
                     if (is_admin)...[
-                      if(ticket['status']=='Close')
-                      _buildDecentButton(
-                        'Feedback',
-                        Icons.feedback,
-                        Colors.blue,
-                            () {
-                          _showViewFeedbackPopup(context, ticket['ticketNumber']); // Admin View Feedback
-                        },
-                      ),
+                      if(ticket['status']=='Close')...[
+                      if(hasPermission('canViewTicketFeedback'))...[
+                        _buildDecentButton(
+                          'Feedback',
+                          Icons.feedback,
+                          Colors.blue,
+                              () {
+                            _showViewFeedbackPopup(context, ticket['ticketNumber']); // Admin View Feedback
+                          },
+                        ),
+                      ]
+                      ]
                     ]
                   ],
                 ),
                 SizedBox(height: 10,),
                 // Subtickets list (Each with only "Transfer" button)
-            if(is_admin && ticket['status']!='Close')
-            Column(
-            children: ticket['maintenanceTypesFiltered'].map<Widget>((subTicket) {
+            if(is_admin && ticket['status']!='Close')...[
+              if(hasPermission('canTransferSubTicketJob'))...[
 
-      return Container(
-      margin: EdgeInsets.symmetric(vertical: 3, horizontal: 0),
-      padding: EdgeInsets.symmetric(vertical: 14, horizontal: 18),
-      decoration: BoxDecoration(
-      color: Colors.white.withOpacity(0.95),
-      borderRadius: BorderRadius.circular(16),
-      boxShadow: [
-      BoxShadow(
-      color: Colors.black.withOpacity(0.07),
-      blurRadius: 5,
-      spreadRadius: 4,
-      offset: Offset(0, 4),
-      ),
-      ],
-      ),
-      child: Row(
-      children: [
-      // Left Side: Subticket Info
-      Expanded(
-      child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-      Text(
-      subTicket['type'],
-      style: GoogleFonts.poppins(
-      fontSize: 16,
-      fontWeight: FontWeight.w600,
-      color: Colors.black87,
-      ),
-      overflow: TextOverflow.ellipsis,
-      ),
 
-      ],
-      ),
-      ),
+                Column(
+                  children: ticket['maintenanceTypesFiltered'].map<Widget>((subTicket) {
 
-      // Transfer Button with Gradient Effect
-      InkWell(
-      borderRadius: BorderRadius.circular(12),
-      onTap: () {
-      _showTransferDialog(context, subTicket['subTicketId']);
-      },
-      child:
+                    return Container(
+                      margin: EdgeInsets.symmetric(vertical: 3, horizontal: 0),
+                      padding: EdgeInsets.symmetric(vertical: 14, horizontal: 18),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.95),
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.07),
+                            blurRadius: 5,
+                            spreadRadius: 4,
+                            offset: Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        children: [
+                          // Left Side: Subticket Info
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  subTicket['type'],
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.black87,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
 
-      Container(
-        margin: EdgeInsets.only(top: 0.0),
-        padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 5.0),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(30.0),
-          color: Colors.white,
-          border: Border.all(
-            color: Colors.redAccent.withOpacity(0.3),
-            width: 1.5,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.redAccent.withOpacity(0.1),
-              blurRadius: 8.0,
-              offset: Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Row(
-          children: [
-            Icon(Icons.swap_horiz, color: Colors.redAccent),
-            /*SizedBox(width: 8.0),
+                              ],
+                            ),
+                          ),
+
+                          // Transfer Button with Gradient Effect
+                          InkWell(
+                            borderRadius: BorderRadius.circular(12),
+                            onTap: () {
+                              _showTransferDialog(context, subTicket['subTicketId']);
+                            },
+                            child:
+
+                            Container(
+                              margin: EdgeInsets.only(top: 0.0),
+                              padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 5.0),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(30.0),
+                                color: Colors.white,
+                                border: Border.all(
+                                  color: Colors.redAccent.withOpacity(0.3),
+                                  width: 1.5,
+                                ),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.redAccent.withOpacity(0.1),
+                                    blurRadius: 8.0,
+                                    offset: Offset(0, 4),
+                                  ),
+                                ],
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(Icons.swap_horiz, color: Colors.redAccent),
+                                  /*SizedBox(width: 8.0),
             Text(
               label,
               style: GoogleFonts.poppins(
@@ -1723,9 +1806,9 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                 fontWeight: FontWeight.w600,
               ),
             ),*/
-          ],
-        ),
-      ),
+                                ],
+                              ),
+                            ),
 
 
 
@@ -1733,12 +1816,16 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
 
 
 
-      ),
-      ],
-      ),
-      );
-      }).toList(),
-    ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }).toList(),
+                ),
+
+              ]
+            ]
+
               ],
             ),
 
@@ -1817,93 +1904,98 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
 
+
         if (ticket['availableFrom'] != null && ticket['availableFrom'].toString().isNotEmpty &&
-            ticket['availableTo'] != null && ticket['availableTo'].toString().isNotEmpty && is_admin)
-          Padding(
-            padding: const EdgeInsets.only(bottom: 8.0),
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                final availableFrom = DateFormat('dd-MMM-yyyy hh:mm a')
-                    .format(DateTime.parse(ticket['availableFrom']).toLocal());
+            ticket['availableTo'] != null && ticket['availableTo'].toString().isNotEmpty && is_admin)...[
+              if(hasPermission('canViewAvailability'))...[
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 8.0),
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      final availableFrom = DateFormat('dd-MMM-yyyy hh:mm a')
+                          .format(DateTime.parse(ticket['availableFrom']).toLocal());
 
-                final availableTo = DateFormat('dd-MMM-yyyy hh:mm a')
-                    .format(DateTime.parse(ticket['availableTo']).toLocal());
-                final combinedText = '$availableFrom → $availableTo';
-                final fitsInline = combinedText.length < (constraints.maxWidth / 7);
+                      final availableTo = DateFormat('dd-MMM-yyyy hh:mm a')
+                          .format(DateTime.parse(ticket['availableTo']).toLocal());
+                      final combinedText = '$availableFrom → $availableTo';
+                      final fitsInline = combinedText.length < (constraints.maxWidth / 7);
 
-                return Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                  decoration: BoxDecoration(
-                    color: Colors.red.withOpacity(0.05),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.red, width: 1),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
+                      return Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                        decoration: BoxDecoration(
+                          color: Colors.red.withOpacity(0.05),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: Colors.red, width: 1),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
 
-                      Text('Availability',
-                        style: GoogleFonts.poppins(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.red,
-                        ),),
-                      SizedBox(height: 3),
+                            Text('Availability',
+                              style: GoogleFonts.poppins(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.red,
+                              ),),
+                            SizedBox(height: 3),
 
 
-                      Row(
+                            Row(
 
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Icon(Icons.access_time_rounded, size: 18, color: Colors.red),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: fitsInline
-                                  ? [
-                                Text(
-                                  combinedText,
-                                  textAlign: TextAlign.center,
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w400,
-                                    color: Colors.red,
-                                  ),
-                                ),
-                              ]
-                                  : [
-                                Text(
-                                  availableFrom,
-                                  textAlign: TextAlign.center,
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w400,
-                                    color: Colors.red,
-                                  ),
-                                ),
-                                Text(
-                                  '→ $availableTo',
-                                  textAlign: TextAlign.center,
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w400,
-                                    color: Colors.red,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Icon(Icons.access_time_rounded, size: 18, color: Colors.red),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: fitsInline
+                                        ? [
+                                      Text(
+                                        combinedText,
+                                        textAlign: TextAlign.center,
+                                        style: GoogleFonts.poppins(
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w400,
+                                          color: Colors.red,
+                                        ),
+                                      ),
+                                    ]
+                                        : [
+                                      Text(
+                                        availableFrom,
+                                        textAlign: TextAlign.center,
+                                        style: GoogleFonts.poppins(
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w400,
+                                          color: Colors.red,
+                                        ),
+                                      ),
+                                      Text(
+                                        '→ $availableTo',
+                                        textAlign: TextAlign.center,
+                                        style: GoogleFonts.poppins(
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w400,
+                                          color: Colors.red,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ],
                             ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
+                          ],
+                        ),
 
-                );
-              },
-            ),
-          ),
+                      );
+                    },
+                  ),
+                ),
+              ]
+        ],
+
 
         _buildInfoRow('Unit:', ticket['unitNumber_rental'].isNotEmpty
             ? ticket['unitNumber_rental']
@@ -2571,58 +2663,58 @@ class _ComplaintBottomSheetState extends State<ComplaintBottomSheet> {
                 minHeight: constraints.minHeight,
               ),
               child: IntrinsicHeight(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // Header
-                    Row(
-                      children: [
-                        Icon(Icons.chat_rounded, color: appbar_color),
-                        SizedBox(width: 10),
-                        Expanded(
-                          child: Text(
-                            "Complaints",
-                            style: GoogleFonts.poppins(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Header
+                      Row(
+                        children: [
+                          Icon(Icons.chat_rounded, color: appbar_color),
+                          SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              "Complaints",
+                              style: GoogleFonts.poppins(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
                           ),
-                        ),
-                        IconButton(
-                          icon: Icon(Icons.close, color: Colors.grey),
-                          onPressed: () => Navigator.pop(context),
-                        ),
-                      ],
-                    ),
-                    Divider(),
-
-
-
-                    // Empty State
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 32),
-                      child: Column(
-                        children: [
-                          Icon(Icons.inbox_outlined, size: 64, color: Colors.grey.shade300),
-                          SizedBox(height: 12),
-                          Text("No complaints yet", style: GoogleFonts.poppins(color: Colors.grey)),
+                          IconButton(
+                            icon: Icon(Icons.close, color: Colors.grey),
+                            onPressed: () => Navigator.pop(context),
+                          ),
                         ],
                       ),
-                    ),
+                      Divider(),
 
-                    if(!is_admin)...[
-                      Divider(height: 24),
 
-                      // Input
-                      _buildInputField(),
 
-                      SizedBox(height: 12),
-                      _buildSubmitButton(),
-                      SizedBox(height: 8),
-                    ]
+                      // Empty State
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 32),
+                        child: Column(
+                          children: [
+                            Icon(Icons.inbox_outlined, size: 64, color: Colors.grey.shade300),
+                            SizedBox(height: 12),
+                            Text("No complaints yet", style: GoogleFonts.poppins(color: Colors.grey)),
+                          ],
+                        ),
+                      ),
 
-                  ],
-                )
+                      if(!is_admin)...[
+                        Divider(height: 24),
+
+                        // Input
+                        _buildInputField(),
+
+                        SizedBox(height: 12),
+                        _buildSubmitButton(),
+                        SizedBox(height: 8),
+                      ]
+
+                    ],
+                  )
               ),
             ),
           );
@@ -2741,7 +2833,7 @@ class _ComplaintBottomSheetState extends State<ComplaintBottomSheet> {
             ),
           );
         },
-      ),
+      )
     );
   }
   Widget _buildInputField() {

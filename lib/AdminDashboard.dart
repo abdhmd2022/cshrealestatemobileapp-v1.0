@@ -536,46 +536,54 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Ticker
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _buildDashboardButton(Icons.inbox, 'Inquiries', '', Colors.purpleAccent, () {
-                  Navigator.pushReplacement(
-                    context,
+                if (hasPermissionInCategory('Inquiries')) ...[
+                  _buildDashboardButton(Icons.inbox, 'Inquiries', '', Colors.purpleAccent, () {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => SalesInquiryReport()),          // navigate to users screen
+                    );
+                  }),
+                ],
 
-                    MaterialPageRoute(builder: (context) => SalesInquiryReport()),          // navigate to users screen
-                  );
-                }),
-
-                _buildDashboardButton(Icons.analytics_outlined, 'Analytics', '', Colors.redAccent, () {
-
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => LandlordDashboardScreen()),          // navigate to users screen
-                  );
-                }),
+                if(hasPermissionInCategory('Analytics'))...[
+                  _buildDashboardButton(Icons.analytics_outlined, 'Analytics', '', Colors.redAccent, () {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => LandlordDashboardScreen()),          // navigate to users screen
+                    );
+                  }),
+                ]
               ],
             ),
 
             SizedBox(height: 10),
+            
+            
 
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _buildDashboardButton(Icons.build, 'Maintenance', '', appbar_color, () {
 
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => MaintenanceTicketReport()),          // navigate to users screen
-                  );
-                }),
-                _buildDashboardButton(Icons.home, 'Available Units', '', Colors.orangeAccent, () {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => AvailableUnitsReport()),          // navigate to users screen
-                  );
-                }),
+                if(hasPermissionInCategory('Maintenance'))...[
+                  _buildDashboardButton(Icons.build, 'Maintenance', '', appbar_color, () {
+
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => MaintenanceTicketReport()),          // navigate to users screen
+                    );
+                  }),
+                ],
+                
+                if(hasPermissionInCategory('Available Units'))...[
+                  _buildDashboardButton(Icons.home, 'Available Units', '', Colors.orangeAccent, () {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => AvailableUnitsReport()),          // navigate to users screen
+                    );
+                  }),
+                ]
               ],
             ),
-
-
           ],
         ),
       ),

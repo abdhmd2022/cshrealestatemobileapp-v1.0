@@ -36,9 +36,100 @@ late String flatsJson ;
 late List<dynamic> flatsList;
 late String baseurl,adminurl,license_expiry,building;
 late bool is_admin_from_api;
+late List<Map<String, dynamic>> user_permissions;
+String access_token_expiry = "";
+String role_name = "";
+bool is_active = false;
+
+
 
 /// Load tokens from SharedPreferences
+/// new function
+
 Future<void> loadTokens() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+
+  Company_Token = prefs.getString("access_token") ?? "";
+  access_token_expiry = prefs.getString("access_token_expiry") ?? "";
+
+  user_email = prefs.getString("user_email") ?? "";
+  user_name = prefs.getString("user_name") ?? "";
+  company_id = prefs.getInt("company_id") ?? 0;
+  scope = prefs.getString("scope") ?? "";
+
+  serial_id = prefs.getInt("serial_id") ?? 0;
+  user_id = prefs.getInt("user_id") ?? 0;
+
+  role_name = prefs.getString("role_name") ?? "";
+
+
+  is_admin = prefs.getBool("is_admin") ?? false;
+  is_admin_from_api = prefs.getBool("is_admin_from_api") ?? false;
+  is_landlord = prefs.getBool('is_landlord') ?? false;
+
+  is_active = prefs.getBool("is_active") ?? true;
+
+  flat_id = prefs.getInt("flat_id") ?? 0;
+  flat_name = prefs.getString("flat_name") ?? '';
+  flatsJson = prefs.getString("flats_list") ?? '';
+  baseurl = prefs.getString("baseurl") ?? '';
+  adminurl = prefs.getString("adminurl") ?? '';
+  license_expiry = prefs.getString("license_expiry") ?? '';
+  building = prefs.getString("building") ?? '';
+
+  print("🛡️ is_admin (legacy): $is_admin");
+  print("🛡️ is_admin_from_api: $is_admin_from_api");
+
+  // ✅ Load permissions
+  String permissionsJson = prefs.getString("user_permissions") ?? "[]";
+
+// Defensive fallback for empty or malformed strings
+  if (permissionsJson.trim().isEmpty) {
+    permissionsJson = "[]";
+  }
+
+  user_permissions = List<Map<String, dynamic>>.from(jsonDecode(permissionsJson));
+
+  if (!is_admin) {
+    flatsList = jsonDecode(flatsJson);
+  }
+
+  print("🔑 Loaded Access Token: $Company_Token");
+  print("🕒 Access Token Expiry: $access_token_expiry");
+
+  print("🏢 Company ID: $company_id");
+  print("👤 User ID: $user_id");
+  print("👤 User Email: $user_email");
+  print("👤 User Name: $user_name");
+
+  print("🛡️ is_admin (legacy): $is_admin");
+  print("🛡️ is_admin_from_api: $is_admin_from_api");
+  print("🛡️ is_active: $is_active");
+
+  print("📍 Flat ID: $flat_id");
+  print("🏠 Flat Name: $flat_name");
+  print("🌐 BaseURL: $baseurl");
+  print("🔧 AdminURL: $adminurl");
+  print("📅 License Expiry: $license_expiry");
+  print("🏗️ Building: $building");
+
+  print("🧾 Loaded Permissions: ${user_permissions.length}");
+  print("🧾 Role Name: $role_name");
+
+}
+
+bool hasPermission(String permissionName) {
+  return user_permissions.any((perm) => perm['name'] == permissionName);
+}
+
+bool hasPermissionInCategory(String categoryName) {
+  return user_permissions.any(
+        (perm) => (perm['category']?.toString().toLowerCase() == categoryName.toLowerCase()),
+  );
+}
+
+//old function
+/*Future<void> loadTokens() async {
 
 
   SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -83,7 +174,7 @@ Future<void> loadTokens() async {
   print("Loaded AdminURL: $adminurl");
   print("Loaded license expiry: $license_expiry");
   print("Loaded Building: $building");
-}
+}*/
 
 // Global Font Family
 final TextTheme globalTextTheme = TextTheme(

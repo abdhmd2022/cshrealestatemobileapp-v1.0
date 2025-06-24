@@ -908,88 +908,89 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
               children: [
                 // Status Filters (Loading Indicator)
 
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // 🔹 Date Range Picker Row
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                            child: GestureDetector(
-                              onTap: () async {
-                                final DateTimeRange? picked = await showDateRangePicker(
-                                  context: context,
-                                  firstDate: DateTime(2020),
-                                  lastDate: DateTime(2100),
-                                  initialDateRange: DateTimeRange(start: startDate, end: endDate),
-                                  builder: (context, child) {
-                                    return Theme(
-                                      data: ThemeData.light().copyWith(
-                                        primaryColor: appbar_color, // ✅ Header & buttons color
-                                        scaffoldBackgroundColor: Colors.white,
-                                        colorScheme: ColorScheme.light(
-                                          primary: appbar_color, // ✅ Start & End date circle color
-                                          onPrimary: Colors.white, // ✅ Text inside Start & End date
-                                          secondary: appbar_color.withOpacity(0.6), // ✅ In-Between date highlight color
-                                          onSecondary: Colors.white, // ✅ Text color inside In-Between dates
-                                          surface: Colors.white, // ✅ Background color
-                                          onSurface: Colors.black, // ✅ Default text color
-                                        ),
-                                        dialogBackgroundColor: Colors.white,
-                                      ),
-                                      child: child!,
-                                    );
-                                  },
-                                );
+                if(hasPermission('canViewInquiry'))...[
+                  Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // 🔹 Date Range Picker Row
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                  child: GestureDetector(
+                                    onTap: () async {
+                                      final DateTimeRange? picked = await showDateRangePicker(
+                                        context: context,
+                                        firstDate: DateTime(2020),
+                                        lastDate: DateTime(2100),
+                                        initialDateRange: DateTimeRange(start: startDate, end: endDate),
+                                        builder: (context, child) {
+                                          return Theme(
+                                            data: ThemeData.light().copyWith(
+                                              primaryColor: appbar_color, // ✅ Header & buttons color
+                                              scaffoldBackgroundColor: Colors.white,
+                                              colorScheme: ColorScheme.light(
+                                                primary: appbar_color, // ✅ Start & End date circle color
+                                                onPrimary: Colors.white, // ✅ Text inside Start & End date
+                                                secondary: appbar_color.withOpacity(0.6), // ✅ In-Between date highlight color
+                                                onSecondary: Colors.white, // ✅ Text color inside In-Between dates
+                                                surface: Colors.white, // ✅ Background color
+                                                onSurface: Colors.black, // ✅ Default text color
+                                              ),
+                                              dialogBackgroundColor: Colors.white,
+                                            ),
+                                            child: child!,
+                                          );
+                                        },
+                                      );
 
-                                if (picked != null) {
-                                  setState(() {
-                                    startDate = picked.start;
-                                    endDate = picked.end;
-                                  });
-                                  filterInquiries(); // ✅ Apply date filter
-                                }
-                              },
-                              child: Container(
-                                padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(20),
-                                  border: Border.all(color: appbar_color, width: 1.5),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black12,
-                                      blurRadius: 4,
-                                      offset: Offset(0, 2),
-                                    ),
-                                  ],
-                                ),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Icon(Icons.calendar_today, color: appbar_color, size: 18),
-                                    Expanded(
-                                      child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        children: [
-                                          Text(
-                                            "${DateFormat('dd-MMM-yyyy').format(startDate)} - ${DateFormat('dd-MMM-yyyy').format(endDate)}",
-                                            style: GoogleFonts.poppins(fontSize: 14, color: Colors.black87),
+                                      if (picked != null) {
+                                        setState(() {
+                                          startDate = picked.start;
+                                          endDate = picked.end;
+                                        });
+                                        filterInquiries(); // ✅ Apply date filter
+                                      }
+                                    },
+                                    child: Container(
+                                      padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(20),
+                                        border: Border.all(color: appbar_color, width: 1.5),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.black12,
+                                            blurRadius: 4,
+                                            offset: Offset(0, 2),
                                           ),
                                         ],
                                       ),
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Icon(Icons.calendar_today, color: appbar_color, size: 18),
+                                          Expanded(
+                                            child: Row(
+                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              children: [
+                                                Text(
+                                                  "${DateFormat('dd-MMM-yyyy').format(startDate)} - ${DateFormat('dd-MMM-yyyy').format(endDate)}",
+                                                  style: GoogleFonts.poppins(fontSize: 14, color: Colors.black87),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          Icon(Icons.calendar_today, color: appbar_color, size: 18),
+                                        ],
+                                      ),
                                     ),
-                                    Icon(Icons.calendar_today, color: appbar_color, size: 18),
-                                  ],
+                                  ),
                                 ),
-                              ),
-                            ),
-                          ),
 
-                      /*SizedBox(width: 10),
+                                /*SizedBox(width: 10),
 
                       // 🔹 Filter Toggle Button
                       IconButton(
@@ -1000,134 +1001,159 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
                           });
                         },
                       ),*/
-                        ],
-                      ),
+                              ],
+                            ),
 
-                      SizedBox(height: 5), // Space before filters
+                            SizedBox(height: 5), // Space before filters
 
-                      // 🔹 Show/Hide Filters
-                      /*if (showFilters)*/
-                      Padding(
-                        padding: const EdgeInsets.only(top: 5.0),
-                        child: isStatusLoading
-                            ? Center(
-                          child: Platform.isIOS
-                              ? CupertinoActivityIndicator(radius: 15.0)
-                              : CircularProgressIndicator(
-                            valueColor: AlwaysStoppedAnimation<Color>(appbar_color),
-                            strokeWidth: 4.0,
-                          ),
-                        )
-                            : SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: Row(
-                            children: inquirystatus_list.map((InquiryStatus status) {
+                            // 🔹 Show/Hide Filters
+                            /*if (showFilters)*/
+                            Padding(
+                                padding: const EdgeInsets.only(top: 5.0),
+                                child: isStatusLoading
+                                    ? Center(
+                                  child: Platform.isIOS
+                                      ? CupertinoActivityIndicator(radius: 15.0)
+                                      : CircularProgressIndicator(
+                                    valueColor: AlwaysStoppedAnimation<Color>(appbar_color),
+                                    strokeWidth: 4.0,
+                                  ),
+                                )
+                                    : SingleChildScrollView(
+                                    scrollDirection: Axis.horizontal,
+                                    child: Row(
+                                      children: inquirystatus_list.map((InquiryStatus status) {
+                                        return Padding(
+                                          padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                                          child: ChoiceChip(
+                                            label: Text(
+                                              status.name,
+                                              style: GoogleFonts.poppins(
+                                                color: selectedStatus == status.name ? Colors.white : Colors.black,
+                                              ),
+                                            ),
+                                            selected: selectedStatus == status.name,
+                                            onSelected: (bool selected) {
+                                              setState(() {
+                                                selectedStatus = selected ? status.name : null;
+                                              });
+                                              filterInquiries();
+                                            },
+                                            selectedColor: appbar_color.withOpacity(0.9),
+                                            backgroundColor: Colors.grey[100],
+                                            showCheckmark: false,
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.circular(20.0),
+                                              side: BorderSide(
+                                                color: selectedStatus == status.name ? appbar_color : Colors.grey,
+                                                width: 1.0,
+                                              ),
+                                            ),
+                                          ),
+                                        );
+                                      }).toList(),
+                                    )))])),
+
+                  // Inquiry List
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: isLoading
+                          ? Center(
+                        child: Platform.isIOS
+                            ? CupertinoActivityIndicator(radius: 15.0)
+                            : CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation<Color>(appbar_color),
+                          strokeWidth: 4.0,
+                        ),
+                      )
+                          : filteredInquiries.isEmpty
+                          ?
+
+                      Expanded(
+                          child:  Center(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min, // center inside column
+
+                              children: [
+                                Icon(Icons.search_off, size: 48, color: Colors.grey),
+                                SizedBox(height: 10),
+                                Text(
+                                  "No data available",
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 16,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )
+                      )
+
+                          : NotificationListener<ScrollNotification>(
+                        onNotification: (ScrollNotification scrollInfo) {
+                          if (!isFetchingMoreInquiries &&
+                              scrollInfo.metrics.pixels >= scrollInfo.metrics.maxScrollExtent - 50 &&
+                              inquiryCurrentPage < totalInquiryPages) {
+                            inquiryCurrentPage++;
+                            fetchInquiries();
+                          }
+                          return false;
+                        },
+                        child: ListView.builder(
+                          itemCount: filteredInquiries.length + (isFetchingMoreInquiries ? 1 : 0),
+                          itemBuilder: (context, index) {
+                            if (isFetchingMoreInquiries && index == filteredInquiries.length) {
                               return Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                                child: ChoiceChip(
-                                  label: Text(
-                                    status.name,
-                                    style: GoogleFonts.poppins(
-                                      color: selectedStatus == status.name ? Colors.white : Colors.black,
-                                    ),
-                                  ),
-                                  selected: selectedStatus == status.name,
-                                  onSelected: (bool selected) {
-                                    setState(() {
-                                      selectedStatus = selected ? status.name : null;
-                                    });
-                                    filterInquiries();
-                                  },
-                                  selectedColor: appbar_color.withOpacity(0.9),
-                                  backgroundColor: Colors.grey[100],
-                                  showCheckmark: false,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20.0),
-                                    side: BorderSide(
-                                      color: selectedStatus == status.name ? appbar_color : Colors.grey,
-                                      width: 1.0,
-                                    ),
-                                  ),
+                                padding: EdgeInsets.all(12.0),
+                                child: Center(
+                                  child: Platform.isAndroid
+                                      ? CircularProgressIndicator(
+                                    valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+                                  )
+                                      : CupertinoActivityIndicator(radius: 15),
                                 ),
                               );
-                            }).toList(),
-                          )))])),
+                            }
 
-                // Inquiry List
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: isLoading
-                        ? Center(
-                      child: Platform.isIOS
-                          ? CupertinoActivityIndicator(radius: 15.0)
-                          : CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation<Color>(appbar_color),
-                        strokeWidth: 4.0,
+                            final inquiry = filteredInquiries[index];
+                            return _buildinquiryCard(inquiry, index);
+                          },
+                        ),
                       ),
-                    )
-                        : filteredInquiries.isEmpty
-                        ?
 
-                    Expanded(
-                        child:  Center(
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min, // center inside column
-
-                            children: [
-                              Icon(Icons.search_off, size: 48, color: Colors.grey),
-                              SizedBox(height: 10),
-                              Text(
-                                "No data available",
-                                style: GoogleFonts.poppins(
-                                  fontSize: 16,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                            ],
-                          ),
-                        )
-                    )
-
-                        : NotificationListener<ScrollNotification>(
-                      onNotification: (ScrollNotification scrollInfo) {
-                        if (!isFetchingMoreInquiries &&
-                            scrollInfo.metrics.pixels >= scrollInfo.metrics.maxScrollExtent - 50 &&
-                            inquiryCurrentPage < totalInquiryPages) {
-                          inquiryCurrentPage++;
-                          fetchInquiries();
-                        }
-                        return false;
-                      },
-                      child: ListView.builder(
-                        itemCount: filteredInquiries.length + (isFetchingMoreInquiries ? 1 : 0),
-                        itemBuilder: (context, index) {
-                          if (isFetchingMoreInquiries && index == filteredInquiries.length) {
-                            return Padding(
-                              padding: EdgeInsets.all(12.0),
-                              child: Center(
-                                child: Platform.isAndroid
-                                    ? CircularProgressIndicator(
-                                  valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
-                                )
-                                    : CupertinoActivityIndicator(radius: 15),
-                              ),
-                            );
-                          }
-
-                          final inquiry = filteredInquiries[index];
-                          return _buildinquiryCard(inquiry, index);
-                        },
-                      ),
                     ),
-
                   ),
-                ),
-              ],
+                ]
+    else ...[
+    Expanded(
+    child: Center(
+    child: Column(
+    mainAxisAlignment: MainAxisAlignment.center,
+    children: [
+    Icon(Icons.lock_outline, size: 48, color: Colors.grey),
+    SizedBox(height: 10),
+    Text(
+    "Access Denied",
+    style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold),
+    ),
+    Text(
+    "You don’t have permission to view inquiries.",
+    style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey),
+    textAlign: TextAlign.center,
+    ),
+    ],
+    ),
+    ),
+    ),
+    ]
+    ]
+
+
             ),
         ),
 
-        floatingActionButton: Container(
+        floatingActionButton: hasPermission('canCreateInquiry') ? Container(
         decoration: BoxDecoration(
           color: appbar_color.withOpacity(1.0),
           borderRadius: BorderRadius.circular(30.0),
@@ -1150,7 +1176,7 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
           backgroundColor: Colors.transparent,
           elevation: 8,
         ),
-      ),
+      ) : null
     );
   }
 
@@ -1160,8 +1186,6 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
     final String assignedTo = inquiry.assigned_to.trim().toLowerCase();
     final String currentUser = user_name.trim().toLowerCase();
 
-
-
     final bool shouldDisableActions =
     // ✅ Super admin: full access, no disabling
     !(is_admin && is_admin_from_api) &&
@@ -1170,8 +1194,6 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
         createdBy == currentUser &&
         assignedTo.isNotEmpty &&
         assignedTo != currentUser;
-
-
 
     return GestureDetector(
       onTap: () {
@@ -1197,10 +1219,6 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
             _buildinquiryHeader(inquiry),
             Divider(color: Colors.grey[300]),
             _buildinquiryDetails(inquiry),
-
-
-
-
             Container(
                 width: MediaQuery
                     .of(context)
@@ -1210,76 +1228,75 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
                     child: SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       child:
-
-
-
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           // Show Follow Up and Transfer only if lead is Normal AND action is allowed
                           if (inquiry.leadStatusCategory == 'Normal' && !shouldRestrictAction(inquiry)) ...[
-                            _buildDecentButton(
-                              'Follow Up',
-                              Icons.schedule,
-                              Colors.blue,
-                                  () {
-                                String name = inquiry.customerName;
-                                List<String> emiratesList = inquiry.emirate.split(',').map((e) => e.trim()).toList();
-                                List<String> areaList = inquiry.area.split(',').map((e) => e.trim()).toList();
-                                List<String> unittype = inquiry.unitType.split(',').map((e) => e.trim()).toList();
-                                String contactno = inquiry.contactNo;
-                                String whatsapp_no = inquiry.whatsapp_no;
-                                String email = inquiry.email;
-                                String id = inquiry.inquiryNo;
 
-                                final RegExp regExp = RegExp(r"^\+\d{1,3}");
-                                String processedNumber = contactno.replaceAll(regExp, "");
+                            if(hasPermission('canFollowUpInquiry') )...[
+                              _buildDecentButton(
+                                'Follow Up',
+                                Icons.schedule,
+                                Colors.blue,
+                                    () {
+                                  String name = inquiry.customerName;
+                                  List<String> emiratesList = inquiry.emirate.split(',').map((e) => e.trim()).toList();
+                                  List<String> areaList = inquiry.area.split(',').map((e) => e.trim()).toList();
+                                  List<String> unittype = inquiry.unitType.split(',').map((e) => e.trim()).toList();
+                                  String contactno = inquiry.contactNo;
+                                  String whatsapp_no = inquiry.whatsapp_no;
+                                  String email = inquiry.email;
+                                  String id = inquiry.inquiryNo;
 
-                                Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => FollowupSalesInquiry(
-                                      id: id,
-                                      name: name,
-                                      unittype: unittype,
-                                      existingAreaList: areaList,
-                                      existingEmirateList: emiratesList,
-                                      contactno: contactno,
-                                      whatsapp_no: whatsapp_no,
-                                      email: email,
+                                  final RegExp regExp = RegExp(r"^\+\d{1,3}");
+                                  String processedNumber = contactno.replaceAll(regExp, "");
+
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => FollowupSalesInquiry(
+                                        id: id,
+                                        name: name,
+                                        unittype: unittype,
+                                        existingAreaList: areaList,
+                                        existingEmirateList: emiratesList,
+                                        contactno: contactno,
+                                        whatsapp_no: whatsapp_no,
+                                        email: email,
+                                      ),
                                     ),
-                                  ),
-                                );
-                              },
-                            ),
-                            SizedBox(width: 5),
-                            _buildDecentButton(
-                              'Transfer',
-                              Icons.swap_horiz,
-                              Colors.orange,
-                                  () => _showTransferDialog(context, inquiry.inquiryNo),
-                            ),
-                            SizedBox(width: 5),
+                                  );
+                                },
+                              ),
+                              SizedBox(width: 5),
+
+                            ],
+
+                            if(hasPermission('canInquiryTransfer'))...[
+                              _buildDecentButton(
+                                'Transfer',
+                                Icons.swap_horiz,
+                                Colors.orange,
+                                    () => _showTransferDialog(context, inquiry.inquiryNo),
+                              ),
+                              SizedBox(width: 5),
+                            ]
+
                           ],
 
                           // View is always visible
-                          _buildDecentButton(
-                            'View',
-                            Icons.visibility,
-                            Colors.black87,
-                                () => _showPopup(context, inquiry.inquiryNo),
-                          ),
-
-
+                          if(hasPermission('canViewLeadFollowUps'))...[
+                            _buildDecentButton(
+                              'View',
+                              Icons.visibility,
+                              Colors.black87,
+                                  () => _showPopup(context, inquiry.inquiryNo),
+                            ),
+                          ]
                         ],
                       )
-
-
-
-
-
-
                     )
                 )
             ),

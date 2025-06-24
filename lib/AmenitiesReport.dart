@@ -16,7 +16,7 @@ class AmentiesReport extends StatefulWidget {
 
 class _AmentiesReportState extends State<AmentiesReport> {
   List<dynamic> amenities = [];
-  bool isLoading = true;
+  bool isLoading = false;
 
   bool isSpecial = false;
   TextEditingController amenitiesController = TextEditingController();
@@ -24,7 +24,9 @@ class _AmentiesReportState extends State<AmentiesReport> {
   @override
   void initState() {
     super.initState();
-    fetchAmenities();
+    if(hasPermission('canViewAmenities')){
+      fetchAmenities();
+    }
   }
 
   Future<void> sendAmenities() async {
@@ -369,6 +371,9 @@ class _AmentiesReportState extends State<AmentiesReport> {
 
   Future<void> fetchAmenities() async {
 
+    setState(() {
+      isLoading = true;
+    });
     print('fetching amenities');
     amenities.clear();
 
@@ -443,6 +448,7 @@ class _AmentiesReportState extends State<AmentiesReport> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         leading: GestureDetector(
           onTap: ()
@@ -463,27 +469,27 @@ class _AmentiesReportState extends State<AmentiesReport> {
         backgroundColor: appbar_color.withOpacity(0.9),
 
       ),
-      body: isLoading
+      body: hasPermission('canViewAmenities') ? (isLoading
           ? Center(
-        child: Container(
-          color: Colors.white,
-          child: Platform.isIOS
-            ? CupertinoActivityIndicator(radius: 15.0)
-            : CircularProgressIndicator(
-          valueColor: AlwaysStoppedAnimation<Color>(appbar_color),
-          strokeWidth: 4.0,
-        ),
-      ))
+          child: Container(
+            color: Colors.white,
+            child: Platform.isIOS
+                ? CupertinoActivityIndicator(radius: 15.0)
+                : CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(appbar_color),
+              strokeWidth: 4.0,
+            ),
+          ))
           : amenities.isEmpty
           ? Center(
-        child: Container(
-          color: Colors.white,
-          child: Text(
-          'No data available',
-          style: GoogleFonts.poppins(color: appbar_color.withOpacity(0.9), fontSize: 18),
-        ),
+          child: Container(
+            color: Colors.white,
+            child: Text(
+              'No data available',
+              style: GoogleFonts.poppins(color: appbar_color.withOpacity(0.9), fontSize: 18),
+            ),
 
-      ))
+          ))
           : Container(
         color: Colors.white,
         padding: EdgeInsets.only(top: 10),
@@ -569,25 +575,32 @@ class _AmentiesReportState extends State<AmentiesReport> {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
 
-                            _buildDecentButton(
-                              'Edit',
-                              Icons.edit,
-                              Colors.blue,
-                                  () {
+                            if(hasPermission('canUpdateAmenities'))...[
+                              _buildDecentButton(
+                                'Edit',
+                                Icons.edit,
+                                Colors.blue,
+                                    () {
 
-                                showEditAmenitiesDialog(amenity['id'],amenity['name'],amenity['is_special']);
-                              },
-                            ),
-                            SizedBox(width:5),
-                            _buildDecentButton(
-                              'Delete',
-                              Icons.delete,
-                              Colors.redAccent,
-                                  () {
+                                  showEditAmenitiesDialog(amenity['id'],amenity['name'],amenity['is_special']);
+                                },
+                              ),
+                              SizedBox(width:5),
+                            ],
 
-                                deleteAmenities(amenity['id']); },
-                            ),
-                            SizedBox(width:5)
+                            if(hasPermission('canDeleteAmenities'))...[
+                              _buildDecentButton(
+                                'Delete',
+                                Icons.delete,
+                                Colors.redAccent,
+                                    () {
+
+                                  deleteAmenities(amenity['id']); },
+                              ),
+                              SizedBox(width:5)
+                            ]
+
+
                           ],),
 
                       ],),
@@ -600,9 +613,32 @@ class _AmentiesReportState extends State<AmentiesReport> {
             );
           },
         ),
+      )) :
+      Expanded(
+        child: Center(
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.lock_outline, size: 48, color: Colors.grey),
+                  SizedBox(height: 10),
+                  Text(
+                    "Access Denied",
+                    style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    "You don’t have permission to view amenities.",
+                    style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            )
+        ),
       ),
 
-      floatingActionButton: FloatingActionButton(
+
+      floatingActionButton: hasPermission('canCreateAmenities') ? FloatingActionButton(
         onPressed:()
         {
           amenitiesController.clear();
@@ -612,7 +648,7 @@ class _AmentiesReportState extends State<AmentiesReport> {
         backgroundColor: appbar_color.withOpacity(0.9),
         child: Icon(Icons.add,
             color: Colors.white),
-      ),
+      ): null
     );
   }
 

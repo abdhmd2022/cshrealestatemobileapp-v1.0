@@ -16,14 +16,16 @@ class ActivitySourceReport extends StatefulWidget {
 class _ActivitySourceReportState extends State<ActivitySourceReport>
 {
   List<dynamic> activitySource_list = [];
-  bool isLoading = true;
+  bool isLoading = false;
 
   TextEditingController activitySourceController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    fetchActivitySources();
+    if(hasPermission('canViewActivitySource')){
+      fetchActivitySources();
+    }
   }
 
   Future<void> sendActivitySources() async {
@@ -288,6 +290,9 @@ class _ActivitySourceReportState extends State<ActivitySourceReport>
 
   Future<void> fetchActivitySources() async {
 
+    setState(() {
+      isLoading = true;
+    });
     print('fetching activity sources');
     activitySource_list.clear();
 
@@ -362,6 +367,7 @@ class _ActivitySourceReportState extends State<ActivitySourceReport>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         leading: GestureDetector(
           onTap: ()
@@ -381,109 +387,137 @@ class _ActivitySourceReportState extends State<ActivitySourceReport>
           ),),
         backgroundColor: appbar_color.withOpacity(0.9),
       ),
-      body: isLoading
+      body: hasPermission('canViewActivitySource') ? (
+      isLoading
           ? Center(
-        child: Container(
-          color: Colors.white,
-          child: Platform.isIOS
-            ? CupertinoActivityIndicator(radius: 15.0)
-            : CircularProgressIndicator(
-          valueColor: AlwaysStoppedAnimation<Color>(appbar_color),
-          strokeWidth: 4.0,
-        ),
-      ))
+          child: Container(
+            color: Colors.white,
+            child: Platform.isIOS
+                ? CupertinoActivityIndicator(radius: 15.0)
+                : CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(appbar_color),
+              strokeWidth: 4.0,
+            ),
+          ))
           : activitySource_list.isEmpty
           ? Center(
-        child: Container(
-          color: Colors.white,
-          child: Text(
-          'No data available',
-          style: GoogleFonts.poppins(color: appbar_color.withOpacity(0.9), fontSize: 18),
-        ),
-      ))
+          child: Container(
+            color: Colors.white,
+            child: Text(
+              'No data available',
+              style: GoogleFonts.poppins(color: appbar_color.withOpacity(0.9), fontSize: 18),
+            ),
+          ))
           : Container(
-        color: Colors.white,
-        padding: EdgeInsets.only(top: 10),
-        child: ListView.builder(
-          itemCount: activitySource_list.length,
-          itemBuilder: (context, index) {
-            final activitysource = activitySource_list[index];
-            return Card(
-              color: Colors.white,
-              margin: const EdgeInsets.symmetric(
-                  horizontal: 16, vertical: 5),
-              elevation: 2,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Container(
-                decoration: BoxDecoration(
+          color: Colors.white,
+          padding: EdgeInsets.only(top: 10),
+          child: ListView.builder(
+              itemCount: activitySource_list.length,
+              itemBuilder: (context, index) {
+                final activitysource = activitySource_list[index];
+                return Card(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(12), // Rounded corners
-                ),
-                child:  ListTile(
-                  contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16, vertical: 12),
-                  title: Container(
-                    child:  Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.assignment_ind,
-                              color: appbar_color.withOpacity(0.9),
-                            ),
-
-                            SizedBox(width: 5,),
-                            Text(
-                              activitysource['name'] ?? 'Unnamed',
-                              style: GoogleFonts.poppins(
-                                fontWeight: FontWeight.normal,
-                                color: appbar_color[800],
-                              ),
-                            ),
-                          ],
-                        ),
-
-                        SizedBox(height: 8),
-
-
-
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-
-                            _buildDecentButton(
-                              'Edit',
-                              Icons.edit,
-                              Colors.blue,
-                               ()
-                              {
-                                showEditActivitySourceDialog(activitysource['id'],activitysource['name']);
-                              },
-                            ),
-                            SizedBox(width:5),
-                            _buildDecentButton(
-                              'Delete',
-                              Icons.delete,
-                              Colors.redAccent,
-                                  () {
-
-                                deleteActivitySource(activitysource['id']); },
-                            ),
-                            SizedBox(width:5)
-                          ],),
-                      ],),
+                  margin: const EdgeInsets.symmetric(
+                      horizontal: 16, vertical: 5),
+                  elevation: 2,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                ),
-              ),
-            );
-          })),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12), // Rounded corners
+                    ),
+                    child:  ListTile(
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 12),
+                      title: Container(
+                        child:  Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
 
-      floatingActionButton: FloatingActionButton(
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.assignment_ind,
+                                  color: appbar_color.withOpacity(0.9),
+                                ),
+
+                                SizedBox(width: 5,),
+                                Text(
+                                  activitysource['name'] ?? 'Unnamed',
+                                  style: GoogleFonts.poppins(
+                                    fontWeight: FontWeight.normal,
+                                    color: appbar_color[800],
+                                  ),
+                                ),
+                              ],
+                            ),
+
+                            SizedBox(height: 8),
+
+
+
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+
+                                if(hasPermission('canUpdateActivitySource'))...[
+                                  _buildDecentButton(
+                                    'Edit',
+                                    Icons.edit,
+                                    Colors.blue,
+                                        ()
+                                    {
+                                      showEditActivitySourceDialog(activitysource['id'],activitysource['name']);
+                                    },
+                                  ),
+                                  SizedBox(width:5),
+                                ],
+                                if(hasPermission('canDeleteActivitySource'))...[
+                                  _buildDecentButton(
+                                    'Delete',
+                                    Icons.delete,
+                                    Colors.redAccent,
+                                        () {
+
+                                      deleteActivitySource(activitysource['id']); },
+                                  ),
+                                  SizedBox(width:5)
+                                ]
+                              ],),
+                          ],),
+                      ),
+                    ),
+                  ),
+                );
+              }))
+      ) :
+      Expanded(
+        child: Center(
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.lock_outline, size: 48, color: Colors.grey),
+                  SizedBox(height: 10),
+                  Text(
+                    "Access Denied",
+                    style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    "You don’t have permission to view activity source.",
+                    style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            )
+        ),
+      ),
+
+      floatingActionButton: hasPermission('canCreateActivitySource') ? FloatingActionButton(
         onPressed:()
         {
           activitySourceController.clear();
@@ -493,7 +527,7 @@ class _ActivitySourceReportState extends State<ActivitySourceReport>
         backgroundColor: appbar_color.withOpacity(0.9),
         child: Icon(Icons.add,
             color: Colors.white),
-      ),
+      ) : null
     );
   }
 }

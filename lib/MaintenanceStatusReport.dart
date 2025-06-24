@@ -22,7 +22,7 @@ class _MaintenanceStatusReportState extends State<MaintenanceStatusReport> {
   ];
 
   String? selectedCategory;
-  bool isLoading = true;
+  bool isLoading = false;
 
   TextEditingController maintenanceStatusController = TextEditingController();
 
@@ -30,7 +30,10 @@ class _MaintenanceStatusReportState extends State<MaintenanceStatusReport> {
   @override
   void initState() {
     super.initState();
-    fetchMaintenanceStatus();
+    if(hasPermission('canViewMaintenanceStatus')){
+      fetchMaintenanceStatus();
+    }
+    
   }
 
   Future<void> sendMaintenanceStatus() async {
@@ -472,6 +475,9 @@ class _MaintenanceStatusReportState extends State<MaintenanceStatusReport> {
 
 
   Future<void> fetchMaintenanceStatus() async {
+    setState(() {
+      isLoading = true;
+    });
     print('Fetching all maintenance statuses...');
     maintenanceStatuses.clear();
 
@@ -558,6 +564,7 @@ class _MaintenanceStatusReportState extends State<MaintenanceStatusReport> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         leading: GestureDetector(
           onTap: ()
@@ -578,26 +585,28 @@ class _MaintenanceStatusReportState extends State<MaintenanceStatusReport> {
         backgroundColor: appbar_color.withOpacity(0.9),
 
       ),
-      body: isLoading
+      body: hasPermission('canViewMaintenanceStatus') ? (
+
+      isLoading
           ? Center(
-        child: Container(
-          color: Colors.white,
-          child: Platform.isIOS
-            ? CupertinoActivityIndicator(radius: 15.0)
-            : CircularProgressIndicator(
-          valueColor: AlwaysStoppedAnimation<Color>(appbar_color),
-          strokeWidth: 4.0,
-        ),
-      ))
+          child: Container(
+            color: Colors.white,
+            child: Platform.isIOS
+                ? CupertinoActivityIndicator(radius: 15.0)
+                : CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(appbar_color),
+              strokeWidth: 4.0,
+            ),
+          ))
           : maintenanceStatuses.isEmpty
           ? Center(
-        child: Container(
-          color: Colors.white,
-          child: Text(
-          'No data available',
-          style: GoogleFonts.poppins(color: appbar_color.withOpacity(0.9), fontSize: 18),
-        ),
-      ))
+          child: Container(
+            color: Colors.white,
+            child: Text(
+              'No data available',
+              style: GoogleFonts.poppins(color: appbar_color.withOpacity(0.9), fontSize: 18),
+            ),
+          ))
           : Container(
         color: Colors.white,
         padding: EdgeInsets.only(top: 10),
@@ -676,28 +685,34 @@ class _MaintenanceStatusReportState extends State<MaintenanceStatusReport> {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
 
-                            _buildDecentButton(
-                              'Edit',
-                              Icons.edit,
-                              Colors.blue,
-                                  () {
-                                setState(() {
-                                  selectedCategory = maintenance['category'] ?? 'Normal';
-                                });
+                            if(hasPermission('canUpdateMaintenanceStatus'))...[
+                              _buildDecentButton(
+                                'Edit',
+                                Icons.edit,
+                                Colors.blue,
+                                    () {
+                                  setState(() {
+                                    selectedCategory = maintenance['category'] ?? 'Normal';
+                                  });
 
-                                showEditMaintenanceStatusDialog(maintenance['id'],maintenance['name'],maintenance['category']);
-                              },
-                            ),
-                            SizedBox(width:5),
-                            _buildDecentButton(
-                              'Delete',
-                              Icons.delete,
-                              Colors.redAccent,
-                                  () {
+                                  showEditMaintenanceStatusDialog(maintenance['id'],maintenance['name'],maintenance['category']);
+                                },
+                              ),
+                              SizedBox(width:5),
+                            ],
+                            if(hasPermission('canDeleteMaintenanceStatus'))...[
+                              _buildDecentButton(
+                                'Delete',
+                                Icons.delete,
+                                Colors.redAccent,
+                                    () {
 
-                                deleteMaintenanceStatus(maintenance['id']); },
-                            ),
-                            SizedBox(width:5)
+                                  deleteMaintenanceStatus(maintenance['id']); },
+                              ),
+                              SizedBox(width:5)
+                            ]
+
+
                           ],),
 
                       ],),
@@ -710,9 +725,34 @@ class _MaintenanceStatusReportState extends State<MaintenanceStatusReport> {
             );
           },
         ),
+      )
+      ) :
+      Expanded(
+        child: Center(
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.lock_outline, size: 48, color: Colors.grey),
+                  SizedBox(height: 10),
+                  Text(
+                    "Access Denied",
+                    style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    "You don’t have permission to view maintenance status.",
+                    style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            )
+        ),
       ),
 
-      floatingActionButton: FloatingActionButton(
+
+
+        floatingActionButton: hasPermission('canCreateMaintenanceStatus') ? FloatingActionButton(
         onPressed:()
         {
           maintenanceStatusController.clear();
@@ -724,7 +764,7 @@ class _MaintenanceStatusReportState extends State<MaintenanceStatusReport> {
 
         child: Icon(Icons.add,
             color: Colors.white),
-      ),
+      ) : null
     );
   }
 

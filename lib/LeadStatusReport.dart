@@ -24,7 +24,7 @@ class _LeadStatusReportState extends State<LeadStatusReport> {
   ];
 
   String? selectedCategory;
-  bool isLoading = true;
+  bool isLoading = false;
 
   TextEditingController leadStatusController = TextEditingController();
 
@@ -32,7 +32,10 @@ class _LeadStatusReportState extends State<LeadStatusReport> {
   @override
   void initState() {
     super.initState();
-    fetchLeadStatus();
+    if(hasPermission('canViewLeadStatus')){
+      fetchLeadStatus();
+
+    }
   }
 
   Future<void> sendLeadStatus() async {
@@ -474,6 +477,9 @@ class _LeadStatusReportState extends State<LeadStatusReport> {
 
 
   Future<void> fetchLeadStatus() async {
+    setState(() {
+      isLoading=true;
+    });
 
     print('fetching lead status');
     leadStatuses.clear();
@@ -549,6 +555,7 @@ class _LeadStatusReportState extends State<LeadStatusReport> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         leading: GestureDetector(
           onTap: ()
@@ -569,7 +576,7 @@ class _LeadStatusReportState extends State<LeadStatusReport> {
         backgroundColor: appbar_color.withOpacity(0.9),
 
       ),
-      body: isLoading
+      body: hasPermission('canViewLeadStatus')? (isLoading
           ? Center(
         child: Container(
           color: Colors.white,
@@ -673,28 +680,35 @@ class _LeadStatusReportState extends State<LeadStatusReport> {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
 
-                            _buildDecentButton(
-                              'Edit',
-                              Icons.edit,
-                              Colors.blue,
-                                  () {
-                                setState(() {
-                                  selectedCategory = lead['category'] ?? 'Normal';
-                                });
+                            if(hasPermission('canUpdateLeadStatus'))...[
+                              _buildDecentButton(
+                                'Edit',
+                                Icons.edit,
+                                Colors.blue,
+                                    () {
+                                  setState(() {
+                                    selectedCategory = lead['category'] ?? 'Normal';
+                                  });
 
-                                showEditLeadStatusDialog(lead['id'],lead['name'],lead['category']);
-                              },
-                            ),
-                            SizedBox(width:5),
-                            _buildDecentButton(
-                              'Delete',
-                              Icons.delete,
-                              Colors.redAccent,
-                                  () {
+                                  showEditLeadStatusDialog(lead['id'],lead['name'],lead['category']);
+                                },
+                              ),
+                              SizedBox(width:5),
+                            ],
 
-                                deleteLeadStatus(lead['id']); },
-                            ),
-                            SizedBox(width:5)
+                            if(hasPermission('canDeleteLeadStatus'))...[
+                              _buildDecentButton(
+                                'Delete',
+                                Icons.delete,
+                                Colors.redAccent,
+                                    () {
+
+                                  deleteLeadStatus(lead['id']); },
+                              ),
+                              SizedBox(width:5)
+                            ]
+
+
                           ],),
 
                       ],),
@@ -708,9 +722,30 @@ class _LeadStatusReportState extends State<LeadStatusReport> {
           },
         ),
 
+      )) :  Expanded(
+        child: Center(
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.lock_outline, size: 48, color: Colors.grey),
+                  SizedBox(height: 10),
+                  Text(
+                    "Access Denied",
+                    style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    "You don’t have permission to view lead status.",
+                    style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            )
+        ),
       ),
 
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: hasPermission('canCreateLeadStatus') ? FloatingActionButton(
         onPressed:()
         {
           leadStatusController.clear();
@@ -723,7 +758,7 @@ class _LeadStatusReportState extends State<LeadStatusReport> {
         
         child: Icon(Icons.add,
         color: Colors.white),
-      ),
+      ) : null
     );
   }
 

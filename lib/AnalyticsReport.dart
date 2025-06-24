@@ -55,12 +55,11 @@ class _LandlordDashboardScreenState extends State<LandlordDashboardScreen> with 
 
   Future<void> _initSharedPreferences() async {
 
+    if(hasPermission('canViewAllBuildingsGraph'))
+      {
+        fetchBuildingData();
 
-    fetchBuildingData();
-
-
-
-
+      }
   }
 
   Future<void> fetchBuildingData() async {
@@ -152,117 +151,124 @@ class _LandlordDashboardScreenState extends State<LandlordDashboardScreen> with 
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
 
-                      isLoadingBarChart
-                          ? Center(
-                        child: Platform.isIOS
-                            ? const CupertinoActivityIndicator(radius: 18)
-                            : CircularProgressIndicator(
-                          valueColor: AlwaysStoppedAnimation<Color>(appbar_color),
-                        ),
-                      )
-                          :
-                      buildingNames.isEmpty
-                          ? Center(
-                        child: Column(
+                      if(hasPermission('canViewAllBuildingsGraph'))...[
 
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.domain_disabled, color: Colors.grey, size: 48),
-                            SizedBox(height: 12),
-                            Text(
-                              'Building(s) Not Found',
-                              style: GoogleFonts.poppins(fontSize: 15, color: Colors.black54),
-                              textAlign: TextAlign.center,
-                            ),
-                          ],
-                        ),
-                      )
-                          :
+                        isLoadingBarChart
+                            ? Center(
+                          child: Platform.isIOS
+                              ? const CupertinoActivityIndicator(radius: 18)
+                              : CircularProgressIndicator(
+                            valueColor: AlwaysStoppedAnimation<Color>(appbar_color),
+                          ),
+                        )
+                            :
+                        buildingNames.isEmpty
+                            ? Center(
+                          child: Column(
 
-                      SizedBox(height: 0),
-
-                      if(buildingNames.isNotEmpty)...[
-
-                        Container(
-                          height: 370,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(16),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black12,
-                                blurRadius: 10,
-                                offset: Offset(0, 4),
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.domain_disabled, color: Colors.grey, size: 48),
+                              SizedBox(height: 12),
+                              Text(
+                                'Building(s) Not Found',
+                                style: GoogleFonts.poppins(fontSize: 15, color: Colors.black54),
+                                textAlign: TextAlign.center,
                               ),
                             ],
                           ),
-                          padding: EdgeInsets.all(20),
-                          child: Container(
-                            height: MediaQuery.of(context).size.height * 0.4,
-                            width: MediaQuery.of(context).size.width,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
+                        )
+                            :
 
-                                Text(
-                                  'Unit(s) Overview',
-                                  style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.bold),
-                                ),
+                        SizedBox(height: 0),
 
-                                SizedBox(height: 20),
-                                Expanded(
-                                  flex: 1,
 
-                                  child: BarGraph(occupiedUnits: occupiedUnits, buildingNames: buildingNames,availableUnits: availableUnits,),
 
-                                ),                        SizedBox(height: 10),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(vertical: 0),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Row(
-                                        children: [
-                                          Container(
-                                            width: 15,
-                                            height: 15,
-                                            decoration: BoxDecoration(
-                                              color: Colors.orangeAccent,
-                                              shape: BoxShape.circle,
-                                            ),
-                                          ),
-                                          SizedBox(width: 8),
-                                          Text('Occupied'),
-                                        ],
-                                      ),
-                                      SizedBox(width: 16),
-                                      Row(
-                                        children: [
-                                          Container(
-                                            width: 15,
-                                            height: 15,
-                                            decoration: BoxDecoration(
-                                              color: Colors.blueAccent,
-                                              shape: BoxShape.circle,
-                                            ),
-                                          ),
-                                          SizedBox(width: 8),
-                                          Text('Available'),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
+                        if(buildingNames.isNotEmpty)...[
+
+                          Container(
+                            height: 370,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(16),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black12,
+                                  blurRadius: 10,
+                                  offset: Offset(0, 4),
                                 ),
                               ],
                             ),
+                            padding: EdgeInsets.all(20),
+                            child: Container(
+                              height: MediaQuery.of(context).size.height * 0.4,
+                              width: MediaQuery.of(context).size.width,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+
+                                  Text(
+                                    'Unit(s) Overview',
+                                    style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.bold),
+                                  ),
+
+                                  SizedBox(height: 20),
+                                  Expanded(
+                                    flex: 1,
+
+                                    child: BarGraph(occupiedUnits: occupiedUnits, buildingNames: buildingNames,availableUnits: availableUnits,),
+
+                                  ),                        SizedBox(height: 10),
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(vertical: 0),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Container(
+                                              width: 15,
+                                              height: 15,
+                                              decoration: BoxDecoration(
+                                                color: Colors.orangeAccent,
+                                                shape: BoxShape.circle,
+                                              ),
+                                            ),
+                                            SizedBox(width: 8),
+                                            Text('Occupied'),
+                                          ],
+                                        ),
+                                        SizedBox(width: 16),
+                                        Row(
+                                          children: [
+                                            Container(
+                                              width: 15,
+                                              height: 15,
+                                              decoration: BoxDecoration(
+                                                color: Colors.blueAccent,
+                                                shape: BoxShape.circle,
+                                              ),
+                                            ),
+                                            SizedBox(width: 8),
+                                            Text('Available'),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                           ),
-                        ),
 
 
 
-                        SizedBox(height: 16),
+                          SizedBox(height: 16),
 
+                        ],
                       ],
+
+
 
 
                       Container(
@@ -273,27 +279,29 @@ class _LandlordDashboardScreenState extends State<LandlordDashboardScreen> with 
                           crossAxisAlignment: CrossAxisAlignment.stretch, // stretches children
 
                           children: [
-                            _buildDashboardButton(Icons.apartment, 'Building(s)', '', appbar_color, () {
+                            if(hasPermission('canViewBuildingWise'))...[
+                              _buildDashboardButton(Icons.apartment, 'Building(s)', '', appbar_color, () {
 
-                              Navigator.pushReplacement(
-                                context,
+                                Navigator.pushReplacement(
+                                  context,
 
-                                MaterialPageRoute(builder: (context) => BuildingsScreen()),          // navigate to users screen
-                              );
-                            }),
+                                  MaterialPageRoute(builder: (context) => BuildingsScreen()),          // navigate to users screen
+                                );
+                              }),
 
-                            SizedBox( height: 10),
+                              SizedBox( height: 10), 
+                            ],
+                            if(hasPermission('canViewComplaintSuggestions') || hasPermission('canFollowUpComplaintSuggestion'))...[
+                              _buildDashboardButton(Icons.apartment, 'Complaints/Suggestions', '', appbar_color, () {
 
-                            _buildDashboardButton(Icons.apartment, 'Complaints/Suggestions', '', appbar_color, () {
+                                Navigator.pushReplacement(
+                                  context,
 
-                              Navigator.pushReplacement(
-                                context,
-
-                                MaterialPageRoute(builder: (context) => ComplaintSuggestionReportScreen()),          // navigate to users screen
-                              );
-                            }),
+                                  MaterialPageRoute(builder: (context) => ComplaintSuggestionReportScreen()),          // navigate to users screen
+                                );
+                              }),
+                            ]
                           ],
-
                         ),
                       )])))
       ),

@@ -16,14 +16,16 @@ class LeadFollowupTypeReport extends StatefulWidget {
 
 class _LeadFollowupTypeReportState extends State<LeadFollowupTypeReport> {
   List<dynamic> leadFollowupTypes = [];
-  bool isLoading = true;
+  bool isLoading = false;
 
   TextEditingController leadFollowupTypeController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    fetchFollowupLeadType();
+    if(hasPermission('canViewLeadFollowUpType')){
+      fetchFollowupLeadType();
+    }
   }
 
   Future<void> sendLeadFollowup() async {
@@ -318,6 +320,10 @@ class _LeadFollowupTypeReportState extends State<LeadFollowupTypeReport> {
 
   Future<void> fetchFollowupLeadType() async {
 
+    setState(() {
+      isLoading = true;
+    });
+
     print('fetching lead type');
     leadFollowupTypes.clear();
 
@@ -392,6 +398,7 @@ class _LeadFollowupTypeReportState extends State<LeadFollowupTypeReport> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         leading: GestureDetector(
           onTap: ()
@@ -412,26 +419,26 @@ class _LeadFollowupTypeReportState extends State<LeadFollowupTypeReport> {
         backgroundColor: appbar_color.withOpacity(0.9),
 
       ),
-      body: isLoading
+      body: hasPermission('canViewLeadFollowUpType') ? (isLoading
           ? Center(
-        child: Container(
-          color: Colors.white,
-          child: Platform.isIOS
-            ? CupertinoActivityIndicator(radius: 15.0)
-            : CircularProgressIndicator(
-          valueColor: AlwaysStoppedAnimation<Color>(appbar_color),
-          strokeWidth: 4.0,
-        ),
-      ))
+          child: Container(
+            color: Colors.white,
+            child: Platform.isIOS
+                ? CupertinoActivityIndicator(radius: 15.0)
+                : CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(appbar_color),
+              strokeWidth: 4.0,
+            ),
+          ))
           : leadFollowupTypes.isEmpty
           ? Center(
-        child: Container(
-          color: Colors.white,
-          child: Text(
-          'No data available',
-          style: GoogleFonts.poppins(color: appbar_color.withOpacity(0.9), fontSize: 18),
-        ),
-      ))
+          child: Container(
+            color: Colors.white,
+            child: Text(
+              'No data available',
+              style: GoogleFonts.poppins(color: appbar_color.withOpacity(0.9), fontSize: 18),
+            ),
+          ))
           : Container(
         color: Colors.white,
         padding: EdgeInsets.only(top: 10),
@@ -486,25 +493,30 @@ class _LeadFollowupTypeReportState extends State<LeadFollowupTypeReport> {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
 
-                            _buildDecentButton(
-                              'Edit',
-                              Icons.edit,
-                              Colors.blue,
-                                  () {
+                            if(hasPermission('canUpdateLeadFollowUpType'))...[
+                              _buildDecentButton(
+                                'Edit',
+                                Icons.edit,
+                                Colors.blue,
+                                    () {
 
-                                showEditLeadFollowupDialog(lead['id'],lead['name']);
-                              },
-                            ),
-                            SizedBox(width:5),
-                            _buildDecentButton(
-                              'Delete',
-                              Icons.delete,
-                              Colors.redAccent,
-                                  () {
+                                  showEditLeadFollowupDialog(lead['id'],lead['name']);
+                                },
+                              ),
+                              SizedBox(width:5),
+                            ],
 
-                                deleteLeadFollowup(lead['id']); },
-                            ),
-                            SizedBox(width:5)
+                            if(hasPermission('canDeleteLeadFollowUpType'))...[
+                              _buildDecentButton(
+                                'Delete',
+                                Icons.delete,
+                                Colors.redAccent,
+                                    () {
+
+                                  deleteLeadFollowup(lead['id']); },
+                              ),
+                              SizedBox(width:5)
+                            ]
                           ],),
 
                       ],),
@@ -516,9 +528,36 @@ class _LeadFollowupTypeReportState extends State<LeadFollowupTypeReport> {
             );
           },
         ),
+      )
+      ) :
+
+      Expanded(
+        child: Center(
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.lock_outline, size: 48, color: Colors.grey),
+                  SizedBox(height: 10),
+                  Text(
+                    "Access Denied",
+                    style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    "You don’t have permission to view lead follow-up type.",
+                    style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            )
+        ),
       ),
 
-      floatingActionButton: FloatingActionButton(
+
+
+
+      floatingActionButton: hasPermission('canCreateLeadFollowUpType') ? FloatingActionButton(
         onPressed:()
         {
           leadFollowupTypeController.clear();
@@ -527,7 +566,7 @@ class _LeadFollowupTypeReportState extends State<LeadFollowupTypeReport> {
         backgroundColor: appbar_color.withOpacity(0.9),
         child: Icon(Icons.add,
             color: Colors.white),
-      ),
+      ) : null
     );
   }
 

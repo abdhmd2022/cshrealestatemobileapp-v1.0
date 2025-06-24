@@ -156,13 +156,14 @@ class _LoginPageState extends State<Login> {
      }
   }
 
-  Future<void> _adminlogin(String email, String password) async {
+  // old admin login function
+  /*Future<void> _adminlogin(String email, String password) async {
 
     prefs!.clear();
 
     String url = "$OAuth_URL/oauth/token";
 
-    /*String token = 'Bearer $authTokenBase';*/
+    *//*String token = 'Bearer $authTokenBase';*//*
 
     setState(() => _isLoading = true);
     dynamic responseData;
@@ -179,8 +180,9 @@ class _LoginPageState extends State<Login> {
         'client_secret': client_password_constant,
         'scope': "user",
         "grant_type" : "password"
+
       };
-      /*var body = jsonEncode({'email': email, 'password': password});*/
+      *//*var body = jsonEncode({'email': email, 'password': password});*//*
 
       var response = await http.post(
         Uri.parse(url),
@@ -268,7 +270,134 @@ class _LoginPageState extends State<Login> {
     } finally {
       setState(() => _isLoading = false);
     }
+  }*/
+
+  // new admin login function
+  Future<void> _adminlogin(String email, String password) async {
+    prefs!.clear();
+    String url = "$OAuth_URL/oauth/token";
+    setState(() => _isLoading = true);
+    dynamic responseData;
+
+    try {
+      Map<String, String> headers = {
+        "Content-Type": "application/x-www-form-urlencoded"
+      };
+
+      Map<String, String> body = {
+        'username': email,
+        'password': password,
+        'client_id': client_id_constant,
+        'client_secret': client_password_constant,
+        'scope': "user",
+        "grant_type": "password"
+      };
+
+      var response = await http.post(
+        Uri.parse(url),
+        body: body,
+        headers: headers,
+      );
+      responseData = json.decode(response.body);
+
+      if (response.statusCode == 200) {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        List<dynamic> usersJsonList = responseData['user'];
+
+        List<Map<String, dynamic>> companiesJson = [];
+
+        for (var userJson in usersJsonList) {
+          final company = userJson['company'] ?? {};
+          final hosting = company['hosting'] ?? {};
+          final role = userJson['role'] ?? {};
+
+          companiesJson.add({
+            'id': userJson['company_id'] ?? 0,
+            'name': company['name'] ?? 'Unknown Company',
+            'token': userJson['accessToken'] ?? responseData['accessToken'],
+            'token_expiry': userJson['accessTokenExpiresAt'] ?? responseData['accessTokenExpiresAt'],
+            'baseurl': hosting['baseurl'] ?? '',
+            'adminurl': hosting['adminurl'] ?? '',
+            'license_expiry': hosting['license_expiry'] ?? '',
+            'permissions': role['permissions'] ?? [],
+            'role_name': role['name'] ?? '',
+            'is_active': userJson['is_active'].toString().toLowerCase() == 'true',
+            'user_id': userJson['id'],
+            'user_email': userJson['email'],
+            'user_name': userJson['name'],
+            'is_admin': userJson['is_admin'].toString().toLowerCase() == 'true',
+          });
+        }
+
+        // Store first user/company context
+        var first = companiesJson[0];
+
+        await prefs.setBool('remember_me', true);
+        await prefs.setString("scope", responseData["scope"]);
+        await prefs.setInt("user_id", first["user_id"]);
+        await prefs.setString("user_name", first["user_name"]);
+        await prefs.setString("user_email", first["user_email"]);
+        await prefs.setString("password", password);
+        await prefs.setString("access_token", first["token"]);
+        await prefs.setString("access_token_expiry", first["token_expiry"]);
+        await prefs.setBool('is_admin', isAdmin==true ? true : false);
+        await prefs.setBool('is_admin_from_api', first["is_admin"]);
+        await prefs.setString("role_name", first["role_name"]);
+        await prefs.setBool("is_active", first["is_active"]);
+        await prefs.setInt("company_id", first["id"]);
+        await prefs.setString("company_name", first["name"]);
+        await prefs.setString("baseurl", first["baseurl"]);
+        await prefs.setString("adminurl", first["adminurl"]);
+        await prefs.setString("license_expiry", first["license_expiry"]);
+        await prefs.setBool('is_landlord', false);
+        await prefs.setString("user_permissions", jsonEncode(first["permissions"]));
+
+        // Store all companies with roles
+        await prefs.setString("companies_list", jsonEncode(companiesJson));
+
+        loadTokens();
+
+        if (companiesJson.length > 0) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => CompanySelection()),
+          );
+        } else {
+          // Parse license expiry date
+          final expiryString = first["license_expiry"];
+          if (expiryString != null && expiryString.isNotEmpty) {
+            final expiryDate = DateTime.tryParse(expiryString);
+            final now = DateTime.now();
+
+            if (expiryDate != null && expiryDate.isBefore(now)) {
+              showErrorSnackbar(
+                context,
+                'Your license against "${first["name"]}" is expired. Please contact your service provider for renewal.',
+              );
+              return; // Don't proceed to dashboard
+            }
+          }
+
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => AdminDashboard()),
+          );
+        }
+      } else {
+        await prefs!.setBool('remember_me', false);
+        final errorMessage = responseData['message'] ?? 'Unknown error occurred';
+        showErrorSnackbar(context, errorMessage);
+      }
+    } catch (e) {
+      await prefs!.setBool('remember_me', false);
+      final errorMessage = responseData['message'] ?? 'Unknown error occurred';
+      showErrorSnackbar(context, errorMessage);
+    } finally {
+      setState(() => _isLoading = false);
+    }
   }
+
+
   // old tenant login function
 
   /*Future<void> tenantLogin(String email, String password) async {

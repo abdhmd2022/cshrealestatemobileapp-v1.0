@@ -160,124 +160,143 @@ class _SettingsScreenState extends State<SettingsScreen> with TickerProviderStat
         children: [
 
 
-          Padding(padding: EdgeInsets.only(top: 5,bottom: 5),
-              child: ListTile(
-                title: Text('Lead Status'),
-                subtitle: Text('Manage lead/follow-up status masters for the app'),
-                onTap: ()
-                {
-                  Navigator.pushReplacement
+          if(hasPermissionInCategory('Lead Status'))...[
+            Padding(padding: EdgeInsets.only(top: 5,bottom: 5),
+                child: ListTile(
+                  title: Text('Lead Status'),
+                  subtitle: Text('Manage lead/follow-up status masters for the app'),
+                  onTap: ()
+                  {
+                    Navigator.pushReplacement
 
-                    (
-                    context,
-                    MaterialPageRoute(builder: (context) => LeadStatusReport()), // navigate to company and serial select screen
-                  );
+                      (
+                      context,
+                      MaterialPageRoute(builder: (context) => LeadStatusReport()), // navigate to company and serial select screen
+                    );
 
-                },
-              )),
-          Divider(),
+                  },
+                )),
+            Divider(),
+          ],
 
-          Padding(padding: EdgeInsets.only(top: 5,bottom: 5),
-              child: ListTile(
-                title: Text('Amenities'),
-                subtitle: Text('Manage amenities masters for the app'),
-                onTap: ()
-                {
-                  Navigator.pushReplacement
+          if(hasPermission('canCreateAmenities') || hasPermission('canViewAmenities') || hasPermission('canUpdateAmenities') || hasPermission('canDeleteAmenities'))...[
+            Padding(padding: EdgeInsets.only(top: 5,bottom: 5),
+                child: ListTile(
+                  title: Text('Amenities'),
+                  subtitle: Text('Manage amenities masters for the app'),
+                  onTap: ()
+                  {
+                    Navigator.pushReplacement
 
-                    (
-                    context,
-                    MaterialPageRoute(builder: (context) => AmentiesReport()), // navigate to company and serial select screen
-                  );
+                      (
+                      context,
+                      MaterialPageRoute(builder: (context) => AmentiesReport()), // navigate to company and serial select screen
+                    );
 
-                },
-              )),
-          Divider(),
+                  },
+                )),
+            Divider(),
+          ],
 
-          Padding(
-            padding: EdgeInsets.only(top: 5,bottom: 5),
-            child: Column(
-              children: [
-                ListTile(
-                  title: Text('Price Range'),
-                  subtitle: Text('Set price range for sales enquiry'),
 
-                  onTap: _showPriceRangeDialog, // Open dialog when tile is tapped
-                ),
-              ],
+          if(hasPermission('canSetPriceRangeForSalesInquiry'))...[
+            Padding(
+              padding: EdgeInsets.only(top: 5,bottom: 5),
+              child: Column(
+                children: [
+                  ListTile(
+                    title: Text('Price Range'),
+                    subtitle: Text('Set price range for sales enquiry'),
+
+                    onTap: _showPriceRangeDialog, // Open dialog when tile is tapped
+                  ),
+                ],
+              ),
             ),
-          ),
-          Divider(),
-
-          Padding(padding: EdgeInsets.only(top: 5,bottom: 5),
-              child: ListTile(
-                title: Text('Lead Follow-up Type'),
-                subtitle: Text('Manage lead follow-up type masters for the app'),
-                onTap: ()
-                {
-                  Navigator.pushReplacement
-
-                    (
-                    context,
-                    MaterialPageRoute(builder: (context) => LeadFollowupTypeReport()), // navigate to company and serial select screen
-                  );
-
-                },
-              )),
-          Divider(),
-
-          Padding(padding: EdgeInsets.only(top: 5,bottom: 5),
-              child: ListTile(
-                title: Text('Activity Source'),
-                subtitle: Text('Manage activity source masters for the app'),
-                onTap: ()
-                {
-                  Navigator.pushReplacement
-
-                    (
-                    context,
-                    MaterialPageRoute(builder: (context) => ActivitySourceReport()), // navigate to company and serial select screen
-                  );
-
-                },
-              )),
-
-          Divider(),
-
-          Padding(padding: EdgeInsets.only(top: 5,bottom: 5),
-              child: ListTile(
-                title: Text('Maintenance Types'),
-                subtitle: Text('Manage maintenance types masters for the app'),
-                onTap: ()
-                {
-                  Navigator.pushReplacement
-
-                    (
-                    context,
-                    MaterialPageRoute(builder: (context) => MaintenanceTypeMastersReport()), // navigate to company and serial select screen
-                  );
-
-                },
-              )),
-
-          Divider(),
+            Divider(),
+          ],
 
 
-          Padding(padding: EdgeInsets.only(top: 5,bottom: 5),
-              child: ListTile(
-                title: Text('Maintenance Status'),
-                subtitle: Text('Manage maintenance status masters for the app'),
-                onTap: ()
-                {
-                  Navigator.pushReplacement
+          if(hasPermissionInCategory('Lead Follow-up Type'))...[
+            Padding(padding: EdgeInsets.only(top: 5,bottom: 5),
+                child: ListTile(
+                  title: Text('Lead Follow-up Type'),
+                  subtitle: Text('Manage lead follow-up type masters for the app'),
+                  onTap: ()
+                  {
+                    Navigator.pushReplacement
 
-                    (
-                    context,
-                    MaterialPageRoute(builder: (context) => MaintenanceStatusReport()), // navigate to company and serial select screen
-                  );
+                      (
+                      context,
+                      MaterialPageRoute(builder: (context) => LeadFollowupTypeReport()), // navigate to company and serial select screen
+                    );
 
-                },
-              )),
+                  },
+                )),
+            Divider(),
+          ],
+          
+          if(hasPermissionInCategory('Activity Source'))...[
+
+            Padding(padding: EdgeInsets.only(top: 5,bottom: 5),
+                child: ListTile(
+                  title: Text('Activity Source'),
+                  subtitle: Text('Manage activity source masters for the app'),
+                  onTap: ()
+                  {
+                    Navigator.pushReplacement
+
+                      (
+                      context,
+                      MaterialPageRoute(builder: (context) => ActivitySourceReport()), // navigate to company and serial select screen
+                    );
+
+                  },
+                )),
+
+            Divider(),
+          ],
+
+
+          if(hasPermissionInCategory('Maintenance Types'))...[
+            Padding(padding: EdgeInsets.only(top: 5,bottom: 5),
+                child: ListTile(
+                  title: Text('Maintenance Types'),
+                  subtitle: Text('Manage maintenance types masters for the app'),
+                  onTap: ()
+                  {
+                    Navigator.pushReplacement
+
+                      (
+                      context,
+                      MaterialPageRoute(builder: (context) => MaintenanceTypeMastersReport()), // navigate to company and serial select screen
+                    );
+
+                  },
+                )),
+
+            Divider(),
+          ],
+
+          if(hasPermissionInCategory('Maintenance Status'))...[
+            Padding(padding: EdgeInsets.only(top: 5,bottom: 5),
+                child: ListTile(
+                  title: Text('Maintenance Status'),
+                  subtitle: Text('Manage maintenance status masters for the app'),
+                  onTap: ()
+                  {
+                    Navigator.pushReplacement
+
+                      (
+                      context,
+                      MaterialPageRoute(builder: (context) => MaintenanceStatusReport()), // navigate to company and serial select screen
+                    );
+
+                  },
+                )),
+          ]
+
+
 
 
 

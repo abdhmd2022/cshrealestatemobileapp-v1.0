@@ -801,7 +801,6 @@ class _LoginPageState extends State<Login> {
                         visible: isVisibleAdminLoginForm,
                         child:Container(
                             height: MediaQuery.of(context).size.height,
-
                             padding: EdgeInsets.only(left: 32,right: 32,top : 20),
                             decoration: BoxDecoration(
                                 color: Colors.white,

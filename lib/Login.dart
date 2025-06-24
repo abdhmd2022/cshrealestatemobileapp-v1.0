@@ -397,7 +397,6 @@ class _LoginPageState extends State<Login> {
     }
   }
 
-
   // old tenant login function
 
   /*Future<void> tenantLogin(String email, String password) async {

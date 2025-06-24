@@ -357,7 +357,7 @@ class _LoginPageState extends State<Login> {
 
         loadTokens();
 
-        if (companiesJson.length > 0) {
+        if (companiesJson.length > 1) {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => CompanySelection()),

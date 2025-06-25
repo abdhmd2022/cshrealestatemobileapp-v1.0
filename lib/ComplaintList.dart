@@ -149,7 +149,7 @@ class _ComplaintListScreenState extends State<ComplaintListScreen> {
           },
         ),
       ),
-      floatingActionButton:Align(
+      floatingActionButton: hasPermission('canCreateComplaintSuggestion') ? Align(
         alignment: Alignment.bottomRight,
         child: Padding(
           padding: const EdgeInsets.only(right: 16.0, bottom: 20.0),
@@ -181,7 +181,7 @@ class _ComplaintListScreenState extends State<ComplaintListScreen> {
             ),
           ),
         ),
-      ),
+      ):null,
 
       body: Container(
         color: Colors.white,

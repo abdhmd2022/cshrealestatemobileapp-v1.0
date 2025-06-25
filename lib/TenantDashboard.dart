@@ -765,18 +765,32 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
               ],
             ),
 
+            if(hasPermissionInCategory('Maintenance'))...[
+              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                _buildDashboardButton(Icons.build, 'Maintenance', appbar_color, () => Navigator.push(context, MaterialPageRoute(builder: (_) => MaintenanceTicketReport()))),
+              ]),
+              SizedBox(height: 10),
+            ],
+
+
             Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-              _buildDashboardButton(Icons.build, 'Maintenance', appbar_color, () => Navigator.push(context, MaterialPageRoute(builder: (_) => MaintenanceTicketReport()))),
-            ]),
-            SizedBox(height: 10),
-            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-              _buildDashboardButton(Icons.credit_card, 'Request', Colors.purpleAccent, () => Navigator.push(context, MaterialPageRoute(builder: (_) => RequestListScreen()))),
-              _buildDashboardButton(Icons.home, 'Available Units', Colors.orangeAccent, () => Navigator.push(context, MaterialPageRoute(builder: (_) => AvailableUnitsReport()))),
+              if(hasPermissionInCategory('Request'))...[
+                _buildDashboardButton(Icons.credit_card, 'Request', Colors.purpleAccent, () => Navigator.push(context, MaterialPageRoute(builder: (_) => RequestListScreen()))),
+
+              ],
+              if(hasPermissionInCategory('Available Units'))...[
+                _buildDashboardButton(Icons.home, 'Available Units', Colors.orangeAccent, () => Navigator.push(context, MaterialPageRoute(builder: (_) => AvailableUnitsReport()))),
+              ]
             ]),
             SizedBox(height: 10),
             Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
               _buildDashboardButton(Icons.upload_file, 'KYC Update', Colors.tealAccent, () => Navigator.push(context, MaterialPageRoute(builder: (_) => DecentTenantKYCForm()))),
+
+
+            if(hasPermission('canCreateComplaintSuggestion') || hasPermission('canViewComplaintSuggestions'))...[
               _buildDashboardButton(Icons.info_outline, 'Complaints/Suggestions', Colors.redAccent, () => Navigator.push(context, MaterialPageRoute(builder: (_) => ComplaintListScreen()))),
+
+              ]
             ]),
 
             SizedBox(height: 20),

@@ -95,6 +95,77 @@ class _LoginPageState extends State<Login> {
 
   final requiredLength = 4; // the required length of the password
 
+  // tenant permissions
+
+  List<Map<String, dynamic>> tenantPermissions = [
+    {
+      "name": "canCreateMaintenanceTicket",
+      "category": "Maintenance",
+      "description": "Create maintenance ticket"
+    },
+    {
+      "name": "canViewMaintenanceTickets",
+      "category": "Maintenance",
+      "description": "View maintenance tickets"
+    },
+    {
+      "name": "canCreateTicketComment",
+      "category": "Maintenance",
+      "description": "Create ticket comment"
+    },
+    {
+      "name": "canViewTicketComment",
+      "category": "Maintenance",
+      "description": "View ticket comment"
+    },
+    {
+      "name": "canViewTicketComplaint",
+      "category": "Maintenance",
+      "description": "View ticket complaint"
+    },
+    {
+      "name": "canViewTicketFeedback",
+      "category": "Maintenance",
+      "description": "View ticket feedback"
+    },
+    {
+      "name": "canCreateRequest",
+      "category": "Request",
+      "description": "Create request"
+    },
+    {
+      "name": "canViewRequest",
+      "category": "Request",
+      "description": "View request"
+    },
+    {
+      "name": "canViewAvailableUnits",
+      "category": "Available Units",
+      "description": "View available units"
+    },
+    {
+      "name": "canCreateComplaintSuggestion",
+      "category": "Analytics",
+      "description": "Create complaint/suggestion"
+    },
+    {
+      "name": "canViewComplaintSuggestions",
+      "category": "Analytics",
+      "description": "View complaint/suggestions"
+    },
+    {
+      "name": "canViewAnnouncement",
+      "category": "Announcement",
+      "description": "View Announcement"
+    },
+    {
+      "name": "canViewChequeDetails",
+      "category": "Analytics",
+      "description": "View cheque details"
+    }
+  ];
+
+
   void _onPasswordChanged() {
     // Check the length of the password
     if (passwordController.text.length < requiredLength) {
@@ -210,7 +281,7 @@ class _LoginPageState extends State<Login> {
           await prefs.setString("user_name", firstUser.name);
           await prefs.setString("password", password);
           await prefs.setString("user_email", firstUser.email);
-          await prefs.setString("company_token", firstUser.token);
+          await prefs.setString("access_token", firstUser.token);
           await prefs.setInt("company_id", firstUser.companyId ?? 0);
           await prefs.setBool('is_admin', isAdmin==true ? true : false);
           await prefs.setBool('is_admin_from_api',firstUser.is_admin.toString().toLowerCase() == "true" ? true : false );
@@ -438,7 +509,7 @@ class _LoginPageState extends State<Login> {
           await prefs.setInt("user_id", firstTenant['tenant_id']);
           await prefs.setString("user_name", firstTenant['tenant']['name']);
           await prefs.setString("user_email", firstTenant['tenant']['email']);
-          await prefs.setString("company_token", firstTenant['accessToken']);
+          await prefs.setString("access_token", firstTenant['accessToken']);
           await prefs.setInt("company_id", firstTenant['company_id'] ?? 0);
           await prefs.setBool('is_admin', false);
           await prefs.setString("license_expiry", firstTenant['tenant']['company']['hosting']['license_expiry']);
@@ -540,7 +611,7 @@ class _LoginPageState extends State<Login> {
       await prefs.setString("user_email", user['email']);
       await prefs.setString("password", password);
 
-      await prefs.setString("company_token", token);
+      await prefs.setString("access_token", token);
       await prefs.setInt("company_id", user['company_id'] ?? 0);
       await prefs.setBool('is_admin', false);
       await prefs.setBool('is_landlord', false);
@@ -600,6 +671,11 @@ class _LoginPageState extends State<Login> {
       }).toList();
 
       await prefs.setString("flats_list", jsonEncode(flatsList));
+      await prefs.setString("user_permissions", jsonEncode(tenantPermissions));
+      await prefs.setString("role_name", 'Tenant');
+
+
+
 
 
       // Step 3: Redirect user
@@ -615,7 +691,10 @@ class _LoginPageState extends State<Login> {
         await prefs.setInt("flat_id", flat['id']);
         await prefs.setString("flat_name", flat['name']);
         await prefs.setString("building", flat['building']);
+
         loadTokens();
+
+
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => TenantDashboard()),
@@ -634,6 +713,7 @@ class _LoginPageState extends State<Login> {
     }
   }
 
+  // new landlord function
   Future<void> landlordLogin(String email, String password) async {
     prefs!.clear();
 
@@ -641,7 +721,6 @@ class _LoginPageState extends State<Login> {
     setState(() => _isLoading = true);
 
     try {
-      // Step 1: Get token and user info
       var loginResponse = await http.post(
         Uri.parse(loginUrl),
         headers: {
@@ -667,6 +746,132 @@ class _LoginPageState extends State<Login> {
       final company = user['company'];
       final hosting = company['hosting'];
       final token = user['accessToken'];
+      final landlordId = user['id'];
+
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setInt("user_id", landlordId);
+      await prefs.setBool('remember_me', true);
+      await prefs.setString("user_name", user['name']);
+      await prefs.setString("scope", loginData["scope"]);
+      await prefs.setString("user_email", user['email']);
+      await prefs.setString("password", password);
+
+      await prefs.setString("access_token", token);
+      await prefs.setInt("company_id", user['company_id'] ?? 0);
+      await prefs.setBool('is_admin', false);
+      await prefs.setBool('is_landlord', true);
+
+      await prefs.remove('is_admin_from_api');
+
+      await prefs.setString("license_expiry", hosting['license_expiry']);
+      await prefs.setString("baseurl", hosting['baseurl']);
+      await prefs.setString("adminurl", hosting['adminurl']);
+
+      await Future.delayed(Duration(seconds: 1));
+
+      final landlordUrl = "${hosting['baseurl']}/landlord/$landlordId";
+
+      var landlordResponse = await http.get(
+        Uri.parse(landlordUrl),
+        headers: {
+          "Authorization": "Bearer $token",
+          "Accept": "application/json",
+        },
+      );
+
+      var landlordData = json.decode(landlordResponse.body);
+
+      if (!landlordData['success']) {
+        final errorMsg = "${landlordData['message']}" ?? "Failed to fetch landlord details.";
+        showErrorSnackbar(context, errorMsg);
+        return;
+      }
+
+      var landlord = landlordData['data']['landlord'];
+      var contracts = landlord['bought_contracts'] as List<dynamic>;
+
+      List<Map<String, dynamic>> flatsList = contracts.expand((contract) {
+        return (contract['flats'] as List<dynamic>).map((flatData) {
+          var flat = flatData['flat'];
+          return {
+            'landlord_id': landlord['id'],
+            'id': flat['id'],
+            'name': flat['name'],
+            'building': flat['building']['name'] ?? 'Unknown Building',
+            'company_id': landlord['company_id'],
+            'baseurl': hosting['baseurl'],
+            'adminurl': hosting['adminurl'],
+            'license_expiry': hosting['license_expiry'],
+            'accessToken': token,
+          };
+        });
+      }).toList();
+
+      await prefs.setString("flats_list", jsonEncode(flatsList));
+
+      if (flatsList.length > 1) {
+        loadTokens();
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => FlatSelection()),
+        );
+      } else if (flatsList.isNotEmpty) {
+        var flat = flatsList.first;
+        await prefs.setInt("flat_id", flat['id']);
+        await prefs.setString("flat_name", flat['name']);
+        await prefs.setString("building", flat['building']);
+        loadTokens();
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => TenantDashboard()),
+        );
+      } else {
+        await prefs!.setBool('remember_me', false);
+        showErrorSnackbar(context, "No flats found for this landlord.");
+      }
+    } catch (e) {
+      await prefs!.setBool('remember_me', false);
+      showErrorSnackbar(context, "Something went wrong during login.");
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
+
+
+  // old landlord function
+  /*Future<void> landlordLogin(String email, String password) async {
+    prefs!.clear();
+
+    String loginUrl = "$OAuth_URL/oauth/token";
+    setState(() => _isLoading = true);
+
+    try {
+      // Step 1: Get token and user info
+      var loginResponse = await http.post(
+        Uri.parse(loginUrl),
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: {
+          'username': email,
+          'password': password,
+          'client_id': client_id_constant,
+          'client_secret': client_password_constant,
+          'scope': "landlord",
+          "grant_type": "password",
+        },
+      );
+
+      var loginData = json.decode(loginResponse.body);
+      if (loginResponse.statusCode != 200 || !loginData.containsKey('landlord')) {
+        showErrorSnackbar(context, "${loginData['message']}" ?? 'Login failed');
+        return;
+      }
+
+      final user = loginData['landlord'][0];
+      final company = user['company'];
+      final hosting = company['hosting'];
+      final token = user['accessToken'];
       final landlordId = user['id']; // landlord_id
 
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -677,7 +882,7 @@ class _LoginPageState extends State<Login> {
       await prefs.setString("user_email", user['email']);
       await prefs.setString("password", password);
 
-      await prefs.setString("company_token", token);
+      await prefs.setString("access_token", token);
       await prefs.setInt("company_id", user['company_id'] ?? 0);
       await prefs.setBool('is_admin', false);
       await prefs.setBool('is_landlord', true);
@@ -768,7 +973,7 @@ class _LoginPageState extends State<Login> {
     } finally {
       setState(() => _isLoading = false);
     }
-  }
+  }*/
 
 
   void loginUser(String email, String password, bool isAdmin, bool isLandlord) {
@@ -982,15 +1187,15 @@ class _LoginPageState extends State<Login> {
                                               });
                                             }),
                                             _buildToggleChip("Landlord", isLandlord, () {
-                                             /* setState(() {
+                                              setState(() {
                                                 isAdmin = false;
                                                 isLandlord = true;
-                                              });*/
-                                              Fluttertoast.showToast(
+                                              });
+                                              /*Fluttertoast.showToast(
                                                 msg: "Landlord access is under development",
                                                 toastLength: Toast.LENGTH_SHORT,
                                                 gravity: ToastGravity.BOTTOM,
-                                              );
+                                              );*/
                                             }),
                                           ],
                                         ),

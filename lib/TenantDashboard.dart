@@ -203,65 +203,68 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
         ),
         actions: [
           // 📢 Announcement Icon with count badge
-          Padding(
-            padding: const EdgeInsets.only(right: 12.0),
-            child: InkWell(
-              onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (_) => AnnouncementScreen()));
+          if(hasPermission('canViewAnnouncement'))...[
+            Padding(
+              padding: const EdgeInsets.only(right: 12.0),
+              child: InkWell(
+                onTap: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => AnnouncementScreen()));
 
                 },
-              child: Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      gradient: LinearGradient(
-                        colors: [appbar_color.shade200, appbar_color.shade700],
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
+                child: Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        gradient: LinearGradient(
+                          colors: [appbar_color.shade200, appbar_color.shade700],
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.2),
+                            blurRadius: 5,
+                            offset: const Offset(0, 2),
+                          )
+                        ],
                       ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.2),
-                          blurRadius: 5,
-                          offset: const Offset(0, 2),
-                        )
-                      ],
+                      child: const Icon(Icons.campaign_outlined, color: Colors.white),
                     ),
-                    child: const Icon(Icons.campaign_outlined, color: Colors.white),
-                  ),
 
-                  // 🔴 Count Badge
-                  if (announcementCount > 0)
-                    Positioned(
-                      top: -8,
-                      right: -4,
-                      child: Container(
-                        padding: const EdgeInsets.all(3),
-                        decoration: BoxDecoration(
-                          color: Colors.red,
-                          shape: BoxShape.circle,
-                          border: Border.all(color: Colors.red, width: 1.5),
-                        ),
-                        constraints: const BoxConstraints(minWidth: 18, minHeight: 18),
-                        child: Text(
-                          '$announcementCount',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 11,
-                            fontWeight: FontWeight.bold,
+                    // 🔴 Count Badge
+                    if (announcementCount > 0)
+                      Positioned(
+                        top: -8,
+                        right: -4,
+                        child: Container(
+                          padding: const EdgeInsets.all(3),
+                          decoration: BoxDecoration(
+                            color: Colors.red,
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Colors.red, width: 1.5),
                           ),
-                          textAlign: TextAlign.center,
+                          constraints: const BoxConstraints(minWidth: 18, minHeight: 18),
+                          child: Text(
+                            '$announcementCount',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
                         ),
                       ),
-                    ),
-                ],
+                  ],
+                ),
               ),
             ),
-          ),
+          ]
+
 
           // 🔔 Notification Icon (existing)
           // Padding(

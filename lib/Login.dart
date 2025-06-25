@@ -95,8 +95,76 @@ class _LoginPageState extends State<Login> {
 
   final requiredLength = 4; // the required length of the password
 
-  // tenant permissions
+  // landlord permissions
+  List<Map<String, dynamic>> landlordPermissions = [
+    {
+      "name": "canCreateMaintenanceTicket",
+      "category": "Maintenance",
+      "description": "Create maintenance ticket"
+    },
+    {
+      "name": "canViewMaintenanceTickets",
+      "category": "Maintenance",
+      "description": "View maintenance tickets"
+    },
+    {
+      "name": "canCreateTicketComment",
+      "category": "Maintenance",
+      "description": "Create ticket comment"
+    },
+    {
+      "name": "canViewTicketComment",
+      "category": "Maintenance",
+      "description": "View ticket comment"
+    },
+    {
+      "name": "canViewTicketComplaint",
+      "category": "Maintenance",
+      "description": "View ticket complaint"
+    },
+    {
+      "name": "canViewTicketFeedback",
+      "category": "Maintenance",
+      "description": "View ticket feedback"
+    },
+    {
+      "name": "canCreateRequest",
+      "category": "Request",
+      "description": "Create request"
+    },
+    {
+      "name": "canViewRequest",
+      "category": "Request",
+      "description": "View request"
+    },
+    {
+      "name": "canViewAvailableUnits",
+      "category": "Available Units",
+      "description": "View available units"
+    },
+    {
+      "name": "canCreateComplaintSuggestion",
+      "category": "Analytics",
+      "description": "Create complaint/suggestion"
+    },
+    {
+      "name": "canViewComplaintSuggestions",
+      "category": "Analytics",
+      "description": "View complaint/suggestions"
+    },
+    {
+      "name": "canViewAnnouncement",
+      "category": "Announcement",
+      "description": "View Announcement"
+    },
+    {
+      "name": "canViewChequeDetails",
+      "category": "Analytics",
+      "description": "View cheque details"
+    }
+  ];
 
+  // tenant permissions
   List<Map<String, dynamic>> tenantPermissions = [
     {
       "name": "canCreateMaintenanceTicket",
@@ -616,7 +684,6 @@ class _LoginPageState extends State<Login> {
       await prefs.setBool('is_admin', false);
       await prefs.setBool('is_landlord', false);
 
-
       // no admin from api
       await prefs.remove('is_admin_from_api');
 
@@ -748,24 +815,24 @@ class _LoginPageState extends State<Login> {
       final token = user['accessToken'];
       final landlordId = user['id'];
 
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      await prefs.setInt("user_id", landlordId);
-      await prefs.setBool('remember_me', true);
-      await prefs.setString("user_name", user['name']);
-      await prefs.setString("scope", loginData["scope"]);
-      await prefs.setString("user_email", user['email']);
-      await prefs.setString("password", password);
+      await prefs!.setInt("user_id", landlordId);
+      await prefs!.setBool('remember_me', true);
+      await prefs!.setString("user_name", user['name']);
+      await prefs!.setString("scope", loginData["scope"]);
+      await prefs!.setString("user_email", user['email']);
+      await prefs!.setString("password", password);
 
-      await prefs.setString("access_token", token);
-      await prefs.setInt("company_id", user['company_id'] ?? 0);
-      await prefs.setBool('is_admin', false);
-      await prefs.setBool('is_landlord', true);
+      await prefs!.setString("access_token", token);
+      await prefs!.setInt("company_id", user['company_id'] ?? 0);
+      await prefs!.setBool('is_admin', false);
+      await prefs!.setBool('is_landlord', true);
+      await prefs!.remove('is_admin_from_api');
+      await prefs!.setString("role_name", 'Landlord');
+      await prefs!.setString("license_expiry", hosting['license_expiry']);
+      await prefs!.setString("baseurl", hosting['baseurl']);
+      await prefs!.setString("adminurl", hosting['adminurl']);
+      await prefs!.setString("user_permissions", jsonEncode(landlordPermissions));
 
-      await prefs.remove('is_admin_from_api');
-
-      await prefs.setString("license_expiry", hosting['license_expiry']);
-      await prefs.setString("baseurl", hosting['baseurl']);
-      await prefs.setString("adminurl", hosting['adminurl']);
 
       await Future.delayed(Duration(seconds: 1));
 
@@ -807,7 +874,7 @@ class _LoginPageState extends State<Login> {
         });
       }).toList();
 
-      await prefs.setString("flats_list", jsonEncode(flatsList));
+      await prefs!.setString("flats_list", jsonEncode(flatsList));
 
       if (flatsList.length > 1) {
         loadTokens();
@@ -817,9 +884,9 @@ class _LoginPageState extends State<Login> {
         );
       } else if (flatsList.isNotEmpty) {
         var flat = flatsList.first;
-        await prefs.setInt("flat_id", flat['id']);
-        await prefs.setString("flat_name", flat['name']);
-        await prefs.setString("building", flat['building']);
+        await prefs!.setInt("flat_id", flat['id']);
+        await prefs!.setString("flat_name", flat['name']);
+        await prefs!.setString("building", flat['building']);
         loadTokens();
         Navigator.pushReplacement(
           context,
@@ -827,7 +894,7 @@ class _LoginPageState extends State<Login> {
         );
       } else {
         await prefs!.setBool('remember_me', false);
-        showErrorSnackbar(context, "No flats found for this landlord.");
+        showErrorSnackbar(context, "No units found for this landlord.");
       }
     } catch (e) {
       await prefs!.setBool('remember_me', false);

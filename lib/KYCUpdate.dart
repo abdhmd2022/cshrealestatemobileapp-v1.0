@@ -277,7 +277,7 @@ class _DecentTenantKYCFormState extends State<DecentTenantKYCForm> {
       return;
     }
 
-    String url = "$baseurl/tenant/kyc/$user_id";
+    String url = is_landlord ? "$baseurl/landlord/kyc/$user_id" : "$baseurl/tenant/kyc/$user_id";
     print("🔹 Uploading to: $url");
 
     try {

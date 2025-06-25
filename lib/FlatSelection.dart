@@ -71,8 +71,14 @@ class _FlatSelectionState extends State<FlatSelection> {
     await prefs.setString("baseurl", selectedFlat!['baseurl']);
     await prefs.setString("adminurl", selectedFlat!['adminurl']);
     await prefs.setString("building", selectedFlat!['building']);
-    await prefs.setInt("user_id", selectedFlat!['tenant_id']);
-    await prefs.setString("company_token", selectedFlat!['accessToken']);
+    await prefs.setInt(
+        "user_id",
+        selectedFlat!['tenant_id'] != null
+            ? selectedFlat!['tenant_id']
+            : selectedFlat!['landlord_id']
+    );
+    await prefs.setString("access_token", selectedFlat!['accessToken']);
+
 
 
     /*await prefs.setString("floor", selectedFlat!['floor']);

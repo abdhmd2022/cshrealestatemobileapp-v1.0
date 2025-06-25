@@ -63,20 +63,28 @@ class _TenantComplaintPageState extends State<TenantComplaint> with TickerProvid
 
         var uuid = Uuid();
         String uuidValue = uuid.v4();
+
+        final body = {
+          'uuid': uuidValue,
+          'status_id': 1,
+          'type': selectedType,
+          'description': _descriptionController.text.trim(),
+        };
+
+// ✅ Add correct user ID based on role
+        if (is_landlord) {
+          body['landlord_id'] = user_id;
+        } else {
+          body['tenant_id'] = user_id;
+        }
+
         final response = await http.post(
           Uri.parse('$baseurl/tenant/complaint'),
           headers: {
             HttpHeaders.contentTypeHeader: 'application/json',
             'Authorization': 'Bearer $Company_Token',
           },
-          body: jsonEncode({
-            'tenant_id' : user_id,
-            'status_id':1,
-
-            'uuid':uuidValue,
-            'type': selectedType,
-            'description': _descriptionController.text.trim(),
-          }),
+          body: jsonEncode(body),
         );
 
         final responseData = jsonDecode(response.body);
@@ -90,11 +98,6 @@ class _TenantComplaintPageState extends State<TenantComplaint> with TickerProvid
             selectedType = "";
             _descriptionController.clear();
           });
-        } else {
-          String error = responseData['message'] ?? 'Something went wrong';
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(error)),
-          );
         }
 
         showResponseSnackbar(context, responseData);

@@ -820,10 +820,15 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
       isFetchingMore = false;
     });
 
+    print('landlord hai ya nai -> $is_landlord');
+    print('admin hai ya nai -> $is_admin');
+
     try {
       while (hasMore) {
         final url = is_admin
             ? "$baseurl/maintenance/ticket?page=$page"
+            : is_landlord
+            ? "$baseurl/maintenance/ticket/?landlord_id=$user_id&flat_id=$flat_id&page=$page"
             : "$baseurl/maintenance/ticket/?tenant_id=$user_id&flat_id=$flat_id&page=$page";
 
         final response = await http.get(Uri.parse(url), headers: {

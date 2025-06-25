@@ -256,7 +256,308 @@ late int loaded_flat_id;
     }
   }
 
+  // new fetch units function
   Future<void> fetchUnits() async {
+    flats.clear();
+    print('user id $user_id');
+
+    String token = 'Bearer $Company_Token';
+
+    Map<String, String> headers = {
+      'Authorization': token,
+      "Content-Type": "application/json"
+    };
+
+    try {
+      if (is_admin) {
+        // ✅ 1. Fetch Tenants
+        final tenantResponse = await http.get(Uri.parse('$baseurl/tenant'), headers: headers);
+        if (tenantResponse.statusCode == 200) {
+          final tenantData = json.decode(tenantResponse.body);
+          List<dynamic> tenants = tenantData['data']['tenants'] ?? [];
+
+          for (var tenant in tenants) {
+            String tenantName = tenant['name'] ?? '';
+            List<dynamic> contracts = tenant['contracts'] ?? [];
+
+            for (var contract in contracts) {
+              int contractId = contract['id'];
+              List<dynamic> contractFlats = contract['flats'] ?? [];
+
+              for (var flatData in contractFlats) {
+                var flat = flatData['flat'];
+                if (flat != null) {
+                  flats.add({
+                    'user_type': 'Tenant',
+                    'tenant_name': tenantName,
+                    'flat_id': flat['id'],
+                    'flat_name': flat['name'],
+                    'building_name': flat['building']['name'],
+                    'area_name': flat['building']['area']['name'],
+                    'emirate': flat['building']['area']['state']['name'],
+                    'flat_type': flat['flat_type']['name'],
+                    'contract_id': contractId,
+                  });
+                }
+              }
+            }
+          }
+        }
+
+        // ✅ 2. Fetch Landlords
+        final landlordResponse = await http.get(Uri.parse('$baseurl/landlord'), headers: headers);
+        if (landlordResponse.statusCode == 200) {
+          final landlordData = json.decode(landlordResponse.body);
+          List<dynamic> landlords = landlordData['data']['landlords'] ?? [];
+
+          for (var landlord in landlords) {
+            String landlordName = landlord['name'] ?? '';
+            List<dynamic> boughtContracts = landlord['bought_contracts'] ?? [];
+
+            for (var contract in boughtContracts) {
+              int contractId = contract['id'];
+              List<dynamic> contractFlats = contract['flats'] ?? [];
+
+              for (var flatData in contractFlats) {
+                var flat = flatData['flat'];
+                if (flat != null) {
+                  flats.add({
+                    'user_type': 'Landlord',
+                    'tenant_name': landlordName,
+                    'flat_id': flat['id'],
+                    'flat_name': flat['name'],
+                    'building_name': flat['building']['name'],
+                    'area_name': flat['building']['area']['name'],
+                    'emirate': flat['building']['area']['state']['name'],
+                    'flat_type': flat['flat_type']['name'],
+                    'contract_id': contractId,
+                  });
+                }
+              }
+            }
+          }
+        }
+
+      } else {
+        // ✅ Tenant or Landlord (Single)
+        String url = is_landlord
+            ? '$baseurl/landlord/$user_id'
+            : '$baseurl/tenant/$user_id';
+
+        final response = await http.get(Uri.parse(url), headers: headers);
+        if (response.statusCode == 200) {
+          final data = json.decode(response.body);
+
+          if (is_landlord) {
+            var landlord = data['data']['landlord'];
+            if (landlord != null) {
+              String landlordName = landlord['name'] ?? '';
+              List<dynamic> boughtContracts = landlord['bought_contracts'] ?? [];
+
+              for (var contract in boughtContracts) {
+                int contractId = contract['id'];
+                List<dynamic> contractFlats = contract['flats'] ?? [];
+
+                for (var flatData in contractFlats) {
+                  var flat = flatData['flat'];
+                  if (flat != null) {
+                    flats.add({
+                      'user_type': 'Landlord',
+                      'tenant_name': landlordName,
+                      'flat_id': flat['id'],
+                      'flat_name': flat['name'],
+                      'building_name': flat['building']['name'],
+                      'area_name': flat['building']['area']['name'],
+                      'emirate': flat['building']['area']['state']['name'],
+                      'flat_type': flat['flat_type']['name'],
+                      'contract_id': contractId,
+                    });
+                  }
+                }
+              }
+            }
+          } else {
+            var tenant = data['data']['tenant'];
+            if (tenant != null) {
+              String tenantName = tenant['name'] ?? '';
+              List<dynamic> contracts = tenant['contracts'] ?? [];
+
+              for (var contract in contracts) {
+                int contractId = contract['id'];
+                List<dynamic> contractFlats = contract['flats'] ?? [];
+
+                for (var flatData in contractFlats) {
+                  var flat = flatData['flat'];
+                  if (flat != null) {
+                    flats.add({
+                      'user_type': 'Tenant',
+                      'tenant_name': tenantName,
+                      'flat_id': flat['id'],
+                      'flat_name': flat['name'],
+                      'building_name': flat['building']['name'],
+                      'area_name': flat['building']['area']['name'],
+                      'emirate': flat['building']['area']['state']['name'],
+                      'flat_type': flat['flat_type']['name'],
+                      'contract_id': contractId,
+                    });
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+
+      // ✅ After all, update UI
+      setState(() {
+        selectedFlat = flats.firstWhere(
+              (flat) => flat['flat_id'] == loaded_flat_id,
+          orElse: () => flats.isNotEmpty ? flats[0] : {},
+        );
+
+        flats.sort((a, b) => (a['flat_name'] ?? '').compareTo(b['flat_name'] ?? ''));
+      });
+    } catch (e) {
+      print('Error fetching data: $e');
+    }
+  }
+
+
+  // no 2 old fetch units function
+  /*Future<void> fetchUnits() async {
+    flats.clear();
+    print('user id $user_id');
+
+    String url = is_admin
+        ? '$baseurl/tenant'
+        : is_landlord
+        ? '$baseurl/landlord/$user_id'
+        : '$baseurl/tenant/$user_id';
+
+    String token = 'Bearer $Company_Token';
+
+    Map<String, String> headers = {
+      'Authorization': token,
+      "Content-Type": "application/json"
+    };
+
+    try {
+      final response = await http.get(Uri.parse(url), headers: headers);
+      print('code ${response.statusCode}');
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = json.decode(response.body);
+        print('data: $data');
+
+        setState(() {
+          flats.clear();
+
+          if (is_admin) {
+            List<dynamic> tenants = data['data']['tenants'] ?? [];
+            for (var tenant in tenants) {
+              String tenantName = tenant['name'] ?? '';
+              List<dynamic> contracts = tenant['contracts'] ?? [];
+
+              for (var contract in contracts) {
+                int contractId = contract['id'];
+                List<dynamic> contractFlats = contract['flats'] ?? [];
+
+                for (var flatData in contractFlats) {
+                  var flat = flatData['flat'];
+                  if (flat != null) {
+                    flats.add({
+                      'tenant_name': tenantName,
+                      'flat_id': flat['id'],
+                      'flat_name': flat['name'],
+                      'building_name': flat['building']['name'],
+                      'area_name': flat['building']['area']['name'],
+                      'emirate': flat['building']['area']['state']['name'],
+                      'flat_type': flat['flat_type']['name'],
+                      'contract_id': contractId,
+                    });
+                  }
+                }
+              }
+            }
+
+          } else if (is_landlord) {
+            var landlord = data['data']['landlord'];
+            if (landlord != null) {
+              String landlordName = landlord['name'] ?? '';
+              List<dynamic> boughtContracts = landlord['bought_contracts'] ?? [];
+
+              for (var contract in boughtContracts) {
+                int contractId = contract['id'];
+                List<dynamic> contractFlats = contract['flats'] ?? [];
+
+                for (var flatData in contractFlats) {
+                  var flat = flatData['flat'];
+                  if (flat != null) {
+                    flats.add({
+                      'tenant_name': landlordName, // You may rename this key if needed
+                      'flat_id': flat['id'],
+                      'flat_name': flat['name'],
+                      'building_name': flat['building']['name'],
+                      'area_name': flat['building']['area']['name'],
+                      'emirate': flat['building']['area']['state']['name'],
+                      'flat_type': flat['flat_type']['name'],
+                      'contract_id': contractId,
+                    });
+                  }
+                }
+              }
+            }
+
+          } else {
+            var tenant = data['data']['tenant'];
+            if (tenant != null) {
+              String tenantName = tenant['name'] ?? '';
+              List<dynamic> contracts = tenant['contracts'] ?? [];
+
+              for (var contract in contracts) {
+                int contractId = contract['id'];
+                List<dynamic> contractFlats = contract['flats'] ?? [];
+
+                for (var flatData in contractFlats) {
+                  var flat = flatData['flat'];
+                  if (flat != null) {
+                    flats.add({
+                      'tenant_name': tenantName,
+                      'flat_id': flat['id'],
+                      'flat_name': flat['name'],
+                      'building_name': flat['building']['name'],
+                      'area_name': flat['building']['area']['name'],
+                      'emirate': flat['building']['area']['state']['name'],
+                      'flat_type': flat['flat_type']['name'],
+                      'contract_id': contractId,
+                    });
+                  }
+                }
+              }
+            }
+          }
+
+          // ✅ Default selected flat
+          selectedFlat = flats.firstWhere(
+                (flat) => flat['flat_id'] == loaded_flat_id,
+            orElse: () => flats.isNotEmpty ? flats[0] : {},
+          );
+
+          // ✅ Sort by flat name
+          flats.sort((a, b) => (a['flat_name'] ?? '').compareTo(b['flat_name'] ?? ''));
+        });
+      } else {
+        print("Error: ${response.statusCode}");
+        print("Message: ${response.body}");
+      }
+    } catch (e) {
+      print('Error fetching data: $e');
+    }
+  }*/
+
+
+  // no 1 old fetch units function
+  /*Future<void> fetchUnits() async {
     flats.clear();
     print('user id $user_id');
 
@@ -360,7 +661,7 @@ late int loaded_flat_id;
     } catch (e) {
       print('Error fetching data: $e');
     }
-  }
+  }*/
 
   /*Future<void> fetchUnits() async {
     flats.clear();
@@ -1688,7 +1989,6 @@ late int loaded_flat_id;
       final Map<String, dynamic> requestBody = {
         "uuid": uuidValue,
         "flat_id": selectedFlat?['flat_id'],
-        "rental_contract_id": selectedFlat?['contract_id'],  // ✅ new key
         "types": selectedMaintenanceType!.map((type) => {
           "id": type.id,
           "description": _descriptionControllers[type.id]?.text ?? ""
@@ -1697,7 +1997,20 @@ late int loaded_flat_id;
         "available_to": availableToStr,
       };
 
-      print('request body -> $requestBody');
+// ✅ Add contract ID dynamically
+      if (is_admin) {
+        // Admin: check the selected unit type
+        if (selectedFlat?['user_type'] == 'Landlord') {
+          requestBody['sales_contract_id'] = selectedFlat?['contract_id'];
+        } else {
+          requestBody['rental_contract_id'] = selectedFlat?['contract_id'];
+        }
+      } else if (is_landlord) {
+        requestBody['sales_contract_id'] = selectedFlat?['contract_id'];
+      } else {
+        // Default = Tenant
+        requestBody['rental_contract_id'] = selectedFlat?['contract_id'];
+      }
 
       final response = await http.post(
         Uri.parse(url),

@@ -35,7 +35,100 @@ class _SpecialRequestScreenState extends State<SpecialRequestScreen> {
 
   bool isSubmitting = false;
 
+  // new function
   Future<void> fetchTenantAndRequestTypes() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final savedFlatId = prefs.getInt('flat_id');
+
+      final headers = {
+        'Authorization': 'Bearer $Company_Token',
+        'Content-Type': 'application/json',
+      };
+
+      // ✅ Fetch tenant or landlord
+      final userUrl = is_landlord
+          ? '$baseurl/landlord/$user_id'
+          : '$baseurl/tenant/$user_id';
+
+      final userResponse = await http.get(Uri.parse(userUrl), headers: headers);
+      final typesResponse = await http.get(
+        Uri.parse('$baseurl/tenant/requestType'),
+        headers: headers,
+      );
+
+      final userJson = json.decode(userResponse.body);
+      final typesJson = json.decode(typesResponse.body);
+
+      final data = userJson['data'];
+
+      // ✅ Extract flats and contracts
+      if (is_landlord) {
+        final landlord = data['landlord'];
+        final contracts = landlord['bought_contracts'];
+
+        for (var contract in contracts) {
+          final contractId = contract['id'];
+          final flats = contract['flats'] ?? [];
+
+          for (var flatWrapper in flats) {
+            final flat = flatWrapper['flat'];
+            tenantFlats.add({
+              'flatId': flat['id'],
+              'flatName': flat['name'],
+              'buildingName': '${flat['building']['name']}',
+              'areaName': '${flat['building']['area']['name']}',
+              'contractId': contractId,
+            });
+          }
+        }
+      } else {
+        final tenant = data['tenant'];
+        final contracts = tenant['contracts'];
+
+        for (var contract in contracts) {
+          final contractId = contract['id'];
+          final flats = contract['flats'] ?? [];
+
+          for (var flatWrapper in flats) {
+            final flat = flatWrapper['flat'];
+            tenantFlats.add({
+              'flatId': flat['id'],
+              'flatName': flat['name'],
+              'buildingName': '${flat['building']['name']}',
+              'areaName': '${flat['building']['area']['name']}',
+              'contractId': contractId,
+            });
+          }
+        }
+      }
+
+      // ✅ Populate request types
+      requestTypes = (typesJson['data']['types'] as List).map((e) => {
+        'id': e['id'],
+        'name': e['name'],
+      }).toList();
+
+      // ✅ Set selected flat
+      if (tenantFlats.isNotEmpty) {
+        final matchedFlat = tenantFlats.firstWhere(
+              (f) => f['flatId'] == savedFlatId,
+          orElse: () => tenantFlats.first,
+        );
+        selectedFlatId = matchedFlat['flatId'];
+        selectedContractId = matchedFlat['contractId'];
+      }
+
+    } catch (e) {
+      print("Error fetching tenant/request types: $e");
+    }
+
+    setState(() => isLoading = false);
+  }
+
+
+// old function
+  /*Future<void> fetchTenantAndRequestTypes() async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final savedFlatId = prefs.getInt('flat_id'); // 👈 fetch saved flat_id
@@ -97,7 +190,7 @@ class _SpecialRequestScreenState extends State<SpecialRequestScreen> {
     }
 
     setState(() => isLoading = false);
-  }
+  }*/
   @override
   void initState() {
     super.initState();
@@ -121,20 +214,31 @@ class _SpecialRequestScreenState extends State<SpecialRequestScreen> {
 
 
     try {
+      // ✅ Build the request body dynamically
+      final requestBody = {
+        "uuid": uuid,
+        "flat_id": selectedFlatId,
+        "type_id": selectedRequestTypeId,
+        "description": descriptionController.text.trim(),
+      };
+
+      // ✅ Conditionally include contract ID
+      if (is_landlord) {
+        requestBody["sales_contract_id"] = selectedContractId;
+      } else {
+        requestBody["rental_contract_id"] = selectedContractId;
+      }
+
       final response = await http.post(
         Uri.parse('$baseurl/tenant/request'),
         headers: {
           'Authorization': 'Bearer $Company_Token',
           'Content-Type': 'application/json',
         },
-        body: json.encode({
-          "rental_contract_id": selectedContractId,
-          "flat_id": selectedFlatId,
-          "type_id": selectedRequestTypeId,
-          "uuid": uuid,
-          "description": descriptionController.text.trim(),
-        }),
+        body: json.encode(requestBody),
       );
+
+      print('body -> ${json.encode(requestBody)}');
 
       final data = json.decode(response.body);
       final message = data['message'] ?? 'Request submitted.';

@@ -603,7 +603,7 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
                                         ),
                                         TextSpan(text: "  •  "), // subtle separator
                                         TextSpan(
-                                          text: "Flats: ",
+                                          text: "Unit: ",
                                           style: GoogleFonts.poppins(
                                             fontWeight: FontWeight.w500,
                                             color: Colors.grey.shade600,

@@ -9,7 +9,6 @@ import 'package:http/http.dart' as http;
 import 'package:cshrealestatemobile/constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'Sidebar.dart';
-import 'TenantProfile.dart';
 import 'AvailableUnitsReport.dart';
 import 'ComplaintList.dart';
 import 'KYCUpdate.dart';
@@ -42,9 +41,144 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
       announcementCount = announcements.length;
     });
   }
-
+// new dashboard function
 
   Future<void> fetchDashboardData() async {
+    setState(() => isLoading = true);
+
+    try {
+      final flatContractUrl = '$baseurl/reports/admin/contracts/$user_id?is_tenant=${!is_landlord}';
+      print('contract url -> $flatContractUrl');
+
+      final flatContractResponse = await http.get(
+        Uri.parse(flatContractUrl),
+        headers: {"Authorization": "Bearer $Company_Token"},
+      );
+
+      final data = jsonDecode(flatContractResponse.body);
+
+      print('data -> $data');
+
+      if (flatContractResponse.statusCode == 200) {
+        final partyKey = is_landlord ? 'landlord' : 'tenant';
+
+        if (!is_landlord) {
+          final tenant = data['data']['tenant'];
+          final List<dynamic> rentalContracts = tenant['rental_contracts'] ?? [];
+
+          Map<String, Map<String, dynamic>> groupedContracts = {};
+
+          for (var contract in rentalContracts) {
+            final contractNo = contract['contract_no'];
+            final contractId = contract['id'];
+            if (contractNo == null) continue;
+
+            // Initialize group
+            groupedContracts[contractNo] = {
+              'contract_no': contractNo,
+              'contract_id': contractId,
+              'flats': [],
+              'cheques': [],
+              'invoices': {},
+            };
+
+            // Extract flats
+            final List<dynamic> flatLinks = contract['flats'] ?? [];
+            for (var link in flatLinks) {
+              final flat = link['flat'];
+              if (flat != null) {
+                groupedContracts[contractNo]!['flats'].add(flat);
+              }
+            }
+
+            // Extract cheques from receipts → payments → cheque
+            final List<dynamic> receipts = contract['receipts'] ?? [];
+            for (var receipt in receipts) {
+              final List<dynamic> payments = receipt['payments'] ?? [];
+              for (var paymentObj in payments) {
+                final payment = paymentObj['payment'];
+                final cheque = payment['cheque'];
+                if (cheque != null) {
+                  groupedContracts[contractNo]!['cheques'].add({
+                    'payment': payment,
+                    'date': cheque['date'],
+                    'is_received': cheque['is_received'],
+                    'is_deposited': cheque['is_deposited'],
+                    'returned_on': payment['returned_on'],
+                  });
+
+                  final month = (cheque['date'] ?? '').substring(0, 7);
+                  groupedContracts[contractNo]!['invoices'][month] =
+                      (groupedContracts[contractNo]!['invoices'][month] ?? 0.0) +
+                          (payment['amount_incl']?.toDouble() ?? 0.0);
+                }
+              }
+            }
+          }
+
+          setState(() {
+            contracts = groupedContracts.values.toList();
+            isLoading = false;
+          });
+        }
+        else {
+          // 🧑‍💼 Landlord Case
+          final landlord = data['data']['landlord'];
+          final List<dynamic> boughtContracts = landlord['bought_contracts'] ?? [];
+          final List<dynamic> rentalContracts = landlord['rental_contracts'] ?? [];
+
+          buildingFlatCount.clear();
+          List<Map<String, dynamic>> allContracts = [];
+
+          void processContract(Map<String, dynamic> contract, String type) {
+            final contractNo = contract['contract_no'];
+            final contractId = contract['id'];
+            if (contractNo == null) return;
+
+            final List<dynamic> flatLinks = contract['flats'] ?? [];
+            List<dynamic> extractedFlats = [];
+
+            for (var link in flatLinks) {
+              final flat = link['flat'];
+              if (flat != null) {
+                extractedFlats.add(flat);
+
+                final buildingName = flat['building']?['name'] ?? 'Unknown';
+                buildingFlatCount[buildingName] = (buildingFlatCount[buildingName] ?? 0) + 1;
+              }
+            }
+
+            allContracts.add({
+              'contract_no': contractNo,
+              'contract_id': contractId,
+              'contract_type': type,
+              'flats': extractedFlats,
+            });
+          }
+
+          for (var contract in boughtContracts) {
+            processContract(contract, 'bought');
+          }
+
+          for (var contract in rentalContracts) {
+            processContract(contract, 'rental');
+          }
+
+          setState(() {
+            contracts = allContracts;
+            isLoading = false;
+          });
+        }
+      }
+    } catch (e) {
+      print("Error in fetchDashboardData: $e");
+      setState(() => isLoading = false);
+    }
+  }
+
+
+  // old dashboard function
+ /* Future<void> fetchDashboardData() async {
 
     final response = await http.get(
       Uri.parse('$baseurl/reports/tenant/cheques/$user_id'),
@@ -88,7 +222,7 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
       print('Failed to load data: ${response.body}');
     }
 
-  }
+  }*/
 
   String _monthAbbr(int month) {
     const List<String> months = [
@@ -123,52 +257,13 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
   }
 
   bool isEditing = false;
+  Map<String, int> buildingFlatCount = {};
+
 
 
   @override
   Widget build(BuildContext context) {
-    /*if (contracts.isEmpty) {
-      return Scaffold(
-          key: _scaffoldKey,
-          backgroundColor: Colors.white,
-          appBar: AppBar(
-            backgroundColor: appbar_color.withOpacity(0.9),
-            title: Text('Dashboard', style: GoogleFonts.poppins(color: Colors.white, fontWeight: FontWeight.w600)),
-            centerTitle: true,
-            leading: IconButton(
-              icon: Icon(Icons.menu, color: Colors.white),
-              onPressed: () => _scaffoldKey.currentState!.openDrawer(),
-            ),
-            actions: [
-              Padding(
-                padding: const EdgeInsets.only(right: 12.0),
-                child: InkWell(
-                  onTap: () => Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => TenantProfile())),
-                  child: Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      gradient: LinearGradient(colors: [appbar_color.shade200, appbar_color.shade700], begin: Alignment.topCenter, end: Alignment.bottomCenter),
-                      boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 5, offset: Offset(0, 2))],
-                    ),
-                    child: Icon(Icons.person, color: Colors.white),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          drawer: Sidebar(isDashEnable: false, isRolesVisible: true, isRolesEnable: true, isUserEnable: true, isUserVisible: true),
 
-          body: Center(
-          child: Platform.isIOS
-              ? const CupertinoActivityIndicator(radius: 18)
-              : CircularProgressIndicator(
-            valueColor: AlwaysStoppedAnimation<Color>(appbar_color),
-          ),
-        )
-      );
-    }*/
     Map<String, dynamic> selected = {};
     List cheques = [];
     Map<String, double> invoices = {};
@@ -402,9 +497,17 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
                       SizedBox(height: 4),
 
                       if (!isEditing) ...[
+
                         Text(
                           contracts[selectedContractIndex]['contract_no'],
                           style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black87),
+                        ),
+
+                        Text(
+                          contracts[selectedContractIndex]['contract_type'] == 'bought'
+                              ? "Buy Contract"
+                              : "Rental Contract",
+                          style: GoogleFonts.poppins(fontSize: 12, color: Colors.grey[600]),
                         ),
                         SizedBox(height: 12),
                         Text(
@@ -526,152 +629,254 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
                   ),
                 ),
 
+
                 SizedBox(height: 10),
 
-                Container(
-                    height: 280,
-                    padding: EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [Colors.white, Colors.grey.shade100],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      borderRadius: BorderRadius.circular(16),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black12,
-                          blurRadius: 10,
-                          offset: Offset(0, 4),
+                if (!is_landlord) ...[
+                  Container(
+                      height: 280,
+                      padding: EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [Colors.white, Colors.grey.shade100],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
                         ),
-                      ],
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black12,
+                            blurRadius: 10,
+                            offset: Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text("Cheque Summary", style: GoogleFonts.poppins(fontSize: 17, fontWeight: FontWeight.bold)),
+                          SizedBox(height: 15),
+
+                          Expanded(
+                              child: SizedBox(
+                                height: 220,
+                                child: Stack(
+                                  alignment: Alignment.center,
+                                  children: [
+                                    // Outer glow & shadow effect
+                                    Container(
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        gradient: RadialGradient(
+                                          colors: [Colors.white, Colors.grey.shade200],
+                                          center: Alignment(-0.1, -0.1),
+                                          radius: 0.95,
+                                        ),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.black26,
+                                            offset: Offset(0, 8),
+                                            blurRadius: 16,
+                                            spreadRadius: 1,
+                                          ),
+                                        ],
+                                      ),
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(10.0),
+                                        child: PieChart(
+                                          PieChartData(
+                                            centerSpaceRadius: 30,
+                                            startDegreeOffset: -45,
+                                            sectionsSpace: 3,
+                                            centerSpaceColor: Colors.grey.shade50,
+                                            sections: [
+                                              PieChartSectionData(
+                                                value: cleared.toDouble(),
+                                                title: '$cleared\nCleared',
+                                                radius: 75,
+                                                titleStyle: GoogleFonts.poppins(
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.w600,
+                                                  color: Colors.white,
+                                                  shadows: [Shadow(blurRadius: 2, color: Colors.black45)],
+                                                ),
+                                                gradient: LinearGradient(
+                                                  colors: [
+                                                    Colors.teal.shade700,
+                                                    Colors.teal.shade400,
+                                                  ],
+                                                  begin: Alignment.topLeft,
+                                                  end: Alignment.bottomRight,
+                                                ),
+                                              ),
+                                              PieChartSectionData(
+                                                value: pending.toDouble(),
+                                                title: '$pending\nPending',
+                                                radius: 75,
+                                                titleStyle: GoogleFonts.poppins(
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.w600,
+                                                  color: Colors.white,
+                                                  shadows: [Shadow(blurRadius: 2, color: Colors.black45)],
+                                                ),
+                                                gradient: LinearGradient(
+                                                  colors: [
+                                                    Colors.orange.shade700,
+                                                    Colors.orange.shade300,
+                                                  ],
+                                                  begin: Alignment.bottomLeft,
+                                                  end: Alignment.topRight,
+                                                ),
+                                              ),
+                                            ],
+
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    // Center total label
+                                    Column(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          "Total",
+                                          style: GoogleFonts.poppins(
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.w500,
+                                            color: Colors.grey.shade600,
+                                            letterSpacing: 0.5,
+                                          ),
+                                        ),
+                                        SizedBox(height: 2),
+                                        Text(
+                                          "${cleared + pending}",
+                                          style: GoogleFonts.poppins(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.black87,
+                                            shadows: [
+                                              Shadow(
+                                                color: Colors.black12,
+                                                blurRadius: 2,
+                                                offset: Offset(0.5, 0.5),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+
+                                      ],
+                                    )
+                                  ],
+                                ),
+                              )
+                          )
+                        ],
+                      )
+                  ),
+                  SizedBox(height: 10),
+                ],
+
+
+                if (is_landlord && buildingFlatCount.isNotEmpty) ...[
+                  Container(
+                    height: 260,
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 8, offset: Offset(0, 4))],
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text("Cheque Summary", style: GoogleFonts.poppins(fontSize: 17, fontWeight: FontWeight.bold)),
-                        SizedBox(height: 15),
-
+                        Text(
+                          "Unit(s)",
+                          style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black87),
+                        ),
+                        const SizedBox(height: 16),
                         Expanded(
-                            child: SizedBox(
-                              height: 220,
-                              child: Stack(
-                                alignment: Alignment.center,
-                                children: [
-                                  // Outer glow & shadow effect
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      gradient: RadialGradient(
-                                        colors: [Colors.white, Colors.grey.shade200],
-                                        center: Alignment(-0.1, -0.1),
-                                        radius: 0.95,
-                                      ),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.black26,
-                                          offset: Offset(0, 8),
-                                          blurRadius: 16,
-                                          spreadRadius: 1,
-                                        ),
-                                      ],
-                                    ),
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(10.0),
-                                      child: PieChart(
-                                        PieChartData(
-                                          centerSpaceRadius: 30,
-                                          startDegreeOffset: -45,
-                                          sectionsSpace: 3,
-                                          centerSpaceColor: Colors.grey.shade50,
-                                          sections: [
-                                            PieChartSectionData(
-                                              value: cleared.toDouble(),
-                                              title: '$cleared\nCleared',
-                                              radius: 75,
-                                              titleStyle: GoogleFonts.poppins(
-                                                fontSize: 12,
-                                                fontWeight: FontWeight.w600,
-                                                color: Colors.white,
-                                                shadows: [Shadow(blurRadius: 2, color: Colors.black45)],
-                                              ),
-                                              gradient: LinearGradient(
-                                                colors: [
-                                                  Colors.teal.shade700,
-                                                  Colors.teal.shade400,
-                                                ],
-                                                begin: Alignment.topLeft,
-                                                end: Alignment.bottomRight,
-                                              ),
-                                            ),
-                                            PieChartSectionData(
-                                              value: pending.toDouble(),
-                                              title: '$pending\nPending',
-                                              radius: 75,
-                                              titleStyle: GoogleFonts.poppins(
-                                                fontSize: 12,
-                                                fontWeight: FontWeight.w600,
-                                                color: Colors.white,
-                                                shadows: [Shadow(blurRadius: 2, color: Colors.black45)],
-                                              ),
-                                              gradient: LinearGradient(
-                                                colors: [
-                                                  Colors.orange.shade700,
-                                                  Colors.orange.shade300,
-                                                ],
-                                                begin: Alignment.bottomLeft,
-                                                end: Alignment.topRight,
-                                              ),
-                                            ),
-                                          ],
-
-                                        ),
-                                      ),
-                                    ),
+                          child: BarChart(
+                            BarChartData(
+                              alignment: BarChartAlignment.spaceAround,
+                              maxY: (buildingFlatCount.values.reduce((a, b) => a > b ? a : b)).toDouble(), // for headroom
+                              barTouchData: BarTouchData(enabled: false),
+                              titlesData: FlTitlesData(
+                                leftTitles: AxisTitles(
+                                  sideTitles: SideTitles(
+                                    showTitles: true,
+                                    reservedSize: 30,
+                                    getTitlesWidget: (value, meta) {
+                                      final label = value % 1 == 0 ? value.toInt().toString() : '';
+                                      return SideTitleWidget(
+                                        axisSide: meta.axisSide,
+                                        child: Text(label, style: GoogleFonts.poppins(fontSize: 11)),
+                                      );
+                                    },
                                   ),
-                                  // Center total label
-                                  Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                        "Total",
-                                        style: GoogleFonts.poppins(
-                                          fontSize: 10,
-                                          fontWeight: FontWeight.w500,
-                                          color: Colors.grey.shade600,
-                                          letterSpacing: 0.5,
+                                ),
+                                rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                                topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                                bottomTitles: AxisTitles(
+                                  sideTitles: SideTitles(
+                                    showTitles: true,
+                                    getTitlesWidget: (value, meta) {
+                                      final index = value.toInt();
+                                      if (index >= buildingFlatCount.length) return const SizedBox.shrink();
+                                      final label = buildingFlatCount.keys.elementAt(index);
+                                      return SideTitleWidget(
+                                        axisSide: meta.axisSide,
+                                        child: Text(
+                                          label,
+                                          style: GoogleFonts.poppins(fontSize: 10),
+                                          textAlign: TextAlign.center,
                                         ),
-                                      ),
-                                      SizedBox(height: 2),
-                                      Text(
-                                        "${cleared + pending}",
-                                        style: GoogleFonts.poppins(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.black87,
-                                          shadows: [
-                                            Shadow(
-                                              color: Colors.black12,
-                                              blurRadius: 2,
-                                              offset: Offset(0.5, 0.5),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-
-                                    ],
-                                  )
-                                ],
+                                      );
+                                    },
+                                    reservedSize: 60,
+                                  ),
+                                ),
                               ),
-                            )
-                        )
+                              gridData: FlGridData(
+                                show: true,
+                                drawHorizontalLine: true,
+                                checkToShowHorizontalLine: (value) => value % 1 == 0,
+                                getDrawingHorizontalLine: (value) => FlLine(
+                                  color: Colors.grey.shade300,
+                                  strokeWidth: 1,
+                                ),
+                              ),
+                              borderData: FlBorderData(show: false),
+                              barGroups: buildingFlatCount.entries.toList().asMap().entries.map((entry) {
+                                final index = entry.key;
+                                final label = entry.value.key;
+                                final count = entry.value.value;
+                                return BarChartGroupData(
+                                  x: index,
+                                  barRods: [
+                                    BarChartRodData(
+                                      toY: count.toDouble(),
+                                      width: 20,
+                                      borderRadius: BorderRadius.circular(8),
+                                      color: appbar_color,
+                                    ),
+                                  ],
+                                );
+                              }).toList(),
+                            ),
+                          ),
+                        ),
                       ],
-                    )
-                ),
-                SizedBox(height: 10),
+                    ),
+                  ),
+                  SizedBox(height: 10),
 
-               // invoice summary bar chart
+                ],
+
+
+
+
+                // invoice summary bar chart
                /* Container(
                     height: 275,
                     padding: EdgeInsets.all(16),

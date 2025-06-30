@@ -411,6 +411,59 @@ class _LoginPageState extends State<Login> {
     }
   }*/
 
+  Future<void> fetchAndSaveCompanyData(String baseurll,int company_id,String token) async {
+
+    print('calling -> $baseurll');
+    try {
+      final url = Uri.parse('$baseurll/company/details/$company_id');
+      final response = await http.get(url,
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },);
+
+      if (response.statusCode == 200) {
+        final responseJson = jsonDecode(response.body);
+        final company = responseJson['data']['company'];
+
+        await saveCompanyData(company);
+
+      } else {
+        print('API error: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error: $e');
+    }
+  }
+
+  Future<void> saveCompanyData(Map<String, dynamic> company) async {
+    final prefs = await SharedPreferences.getInstance();
+
+    await prefs.setString('mailing_name', company['mailing_name'] ?? '');
+    await prefs.setString('address', company['address'] ?? '');
+    await prefs.setString('pincode', company['pincode'] ?? '');
+    await prefs.setString('state', company['state'] ?? '');
+    await prefs.setString('country', company['country'] ?? '');
+    await prefs.setString('trn', company['trn'] ?? '');
+    await prefs.setString('phone', company['phone'] ?? '');
+    await prefs.setString('mobile', company['mobile'] ?? '');
+    await prefs.setString('email', company['email'] ?? '');
+    await prefs.setString('website', company['website'] ?? '');
+    await prefs.setString('logo_path', company['logo_path'] ?? '');
+    await prefs.setString('whatsapp_no', company['whatsapp_no'] ?? '');
+
+    print('Company data saved');
+
+    loadTokens();
+
+    print('Company data loaded');
+
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => AdminDashboard()),
+    );
+  }
+
   // new admin login function
   Future<void> _adminlogin(String email, String password) async {
     prefs!.clear();
@@ -496,7 +549,7 @@ class _LoginPageState extends State<Login> {
 
         loadTokens();
 
-        if (companiesJson.length > 1) {
+        if (companiesJson.length > 0) {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => CompanySelection()),
@@ -513,14 +566,17 @@ class _LoginPageState extends State<Login> {
                 context,
                 'Your license against "${first["name"]}" is expired. Please contact your service provider for renewal.',
               );
+
+
+
               return; // Don't proceed to dashboard
             }
           }
 
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => AdminDashboard()),
-          );
+          fetchAndSaveCompanyData(first["baseurl"],first["id"],first["token"]);
+
+
+
         }
       } else {
         await prefs!.setBool('remember_me', false);

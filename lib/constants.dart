@@ -41,6 +41,7 @@ String access_token_expiry = "";
 String role_name = "";
 bool is_active = false;
 
+late String mailing_name,address,pincode,state,country,trn,phone,mobile,email,website,logo_path,whatsapp_no;
 
 
 /// Load tokens from SharedPreferences
@@ -48,6 +49,19 @@ bool is_active = false;
 
 Future<void> loadTokens() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
+
+  mailing_name =  prefs.getString('mailing_name') ?? "";
+  address= prefs.getString('address') ?? "";
+  pincode =  prefs.getString('pincode')?? "";
+  state =  prefs.getString('state') ?? "";
+  country =  prefs.getString('country') ?? "";
+  trn =  prefs.getString('trn') ?? "";
+  phone = prefs.getString('phone') ?? "";
+  mobile =  prefs.getString('mobile') ?? "";
+  email =  prefs.getString('email') ?? "";
+  website =  prefs.getString('website') ?? "";
+  logo_path =  prefs.getString('logo_path') ?? "";
+  whatsapp_no =  prefs.getString('whatsapp_no')?? "";
 
   Company_Token = prefs.getString("access_token") ?? "";
   access_token_expiry = prefs.getString("access_token_expiry") ?? "";

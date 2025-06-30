@@ -6,6 +6,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'AdminDashboard.dart';
 import 'constants.dart';
 import 'models/serial_model.dart';
+import 'package:http/http.dart' as http;
+
 
 class CompanySelection extends StatefulWidget {
   @override
@@ -36,6 +38,59 @@ class _CompanySelectionState extends State<CompanySelection> {
     }
 
     print("✅ Loaded ${companies.length} Companies");
+  }
+
+  Future<void> fetchAndSaveCompanyData(String baseurll,int company_id,String token) async {
+
+    print('calling -> $baseurll');
+    try {
+      final url = Uri.parse('$baseurll/company/details/$company_id');
+      final response = await http.get(url,
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },);
+
+      if (response.statusCode == 200) {
+        final responseJson = jsonDecode(response.body);
+        final company = responseJson['data']['company'];
+
+        await saveCompanyData(company);
+
+      } else {
+        print('API error: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error: $e');
+    }
+  }
+
+  Future<void> saveCompanyData(Map<String, dynamic> company) async {
+    final prefs = await SharedPreferences.getInstance();
+
+    await prefs.setString('mailing_name', company['mailing_name'] ?? '');
+    await prefs.setString('address', company['address'] ?? '');
+    await prefs.setString('pincode', company['pincode'] ?? '');
+    await prefs.setString('state', company['state'] ?? '');
+    await prefs.setString('country', company['country'] ?? '');
+    await prefs.setString('trn', company['trn'] ?? '');
+    await prefs.setString('phone', company['phone'] ?? '');
+    await prefs.setString('mobile', company['mobile'] ?? '');
+    await prefs.setString('email', company['email'] ?? '');
+    await prefs.setString('website', company['website'] ?? '');
+    await prefs.setString('logo_path', company['logo_path'] ?? '');
+    await prefs.setString('whatsapp_no', company['whatsapp_no'] ?? '');
+
+    print('Company data saved');
+
+    loadTokens();
+    print('Company data loaded');
+
+
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => AdminDashboard()),
+    );
   }
 
   /// ✅ Save Selection in SharedPreferences
@@ -176,15 +231,14 @@ class _CompanySelectionState extends State<CompanySelection> {
 
                         loadTokens(); // ✅ To refresh globally used values
 
-                        // Proceed to dashboard or next screen
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(builder: (context) => AdminDashboard()),
-                        );
+
+
+                        fetchAndSaveCompanyData(newCompany.baseurl, newCompany.id, newCompany.token);
+
                       }
 
                   ),
-                  SizedBox(height: 30),
+                  /*SizedBox(height: 30),
                   Center(
                     child: ElevatedButton(
                       onPressed: saveSelection,
@@ -204,7 +258,7 @@ class _CompanySelectionState extends State<CompanySelection> {
                         ),
                       ),
                     ),
-                  )
+                  )*/
                 ],
               ),
             ),

@@ -454,10 +454,7 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
               ),
               SizedBox(height: 10,)],
             )
-           :
-
-
-               Column(
+           : Column(
               children: [
                 Container(
 
@@ -989,7 +986,6 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
 
               ]
             ]),
-
             SizedBox(height: 20),
           ],
         ),

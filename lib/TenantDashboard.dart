@@ -391,8 +391,6 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
           //   ),
           // ),
         ],
-
-
       ),
       drawer: Sidebar(isDashEnable: true, isRolesVisible: true, isRolesEnable: true, isUserEnable: true, isUserVisible: true),
       body: SingleChildScrollView(
@@ -420,7 +418,6 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
 
             Column(
               children: [ Container(
-
                   padding: EdgeInsets.all(16),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
@@ -457,7 +454,6 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
            : Column(
               children: [
                 Container(
-
                   padding: EdgeInsets.all(16),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
@@ -494,12 +490,10 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
                       SizedBox(height: 4),
 
                       if (!isEditing) ...[
-
                         Text(
                           contracts[selectedContractIndex]['contract_no'],
                           style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black87),
                         ),
-
                         Text(
                           contracts[selectedContractIndex]['contract_type'] == 'bought'
                               ? "Buy Contract"

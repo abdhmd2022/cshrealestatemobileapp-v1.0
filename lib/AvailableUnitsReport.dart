@@ -1467,8 +1467,6 @@ class ApiService {
       throw Exception("Failed to load amenities");
     }
   }
-
-
 }
 
 // Model Class

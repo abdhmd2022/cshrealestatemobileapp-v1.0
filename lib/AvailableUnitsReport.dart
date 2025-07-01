@@ -74,27 +74,78 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
     });
   }
 
-  Future<void> fetchFlats({int page = 1}) async {
-    if (isFetchingMoreFlats) return;
+  Future<void> fetchFlats() async {
+    setState(() {
+      isLoading = true;
+      allUnits.clear(); // Reset on fresh load
+    });
 
-    if (page == 1) {
-      setState(() {
-        isLoading = true;
-      });
-    } else {
-      setState(() {
-        isFetchingMoreFlats = true;
-      });
-    }
+    List<Flat> combinedFlats = [];
 
     try {
-      List<Flat> flats = await ApiService().fetchFlats(page: page);
-      setState(() {
-        if (page == 1) {
-          allUnits = flats.reversed.toList();
-        } else {
-          allUnits.addAll(flats.reversed.toList());
+      // Helper to fetch flats by status
+      Future<void> fetchByStatus(String status) async {
+        int currentPage = 1;
+
+        while (true) {
+          String url =
+              "$baseurl/reports/flat/available/date?date=${DateFormat('yyyy-MM-dd').format(DateTime.now())}"
+              "&status=$status"
+              "&page=$currentPage";
+
+          print("Fetching: $url");
+
+          final response = await http.get(
+            Uri.parse(url),
+            headers: {
+              "Authorization": "Bearer $Company_Token",
+              "Content-Type": "application/json",
+            },
+          );
+
+          if (response.statusCode != 200) {
+            final errorMessage =
+                "Failed to fetch $status flats on page $currentPage (Status: ${response.statusCode})";
+
+            // Show error snackbar
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Row(
+                  children: [
+                    Icon(Icons.error_outline, color: Colors.white),
+                    SizedBox(width: 8),
+                    Expanded(child: Text(errorMessage)),
+                  ],
+                ),
+                backgroundColor: Colors.redAccent,
+                behavior: SnackBarBehavior.floating,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                margin: EdgeInsets.all(16),
+                duration: Duration(seconds: 3),
+              ),
+            );
+
+            throw Exception(errorMessage);
+          }
+
+          final data = json.decode(response.body);
+          final flatsJson = data["data"]["flats"] as List<dynamic>? ?? [];
+
+          if (flatsJson.isEmpty) break; // No more data
+
+          combinedFlats.addAll(flatsJson.map((json) => Flat.fromJson(json)));
+
+          currentPage++;
         }
+      }
+
+      await fetchByStatus("Rent");
+      await fetchByStatus("Buy");
+
+      setState(() {
+        allUnits = combinedFlats.reversed.toList();
         filteredUnits = allUnits;
       });
     } catch (e) {
@@ -402,19 +453,13 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
     print("Selected amenities: $selectedAmenities");
 
     List<Flat> filtered = allUnits.where((unit) {
-      final rent = unit.basicRent;
+      final rent = unit.basicRent ?? 0;
 
-      // ✅ Flat type match
-      final flatTypeMatch = selectedFlatTypes.isEmpty ||
-          selectedFlatTypes.contains(unit.flatTypeName);
+      final flatTypeMatch = selectedFlatTypes.isEmpty || selectedFlatTypes.contains(unit.flatTypeName);
 
-      // ✅ Price range match (only if user changed it)
       final priceMatch = !isPriceRangeModified ||
-          (rent != null &&
-              rent >= selectedPriceRange.start &&
-              rent <= selectedPriceRange.end);
+          (rent >= selectedPriceRange.start && rent <= selectedPriceRange.end);
 
-      // ✅ Amenities match (if selected)
       final amenitiesMatch = selectedAmenities.every((a) => unit.amenities.contains(a));
 
       final finalMatch = flatTypeMatch && priceMatch && amenitiesMatch;
@@ -426,14 +471,14 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
 
     print("✅ Filtered units before search: ${filtered.length}");
 
-    // 🔍 Apply search on top of filtered list
     if (searchQuery.trim().isNotEmpty) {
       filtered = filtered.where((unit) =>
       unit.flatTypeName.toLowerCase().contains(searchQuery.toLowerCase()) ||
           unit.buildingName.toLowerCase().contains(searchQuery.toLowerCase()) ||
           unit.name.toLowerCase().contains(searchQuery.toLowerCase()) ||
           unit.areaName.toLowerCase().contains(searchQuery.toLowerCase()) ||
-          unit.stateName.toLowerCase().contains(searchQuery.toLowerCase())).toList();
+          unit.stateName.toLowerCase().contains(searchQuery.toLowerCase())
+      ).toList();
 
       print("🔎 Applied search '$searchQuery' → Final count: ${filtered.length}");
     }
@@ -648,12 +693,17 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
           backgroundColor: appbar_color.withOpacity(0.9),
           automaticallyImplyLeading: false,
           centerTitle: true,
-          leading: IconButton(
-            icon: const Icon(Icons.menu, color: Colors.white),
-            onPressed: () {
-              _scaffoldKey.currentState!.openDrawer();
+          leading: GestureDetector(
+            onTap: ()
+            {
+              Navigator.of(context).pop();
+
             },
-          ),
+            child: Icon(
+              Icons.arrow_back,
+              color: Colors.white,
+            ),),
+
         ),
 
         drawer: Sidebar(
@@ -830,10 +880,9 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
                   child: NotificationListener<ScrollNotification>(
                     onNotification: (ScrollNotification scrollInfo) {
                       if (!isFetchingMoreFlats &&
-                          scrollInfo.metrics.pixels >= scrollInfo.metrics.maxScrollExtent - 50 &&
-                          currentFlatPage < totalFlatPages) {
-                        currentFlatPage++;
-                        fetchFlats(page: currentFlatPage);
+                          scrollInfo.metrics.pixels >= scrollInfo.metrics.maxScrollExtent - 50) {
+                        print("🔄 Re-fetching data on scroll end...");
+                        fetchFlats();  // Just re-fetch everything; ideally you'd implement proper page tracking
                       }
                       return false;
                     },
@@ -854,12 +903,12 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
                         }
 
                         final unit = filteredUnits[index];
-
                         return _buildModernUnitCard(unit);
                       },
                     ),
                   ),
                 )
+
 
               ],
             ),
@@ -902,69 +951,103 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
         ],
         border: Border.all(color: Colors.grey.shade200.withOpacity(0.4)),
       ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(24),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 12.0, sigmaY: 12.0),
-          child: Padding(
-            padding: const EdgeInsets.all(18),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildInfoRow(Icons.home_work_rounded, unit.flatTypeName),
-                const SizedBox(height: 10),
-                _buildInfoRow(Icons.business, unit.buildingName),
-                const SizedBox(height: 10),
-                _buildInfoRow(Icons.location_on_rounded, "${unit.areaName}, ${unit.stateName}"),
-                const SizedBox(height: 18),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Stack(
+        children: [
+          // Main card content
+          ClipRRect(
+            borderRadius: BorderRadius.circular(24),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 12.0, sigmaY: 12.0),
+              child: Padding(
+                padding: const EdgeInsets.all(18),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    buildPriceChip(unit.basicRent,unit.flatTypeName, isBest: _isBestRentInFlatType(unit)),
-
-
-
-                    TextButton(
-                      onPressed: () {
-                        showDialog(
-                          context: context,
-                          builder: (context) => AvailableUnitsDialog(
-                            unitno: unit.name,
-                            area: unit.areaName,
-                            emirate: unit.stateName,
-                            unittype: unit.flatTypeName,
-                            rent: unit.basicRent != null ? "AED ${unit.basicRent}" : "AED N/A",
-                            parking: unit.noOfParking.toString(),
-                            balcony: unit.amenities.contains("Balcony") ? "Yes" : "No",
-                            bathrooms: unit.noOfBathrooms.toString(),
-                            building_name: unit.buildingName,
-                            ownership: unit.ownership ?? "N/A",
-                            basicRent: unit.basicRent?.toString() ?? "N/A",
-                            basicSaleValue: unit.basicSaleValue?.toString() ?? "N/A",
-                            isExempt: unit.isExempt ? "true" : "false",
-                            amenities: unit.amenities,
-                          ),
-                        );
-                      },
-
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(Icons.info_outline, size: 26, color: appbar_color),
-
-                        ],
-                      ),
+                    _buildInfoRow(Icons.home_work_rounded, unit.flatTypeName),
+                    const SizedBox(height: 10),
+                    _buildInfoRow(Icons.business, unit.buildingName),
+                    const SizedBox(height: 10),
+                    _buildInfoRow(Icons.location_on_rounded, "${unit.areaName}, ${unit.stateName}"),
+                    const SizedBox(height: 18),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        buildPriceChip(unit.basicRent, unit.flatTypeName, isBest: _isBestRentInFlatType(unit)),
+                        TextButton(
+                          onPressed: () {
+                            showDialog(
+                              context: context,
+                              builder: (context) => AvailableUnitsDialog(
+                                unitno: unit.name,
+                                area: unit.areaName,
+                                emirate: unit.stateName,
+                                unittype: unit.flatTypeName,
+                                rent: unit.basicRent != null ? "AED ${unit.basicRent}" : "AED N/A",
+                                parking: unit.noOfParking.toString(),
+                                balcony: unit.amenities.contains("Balcony") ? "Yes" : "No",
+                                bathrooms: unit.noOfBathrooms.toString(),
+                                building_name: unit.buildingName,
+                                ownership: unit.ownership ?? "N/A",
+                                basicRent: unit.basicRent?.toString() ?? "N/A",
+                                basicSaleValue: unit.basicSaleValue?.toString() ?? "N/A",
+                                isExempt: unit.isExempt ? "true" : "false",
+                                amenities: unit.amenities,
+                              ),
+                            );
+                          },
+                          child: Icon(Icons.info_outline, size: 26, color: appbar_color),
+                        )
+                      ],
                     )
-
                   ],
-                )
-              ],
+                ),
+              ),
             ),
           ),
-        ),
+
+          // Status badge at top right
+          Positioned(
+            top: 15,
+            right: 30,
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              decoration: BoxDecoration(
+                color: unit.status == 'Rent'
+                    ? Colors.green.withOpacity(0.1)
+                    : unit.status == 'Buy'
+                    ? Colors.blue.withOpacity(0.1)
+                    : Colors.grey.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(
+                  color: unit.status == 'Rent'
+                      ? Colors.green
+                      : unit.status == 'Buy'
+                      ? Colors.blue
+                      : Colors.grey,
+                  width: 1,
+                ),
+              ),
+              child: Text(
+                unit.status
+                    ?? 'Unknown',
+                style: GoogleFonts.poppins(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w500,
+                  color: unit.status == 'Rent'
+                      ? Colors.green
+                      : unit.status == 'Buy'
+                      ? Colors.blue
+                      : Colors.grey,
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
+
+
 
   Widget _buildInfoRow(IconData icon, String text) {
     return Row(
@@ -983,14 +1066,20 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
 
   bool _isBestRentInFlatType(Flat unit) {
     final type = unit.flatTypeName;
-    final typeUnits = filteredUnits.where((u) => u.flatTypeName == type).toList();
-    final typeRents = typeUnits.map((u) => u.basicRent).whereType<int>().toList();
 
-    if (typeRents.isEmpty || unit.basicRent == null) return false;
+    // Get all units of the same flat type
+    final typeUnits = filteredUnits.where((u) => u.flatTypeName == type && u.basicRent != null).toList();
 
-    final minRent = typeRents.reduce((a, b) => a < b ? a : b);
+    // If less than 2 units of this type, don't mark any as best (nothing to compare)
+    if (typeUnits.length < 2) return false;
+
+    // Find the min rent
+    final minRent = typeUnits.map((u) => u.basicRent!).reduce((a, b) => a < b ? a : b);
+
+    // Return true if this unit's rent equals the min
     return unit.basicRent == minRent;
   }
+
 
 }
 
@@ -1378,26 +1467,6 @@ class ApiService {
       throw Exception("Failed to load amenities");
     }
   }
-  Future<List<Flat>> fetchFlats({int page = 1}) async {
-    DateTime now = DateTime.now();
-
-    final response = await http.get(
-      Uri.parse("$baseurl/reports/flat/available/date?date=${DateFormat('yyyy-MM-dd').format(now)}&page=$page"), // 🔥 add page=$page
-      headers: {
-        "Authorization": "Bearer $Company_Token",
-        "Content-Type": "application/json",
-      },
-    );
-
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      List<dynamic> flatsJson = data["data"]["flats"];
-
-      return flatsJson.map((json) => Flat.fromJson(json)).toList();
-    } else {
-      throw Exception("Failed to fetch flats: ${response.body}");
-    }
-  }
 
 
 }
@@ -1416,6 +1485,7 @@ class Flat {
   final String createdAt;
   final int noOfBathrooms;
   final int noOfParking;
+  final String? status;
 
   // New fields
   final String? ownership;
@@ -1426,6 +1496,7 @@ class Flat {
   final int? buildingId;
   final int? floorId;
   final int? flatTypeId;
+
   final List<String> amenities;
 
   Flat({
@@ -1442,6 +1513,8 @@ class Flat {
     required this.noOfBathrooms,
     required this.noOfParking,
     this.ownership,
+    this.status,
+
     this.basicRent,
     this.basicSaleValue,
     required this.isExempt,
@@ -1464,6 +1537,7 @@ class Flat {
       stateName: json["building"]["area"]["state"]["name"],
       countryName: json["building"]["area"]["state"]["country"]["name"],
       createdAt: json["created_at"],
+      status :json['status'] ?? "",
 
 
       ownership: json["ownership"],
@@ -1525,9 +1599,9 @@ class _ExpandableFabState extends State<ExpandableFab> with SingleTickerProvider
 
     // Define the buttons with angles for circular expansion
     List<Map<String, dynamic>> actions = [
-      {"icon": FontAwesomeIcons.whatsapp, "color": [Color(0xFF11998E), Color(0xFF38EF7D)], "action": "https://wa.me/971588313352"},
-      {"icon": Icons.phone, "color": [Color(0xFF0575E6), Color(0xFF021B79)], "action": "tel:+971588313352"},
-      {"icon": Icons.email, "color": [Color(0xFF0575E6), Color(0xFF26D0CE)], "action": "mailto:saadan@ca-eim.com"},
+      {"icon": FontAwesomeIcons.whatsapp, "color": [Color(0xFF11998E), Color(0xFF38EF7D)], "action": "https://wa.me/$whatsapp_no"},
+      {"icon": Icons.phone, "color": [Color(0xFF0575E6), Color(0xFF021B79)], "action": "tel:$phone"},
+      {"icon": Icons.email, "color": [Color(0xFF0575E6), Color(0xFF26D0CE)], "action": "mailto:$email"},
     ];
 
     for (int i = 0; i < actions.length; i++) {

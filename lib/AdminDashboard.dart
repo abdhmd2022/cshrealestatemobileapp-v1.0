@@ -576,7 +576,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Ticker
                 
                 if(hasPermissionInCategory('Available Units'))...[
                   _buildDashboardButton(Icons.home, 'Available Units', '', Colors.orangeAccent, () {
-                    Navigator.pushReplacement(
+                    Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => AvailableUnitsReport()),          // navigate to users screen
                     );

@@ -59,11 +59,14 @@ class _RequestListScreenState extends State<RequestListScreen> {
 
           // ✅ Updated filtering: match nested flat ID
           final filteredPage = requestsPage.where((req) {
-            final nestedFlatId = req['rental_flat']?['flat']?['id'];
-            return nestedFlatId == flat_id;
+            final rentalFlatId = req['rental_flat']?['flat']?['id'];
+            final soldFlatId = req['sold_flat']?['flat']?['id'];
+            return rentalFlatId == flat_id || soldFlatId == flat_id;
           }).toList();
 
+
           allRequests.addAll(filteredPage);
+
 
           int currentPage = meta['page'];
           int pageSize = meta['size'];
@@ -355,12 +358,21 @@ class _RequestListScreenState extends State<RequestListScreen> {
                 itemBuilder: (context, index) {
                   final req = filteredComplaints[index];
                   final req_id = req["id"];
-                  final flat = req['rental_flat']?['flat'];
+                  final flat = req['rental_flat']?['flat'] ?? req['sold_flat']?['flat'];
 
+                  if (flat == null) {
+                    return SizedBox(); // Or show a placeholder if flat info is missing
+                  }
+
+                  final flatName = flat['name'] ?? 'N/A';
                   final building = flat['building'];
-                  final area = building['area'];
-                  final state = area['state'];
-                  final approved_by = req['approved_by'];
+                  final buildingName = building?['name'] ?? 'N/A';
+
+                  final area = building?['area'];
+                  final areaName = area?['name'] ?? 'N/A';
+
+                  final state = area?['state'];
+                  final stateName = state?['name'] ?? 'N/A';
 
                   return Card(
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),

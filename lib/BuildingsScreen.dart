@@ -27,36 +27,58 @@ class _BuildingsScreenState extends State<BuildingsScreen> {
   }
 
   Future<void> fetchBuildings() async {
-
     setState(() {
-
       _isLoading = true;
     });
+
     buildings.clear();
-    final url = Uri.parse("$baseurl/reports/building/available/date?date=${DateFormat('yyyy-MM-dd').format(DateTime.now())}");
+
+    final url = Uri.parse(
+        "$baseurl/reports/building/available/date?date=${DateFormat('yyyy-MM-dd').format(DateTime.now())}"
+    );
 
     print('building url -> $url');
+
     final response = await http.get(url, headers: {
       "Authorization": "Bearer $Company_Token",
       "Content-Type": "application/json"
     });
 
     if (response.statusCode == 200) {
-      final json = jsonDecode(response.body);
+      final jsonData = jsonDecode(response.body);
+      final buildingsJson = jsonData['data']['buildings'] as List;
+
+      // Add available + occupied counts into each building map
+      final processedBuildings = buildingsJson.map((building) {
+        final flats = building['flats'] as List;
+        final availableRent = (building['availableFlatsForRent'] ?? 0) as int;
+        final occupied = flats.length - availableRent;
+
+        return {
+          ...building,
+          'available_count': availableRent,
+          'occupied_count': occupied
+        };
+      }).toList();
+
       setState(() {
-        buildings = json['data']['buildings'];
+        buildings = processedBuildings;
       });
+
     } else {
       setState(() {
-        buildings = []; // or keep as is, just trigger UI rebuild
+        buildings = [];
       });
-      // Handle error
-      final error = jsonDecode(response.body);
-      showErrorSnackbar(context, "${error['message'] ?? 'Unknown error'}");
+
+      try {
+        final error = jsonDecode(response.body);
+        showErrorSnackbar(context, "${error['message'] ?? 'Unknown error'}");
+      } catch (_) {
+        showErrorSnackbar(context, "Failed to load buildings");
+      }
     }
 
     setState(() {
-
       _isLoading = false;
     });
   }
@@ -86,97 +108,149 @@ class _BuildingsScreenState extends State<BuildingsScreen> {
     final area = building['area'] ?? {};
     final state = area['state'] ?? {};
     final country = state['country'] ?? {};
+    final available = building['available_count'] ?? 0;
+    final occupied = building['occupied_count'] ?? 0;
 
-    return
-      GestureDetector(
-          onTap: () {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (context) => BuildingReportScreen(building: building),
-              ),
-            );
-          },
-
-      child: Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      elevation: 4,
-      margin: EdgeInsets.only(bottom: 12),
-      color: Colors.white,
-      child: Container(
+    return GestureDetector(
+      onTap: () {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => BuildingReportScreen(building: building),
+          ),
+        );
+      },
+      child: AnimatedContainer(
+        duration: Duration(milliseconds: 200),
+        curve: Curves.easeInOut,
+        margin: EdgeInsets.only(bottom: 16),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(16.0),
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black12,
+              blurRadius: 10,
+              offset: Offset(0, 6),
+            ),
+          ],
         ),
-        padding: const EdgeInsets.all(18.0),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Top Row: Name + Status Badge
             Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
                   child: Text(
                     building['name'] ?? 'Unknown',
                     style: GoogleFonts.poppins(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 16,
-                      color: Colors.black,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 17,
+                      color: Colors.black87,
                     ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                SizedBox(width: 8),
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    color: Colors.green.shade100,
+                    color: Colors.green.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
                     building['status'] ?? 'Open',
-                    style: GoogleFonts.poppins(fontSize: 12.5, color: Colors.green.shade800),
-                  ),
-                )
-              ],
-            ),
-            SizedBox(height: 12),
-            Divider(height: 1, color: Colors.grey.shade300),
-
-            SizedBox(height: 16),
-            Row(
-              children: [
-                Icon(Icons.location_on, size: 16, color: Colors.redAccent),
-                SizedBox(width: 6),
-                Expanded(
-                  child: Text(
-                    '${area['name']}, ${state['name']}, ${country['name']}' ,
-                    style: GoogleFonts.poppins(fontSize: 13),
+                    style: GoogleFonts.poppins(
+                      fontSize: 11.5,
+                      color: Colors.green.shade700,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 ),
               ],
             ),
 
-            if(building['completion_date']!=null)...[
+            SizedBox(height: 12),
+
+            // Location
+            Row(
+              children: [
+                Icon(Icons.location_on_outlined, size: 16, color: Colors.blueAccent),
+                SizedBox(width: 6),
+                Expanded(
+                  child: Text(
+                    '${area['name']}, ${state['name']}, ${country['name']}',
+                    style: GoogleFonts.poppins(fontSize: 13, color: Colors.black54),
+                  ),
+                ),
+              ],
+            ),
+
+            if (building['completion_date'] != null) ...[
               SizedBox(height: 6),
               Row(
                 children: [
-                  Icon(Icons.calendar_today, size: 16, color: Colors.redAccent),
+                  Icon(Icons.calendar_month_outlined, size: 16, color: Colors.deepOrangeAccent),
                   SizedBox(width: 6),
-                  Expanded(
-                    child: Text(
-                      'Completed On: ${formatDate(building['completion_date'])}' ,
-                      style: GoogleFonts.poppins(fontSize: 13),
-                    ),
+                  Text(
+                    'Completed: ${formatDate(building['completion_date'])}',
+                    style: GoogleFonts.poppins(fontSize: 13, color: Colors.black54),
                   ),
                 ],
               ),
-            ]
+            ],
+
+            SizedBox(height: 12),
+
+            // Available + Occupied pills
+            Row(
+              children: [
+                Expanded(
+                  child: Container(
+                    padding: EdgeInsets.symmetric(vertical: 6),
+                    decoration: BoxDecoration(
+                      color: Colors.green.shade50,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    alignment: Alignment.center,
+                    child: Text(
+                      'Available: $available',
+                      style: GoogleFonts.poppins(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.green.shade700,
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(width: 8),
+                Expanded(
+                  child: Container(
+                    padding: EdgeInsets.symmetric(vertical: 6),
+                    decoration: BoxDecoration(
+                      color: Colors.red.shade50,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    alignment: Alignment.center,
+                    child: Text(
+                      'Occupied: $occupied',
+                      style: GoogleFonts.poppins(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.red.shade700,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ],
         ),
       ),
-    ));
+    );
   }
   @override
   Widget build(BuildContext context) {

@@ -52,20 +52,25 @@ class _TenantComplaintPageState extends State<TenantComplaint> with TickerProvid
     _initSharedPreferences();
   }
 
+  List<dynamic> complaintStatuses = [];
+  dynamic selectedStatus;
+
+
   Future<void> _submitForm() async {
     if (_formKey.currentState != null && _formKey.currentState!.validate()) {
       setState(() {
         _isSubmitting = true;
       });
 
-      try {
+      print('status id -> ${selectedStatus['id']}');
 
+      try {
         var uuid = Uuid();
         String uuidValue = uuid.v4();
 
         final body = {
           'uuid': uuidValue,
-          'status_id': 1,
+          'status_id' : selectedStatus['id'],
           'type': selectedType,
           'description': _descriptionController.text.trim(),
         };
@@ -89,9 +94,6 @@ class _TenantComplaintPageState extends State<TenantComplaint> with TickerProvid
         final responseData = jsonDecode(response.body);
 
         if (response.statusCode == 201 || responseData['success'] == true) {
-
-
-
           // Reset form
           setState(() {
             selectedType = "";
@@ -114,7 +116,51 @@ class _TenantComplaintPageState extends State<TenantComplaint> with TickerProvid
   }
 
   Future<void> _initSharedPreferences() async {
+
+    _fetchComplaintStatuses(Company_Token);
   }
+
+  Future<void> _fetchComplaintStatuses(String token) async {
+    int currentPage = 1;
+    bool hasMore = true;
+    List<dynamic> allStatuses = [];
+
+    while (hasMore) {
+      final response = await http.get(
+        Uri.parse('$baseurl/tenant/complaintStatus/?page=$currentPage'),
+        headers: {'Authorization': 'Bearer $token'},
+      );
+
+      if (response.statusCode == 200) {
+        final json = jsonDecode(response.body);
+        final List<dynamic> statuses = json['data']['complaintStatus'] ?? [];
+
+        if (statuses.isEmpty) {
+          hasMore = false;
+        } else {
+          allStatuses.addAll(statuses);
+          currentPage++;
+        }
+      } else {
+        hasMore = false;
+      }
+    }
+
+    // Set selectedStatus to first Normal category
+    final normalStatus = allStatuses.firstWhere(
+          (status) => (status['category']?.toString().toLowerCase() ?? '') == 'normal',
+      orElse: () => null,
+    );
+
+    if (normalStatus != null) {
+      selectedStatus = normalStatus;
+    }
+
+    setState(() {
+      complaintStatuses = allStatuses;
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -135,13 +181,11 @@ class _TenantComplaintPageState extends State<TenantComplaint> with TickerProvid
               Icons.arrow_back,
               color: Colors.white,
             ),),
-
           title: Text('Complaint/Suggestions',
             style: GoogleFonts.poppins(
                 color: Colors.white
             ),),
         ),
-
         drawer: Sidebar(
             isDashEnable: isDashEnable,
             isRolesVisible: isRolesVisible,
@@ -224,7 +268,6 @@ class _TenantComplaintPageState extends State<TenantComplaint> with TickerProvid
                 TextFormField(
                   controller: _descriptionController,
                   maxLines: 4,
-
                   maxLength: 500,
                   validator: (value) =>
                   (value == null || value.isEmpty) ? 'Description is required' : null,

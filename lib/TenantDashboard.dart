@@ -41,9 +41,150 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
       announcementCount = announcements.length;
     });
   }
-// new dashboard function
 
+
+  // new dashboard function
   Future<void> fetchDashboardData() async {
+    setState(() => isLoading = true);
+
+    try {
+      final url = is_landlord
+          ? '$baseurl/landlord/$user_id'
+          : '$baseurl/tenant/$user_id';
+
+      print('Dashboard URL -> $url');
+
+      final response = await http.get(
+        Uri.parse(url),
+        headers: {"Authorization": "Bearer $Company_Token"},
+      );
+
+      if (response.statusCode != 200) {
+        print('Non-200 response: ${response.statusCode}');
+        setState(() => isLoading = false);
+        return;
+      }
+
+      final data = jsonDecode(response.body);
+      print('Dashboard data -> $data');
+
+      if (is_landlord) {
+        _processLandlordData(data['data']['landlord']);
+      } else {
+        _processTenantData(data['data']['tenant']);
+      }
+
+    } catch (e) {
+      print('Error in fetchDashboardData: $e');
+      setState(() => isLoading = false);
+    }
+  }
+
+  void _processTenantData(Map<String, dynamic> tenant) {
+    final contractsList = tenant['contracts'] ?? [];
+    Map<String, Map<String, dynamic>> groupedContracts = {};
+
+    for (var contract in contractsList) {
+      final contractNo = contract['contract_no'];
+      final contractId = contract['id'];
+      if (contractNo == null) continue;
+
+      groupedContracts[contractNo] = {
+        'contract_no': contractNo,
+        'contract_id': contractId,
+        'flats': [],
+        'cheques': [],
+        'invoices': {},
+      };
+
+      final flatLinks = contract['flats'] ?? [];
+      for (var link in flatLinks) {
+        final flat = link['flat'];
+        if (flat != null) {
+          groupedContracts[contractNo]!['flats'].add(flat);
+        }
+      }
+
+      final receipts = contract['receipts'] ?? [];
+      for (var receipt in receipts) {
+        final payments = receipt['payments'] ?? [];
+        for (var paymentObj in payments) {
+          final payment = paymentObj['payment'];
+          final cheque = payment['cheque'];
+
+          if (cheque != null) {
+            groupedContracts[contractNo]!['cheques'].add({
+              'payment': payment,
+              'date': cheque['date'],
+              'is_received': cheque['is_received'] == 'true',
+              'is_deposited': cheque['is_deposited'] == 'true',
+              'returned_on': payment['returned_on'],
+            });
+
+            final dateStr = cheque['date'] ?? '';
+            final month = dateStr.isNotEmpty ? dateStr.substring(0, 7) : 'Unknown';
+
+            groupedContracts[contractNo]!['invoices'][month] =
+                (groupedContracts[contractNo]!['invoices'][month] ?? 0.0) +
+                    (payment['amount_incl']?.toDouble() ?? 0.0);
+          }
+        }
+      }
+    }
+
+    setState(() {
+      contracts = groupedContracts.values.toList();
+      isLoading = false;
+    });
+  }
+
+  void _processLandlordData(Map<String, dynamic> landlord) {
+    final boughtContracts = landlord['bought_contracts'] ?? [];
+    final soldContracts = landlord['sold_contracts'] ?? [];
+
+    buildingFlatCount.clear();
+    List<Map<String, dynamic>> allContracts = [];
+
+    for (var contract in boughtContracts) {
+      allContracts.add(_extractLandlordContract(contract, 'bought'));
+    }
+
+    for (var contract in soldContracts) {
+      allContracts.add(_extractLandlordContract(contract, 'sold'));
+    }
+
+    setState(() {
+      contracts = allContracts;
+      isLoading = false;
+    });
+  }
+
+  Map<String, dynamic> _extractLandlordContract(Map<String, dynamic> contract, String type) {
+    final contractNo = contract['contract_no'];
+    final contractId = contract['id'];
+    final flatLinks = contract['flats'] ?? [];
+    List<dynamic> extractedFlats = [];
+
+    for (var link in flatLinks) {
+      final flat = link['flat'];
+      if (flat != null) {
+        extractedFlats.add(flat);
+        final buildingName = flat['building']?['name'] ?? 'Unknown';
+        buildingFlatCount[buildingName] = (buildingFlatCount[buildingName] ?? 0) + 1;
+      }
+    }
+
+    return {
+      'contract_no': contractNo,
+      'contract_id': contractId,
+      'contract_type': type,
+      'flats': extractedFlats,
+    };
+  }
+
+// old 2 dashboard function
+
+  /*Future<void> fetchDashboardData() async {
     setState(() => isLoading = true);
 
     try {
@@ -174,7 +315,7 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
       print("Error in fetchDashboardData: $e");
       setState(() => isLoading = false);
     }
-  }
+  }*/
 
 
   // old dashboard function

@@ -2571,15 +2571,106 @@ class _ComplaintBottomSheetState extends State<ComplaintBottomSheet> {
   List<dynamic> complaintList = [];
   bool isLoading = true;
   bool isSubmitting = false;
+  List<dynamic> complaintStatuses = [];
+  dynamic selectedStatus;
+
   final TextEditingController _controller = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    _fetchComplaintHistory();
+    _fetchComplaintHistoryAndStatus();
   }
 
-  Future<void> _fetchComplaintHistory() async {
+
+  Future<void> _fetchComplaintHistoryAndStatus() async {
+    final token = Company_Token;
+    await Future.wait([
+      _fetchComplaintHistory(token),
+      _fetchComplaintStatuses(token),
+    ]);
+
+    setState(() {
+      isLoading = false;
+    });
+  }
+
+  Future<void> _fetchComplaintHistory(String token) async {
+    int currentPage = 1;
+    bool hasMore = true;
+    List<dynamic> allComplaints = [];
+
+    while (hasMore) {
+      final response = await http.get(
+        Uri.parse('$baseurl/maintenance/complaint/?ticket_id=${widget.ticketId}&page=$currentPage'),
+        headers: {'Authorization': 'Bearer $token'},
+      );
+
+      if (response.statusCode == 200) {
+        final json = jsonDecode(response.body);
+        final List<dynamic> complaints = json['data']['complaints'] ?? [];
+
+        print('status list ->${complaintStatuses}');
+
+        if (complaints.isEmpty) {
+          hasMore = false;
+        } else {
+          allComplaints.addAll(complaints);
+          currentPage++;
+        }
+      } else {
+        hasMore = false;
+      }
+    }
+
+    setState(() {
+      complaintList = allComplaints.reversed.toList(); // Latest first
+    });
+  }
+
+  Future<void> _fetchComplaintStatuses(String token) async {
+    int currentPage = 1;
+    bool hasMore = true;
+    List<dynamic> allStatuses = [];
+
+    while (hasMore) {
+      final response = await http.get(
+        Uri.parse('$baseurl/tenant/complaintStatus/?page=$currentPage'),
+        headers: {'Authorization': 'Bearer $token'},
+      );
+
+      if (response.statusCode == 200) {
+        final json = jsonDecode(response.body);
+        final List<dynamic> statuses = json['data']['complaintStatus'] ?? [];
+
+        if (statuses.isEmpty) {
+          hasMore = false;
+        } else {
+          allStatuses.addAll(statuses);
+          currentPage++;
+        }
+      } else {
+        hasMore = false;
+      }
+    }
+
+    // Set selectedStatus to first Normal category
+    final normalStatus = allStatuses.firstWhere(
+          (status) => (status['category']?.toString().toLowerCase() ?? '') == 'normal',
+      orElse: () => null,
+    );
+
+    if (normalStatus != null) {
+      selectedStatus = normalStatus;
+    }
+
+    setState(() {
+      complaintStatuses = allStatuses;
+    });
+  }
+
+  // old complaint history function
+  /*Future<void> _fetchComplaintHistory() async {
     final token = Company_Token;
     int currentPage = 1;
     bool hasMore = true;
@@ -2610,7 +2701,8 @@ class _ComplaintBottomSheetState extends State<ComplaintBottomSheet> {
       complaintList = allComplaints.reversed.toList(); // Latest first
       isLoading = false;
     });
-  }
+
+  }*/
 
   Future<void> _submitComplaint() async {
     final description = _controller.text.trim();
@@ -2618,6 +2710,8 @@ class _ComplaintBottomSheetState extends State<ComplaintBottomSheet> {
 
     setState(() => isSubmitting = true);
     final token = Company_Token;
+
+    print('status id -> ${selectedStatus['id']}');
 
     final response = await http.post(
       Uri.parse('$baseurl/maintenance/complaint'),
@@ -2627,7 +2721,7 @@ class _ComplaintBottomSheetState extends State<ComplaintBottomSheet> {
       },
       body: jsonEncode({
         "ticket_id": widget.ticketId,
-        'status_id' : 1,
+        'status_id' : selectedStatus['id'],
         "description": description,
       }),
     );
@@ -2635,7 +2729,7 @@ class _ComplaintBottomSheetState extends State<ComplaintBottomSheet> {
     if (response.statusCode == 200 || response.statusCode == 201)
     {
       _controller.clear();
-      await _fetchComplaintHistory(); // Refresh the list
+      await _fetchComplaintHistoryAndStatus(); // Refresh the list
     }
     else
     {

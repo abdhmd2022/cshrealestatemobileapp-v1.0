@@ -8,11 +8,12 @@ const String app_name = "Real Estate";
 
 const MaterialAccentColor appbar_color = Colors.blueAccent;
 
-const String company_name = 'Company';
+ late String company_name = 'Company';
 
 const String authTokenBase = r'!1--3*%*%*%*9$api$8*%*%*%*5--0!X19fIUBBUyQlYXMxOTI4MzdfX18=KSgqL2FzZGFzZGlvQ0VEQUZf';
 
 const String BASE_URL_config = "http://192.168.2.185:7750/api";
+
 
 const String OAuth_URL = "http://192.168.2.185:4555";
 
@@ -62,6 +63,8 @@ Future<void> loadTokens() async {
   website =  prefs.getString('website') ?? "";
   logo_path =  prefs.getString('logo_path') ?? "";
   whatsapp_no =  prefs.getString('whatsapp_no')?? "";
+
+  company_name =  prefs.getString('company_name')?? "";
 
   Company_Token = prefs.getString("access_token") ?? "";
   access_token_expiry = prefs.getString("access_token_expiry") ?? "";

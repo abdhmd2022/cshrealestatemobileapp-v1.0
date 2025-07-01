@@ -31,15 +31,20 @@ class _BuildingReportScreenState extends State<BuildingReportScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   void _openMaps() async {
-    final String googleMapsUrl =
-        "https://www.google.com/maps/search/?api=1&query=${Uri.encodeComponent(widget.building['name'])}";
-    final String appleMapsUrl =
-        "https://maps.apple.com/?q=${Uri.encodeComponent(widget.building['name'])}";
-    final String wazeUrl =
-        "waze://?q=${Uri.encodeComponent(widget.building['name'])}"; // Waze URL scheme
+    final String companyName = company_name ?? '';
+    final String companyAddress = address ?? '';
+
+    print('company name -> $companyName');
+    print('company Address -> $companyAddress');
+
+    // Combine company name and address for a more accurate map query
+    final String query = Uri.encodeComponent('$companyName $companyAddress');
+
+    final String googleMapsUrl = "https://www.google.com/maps/search/?api=1&query=$query";
+    final String appleMapsUrl = "https://maps.apple.com/?q=$query";
+    final String wazeUrl = "waze://?q=$query";
 
     if (defaultTargetPlatform == TargetPlatform.iOS) {
-      // For iOS, prefer Apple Maps
       if (await canLaunch(appleMapsUrl)) {
         await launch(appleMapsUrl);
       } else if (await canLaunch(googleMapsUrl)) {
@@ -48,7 +53,6 @@ class _BuildingReportScreenState extends State<BuildingReportScreen> {
         throw 'Could not open map app';
       }
     } else if (defaultTargetPlatform == TargetPlatform.android) {
-      // For Android, check if Google Maps or Waze is installed
       if (await canLaunch(googleMapsUrl)) {
         await launch(googleMapsUrl);
       } else if (await canLaunch(wazeUrl)) {
@@ -57,7 +61,6 @@ class _BuildingReportScreenState extends State<BuildingReportScreen> {
         throw 'Could not open map app';
       }
     } else {
-      // Default case for unsupported platforms
       throw 'Platform not supported';
     }
   }
@@ -65,16 +68,14 @@ class _BuildingReportScreenState extends State<BuildingReportScreen> {
   @override
   Widget build(BuildContext context) {
     final building = widget.building;
-    final int occupied = building['flats']
-        .where((f) => f['is_occupied'] == 'true')
-        .length;
-    final int available = building['flats']
-        .where((f) => f['is_occupied'] == 'false')
-        .length;
-    final filteredFlats = widget.building['flats'].where((f) {
+    final int available = building['availableFlatsForRent'] ?? 0;
+    final int totalFlats = (building['flats'] as List).length;
+    final int occupied = totalFlats - available;
+
+    final filteredFlats = (building['flats'] as List).where((f) {
       if (selectedFilter == 'All') return true;
-      if (selectedFilter == 'Occupied') return f['is_occupied'] == 'true';
-      if (selectedFilter == 'Available') return f['is_occupied'] == 'false';
+      if (selectedFilter == 'Occupied') return (f['forRent'] == false);
+      if (selectedFilter == 'Available') return (f['forRent'] == true);
       return true;
     }).toList();
 
@@ -105,7 +106,22 @@ class _BuildingReportScreenState extends State<BuildingReportScreen> {
       body: Container(
           color: Colors.white,
           height: MediaQuery.of(context).size.height,
-          child:Stack(
+         child: (building['flats'] as List).isEmpty
+          ? Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.domain_disabled, color: Colors.grey, size: 64),
+            SizedBox(height: 12),
+            Text(
+              'No unit(s) data available',
+              style: GoogleFonts.poppins(fontSize: 16, color: Colors.black54),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      )
+          :Stack(
               children:[
                 SingleChildScrollView(child:
                 Container(
@@ -273,7 +289,7 @@ class _BuildingReportScreenState extends State<BuildingReportScreen> {
                                           width: 15,
                                           height: 15,
                                           decoration: BoxDecoration(
-                                            color: Colors.orangeAccent,
+                                            color: Colors.redAccent,
                                             shape: BoxShape.circle,
                                           ),
                                         ),
@@ -288,7 +304,7 @@ class _BuildingReportScreenState extends State<BuildingReportScreen> {
                                           width: 15,
                                           height: 15,
                                           decoration: BoxDecoration(
-                                            color: Colors.blueAccent,
+                                            color: Colors.green.withOpacity(0.9),
                                             shape: BoxShape.circle,
                                           ),
                                         ),
@@ -348,11 +364,12 @@ class _BuildingReportScreenState extends State<BuildingReportScreen> {
                       final flat = filteredFlats[index];
 
                       final flat_id = flat['id'];
-                      final isOccupied = flat['is_occupied'] == 'true';
+                      final isOccupied = flat['forRent'] == false;
                       final flatName = flat['name'] ?? 'N/A';
                       final flatType = flat['flat_type']?['name'] ?? 'N/A';
                       final isLoading = loadingTileIndex == index;
 
+                      
                       return Container(
                         margin: EdgeInsets.symmetric(vertical: 2),
                         decoration: BoxDecoration(
@@ -449,11 +466,11 @@ class _BuildingReportScreenState extends State<BuildingReportScreen> {
                               padding: EdgeInsets.all(6),
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                color: isOccupied ? Colors.orange.shade100 : appbar_color.withOpacity(0.2),
+                                color: isOccupied ? Colors.redAccent.withOpacity(0.2) : Colors.green.withOpacity(0.2),
                               ),
                               child: Icon(
                                 isOccupied ? Icons.home_work_rounded : Icons.home_outlined,
-                                color: isOccupied ? Colors.orange : appbar_color,
+                                color: isOccupied ? Colors.redAccent : Colors.green,
                                 size: 24,
                               ),
                             ),
@@ -466,6 +483,7 @@ class _BuildingReportScreenState extends State<BuildingReportScreen> {
                             ),
                             subtitle: Text(
                               'Type: $flatType ',
+                              
                               style: GoogleFonts.poppins(
                                 fontSize: 12,
                                 color: Colors.grey.shade600,
@@ -474,7 +492,7 @@ class _BuildingReportScreenState extends State<BuildingReportScreen> {
                             trailing: Container(
                               padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                               decoration: BoxDecoration(
-                                color: isOccupied ? Colors.orange.shade50 : appbar_color.withOpacity(0.1),
+                                color: isOccupied ? Colors.redAccent.withOpacity(0.1) : Colors.green.withOpacity(0.1),
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               child: Text(
@@ -482,7 +500,7 @@ class _BuildingReportScreenState extends State<BuildingReportScreen> {
                                 style: GoogleFonts.poppins(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w500,
-                                  color: isOccupied ? Colors.orange : appbar_color,
+                                  color: isOccupied ? Colors.redAccent : Colors.green,
                                 ),
                               ),
                             ),
@@ -502,22 +520,25 @@ class _BuildingReportScreenState extends State<BuildingReportScreen> {
                   right: 20,
                   child: Align(
                     alignment: Alignment.bottomRight,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.8),
-                        borderRadius: BorderRadius.circular(10),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black26,
-                            blurRadius: 5,
-                            offset: Offset(2, 2),
-                          ),
-                        ],
-                      ),
-                      child: Image.asset(
-                        'assets/building_location.png', // Image from assets
-                        width: 75, // Adjust size as needed
-                        height: 75,
+                    child: GestureDetector(
+                      onTap: _openMaps, // This triggers the map open logic
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.8),
+                          borderRadius: BorderRadius.circular(10),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black26,
+                              blurRadius: 5,
+                              offset: Offset(2, 2),
+                            ),
+                          ],
+                        ),
+                        child: Image.asset(
+                          'assets/building_location.png', // Image from assets
+                          width: 75, // Adjust size as needed
+                          height: 75,
+                        ),
                       ),
                     ),
                   ),
@@ -585,7 +606,7 @@ class PieChartGraph extends StatelessWidget {
                   value: occupied.toDouble(),
                   title: "$occupied Unit(s)",
                   gradient: LinearGradient(
-                    colors: [Colors.orangeAccent.shade100,Colors.orangeAccent.shade200, Colors.orangeAccent.shade200], // Gradient background
+                    colors: [Colors.redAccent.withOpacity(0.5),Colors.redAccent.withOpacity(0.9), Colors.redAccent.withOpacity(0.9)], // Gradient background
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                   ),
@@ -597,7 +618,7 @@ class PieChartGraph extends StatelessWidget {
                   value: available.toDouble(),
                   title: "$available Unit(s)",
                   gradient: LinearGradient(
-                    colors: [Colors.blueAccent.shade100,Colors.blueAccent.shade200, Colors.blueAccent.shade200], // Gradient background
+                    colors: [Colors.green.withOpacity(0.1),Colors.green.withOpacity(0.8), Colors.green.withOpacity(0.8)], // Gradient background
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                   ),
@@ -721,7 +742,7 @@ class BarChartGraph extends StatelessWidget {
                   toY: occupied.toDouble(),
                   width: 40,
                   gradient: LinearGradient(
-                    colors: [Colors.orangeAccent.shade100,Colors.orangeAccent.shade200, Colors.orangeAccent.shade200], // Gradient background
+                    colors: [Colors.redAccent.withOpacity(0.9),Colors.redAccent.withOpacity(0.8), Colors.redAccent.withOpacity(0.8)], // Gradient background
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                   ),                  borderRadius: BorderRadius.circular(4),
@@ -735,7 +756,7 @@ class BarChartGraph extends StatelessWidget {
                   toY: available.toDouble(),
                   width: 40,
                   gradient: LinearGradient(
-                    colors: [appbar_color.withOpacity(0.5),appbar_color.withOpacity(0.7), appbar_color.withOpacity(0.9)], // Gradient background
+                    colors: [Colors.green.withOpacity(0.5),Colors.green.withOpacity(0.7), Colors.green.withOpacity(0.9)], // Gradient background
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                   ),                  borderRadius: BorderRadius.circular(4),

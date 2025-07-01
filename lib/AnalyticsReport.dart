@@ -62,46 +62,53 @@ class _LandlordDashboardScreenState extends State<LandlordDashboardScreen> with 
       }
   }
 
-  Future<void> fetchBuildingData() async {
+   Future<void> fetchBuildingData() async {
+     buildingNames.clear();
+     availableUnits.clear();
+     occupiedUnits.clear();
 
-    buildingNames.clear();
-    availableUnits.clear();
-    occupiedUnits.clear();
+     setState(() {
+       isLoadingBarChart = true;
+     });
 
-    setState(() {
-      isLoadingBarChart = true;
-    });
-    final response = await http.get(
-      Uri.parse("$baseurl/reports/building/available/date?date=${DateFormat('yyyy-MM-dd').format(DateTime.now())}"),
-      headers: {
-        "Authorization": "Bearer $Company_Token",
-        "Content-Type": "application/json",
-      },
-    );
+     final response = await http.get(
+       Uri.parse("$baseurl/reports/building/available/date?date=${DateFormat('yyyy-MM-dd').format(DateTime.now())}"),
+       headers: {
+         "Authorization": "Bearer $Company_Token",
+         "Content-Type": "application/json",
+       },
+     );
 
-    if (response.statusCode == 200) {
+     if (response.statusCode == 200) {
+       final jsonData = json.decode(response.body);
+       final buildingsJson = jsonData['data']['buildings'] as List;
 
-      final jsonData = json.decode(response.body);
-      final buildingsJson = jsonData['data']['buildings'] as List;
+       print('buildings -> $buildingsJson');
 
-      for (var building in buildingsJson) {
-        final name = building['name'];
-        final flats = building['flats'] as List;
+       for (var building in buildingsJson) {
+         final name = building['name'];
+         final flats = building['flats'] as List;
 
-        int occupied = flats.where((f) => f['is_occupied'] == 'true').length;
-        int available = flats.where((f) => f['is_occupied'] == 'false').length;
+         final available = (building['availableFlatsForRent'] ?? 0) as int;
+         final occupied = flats.length - available;
 
-        buildingNames.add(name);
-        occupiedUnits.add(occupied);
-        availableUnits.add(available);
-      }
-    } else {
-      throw Exception('Failed to load buildings');
-    }
-    setState(() {
-      isLoadingBarChart = false;
-    });
-  }
+         // ✅ Include only if there is some data to show
+         if (available > 0 || occupied > 0) {
+           buildingNames.add(name);
+           availableUnits.add(available);
+           occupiedUnits.add(occupied);
+         }
+       }
+
+     } else {
+       print('Failed to load buildings: ${response.statusCode}');
+       throw Exception('Failed to load buildings');
+     }
+
+     setState(() {
+       isLoadingBarChart = false;
+     });
+   }
 
 
     final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();

@@ -2646,6 +2646,7 @@ class _ComplaintBottomSheetState extends State<ComplaintBottomSheet> {
           currentPage++;
         }
       } else {
+        print('code -> ${response.statusCode} \n\n body -> ${response.body}');
         hasMore = false;
       }
     }
@@ -2677,6 +2678,7 @@ class _ComplaintBottomSheetState extends State<ComplaintBottomSheet> {
           currentPage++;
         }
       } else {
+        print('code -> ${response.statusCode} \n\n body -> ${response.body}');
         hasMore = false;
       }
     }

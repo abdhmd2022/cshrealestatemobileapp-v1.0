@@ -191,7 +191,7 @@ class _SidebarState extends State<Sidebar> {
                   if(is_admin)
                     _buildDrawerItem(Icons.settings, "Settings", true, () {
                       Navigator.of(context).pop();
-                    _navigateTo(context, SettingsScreen());
+                      _navigateTopush(context, SettingsScreen());
                   }),
                   Divider(),
                   _buildDrawerItem(Icons.contact_support, "Help", true, () {

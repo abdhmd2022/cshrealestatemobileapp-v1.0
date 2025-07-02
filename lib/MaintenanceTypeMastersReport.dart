@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:cshrealestatemobile/Settings.dart';
 import 'package:cshrealestatemobile/constants.dart';
 import 'package:flutter/cupertino.dart';
@@ -25,9 +24,8 @@ class _MaintenanceTypeMastersReportState extends State<MaintenanceTypeMastersRep
   List<String> categories_list= [
     'MEP',
     'Pest Control',
-    'Cleaning'
+    'Cleaning',
   ];
-
 
   @override
   void initState() {
@@ -35,7 +33,6 @@ class _MaintenanceTypeMastersReportState extends State<MaintenanceTypeMastersRep
     if(hasPermission('canViewMaintenanceTypes')){
       fetchMaintenanceType();
     }
-
   }
 
   Future<void> sendMaintenanceType() async {

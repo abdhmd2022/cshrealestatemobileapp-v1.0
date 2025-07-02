@@ -618,7 +618,7 @@ class PieChartGraph extends StatelessWidget {
                   value: available.toDouble(),
                   title: "$available Unit(s)",
                   gradient: LinearGradient(
-                    colors: [Colors.green.withOpacity(0.1),Colors.green.withOpacity(0.8), Colors.green.withOpacity(0.8)], // Gradient background
+                    colors: [Colors.green.withOpacity(0.5),Colors.green.withOpacity(0.8), Colors.green.withOpacity(0.8)], // Gradient background
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                   ),

@@ -20,12 +20,7 @@ import 'package:google_fonts/google_fonts.dart';
 class LandlordDashboard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Analytics',
-      theme: ThemeData(primarySwatch: Colors.blue),
-      home: LandlordDashboardScreen(),
-    );
+    return LandlordDashboardScreen();
   }
 }
 
@@ -41,12 +36,16 @@ class _LandlordDashboardScreenState extends State<LandlordDashboardScreen> with 
 
   ];
 
+
+
    bool isLoadingBarChart = false;
    List<int> occupiedUnits = []; // Example data for occupied units
    List<int> availableUnits = []; // Example data for available units
+   List<Map<String, dynamic>> buildingData = [];
 
 
-  @override
+
+   @override
   void initState() {
     super.initState();
     _initSharedPreferences();
@@ -63,12 +62,12 @@ class _LandlordDashboardScreenState extends State<LandlordDashboardScreen> with 
   }
 
    Future<void> fetchBuildingData() async {
-     buildingNames.clear();
-     availableUnits.clear();
-     occupiedUnits.clear();
-
      setState(() {
        isLoadingBarChart = true;
+       buildingNames.clear();
+       occupiedUnits.clear();
+       availableUnits.clear();
+       buildingData.clear();
      });
 
      final response = await http.get(
@@ -81,27 +80,24 @@ class _LandlordDashboardScreenState extends State<LandlordDashboardScreen> with 
 
      if (response.statusCode == 200) {
        final jsonData = json.decode(response.body);
-       final buildingsJson = jsonData['data']['buildings'] as List;
+       final buildings = jsonData['data']['buildings'] as List;
 
-       print('buildings -> $buildingsJson');
-
-       for (var building in buildingsJson) {
-         final name = building['name'];
-         final flats = building['flats'] as List;
-
-         final available = (building['availableFlatsForRent'] ?? 0) as int;
+       for (var b in buildings) {
+         final flats = (b['flats'] ?? []) as List;
+         final available = (b['availableFlatsForRent'] ?? 0) as int;
          final occupied = flats.length - available;
 
-         // ✅ Include only if there is some data to show
          if (available > 0 || occupied > 0) {
-           buildingNames.add(name);
+           buildingNames.add(b['name']);
            availableUnits.add(available);
            occupiedUnits.add(occupied);
+           buildingData.add({
+             'name': b['name'],
+             'flats': flats,
+           });
          }
        }
-
      } else {
-       print('Failed to load buildings: ${response.statusCode}');
        throw Exception('Failed to load buildings');
      }
 
@@ -110,8 +106,132 @@ class _LandlordDashboardScreenState extends State<LandlordDashboardScreen> with 
      });
    }
 
+   void _showUnitsPopup(Map<String, dynamic> building, String status, BuildContext context) {
+     final flats = (building['flats'] as List).cast<Map<String, dynamic>>();
 
-    final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+     final filtered = flats.where((flat) {
+       final forRent = flat['forRent'] == true;
+       if (status == 'Available') {
+         return forRent;
+       } else {
+         return !forRent;
+       }
+     }).toList();
+
+     showDialog(
+
+       context: context,
+       builder: (context) => Dialog(
+         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+         insetPadding: EdgeInsets.all(20),
+         child: Container(
+           padding: EdgeInsets.all(20),
+           decoration: BoxDecoration(
+             color: Colors.white,
+             borderRadius: BorderRadius.circular(20),
+             boxShadow: [
+               BoxShadow(
+                 color: Colors.black12,
+                 blurRadius: 15,
+                 offset: Offset(0, 8),
+               ),
+             ],
+           ),
+           child: SingleChildScrollView(
+         child: ConstrainedBox(
+         constraints: BoxConstraints(
+             maxHeight: MediaQuery.of(context).size.height * 0.8, // or 0.7 depending on preference
+       ),
+       child: Column(
+         mainAxisSize: MainAxisSize.min,
+         children: [
+           Text(
+             '$status Units in ${building['name']}',
+             style: TextStyle(
+               fontSize: 18,
+               fontWeight: FontWeight.bold,
+             ),
+           ),
+           SizedBox(height: 12),
+           Divider(thickness: 1, color: Colors.grey[300]),
+           SizedBox(height: 12),
+           filtered.isEmpty
+               ? Text(
+             'No $status units found.',
+             style: TextStyle(color: Colors.black54),
+           )
+               : Flexible( // Allow list view to take available space
+             child: ListView.separated(
+               shrinkWrap: true,
+               itemCount: filtered.length,
+               separatorBuilder: (_, __) => Divider(color: Colors.grey[200]),
+               itemBuilder: (_, index) {
+                 final unit = filtered[index];
+                 return Row(
+                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                   children: [
+                     Column(
+                       crossAxisAlignment: CrossAxisAlignment.start,
+                       children: [
+                         Text(
+                           'Unit No: ${unit['name']}',
+                           style: TextStyle(fontWeight: FontWeight.w600),
+                         ),
+                         SizedBox(height: 4),
+                         Text(
+                           'Type: ${unit['flat_type']?['name'] ?? 'N/A'}',
+                           style: TextStyle(color: Colors.black54, fontSize: 12),
+                         ),
+                       ],
+                     ),
+                     Container(
+                       padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                       decoration: BoxDecoration(
+                         color: status == 'Available' ? Colors.green[100] : Colors.orange[100],
+                         borderRadius: BorderRadius.circular(12),
+                       ),
+                       child: Text(
+                         status,
+                         style: TextStyle(
+                           color: status == 'Available' ? Colors.green : Colors.orange,
+                           fontSize: 12,
+                           fontWeight: FontWeight.w500,
+                         ),
+                       ),
+                     ),
+                   ],
+                 );
+               },
+             ),
+           ),
+           SizedBox(height: 16),
+           SizedBox(
+             width: double.infinity,
+             child: ElevatedButton(
+               style: ElevatedButton.styleFrom(
+                 backgroundColor: Colors.blueAccent,
+                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                 padding: EdgeInsets.symmetric(vertical: 12),
+               ),
+               onPressed: () => Navigator.of(context).pop(),
+               child: Text(
+                 'Close',
+                 style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),
+               ),
+             ),
+           ),
+         ],
+       ),
+     ),
+     ),
+
+     ),
+       ),
+     );
+   }
+
+
+   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
 
   @override
@@ -223,7 +343,14 @@ class _LandlordDashboardScreenState extends State<LandlordDashboardScreen> with 
                                   Expanded(
                                     flex: 1,
 
-                                    child: BarGraph(occupiedUnits: occupiedUnits, buildingNames: buildingNames,availableUnits: availableUnits,),
+                                    child: BarGraph(
+                                      occupiedUnits: occupiedUnits,
+                                      buildingNames: buildingNames,
+                                      availableUnits: availableUnits,
+                                      onBarTap: (index, status) {
+                                        _showUnitsPopup(buildingData[index], status,context);
+                                      },
+                                    )
 
                                   ),                        SizedBox(height: 10),
                                   Padding(
@@ -321,8 +448,10 @@ class BarGraph extends StatelessWidget {
   final List<int> occupiedUnits;
   final List<String> buildingNames;
   final List<int> availableUnits;
+  final Function(int, String) onBarTap;
 
-  BarGraph({required this.occupiedUnits, required this.buildingNames,required this.availableUnits});
+  BarGraph({required this.occupiedUnits, required this.buildingNames,required this.availableUnits,  required this.onBarTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -362,7 +491,20 @@ class BarGraph extends StatelessWidget {
         child: BarChart(
           BarChartData(
             alignment: BarChartAlignment.spaceEvenly,
-            barTouchData: BarTouchData(enabled: true),
+            barTouchData: BarTouchData(
+              enabled: true,
+              touchCallback: (event, response) {
+                if (event is FlTapUpEvent && response != null && response.spot != null) {
+                  final groupIndex = response.spot!.touchedBarGroupIndex;
+                  final rodIndex = response.spot!.touchedRodDataIndex;
+
+                  final status = (rodIndex == 0) ? 'Occupied' : 'Available';
+                  onBarTap(groupIndex, status);
+                }
+              },
+            ),
+
+
             titlesData: FlTitlesData(
               leftTitles: AxisTitles(
                 sideTitles: SideTitles(

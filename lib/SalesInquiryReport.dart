@@ -990,6 +990,7 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
                                   ),
                                 ),
 
+
                                 /*SizedBox(width: 10),
 
                       // 🔹 Filter Toggle Button
@@ -1068,26 +1069,22 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
                         ),
                       )
                           : filteredInquiries.isEmpty
-                          ?
+                          ? Center(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min, // center inside column
 
-                      Expanded(
-                          child:  Center(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min, // center inside column
-
-                              children: [
-                                Icon(Icons.search_off, size: 48, color: Colors.grey),
-                                SizedBox(height: 10),
-                                Text(
-                                  "No data available",
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 16,
-                                    color: Colors.grey,
-                                  ),
-                                ),
-                              ],
+                          children: [
+                            Icon(Icons.search_off, size: 48, color: Colors.grey),
+                            SizedBox(height: 10),
+                            Text(
+                              "No data available",
+                              style: GoogleFonts.poppins(
+                                fontSize: 16,
+                                color: Colors.grey,
+                              ),
                             ),
-                          )
+                          ],
+                        ),
                       )
 
                           : NotificationListener<ScrollNotification>(
@@ -1148,7 +1145,6 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
     ),
     ]
     ]
-
 
             ),
         ),

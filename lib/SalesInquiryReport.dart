@@ -1072,7 +1072,6 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
                           ? Center(
                         child: Column(
                           mainAxisSize: MainAxisSize.min, // center inside column
-
                           children: [
                             Icon(Icons.search_off, size: 48, color: Colors.grey),
                             SizedBox(height: 10),
@@ -1085,9 +1084,7 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
                             ),
                           ],
                         ),
-                      )
-
-                          : NotificationListener<ScrollNotification>(
+                      ) : NotificationListener<ScrollNotification>(
                         onNotification: (ScrollNotification scrollInfo) {
                           if (!isFetchingMoreInquiries &&
                               scrollInfo.metrics.pixels >= scrollInfo.metrics.maxScrollExtent - 50 &&
@@ -1118,34 +1115,32 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
                           },
                         ),
                       ),
-
                     ),
                   ),
                 ]
-    else ...[
-    Expanded(
-    child: Center(
-    child: Column(
-    mainAxisAlignment: MainAxisAlignment.center,
-    children: [
-    Icon(Icons.lock_outline, size: 48, color: Colors.grey),
-    SizedBox(height: 10),
-    Text(
-    "Access Denied",
-    style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold),
-    ),
-    Text(
-    "You don’t have permission to view inquiries.",
-    style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey),
-    textAlign: TextAlign.center,
-    ),
-    ],
-    ),
-    ),
-    ),
-    ]
-    ]
-
+                else ...[
+                Expanded(
+                child: Center(
+                child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                Icon(Icons.lock_outline, size: 48, color: Colors.grey),
+                SizedBox(height: 10),
+                Text(
+                "Access Denied",
+                style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                Text(
+                "You don’t have permission to view inquiries.",
+                style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey),
+                textAlign: TextAlign.center,
+                ),
+                ],
+                ),
+                ),
+                ),
+                ]
+                ]
             ),
         ),
 

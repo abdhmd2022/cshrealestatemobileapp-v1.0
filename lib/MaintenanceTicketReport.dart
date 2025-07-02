@@ -349,10 +349,28 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                             } else if (currentScope == 'tenant') {
                               isCurrentUserComment = item['tenant_id'] != null;
                             }
+                            else if (currentScope == 'landlord') {
+                              isCurrentUserComment = item['landlord_id'] != null;
+                            }
 
-                            String username = item['tenant_id'] != null
-                                ? (item["tenant"] != null ? (item["tenant"]["name"] ?? "Tenant") : "Tenant")
-                                : (item["created_user"] != null ? (item["created_user"]["name"] ?? "Admin") : "Admin");
+
+                            String username;
+                            if (item['tenant_id'] != null) {
+                              username = item["tenant"]?["name"] ?? "Tenant";
+                            } else if (item['landlord_id'] != null) {
+                              if (currentScope == 'landlord' && item['landlord_id'] != null) {
+                                // It's *this* landlord's comment
+                                username = "You";
+                              } else {
+                                // Some other landlord (if relevant)
+                                username = "Landlord";
+
+                              }
+                            } else if (item["created_user"] != null) {
+                              username = item["created_user"]["name"] ?? "Admin";
+                            } else {
+                              username = "Admin";
+                            }
 
                             // Get current message date (only date part)
                             DateTime messageDate = DateTime.parse(item["created_at"]).toLocal();
@@ -543,14 +561,23 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
 
             if (success) {
             setState(() {
-            filteredData.add({
-            "description": commentController.text.trim(),
-            "created_at": DateTime.now().toIso8601String(),
-            currentScope == 'user' ? "created_by" : "tenant_id": 1,
-            "tenant": currentScope == 'tenant' ? {"name": "You"} : null,
-            "created_user": currentScope == 'user' ? {"name": "You"} : null,
-            });
-            commentController.clear();
+              filteredData.add({
+                "description": commentController.text.trim(),
+                "created_at": DateTime.now().toIso8601String(),
+                currentScope == 'user'
+                    ? "created_by"
+                    : currentScope == 'tenant'
+
+                    ? "tenant_id"
+                    : currentScope == 'landlord'
+                    ? "landlord_id"
+                    : null: 1,
+                "tenant": currentScope == 'tenant' ? {"name": "You"} : null,
+                "created_user": currentScope == 'user' ? {"name": "You"} : null,
+                "landlord": currentScope == 'landlord' ? {"name": "You"} : null,
+              });
+
+              commentController.clear();
             });
 
             // 🔥 Smooth scroll to bottom after sending

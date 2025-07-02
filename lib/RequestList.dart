@@ -357,22 +357,17 @@ class _RequestListScreenState extends State<RequestListScreen> {
                 itemCount: filteredComplaints.length,
                 itemBuilder: (context, index) {
                   final req = filteredComplaints[index];
-                  final req_id = req["id"];
                   final flat = req['rental_flat']?['flat'] ?? req['sold_flat']?['flat'];
 
                   if (flat == null) {
                     return SizedBox(); // Or show a placeholder if flat info is missing
                   }
 
-                  final flatName = flat['name'] ?? 'N/A';
                   final building = flat['building'];
-                  final buildingName = building?['name'] ?? 'N/A';
 
                   final area = building?['area'];
-                  final areaName = area?['name'] ?? 'N/A';
 
                   final state = area?['state'];
-                  final stateName = state?['name'] ?? 'N/A';
 
                   return Card(
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),

@@ -74,20 +74,21 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
     });
   }
 
+
   Future<void> fetchFlats() async {
     setState(() {
       isLoading = true;
-      allUnits.clear(); // Reset on fresh load
+      allUnits.clear(); // Reset list
     });
 
     List<Flat> combinedFlats = [];
 
     try {
-      // Helper to fetch flats by status
       Future<void> fetchByStatus(String status) async {
         int currentPage = 1;
+        int totalPages = 1;
 
-        while (true) {
+        do {
           String url =
               "$baseurl/reports/flat/available/date?date=${DateFormat('yyyy-MM-dd').format(DateTime.now())}"
               "&status=$status"
@@ -107,7 +108,6 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
             final errorMessage =
                 "Failed to fetch $status flats on page $currentPage (Status: ${response.statusCode})";
 
-            // Show error snackbar
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Row(
@@ -132,20 +132,29 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
 
           final data = json.decode(response.body);
           final flatsJson = data["data"]["flats"] as List<dynamic>? ?? [];
-
-          if (flatsJson.isEmpty) break; // No more data
-
           combinedFlats.addAll(flatsJson.map((json) => Flat.fromJson(json)));
 
+          // Handle meta safely
+          final meta = data["meta"];
+          print("Meta received: $meta");
+
+          if (meta != null) {
+            int totalCount = (meta["totalCount"] ?? 0) as int;
+            int size = (meta["size"] ?? 1) as int;
+            if (size == 0) size = 1; // prevent division by zero
+            totalPages = (totalCount / size).ceil();
+          }
+
           currentPage++;
-        }
+        } while (currentPage <= totalPages);
       }
 
+      // Fetch for both statuses
       await fetchByStatus("Rent");
       await fetchByStatus("Buy");
 
       setState(() {
-        allUnits = combinedFlats.reversed.toList();
+        allUnits = combinedFlats.reversed.toList(); // Optional: reverse order
         filteredUnits = allUnits;
       });
     } catch (e) {
@@ -157,6 +166,7 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
       isFetchingMoreFlats = false;
     });
   }
+
 
   Future<void> fetchFiltersData() async {
     try {
@@ -225,7 +235,7 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "Flat Types",
+                          "Unit Type(s)",
                           style: GoogleFonts.poppins(
                             fontWeight: FontWeight.bold,
                             fontSize: 16,
@@ -877,35 +887,25 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
                   )
                 ) :
                 Expanded(
-                  child: NotificationListener<ScrollNotification>(
-                    onNotification: (ScrollNotification scrollInfo) {
-                      if (!isFetchingMoreFlats &&
-                          scrollInfo.metrics.pixels >= scrollInfo.metrics.maxScrollExtent - 50) {
-                        print("🔄 Re-fetching data on scroll end...");
-                        fetchFlats();  // Just re-fetch everything; ideally you'd implement proper page tracking
+                  child: ListView.builder(
+                    itemCount: filteredUnits.length + (isFetchingMoreFlats ? 1 : 0),
+                    itemBuilder: (context, index) {
+                      if (isFetchingMoreFlats && index == filteredUnits.length) {
+                        return Padding(
+                          padding: EdgeInsets.all(12.0),
+                          child: Center(
+                            child: Platform.isAndroid
+                                ? CircularProgressIndicator(
+                              valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+                            )
+                                : CupertinoActivityIndicator(radius: 15),
+                          ),
+                        );
                       }
-                      return false;
-                    },
-                    child: ListView.builder(
-                      itemCount: filteredUnits.length + (isFetchingMoreFlats ? 1 : 0),
-                      itemBuilder: (context, index) {
-                        if (isFetchingMoreFlats && index == filteredUnits.length) {
-                          return Padding(
-                            padding: EdgeInsets.all(12.0),
-                            child: Center(
-                              child: Platform.isAndroid
-                                  ? CircularProgressIndicator(
-                                valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
-                              )
-                                  : CupertinoActivityIndicator(radius: 15),
-                            ),
-                          );
-                        }
 
-                        final unit = filteredUnits[index];
-                        return _buildModernUnitCard(unit);
-                      },
-                    ),
+                      final unit = filteredUnits[index];
+                      return _buildModernUnitCard(unit);
+                    },
                   ),
                 )
 

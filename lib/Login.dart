@@ -1164,8 +1164,6 @@ class _LoginPageState extends State<Login> {
     }
   }
 
-
-
   /*Future<void> _adminlogin(String email, String password) async {
 
     String url = isAdmin ? "$BASE_URL_config/v1/auth/login" : "$BASE_URL_config/v1/auth/tenet/login";
@@ -1175,7 +1173,6 @@ class _LoginPageState extends State<Login> {
     setState(() {
       _isLoading = true;
     });
-
 
     try {
       Map<String, String> headers = {

@@ -4,6 +4,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'TenantDashboard.dart';
 import 'constants.dart';
+import 'package:http/http.dart' as http;
+
 
 class FlatSelection extends StatefulWidget {
   @override
@@ -19,6 +21,7 @@ class _FlatSelectionState extends State<FlatSelection> {
     super.initState();
     _loadFlats();
   }
+
 
   /// ✅ Load Flats from SharedPreferences
   Future<void> _loadFlats() async {
@@ -90,13 +93,67 @@ class _FlatSelectionState extends State<FlatSelection> {
 
     print("✅ Selected Flat: ${selectedFlat!['name']} - ${selectedFlat!['building']}");
 
-    await loadTokens();
+    await fetchAndSaveCompanyDataTenant(
+      selectedFlat!['baseurl'],
+      selectedFlat!['company_id'],
+      selectedFlat!['accessToken'],
+    );
+
+  }
+
+  Future<void> fetchAndSaveCompanyDataTenant(String baseurll,int company_id,String token) async {
+
+    print('calling -> $baseurll');
+    try {
+      final url = Uri.parse('$baseurll/company/details/$company_id');
+      final response = await http.get(url,
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },);
+
+      if (response.statusCode == 200) {
+        final responseJson = jsonDecode(response.body);
+        final company = responseJson['data']['company'];
+
+        await saveCompanyDataTenant(company);
+
+      } else {
+        print('API error: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error: $e');
+    }
+  }
+
+  Future<void> saveCompanyDataTenant(Map<String, dynamic> company) async {
+    final prefs = await SharedPreferences.getInstance();
+
+    await prefs.setString('mailing_name', company['mailing_name'] ?? '');
+    await prefs.setString('address', company['address'] ?? '');
+    await prefs.setString('pincode', company['pincode'] ?? '');
+    await prefs.setString('state', company['state'] ?? '');
+    await prefs.setString('country', company['country'] ?? '');
+    await prefs.setString('trn', company['trn'] ?? '');
+    await prefs.setString('phone', company['phone'] ?? '');
+    await prefs.setString('mobile', company['mobile'] ?? '');
+    await prefs.setString('email', company['email'] ?? '');
+    await prefs.setString('website', company['website'] ?? '');
+    await prefs.setString('logo_path', company['logo_path'] ?? '');
+    await prefs.setString('whatsapp_no', company['whatsapp_no'] ?? '');
+
+    print('Company data saved');
+
+    loadTokens();
+
+    print('Company data loaded');
 
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => TenantDashboard()), // Navigate to Tenant Dashboard
+      MaterialPageRoute(builder: (context) => TenantDashboard()),
     );
   }
+
 
   @override
   Widget build(BuildContext context) {

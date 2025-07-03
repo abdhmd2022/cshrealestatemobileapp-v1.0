@@ -102,8 +102,6 @@ class _AddUserPageState extends State<AddUser> with TickerProviderStateMixin {
     try
     {
       final url = Uri.parse('$BASE_URL_config/api/login/userRegistration');
-
-
       Map<String,String> headers = {
         'Authorization' : 'Bearer $authTokenBase',
         "Content-Type": "application/json"

@@ -25,8 +25,6 @@ class _AddUserPageState extends State<AddUser> with TickerProviderStateMixin {
 
   final _formKey = GlobalKey<FormState>();
 
-
-
   List<dynamic> myData_roles = [
     {'role_name': 'Sales'},
     {'role_name': 'Accountant'},
@@ -35,7 +33,6 @@ class _AddUserPageState extends State<AddUser> with TickerProviderStateMixin {
 
   dynamic _selectedrole;
   List<String> myDataCompanies = [];
-
 
   String user_email_fetched = "";
 
@@ -61,9 +58,7 @@ class _AddUserPageState extends State<AddUser> with TickerProviderStateMixin {
 
     setState(() {
       _selectedrole = myData_roles.first;
-
     });
-
 
     /*setState(() {
       hostname = prefs.getString('hostname');

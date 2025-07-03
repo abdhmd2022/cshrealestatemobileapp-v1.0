@@ -41,12 +41,14 @@ class _ComplaintListScreenState extends State<ComplaintListScreen> {
     int page = 1;
     bool hasMore = true;
 
+    final url = is_landlord ? "$baseurl/tenant/complaint/?landlord_id=$user_id&page=$page" : "$baseurl/tenant/complaint/?tenant_id=$user_id&page=$page";
+
     setState(() => isLoading = true);
 
     try {
       while (hasMore) {
         final response = await http.get(
-          Uri.parse('$baseurl/tenant/complaint/?user_id=$user_id&page=$page'),
+          Uri.parse(url),
           headers: {
             'Authorization': 'Bearer $Company_Token',
             'Content-Type': 'application/json',

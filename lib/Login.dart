@@ -1176,7 +1176,6 @@ class _LoginPageState extends State<Login> {
       _isLoading = true;
     });
 
-
     try {
       Map<String, String> headers = {
         'Authorization': token,

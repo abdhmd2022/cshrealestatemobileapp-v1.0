@@ -9,10 +9,14 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:printing/printing.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:uuid/uuid.dart';
 import 'Sidebar.dart';
 import 'package:http/http.dart' as http;
+import 'package:pdf/widgets.dart' as pw;
+import 'package:pdf/pdf.dart';
+
 
 class MaintenanceTicketReport extends StatefulWidget {
   @override
@@ -837,6 +841,123 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
     }
   }
 
+  Future<void> generateInvoicePDF({
+    required String invoiceNumber,
+    required String maintenanceType,
+    required double amount,
+    required DateTime receiptDate,
+    required DateTime dueDate,
+  }) async {
+    final pdf = pw.Document();
+
+    final vatRate = 0.05;
+    final vatAmount = amount * vatRate;
+    final totalAmount = amount + vatAmount;
+
+    final formattedReceiptDate = DateFormat('dd-MMM-yyyy').format(receiptDate);
+    final formattedDueDate = DateFormat('dd-MMM-yyyy').format(dueDate);
+
+    pdf.addPage(
+      pw.Page(
+        build: (pw.Context context) {
+          return pw.Container(
+            padding: pw.EdgeInsets.all(24),
+            child: pw.Column(
+              crossAxisAlignment: pw.CrossAxisAlignment.start,
+              children: [
+                pw.Text(
+                  "TAX INVOICE",
+                  style: pw.TextStyle(fontSize: 24, fontWeight: pw.FontWeight.bold),
+                ),
+                pw.SizedBox(height: 12),
+                pw.Text("Invoice Number: $invoiceNumber"),
+                pw.Text("Invoice Date: $formattedReceiptDate"),
+                pw.Text("Due Date: $formattedDueDate"),
+                pw.SizedBox(height: 20),
+                pw.Table(
+                  border: pw.TableBorder.all(color: PdfColors.grey),
+                  children: [
+                    pw.TableRow(
+                      children: [
+                        pw.Padding(
+                          padding: pw.EdgeInsets.all(8),
+                          child: pw.Text("Sr No"),
+                        ),
+                        pw.Padding(
+                          padding: pw.EdgeInsets.all(8),
+                          child: pw.Text("Description"),
+                        ),
+                        pw.Padding(
+                          padding: pw.EdgeInsets.all(8),
+                          child: pw.Text("Amount (AED)"),
+                        ),
+                      ],
+                    ),
+                    pw.TableRow(
+                      children: [
+                        pw.Padding(
+                          padding: pw.EdgeInsets.all(8),
+                          child: pw.Text("1"),
+                        ),
+                        pw.Padding(
+                          padding: pw.EdgeInsets.all(8),
+                          child: pw.Text(maintenanceType),
+                        ),
+                        pw.Padding(
+                          padding: pw.EdgeInsets.all(8),
+                          child: pw.Text(amount.toStringAsFixed(2)),
+                        ),
+                      ],
+                    ),
+                    pw.TableRow(
+                      children: [
+                        pw.Padding(
+                          padding: pw.EdgeInsets.all(8),
+                          child: pw.Text(""),
+                        ),
+                        pw.Padding(
+                          padding: pw.EdgeInsets.all(8),
+                          child: pw.Text("VAT (5%)"),
+                        ),
+                        pw.Padding(
+                          padding: pw.EdgeInsets.all(8),
+                          child: pw.Text(vatAmount.toStringAsFixed(2)),
+                        ),
+                      ],
+                    ),
+                    pw.TableRow(
+                      children: [
+                        pw.Padding(
+                          padding: pw.EdgeInsets.all(8),
+                          child: pw.Text(""),
+                        ),
+                        pw.Padding(
+                          padding: pw.EdgeInsets.all(8),
+                          child: pw.Text("Total"),
+                        ),
+                        pw.Padding(
+                          padding: pw.EdgeInsets.all(8),
+                          child: pw.Text(totalAmount.toStringAsFixed(2)),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                pw.SizedBox(height: 30),
+                pw.Text("Thank you for your business!",
+                    style: pw.TextStyle(fontSize: 14, fontStyle: pw.FontStyle.italic)),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+
+
+    await Printing.layoutPdf(onLayout: (format) async => pdf.save());
+  }
+
+
   Future<void> fetchAllTickets() async {
     List<Map<String, dynamic>> allFormattedTickets = [];
     int page = 1;
@@ -1615,11 +1736,12 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
 
 
   Future<void> saveInvoice({
-    required String ticketId, // still useful for context or logging
+    required String ticketId,
     required String subTicketId,
     required String amount,
-    required DateTime receiptDate, // this maps to "date"
-    required DateTime dueDate,
+    required DateTime receiptDate,
+    required String maintenanceType,
+    DateTime? dueDate, // ✅ Made optional
   }) async {
     // 🔑 Validation
     if (subTicketId.isEmpty) {
@@ -1634,27 +1756,24 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
       Fluttertoast.showToast(msg: "Please select a receipt date!");
       return;
     }
-    if (dueDate == null) {
-      Fluttertoast.showToast(msg: "Please select a due date!");
-      return;
-    }
-    if (dueDate.isBefore(receiptDate)) {
+    if (dueDate != null && dueDate.isBefore(receiptDate)) {
       Fluttertoast.showToast(msg: "Due date must be after receipt date!");
       return;
     }
 
     final String url = "$baseurl/maintenance/invoices";
-
-    // Generate UUID
     String uuid = Uuid().v4();
 
     final Map<String, dynamic> requestBody = {
       "uuid": uuid,
-      "due_date": dueDate.toIso8601String().split('T')[0], // yyyy-MM-dd
       "sub_ticket_id": int.tryParse(subTicketId) ?? subTicketId,
       "amount": double.parse(amount),
-      "date": receiptDate.toIso8601String().split('T')[0], // yyyy-MM-dd
+      "date": receiptDate.toIso8601String().split('T')[0],
     };
+
+    if (dueDate != null) {
+      requestBody["due_date"] = dueDate.toIso8601String().split('T')[0];
+    }
 
     try {
       print("Sending invoice: $requestBody");
@@ -1675,7 +1794,44 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
           backgroundColor: Colors.green,
           textColor: Colors.white,
         );
-        Navigator.pop(context);
+
+        final invoice = responseBody['data']['invoice'];
+
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (_) => WillPopScope(
+            onWillPop: () async => false,
+            child: Dialog(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    CircularProgressIndicator.adaptive(
+                      valueColor: AlwaysStoppedAnimation<Color>(appbar_color),
+                      strokeWidth: 3.5,
+                    ),
+                    SizedBox(width: 16),
+                    Text("Generating invoice...", style: TextStyle(fontSize: 16)),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+
+        await generateInvoicePDF(
+          invoiceNumber: invoice['id'].toString(),
+          maintenanceType: invoice['sub_ticket']['type']['name'] ?? 'N/A',
+          amount: double.parse(invoice['amount'].toString()),
+          receiptDate: DateTime.parse(invoice['date']),
+          dueDate: dueDate ?? DateTime.parse(invoice['date']), // Fallback if missing
+        );
+
+        Navigator.of(context, rootNavigator: true).pop(); // Close loading dialog
+        Navigator.pop(context); // Close modal
       } else {
         final errorBody = jsonDecode(response.body);
         Fluttertoast.showToast(
@@ -1696,19 +1852,21 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
   }
 
 
-
   void _showCreateInvoicePopup(BuildContext context, Map<String, dynamic> ticket) {
     final nonClosedTypes = ticket['maintenanceTypesFiltered'] ?? [];
     final TextEditingController amountController = TextEditingController();
     DateTime? receiptDate;
     DateTime? dueDate;
     String? selectedSubTicketId;
+    String? selectedMaintenanceType;
+
     bool isSubmitting = false;
 
 
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      backgroundColor: Colors.white, // ✅ This sets the modal sheet background to white
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -1785,8 +1943,15 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                         onChanged: (value) {
                           setState(() {
                             selectedSubTicketId = value;
+                            final selectedType = nonClosedTypes.firstWhere(
+                                  (type) => type['subTicketId'].toString() == value,
+                              orElse: () => null,
+                            );
+                            selectedMaintenanceType = selectedType?['type'] ?? '';
+                            print('sub ticket -> $selectedSubTicketId, maintenance type -> $selectedMaintenanceType');
                           });
                         },
+
                       ),
                     ),
 
@@ -1891,17 +2056,41 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                             onPressed: isSubmitting
                                 ? null
                                 : () async {
+                              // Validate inputs first
+                              if (selectedSubTicketId == null || selectedSubTicketId!.isEmpty) {
+                                Fluttertoast.showToast(msg: "Please select a maintenance type!");
+                                return;
+                              }
+                              if (amountController.text.trim().isEmpty ||
+                                  double.tryParse(amountController.text.trim()) == null ||
+                                  double.parse(amountController.text.trim()) <= 0) {
+                                Fluttertoast.showToast(msg: "Please enter a valid positive amount!");
+                                return;
+                              }
+                              if (receiptDate == null) {
+                                Fluttertoast.showToast(msg: "Please select a receipt date!");
+                                return;
+                              }
+                              if (dueDate != null && dueDate!.isBefore(receiptDate!)) {
+                                Fluttertoast.showToast(msg: "Due date must be after receipt date!");
+                                return;
+                              }
+
+                              // ✅ If validation passes, now show submitting indicator
                               setState(() => isSubmitting = true);
+
                               await saveInvoice(
                                 ticketId: ticket['ticketNumber'],
-                                subTicketId: selectedSubTicketId ?? "",
+                                subTicketId: selectedSubTicketId!,
+                                maintenanceType: selectedMaintenanceType ?? "",
                                 amount: amountController.text.trim(),
                                 receiptDate: receiptDate!,
-                                dueDate: dueDate!,
+                                dueDate: dueDate,
                               );
+
                               setState(() => isSubmitting = false);
-                              // Optionally close popup on success
                             },
+
 
                           ),
                         )

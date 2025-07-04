@@ -150,52 +150,40 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Ticker
 
 
     for (var cheque in cheques) {
-      final payment = cheque['payment'];
-      if (payment == null) continue;
+      String status = _getChequeStatus(cheque);
+      DateTime? eventDate;
 
-      DateTime? returnedOn = _parseDate(payment['returned_on']);
-      DateTime? receivedOn = _parseDate(payment['received_date']);
-      DateTime? clearedOn = _parseDate(cheque['cleared_on']);
-      DateTime? depositedOn = _parseDate(cheque['deposited_on']);
-
-
-      DateTime? chequeDate = _parseDate(cheque['date']);
-
-      final isReceived = cheque['is_received'].toString().toLowerCase() == 'true';
-      final isDeposited = cheque['is_deposited'].toString().toLowerCase() == 'true';
-
-      bool counted = false;
-
-      if (returnedOn != null &&
-          !returnedOn.isBefore(selectedRange!.start) &&
-          !returnedOn.isAfter(selectedRange!.end)) {
-        returned++;
-        counted = true;
+      switch (status) {
+        case 'Returned':
+          eventDate = _parseDate(cheque['payment']?['returned_on']);
+          returned++;
+          break;
+        case 'Cleared':
+          eventDate = _parseDate(cheque['cleared_on']);
+          cleared++;
+          break;
+        case 'Deposited':
+          eventDate = _parseDate(cheque['deposited_on']);
+          deposited++;
+          break;
+        case 'Received':
+          eventDate = _parseDate(cheque['date']);
+          received++;
+          break;
+        case 'Pending':
+          eventDate = _parseDate(cheque['date']);
+          pending++;
+          break;
       }
-      else if (isReceived && isDeposited && clearedOn == null && depositedOn != null &&
-          !depositedOn.isBefore(selectedRange!.start) &&
-          !depositedOn.isAfter(selectedRange!.end)) {
-        deposited++; // ✅ newly added
-        counted = true;
-      }
-      else if (isReceived && !isDeposited &&
-          receivedOn != null &&
-          !receivedOn.isBefore(selectedRange!.start) &&
-          !receivedOn.isAfter(selectedRange!.end)) {
-        received++;
-        counted = true;
-      } else if (isReceived && isDeposited &&
-          clearedOn != null &&
-          !clearedOn.isBefore(selectedRange!.start) &&
-          !clearedOn.isAfter(selectedRange!.end)) {
-        cleared++;
-        counted = true;
-      } else if (!counted && !isReceived && !isDeposited && chequeDate != null &&
-          !chequeDate.isBefore(selectedRange!.start) &&
-          !chequeDate.isAfter(selectedRange!.end)) {
-        pending++;
+
+      if (eventDate == null ||
+          eventDate.isBefore(selectedRange!.start) ||
+          eventDate.isAfter(selectedRange!.end)) {
+        // Don't count if out of range
+        continue;
       }
     }
+
 
     print('--- Cheque Status Counts ---');
     print('Returned: $returned');
@@ -203,10 +191,24 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Ticker
     print('Pending: $pending');
     print('Cleared: $cleared');
     print('Deposited: $deposited');
-
     print('----------------------------');
 
     setState(() {});
+  }
+
+  String _getChequeStatus(Map<String, dynamic> cheque) {
+    final payment = cheque['payment'];
+    final isReceived = cheque['is_received'].toString().toLowerCase() == 'true';
+    final isDeposited = cheque['is_deposited'].toString().toLowerCase() == 'true';
+    final returnedOn = _parseDate(payment?['returned_on']);
+    final depositedOn = _parseDate(cheque['deposited_on']);
+    final clearedOn = _parseDate(cheque['cleared_on']);
+
+    if (returnedOn != null) return 'Returned';
+    if (isReceived && isDeposited && clearedOn != null) return 'Cleared';
+    if (isReceived && isDeposited && clearedOn == null) return 'Deposited';
+    if (isReceived && !isDeposited) return 'Received';
+    return 'Pending';
   }
 
   DateTime? _parseDate(dynamic dateStr) {
@@ -221,18 +223,19 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Ticker
     });
     try {
       final response = await http.get(
-        Uri.parse('$baseurl/tenant/cheque'),
+        Uri.parse('$baseurl/reports/admin/cheques'),
         headers: {
           "Authorization": "Bearer $Company_Token",
         },
       );
+
 
       if (response.statusCode == 200) {
         final json = jsonDecode(response.body);
 
         // Update cheques and trigger status count update in same state block
         setState(() {
-          cheques = json['data']['cheques'];
+          cheques = json['data'];  // ✅ data is a List in your API response
           isLoading = false;
         });
 

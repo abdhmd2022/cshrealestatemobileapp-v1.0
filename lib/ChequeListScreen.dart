@@ -61,8 +61,10 @@ class _ChequeListScreenState extends State<ChequeListScreen> {
   Future<void> _showChequeDetailsDialogFromCard(Map<String, dynamic> cheque) async {
     try {
       final payment = cheque['payment'];
-      final contract = payment['contract'];
-      final flats = contract['flats'];
+      final rentalReceipt = payment['rental_payments']?['receipt'];
+      final salesReceipt = payment['sales_payments']?['receipt'];
+      final contract = rentalReceipt?['contract'] ?? salesReceipt?['contract'];
+      final flats = contract?['flats'] ?? [];
       final flatNames = flats.map((f) => f['flat']['name']).join(', ');
       final buildingName = flats.isNotEmpty ? flats[0]['flat']['building']['name'] : '-';
       final areaName = flats.isNotEmpty ? flats[0]['flat']['building']['area']['name'] : '-';
@@ -292,7 +294,7 @@ class _ChequeListScreenState extends State<ChequeListScreen> {
     setState(() => isLoading = true);
     try {
       final response = await http.get(
-        Uri.parse('$baseurl/tenant/cheque'),
+        Uri.parse('$baseurl/reports/admin/cheques'),
         headers: {
           'Authorization': 'Bearer $Company_Token',
           'Content-Type': 'application/json',
@@ -301,7 +303,7 @@ class _ChequeListScreenState extends State<ChequeListScreen> {
 
       final data = json.decode(response.body);
       if (data['success'] == true) {
-        allCheques = data['data']['cheques'] ?? [];
+        allCheques = data['data'] ?? [];
         _applyDateFilter();
       } else {
         allCheques = [];
@@ -353,66 +355,40 @@ class _ChequeListScreenState extends State<ChequeListScreen> {
     }
   }
 
+  String _getChequeStatus(Map<String, dynamic> cheque) {
+    final payment = cheque['payment'];
+    final isReceived = cheque['is_received'].toString().toLowerCase() == 'true';
+    final isDeposited = cheque['is_deposited'].toString().toLowerCase() == 'true';
+    final returnedOn = _parseDate(payment?['returned_on']);
+    final depositedOn = _parseDate(cheque['deposited_on']);
+    final clearedOn = _parseDate(cheque['cleared_on']);
+
+    if (returnedOn != null) return 'Returned';
+    if (isReceived && isDeposited && clearedOn != null) return 'Cleared';
+    if (isReceived && isDeposited && clearedOn == null) return 'Deposited';
+    if (isReceived && !isDeposited) return 'Received';
+    return 'Pending';
+  }
+
+
   void _applyDateFilter() {
     setState(() {
       filteredCheques = allCheques.where((cheque) {
         final payment = cheque['payment'];
         if (payment == null) return false;
 
-        DateTime? returnedOn = _parseDate(payment['returned_on']);
-        DateTime? receivedOn = _parseDate(payment['received_date']);
-        DateTime? clearedOn = _parseDate(cheque['cleared_on']);
-        DateTime? depositedOn = _parseDate(cheque['deposited_on']);
+        final status = _getChequeStatus(cheque);
 
-        DateTime? chequeDate = _parseDate(cheque['date']);
-
-        final isReceived = cheque['is_received'].toString().toLowerCase() == 'true';
-        final isDeposited = cheque['is_deposited'].toString().toLowerCase() == 'true';
-
-        String status = '';
-
-        if (returnedOn != null &&
-            !returnedOn.isBefore(_startDate!) &&
-            !returnedOn.isAfter(_endDate!)) {
-          status = 'Returned';
-        }
-
-        else if (isReceived && isDeposited && clearedOn == null &&
-            depositedOn != null &&
-            !depositedOn.isBefore(_startDate!) &&
-            !depositedOn.isAfter(_endDate!)) {
-          status = 'Deposited';
-        }
-        else if (isReceived && !isDeposited &&
-            receivedOn != null &&
-            !receivedOn.isBefore(_startDate!) &&
-            !receivedOn.isAfter(_endDate!)) {
-          status = 'Received';
-        } else if (isReceived && isDeposited &&
-            clearedOn != null &&
-            !clearedOn.isBefore(_startDate!) &&
-            !clearedOn.isAfter(_endDate!)) {
-          status = 'Cleared';
-        }
-
-        else if (chequeDate != null &&
-            !chequeDate.isBefore(_startDate!) &&
-            !chequeDate.isAfter(_endDate!)) {
-          status = 'Pending';
-        }
-
-        // If a status filter is set, only include matching items
+        // Only include if status matches
         if (widget.statusFilter != null && widget.statusFilter!.isNotEmpty) {
-          print('filter ${status}');
-
           return status == widget.statusFilter;
         }
-
         return true;
       }).toList();
 
       // Sort by date
       filteredCheques.sort((a, b) {
+
         final dateA = _parseDate(a['date']) ?? DateTime(1900);
         final dateB = _parseDate(b['date']) ?? DateTime(1900);
         return dateB.compareTo(dateA);
@@ -632,11 +608,13 @@ class _ChequeListScreenState extends State<ChequeListScreen> {
                   itemCount: filteredCheques.length,
                   itemBuilder: (context, index) {
                     final cheque = filteredCheques[index];
-                    final status = _getStatusLabel(cheque);
+                    final status = _getChequeStatus(cheque);
 
                     final payment = cheque['payment'];
-                    final contract = payment['contract'];
-                    final flats = contract['flats'];
+                    final rentalReceipt = payment['rental_payments']?['receipt'];
+                    final salesReceipt = payment['sales_payments']?['receipt'];
+                    final contract = rentalReceipt?['contract'] ?? salesReceipt?['contract'];
+                    final flats = contract?['flats'] ?? [];
                     final firstFlat = flats.isNotEmpty ? flats[0]['flat'] : null;
                     final building = firstFlat?['building'];
                     final area = building?['area'];

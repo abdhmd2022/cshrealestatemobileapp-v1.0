@@ -1812,28 +1812,93 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
         final invoice = responseBody['data']['invoice'];
 
         // ✅ Don't pop the bottom sheet yet
-        final action = await showGeneralDialog<String>(
+        final action = await showDialog<String>(
           context: parentContext,
           barrierDismissible: false,
-          barrierColor: Colors.black.withOpacity(0.5),
-          transitionDuration: Duration(milliseconds: 300),
-          pageBuilder: (context, anim1, anim2) {
-            return Center(
-              child: _buildInvoiceDialogContent(context),
-            );
-          },
-          transitionBuilder: (context, anim1, anim2, child) {
-            return FadeTransition(
-              opacity: anim1,
-              child: ScaleTransition(
-                scale: Tween<double>(begin: 0.95, end: 1.0).animate(
-                  CurvedAnimation(parent: anim1, curve: Curves.easeOutBack),
+          builder: (dialogContext) {
+            return Dialog(
+              backgroundColor: Colors.white,
+              insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // ✅ Success icon
+                    Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.green.withOpacity(0.1),
+                      ),
+                      padding: EdgeInsets.all(16),
+                      child: Icon(Icons.check_circle_rounded,
+                          color: Colors.green.shade600, size: 60),
+                    ),
+                    SizedBox(height: 16),
+                    Text(
+                      "Invoice Ready",
+                      style: GoogleFonts.poppins(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    SizedBox(height: 8),
+                    Text(
+                      "Invoice has been generated",
+                      style: GoogleFonts.poppins(
+                        fontSize: 14,
+                        color: Colors.black54,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    SizedBox(height: 24),
+                    // ✅ Buttons
+                    _modernActionButton(
+                      icon: Icons.download,
+                      label: "Download",
+                      onPressed: () => Navigator.pop(dialogContext, 'download'),
+                      color: Colors.blueAccent,
+                    ),
+                    SizedBox(height: 10),
+                    _modernActionButton(
+                      icon: Icons.print,
+                      label: "Print",
+                      onPressed: () => Navigator.pop(dialogContext, 'print'),
+                      color: Colors.indigoAccent,
+                    ),
+                    SizedBox(height: 10),
+                    _modernActionButton(
+                      icon: Icons.share,
+                      label: "Share",
+                      onPressed: () => Navigator.pop(dialogContext, 'share'),
+                      color: Colors.teal,
+                    ),
+                    SizedBox(height: 10),
+                    OutlinedButton(
+                      onPressed: () => Navigator.pop(dialogContext, 'no'),
+                      style: OutlinedButton.styleFrom(
+                        minimumSize: Size(double.infinity, 48),
+                        side: BorderSide(color: Colors.grey.shade300),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12)),
+                      ),
+                      child: Text(
+                        "No Thanks",
+                        style: GoogleFonts.poppins(
+                          fontSize: 14,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-                child: child,
               ),
             );
           },
         );
+
 
 
 
@@ -2217,118 +2282,6 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
       ),
     );
   }
-
-  Widget _buildInvoiceDialogContent(BuildContext dialogContext) {
-    return Material(
-      color: Colors.transparent,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(20),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-          child: Container(
-            padding: const EdgeInsets.all(20),
-            width: MediaQuery.of(dialogContext).size.width * 0.85,
-            color: Colors.white,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Animated success icon
-                TweenAnimationBuilder<double>(
-                  tween: Tween(begin: 0.8, end: 1.0),
-                  duration: Duration(milliseconds: 500),
-                  curve: Curves.elasticOut,
-                  builder: (context, scale, child) {
-                    return Transform.scale(
-                      scale: scale,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.green.withOpacity(0.1),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.greenAccent.withOpacity(0.4),
-                              blurRadius: 20,
-                              spreadRadius: 2,
-                            )
-                          ],
-                        ),
-                        padding: EdgeInsets.all(16),
-                        child: Icon(
-                          Icons.check_circle_rounded,
-                          color: Colors.green.shade600,
-                          size: 64,
-                        ),
-                      ),
-                    );
-                  },
-                ),
-                SizedBox(height: 16),
-                Text(
-                  "Invoice Ready",
-                  style: GoogleFonts.poppins(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.black87,
-                  ),
-                ),
-                SizedBox(height: 8),
-                Text(
-                  "Your invoice has been generated",
-                  style: GoogleFonts.poppins(
-                    fontSize: 14,
-                    color: Colors.black54,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                SizedBox(height: 24),
-                Column(
-                  children: [
-                    _modernActionButton(
-                      icon: Icons.download,
-                      label: "Download",
-                      onPressed: () => Navigator.pop(dialogContext, 'download'),
-                      color: Colors.blueAccent,
-                    ),
-                    SizedBox(height: 10),
-                    _modernActionButton(
-                      icon: Icons.print,
-                      label: "Print",
-                      onPressed: () => Navigator.pop(dialogContext, 'print'),
-                      color: Colors.indigoAccent,
-                    ),
-                    SizedBox(height: 10),
-                    _modernActionButton(
-                      icon: Icons.share,
-                      label: "Share",
-                      onPressed: () => Navigator.pop(dialogContext, 'share'),
-                      color: Colors.teal,
-                    ),
-                    SizedBox(height: 10),
-                    OutlinedButton(
-                      onPressed: () => Navigator.pop(dialogContext, 'no'),
-                      style: OutlinedButton.styleFrom(
-                        minimumSize: Size(double.infinity, 48),
-                        side: BorderSide(color: Colors.grey.shade300),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                      ),
-                      child: Text(
-                        "No,Thanks",
-                        style: GoogleFonts.poppins(
-                          fontSize: 14,
-                          color: Colors.grey,
-                        ),
-                      ),
-                    ),
-                  ],
-                )
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
 
   Widget _modernActionButton({
     required IconData icon,

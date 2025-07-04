@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:cshrealestatemobile/Announcements.dart';
@@ -92,6 +93,8 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
       groupedContracts[contractNo] = {
         'contract_no': contractNo,
         'contract_id': contractId,
+        'contract_type': 'rental',
+        'expiry_date': contract['to_date'],  // ✅ Extract to_date as expiry date
         'flats': [],
         'cheques': [],
         'invoices': {},
@@ -134,6 +137,11 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
 
     setState(() {
       contracts = groupedContracts.values.toList();
+      if (contracts.isNotEmpty) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _showContractExpiryNotice(context, contracts[0]);
+        });
+      }
       isLoading = false;
     });
   }
@@ -141,6 +149,7 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
   void _processLandlordData(Map<String, dynamic> landlord) {
     final boughtContracts = landlord['bought_contracts'] ?? [];
     final soldContracts = landlord['sold_contracts'] ?? [];
+    final rentalContracts = landlord['rental_contracts'] ?? [];  // ✅ Handle rental contracts
 
     buildingFlatCount.clear();
     List<Map<String, dynamic>> allContracts = [];
@@ -153,8 +162,18 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
       allContracts.add(_extractLandlordContract(contract, 'sold'));
     }
 
+    for (var contract in rentalContracts) {
+      allContracts.add(_extractLandlordContract(contract, 'rental'));  // ✅ Process rental contracts
+    }
+
     setState(() {
       contracts = allContracts;
+      if (contracts.isNotEmpty) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _showContractExpiryNotice(context, contracts[0]);
+        });
+
+      }
       isLoading = false;
     });
   }
@@ -178,9 +197,11 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
       'contract_no': contractNo,
       'contract_id': contractId,
       'contract_type': type,
+      'expiry_date': contract['to_date'],  // ✅ Include to_date as expiry date
       'flats': extractedFlats,
     };
   }
+
 
 // old 2 dashboard function
 
@@ -365,41 +386,66 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
 
   }*/
 
-  String _monthAbbr(int month) {
-    const List<String> months = [
-      "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+  String _formatDateToDDMMMYYYY(DateTime date) {
+    const monthNames = [
+      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
     ];
-    return months[month - 1];
+    final day = date.day.toString().padLeft(2, '0');
+    final month = monthNames[date.month - 1];
+    final year = date.year;
+    return "$day-$month-$year";
   }
-  Widget _buildBadge(String label, Color color) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.9),
-        borderRadius: BorderRadius.circular(8),
-        boxShadow: [
-          BoxShadow(
-            color: color.withOpacity(0.4),
-            blurRadius: 6,
-            offset: Offset(2, 2),
-          ),
-        ],
-      ),
-      child: Text(
-        label,
-        style: GoogleFonts.poppins(
-          fontSize: 10,
-          color: Colors.white,
-          fontWeight: FontWeight.w500,
-        ),
-      ),
-    );
-  }
+
 
   bool isEditing = false;
   Map<String, int> buildingFlatCount = {};
 
+  void _showContractExpiryNotice(BuildContext context, Map<String, dynamic> contract) {
+    if (contract['contract_type'] != 'rental' || contract['expiry_date'] == null) return;
+
+    final expiryDate = DateTime.tryParse(contract['expiry_date']);
+    if (expiryDate == null) return;
+
+    final now = DateTime.now();
+    final daysLeft = expiryDate.difference(now).inDays;
+    final formattedDate = _formatDateToDDMMMYYYY(expiryDate);
+
+    if (!(daysLeft < 0 || daysLeft == 0 || daysLeft <= 3 || daysLeft <= 300)) return;
+
+    String expiryText = '';
+    if (daysLeft < 0) {
+      expiryText = 'This contract expired on $formattedDate';
+    } else if (daysLeft == 0) {
+      expiryText = 'This contract is expiring today ($formattedDate)';
+    } else {
+      expiryText = 'Expiring in $daysLeft day${daysLeft == 1 ? '' : 's'} on $formattedDate';
+    }
+
+    final contractNo = contract['contract_no'] ?? 'N/A';
+    final flats = contract['flats'] as List;
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return _AnimatedReminderDialog(
+          contractNo: contractNo,
+          expiryText: expiryText,
+          daysLeft: daysLeft,
+          flats: flats,
+        );
+      },
+    );
+  }
+  int? lastNotifiedIndex;
+
+  void _maybeNotify(BuildContext context, int index) {
+    if (lastNotifiedIndex != index) {
+      lastNotifiedIndex = index;
+      _showContractExpiryNotice(context, contracts[index]);
+    }
+  }
 
 
   @override
@@ -630,6 +676,7 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
                       ),
                       SizedBox(height: 4),
 
+
                       if (!isEditing) ...[
                         Text(
                           contracts[selectedContractIndex]['contract_no'],
@@ -641,7 +688,69 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
                               : "Rental Contract",
                           style: GoogleFonts.poppins(fontSize: 12, color: Colors.grey[600]),
                         ),
+                        Builder(builder: (context) {
+                          final contract = contracts[selectedContractIndex];
+                          final contractType = contract['contract_type'];
+                          final expiryStr = contract['expiry_date'];
+
+                          if (contractType != 'rental' || expiryStr == null) return SizedBox.shrink();
+
+                          final expiryDate = DateTime.tryParse(expiryStr);
+                          if (expiryDate == null) return SizedBox.shrink();
+
+                          final now = DateTime.now();
+                          final daysLeft = expiryDate.difference(now).inDays;
+                          Color badgeColor = Colors.green;
+                          String expiryText = '';
+                          final formattedDate = _formatDateToDDMMMYYYY(expiryDate);
+
+                          if (daysLeft < 0) {
+                            badgeColor = Colors.red;
+                            expiryText = 'Expired on $formattedDate';
+                          } else if (daysLeft <= 3) {
+                            badgeColor = Colors.red;
+                            expiryText = 'Expiring in $daysLeft day${daysLeft == 1 ? '' : 's'} on $formattedDate';
+                          } else if (daysLeft <= 30) {
+                            badgeColor = Colors.yellow.shade700;
+                            expiryText = 'Expiring in $daysLeft day${daysLeft == 1 ? '' : 's'} on $formattedDate';
+                          } else {
+
+                            badgeColor = Colors.green;
+                            expiryText = 'Expiring in $daysLeft day${daysLeft == 1 ? '' : 's'} on $formattedDate';
+                          }
+
+                          return Padding(
+                            padding: const EdgeInsets.only(top: 6),
+                            child: Container(
+                              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: badgeColor.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(color: badgeColor),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(Icons.access_time, size: 14, color: badgeColor),
+                                  SizedBox(width: 6),
+                                  Text(
+                                    expiryText,
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w500,
+                                      color: badgeColor,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        }),
+
+
+
                         SizedBox(height: 12),
+
                         Text(
                           "Unit(s)",
                           style: GoogleFonts.poppins(fontSize: 13, fontWeight: FontWeight.w500, color: Colors.grey[600]),
@@ -713,6 +822,8 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
                             onChanged: (val) {
                               setState(() {
                                 selectedContractIndex = val!;
+                                _maybeNotify(context, selectedContractIndex);
+
                                 isEditing = false;
                               });
                             },
@@ -1219,4 +1330,223 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
     return validAnnouncements;
   }
 
+}
+class _AnimatedReminderDialog extends StatefulWidget {
+  final String contractNo;
+  final String expiryText;
+  final int daysLeft;
+  final List flats;
+
+  const _AnimatedReminderDialog({
+    required this.contractNo,
+    required this.expiryText,
+    required this.daysLeft,
+    required this.flats,
+  });
+
+  @override
+  State<_AnimatedReminderDialog> createState() => _AnimatedReminderDialogState();
+}
+
+class _AnimatedReminderDialogState extends State<_AnimatedReminderDialog> {
+  bool flash = true;
+  double opacity = 0.0;
+  int secondsLeft = 10;
+
+  Timer? _flashTimer;
+  Timer? _fadeTimer;
+  Timer? _countdownTimer;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Fade in
+    Future.delayed(Duration.zero, () {
+      setState(() {
+        opacity = 1.0;
+      });
+    });
+
+    // Flashing icon/text
+    _flashTimer = Timer.periodic(Duration(milliseconds: 500), (timer) {
+      if (mounted) {
+        setState(() {
+          flash = !flash;
+        });
+      }
+    });
+
+    // Countdown and fade out
+    _countdownTimer = Timer.periodic(Duration(seconds: 1), (timer) {
+      if (mounted) {
+        setState(() {
+          secondsLeft--;
+        });
+
+        if (secondsLeft <= 0) {
+          _startFadeOutAndClose();
+          timer.cancel();
+        }
+      }
+    });
+  }
+
+  void _startFadeOutAndClose() {
+    setState(() {
+      opacity = 0.0;
+    });
+    _fadeTimer = Timer(Duration(milliseconds: 500), () {
+      if (mounted) Navigator.of(context).pop();
+    });
+  }
+
+  @override
+  void dispose() {
+    _flashTimer?.cancel();
+    _fadeTimer?.cancel();
+    _countdownTimer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final daysLeft = widget.daysLeft;
+
+    return AnimatedOpacity(
+      opacity: opacity,
+      duration: Duration(milliseconds: 500),
+      child: Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        insetPadding: EdgeInsets.all(20),
+        child: Container(
+          padding: EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black12,
+                blurRadius: 20,
+                offset: Offset(0, 8),
+              ),
+            ],
+          ),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.notifications_active,
+                      color: flash ? Colors.amber.shade700 : Colors.amber.shade300,
+                      size: 24,
+                    ),
+                    SizedBox(width: 6),
+                    Text(
+                      'Reminder',
+                      style: GoogleFonts.poppins(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: flash ? Colors.amber.shade700 : Colors.amber.shade300,
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 14),
+                Container(
+                  decoration: BoxDecoration(
+                    color: daysLeft < 0 || daysLeft <= 3
+                        ? Colors.red.shade50
+                        : Colors.yellow.shade50,
+                    shape: BoxShape.circle,
+                  ),
+                  padding: EdgeInsets.all(12),
+                  child: Icon(
+                    daysLeft < 0 || daysLeft <= 3
+                        ? Icons.error_outline
+                        : Icons.access_time,
+                    size: 48,
+                    color: daysLeft < 0 || daysLeft <= 3
+                        ? Colors.redAccent
+                        : Colors.amber.shade700,
+                  ),
+                ),
+                SizedBox(height: 14),
+                Text(
+                  'Contract: ${widget.contractNo}',
+                  style: GoogleFonts.poppins(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.grey.shade800,
+                  ),
+                ),
+                SizedBox(height: 6),
+                Text(
+                  widget.expiryText,
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.poppins(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
+                    color: daysLeft < 0 || daysLeft <= 3
+                        ? Colors.redAccent
+                        : Colors.amber.shade700,
+                  ),
+                ),
+                SizedBox(height: 12),
+                Divider(color: Colors.grey.shade300),
+                ...widget.flats.map((flat) {
+                  final flatName = flat['name'] ?? 'N/A';
+                  final buildingName = flat['building']?['name'] ?? 'N/A';
+                  final areaName = flat['building']?['area']?['name'] ?? 'N/A';
+                  final stateName = flat['building']?['area']?['state']?['name'] ?? 'N/A';
+
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 2.0),
+                    child: Text(
+                      'Unit: $flatName • $buildingName ($areaName, $stateName)',
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.poppins(fontSize: 12, color: Colors.grey.shade700),
+                    ),
+                  );
+                }).toList(),
+                SizedBox(height: 12),
+                Container(
+                  padding: EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade100,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    'Please review this contract and take necessary action.',
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.poppins(fontSize: 11, color: Colors.grey.shade600),
+                  ),
+                ),
+                SizedBox(height: 16),
+                ElevatedButton.icon(
+                  onPressed: () {
+                    _countdownTimer?.cancel();
+                    _startFadeOutAndClose();
+                  },
+                  icon: Icon(Icons.check_circle_outline, size: 18),
+                  label: Text('Got it (${secondsLeft}s)'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: appbar_color,
+
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                    elevation: 0,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }

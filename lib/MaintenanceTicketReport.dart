@@ -1614,6 +1614,371 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
   }
 
 
+  Future<void> saveInvoice({
+    required String ticketId, // still useful for context or logging
+    required String subTicketId,
+    required String amount,
+    required DateTime receiptDate, // this maps to "date"
+    required DateTime dueDate,
+  }) async {
+    // 🔑 Validation
+    if (subTicketId.isEmpty) {
+      Fluttertoast.showToast(msg: "Please select a maintenance type!");
+      return;
+    }
+    if (amount.trim().isEmpty || double.tryParse(amount) == null || double.parse(amount) <= 0) {
+      Fluttertoast.showToast(msg: "Please enter a valid positive amount!");
+      return;
+    }
+    if (receiptDate == null) {
+      Fluttertoast.showToast(msg: "Please select a receipt date!");
+      return;
+    }
+    if (dueDate == null) {
+      Fluttertoast.showToast(msg: "Please select a due date!");
+      return;
+    }
+    if (dueDate.isBefore(receiptDate)) {
+      Fluttertoast.showToast(msg: "Due date must be after receipt date!");
+      return;
+    }
+
+    final String url = "$baseurl/maintenance/invoices";
+
+    // Generate UUID
+    String uuid = Uuid().v4();
+
+    final Map<String, dynamic> requestBody = {
+      "uuid": uuid,
+      "due_date": dueDate.toIso8601String().split('T')[0], // yyyy-MM-dd
+      "sub_ticket_id": int.tryParse(subTicketId) ?? subTicketId,
+      "amount": double.parse(amount),
+      "date": receiptDate.toIso8601String().split('T')[0], // yyyy-MM-dd
+    };
+
+    try {
+      print("Sending invoice: $requestBody");
+
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $Company_Token",
+        },
+        body: jsonEncode(requestBody),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final responseBody = jsonDecode(response.body);
+        Fluttertoast.showToast(
+          msg: responseBody['message'] ?? "Invoice saved successfully!",
+          backgroundColor: Colors.green,
+          textColor: Colors.white,
+        );
+        Navigator.pop(context);
+      } else {
+        final errorBody = jsonDecode(response.body);
+        Fluttertoast.showToast(
+          msg: errorBody['message'] ?? "Error: ${response.statusCode}",
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+        );
+        print("Error response: ${response.body}");
+      }
+    } catch (e) {
+      Fluttertoast.showToast(
+        msg: "Something went wrong: $e",
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+      );
+      print("Exception during invoice save: $e");
+    }
+  }
+
+
+
+  void _showCreateInvoicePopup(BuildContext context, Map<String, dynamic> ticket) {
+    final nonClosedTypes = ticket['maintenanceTypesFiltered'] ?? [];
+    final TextEditingController amountController = TextEditingController();
+    DateTime? receiptDate;
+    DateTime? dueDate;
+    String? selectedSubTicketId;
+    bool isSubmitting = false;
+
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return Padding(
+          padding: EdgeInsets.only(
+            left: 20,
+            right: 20,
+            bottom: MediaQuery.of(context).viewInsets.bottom + 16,
+            top: 20,
+          ),
+          child: StatefulBuilder(
+            builder: (context, setState) {
+              return SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(Icons.receipt_long, color: appbar_color),
+                        SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            "Create Invoice",
+                            style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w600),
+                          ),
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.close),
+                            onPressed: () {
+                              Navigator.pop(context);
+
+
+                            }
+                            )
+                      ],
+                    ),
+                    Divider(),
+
+                    Theme(
+                      data: Theme.of(context).copyWith(
+                        // Don't set primaryColor here! That affects text color.
+                        colorScheme: ColorScheme.light(
+                          primary: appbar_color, // For focus border, button etc
+                          onPrimary: Colors.white,
+                          onSurface: Colors.black, // Default text color
+                        ),
+                        hoverColor: appbar_color.withOpacity(0.1),
+                        highlightColor: Colors.transparent, // ✅ Prevent over-corner highlight
+                        splashColor: Colors.transparent,    // ✅ Prevent ripple beyond corner
+                      ),
+                      child: DropdownButtonFormField<String>(
+                        value: selectedSubTicketId,
+                        decoration: InputDecoration(
+                          labelText: "Select Maintenance Type",
+                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                          filled: true,
+                          fillColor: Colors.grey.shade100,
+                        ),
+                        icon: Icon(Icons.keyboard_arrow_down, color: appbar_color),
+                        style: GoogleFonts.poppins(color: Colors.black87), // ✅ Forces text color to black
+                        dropdownColor: Colors.white,
+                        items: nonClosedTypes.map<DropdownMenuItem<String>>((type) {
+                          return DropdownMenuItem<String>(
+                            value: type['subTicketId'].toString(),
+                            child: Text(
+                              type['type'] ?? 'Unknown',
+                              style: GoogleFonts.poppins(
+                                color: Colors.black87, // ✅ Selected + unselected always black/grey
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                        onChanged: (value) {
+                          setState(() {
+                            selectedSubTicketId = value;
+                          });
+                        },
+                      ),
+                    ),
+
+
+                    SizedBox(height: 12),
+
+                    TextField(
+                      controller: amountController,
+                      keyboardType: TextInputType.numberWithOptions(decimal: true),
+                      cursorColor: appbar_color,
+                      style: GoogleFonts.poppins(color: Colors.black87),
+                      decoration: InputDecoration(
+                        labelText: "Amount",
+                        labelStyle: GoogleFonts.poppins(color: Colors.grey),
+                        prefixText: "AED ",
+                        prefixStyle: GoogleFonts.poppins(
+                          color: Colors.grey,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: appbar_color),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Colors.grey.shade300),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: appbar_color, width: 2),
+                        ),
+                        filled: true,
+                        fillColor: Colors.grey.shade100,
+                      ),
+                    ),
+
+
+
+                    SizedBox(height: 12),
+
+                    _buildDateField(
+                      context,
+                      label: "Receipt Date",
+                      date: receiptDate,
+                      onPick: (picked) => setState(() => receiptDate = picked),
+                    ),
+
+                    SizedBox(height: 12),
+
+                    _buildDateField(
+                      context,
+                      label: "Due Date",
+                      date: dueDate,
+                      onPick: (picked) => setState(() => dueDate = picked),
+                    ),
+
+                    SizedBox(height: 20),
+
+                    Row(
+                      children: [
+                        Expanded(
+                          child: ElevatedButton.icon(
+                            icon: Icon(Icons.clear, color: Colors.white),
+                            label: Text("Clear", style: GoogleFonts.poppins(color: Colors.white)),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.grey,
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                              padding: EdgeInsets.symmetric(vertical: 14),
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                selectedSubTicketId = null;
+                                amountController.clear();
+                                receiptDate = null;
+                                dueDate = null;
+                              });
+                            },
+                          ),
+                        ),
+                        SizedBox(width: 10),
+                        Expanded(
+                          child: ElevatedButton.icon(
+                            icon: isSubmitting
+                                ? SizedBox(
+                              width: 18,
+                              height: 18,
+                              child: CircularProgressIndicator.adaptive(
+                                strokeWidth: 2,
+                                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                              ),
+                            )
+                                : Icon(Icons.check_circle, color: Colors.white),
+                            label: Text(
+                              isSubmitting ? "Creating..." : "Create Invoice",
+                              style: GoogleFonts.poppins(color: Colors.white),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: appbar_color,
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                              padding: EdgeInsets.symmetric(vertical: 14),
+                            ),
+                            onPressed: isSubmitting
+                                ? null
+                                : () async {
+                              setState(() => isSubmitting = true);
+                              await saveInvoice(
+                                ticketId: ticket['ticketNumber'],
+                                subTicketId: selectedSubTicketId ?? "",
+                                amount: amountController.text.trim(),
+                                receiptDate: receiptDate!,
+                                dueDate: dueDate!,
+                              );
+                              setState(() => isSubmitting = false);
+                              // Optionally close popup on success
+                            },
+
+                          ),
+                        )
+
+                      ],
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildDateField(BuildContext context,
+      {required String label, required DateTime? date, required Function(DateTime) onPick}) {
+    return GestureDetector(
+      onTap: () async {
+        final picked = await showDatePicker(
+          context: context,
+          initialDate: date ?? DateTime.now(),
+          firstDate: DateTime(2000),
+          lastDate: DateTime(2100),
+          builder: (context, child) {
+            return Theme(
+              data: Theme.of(context).copyWith(
+                colorScheme: ColorScheme.light(
+                  primary: appbar_color,
+                  onPrimary: Colors.white,
+                  onSurface: Colors.black,
+                ),
+              ),
+              child: child!,
+            );
+          },
+        );
+        if (picked != null) onPick(picked);
+      },
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.grey.shade300),
+          color: Colors.grey.shade100,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.03),
+              blurRadius: 4,
+              offset: Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Icon(Icons.calendar_today, size: 18, color: appbar_color),
+            SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                date != null
+                    ? "$label: ${DateFormat('dd-MMM-yyyy').format(date)}"
+                    : "Select $label",
+                style: GoogleFonts.poppins(
+                  color: date != null ? Colors.black87 : Colors.grey,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+
+
 
 
   Widget _buildTicketCard(Map<String, dynamic> ticket, int index) {
@@ -1670,6 +2035,18 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                         ),
                         SizedBox(width: 5),
                       ],
+
+                    if (is_admin && ticket['status'] != 'Close') ...[
+                      _buildDecentButton(
+                        'Create Invoice',
+                        Icons.receipt_long,
+                        Colors.purple,
+                            () {
+                          _showCreateInvoicePopup(context, ticket);
+                        },
+                      ),
+                      SizedBox(width: 5),
+                    ],
 
                     
                       if (ticket['status'] == 'Close' && is_admin) ...[

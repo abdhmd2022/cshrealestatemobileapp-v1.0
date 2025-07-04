@@ -95,6 +95,9 @@ class _LoginPageState extends State<Login> {
 
   final requiredLength = 4; // the required length of the password
 
+  String selectedRole = "Tenant"; // Default selection
+
+
   // landlord permissions
   List<Map<String, dynamic>> landlordPermissions = [
     {
@@ -1263,630 +1266,303 @@ class _LoginPageState extends State<Login> {
     }
   }*/
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-        appBar: AppBar(
-          centerTitle: true,
-          backgroundColor: appbar_color.withOpacity(0.9),
-          automaticallyImplyLeading:false,
-          title: Text(widget.title,
-
+      appBar: AppBar(
+        backgroundColor: appbar_color.withOpacity(0.9),
+        elevation: 0,
+        centerTitle: true,
+        title: Text(
+          widget.title,
           style: GoogleFonts.poppins(
-            color: Colors.white
-          ),),
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
         ),
-        body: Container(
-          height: MediaQuery.of(context).size.height,
-          width: MediaQuery.of(context).size.width,
-          color: Colors.white,
-            /*decoration:BoxDecoration(
-              gradient: LinearGradient(
-                  colors: [
-                    Color(0xFFD9FCF6),
-                    Colors.white,
-                  ],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter
+      ),
+      body: Container(
+        width: double.infinity,
+        height: double.infinity,
+        decoration:  BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Colors.blueGrey.shade700,
+                Colors.white,
+                Colors.blueGrey.shade700,
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            )
+        ),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Icon(Icons.real_estate_agent_outlined, size: 70, color: appbar_color),
+              const SizedBox(height: 20),
+              Text(
+                "Welcome Back!",
+                style: GoogleFonts.poppins(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  color: appbar_color,
+                ),
               ),
-            ),*/
-            child: SingleChildScrollView(
-              child:  Column(
-                  children: [
-                    Container(
-                        padding: EdgeInsets.only(top: 50,bottom: 30),
-                        child: Icon(
-                          Icons.real_estate_agent_outlined,
-                          size: 120,
-                          color: appbar_color,
-                        )
-                    ),
-
-                    Visibility(
-                        visible: isVisibleAdminLoginForm,
-                        child:Container(
-                            height: MediaQuery.of(context).size.height,
-                            padding: EdgeInsets.only(left: 32,right: 32,top : 20),
-                            decoration: BoxDecoration(
-                                color: Colors.white,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.1),
-                                    spreadRadius: 0, // Spread radius
-                                    blurRadius: 20, // Blur radius
-                                    offset: Offset(0, -10),
-                                  ),
-                                ],
-                                borderRadius: BorderRadius.only(
-                                    topLeft: Radius.circular(50),
-                                    topRight: Radius.circular(50)
-                                )
-                            ),
-                            child:Form(
-                                key: _formKey,
-                                child: Column(
-                                    children: [
-                                      Container(
-                                        margin: const EdgeInsets.symmetric(vertical: 20, horizontal: 8),
-                                        padding: const EdgeInsets.all(12),
-                                        width: MediaQuery.of(context).size.width,
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          borderRadius: BorderRadius.circular(30),
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color: Colors.black26,
-                                              blurRadius: 8,
-                                              offset: Offset(0, 4),
-                                            ),
-                                          ],
-                                        ),
-                                        child: Wrap(
-                                          alignment: WrapAlignment.center,
-                                          spacing: 8.0,
-                                          runSpacing: 12.0,
-                                          children: [
-                                            _buildToggleChip("Tenant", !isAdmin && !isLandlord, () {
-                                              setState(() {
-                                                isAdmin = false;
-                                                isLandlord = false;
-                                              });
-                                            }),
-                                            _buildToggleChip("Admin", isAdmin, () {
-                                              setState(() {
-                                                isAdmin = true;
-                                                isLandlord = false;
-                                              });
-                                            }),
-                                            _buildToggleChip("Landlord", isLandlord, () {
-                                              setState(() {
-                                                isAdmin = false;
-                                                isLandlord = true;
-                                              });
-                                              /*Fluttertoast.showToast(
-                                                msg: "Landlord access is under development",
-                                                toastLength: Toast.LENGTH_SHORT,
-                                                gravity: ToastGravity.BOTTOM,
-                                              );*/
-                                            }),
-                                          ],
-                                        ),
-                                      ),
-
-                                      Container(padding: EdgeInsets.only(top: 5),
-                                        child: TextFormField(
-                                          controller: emailController,
-                                          focusNode: _emailFocusNode,
-                                          decoration: InputDecoration(
-                                            labelText: 'Email Address',
-                                            filled: true,
-                                            enabledBorder: OutlineInputBorder(
-                                              borderRadius: BorderRadius.circular(5.0),
-                                              borderSide: BorderSide(
-                                                color: Colors.black12,
-                                              ),
-                                            ),
-                                            fillColor: Colors.white,
-                                            labelStyle: GoogleFonts.poppins(
-                                              color: Colors.black54, // Set the label text color to black
-                                            ),
-                                            focusedBorder: UnderlineInputBorder(
-                                              borderSide: BorderSide(color: Colors.black),
-                                            ),
-                                          ),
-                                          style: GoogleFonts.poppins(
-                                            color: Colors.black,
-                                          ),
-
-                                          validator: (value) {
-                                            if (value == null || value.isEmpty)
-                                            {
-                                              return 'Please enter your email address';
-                                            }
-                                            if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value))
-                                            {
-                                              return 'Please enter a valid email address';
-                                            }
-                                            return null;
-                                          },
-                                          onSaved: (value) => email = value!,
-                                        ),),
-
-                                      SizedBox(height: 16.0),
-
-                                      TextFormField(
-                                        controller: passwordController,
-                                        focusNode: _passwordFocusNode,
-                                        decoration: InputDecoration(
-                                          enabledBorder: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(5.0),
-                                            borderSide: BorderSide(
-                                              color: Colors.black12,
-                                            ),
-                                          ),
-
-                                          suffixIcon: GestureDetector(
-                                            onTap: () {
-                                              setState(() {
-                                                _obscureText = !_obscureText;
-                                              });
-                                            },
-                                            child: Icon(
-                                              _obscureText ? Icons.visibility_off :  Icons.visibility,
-                                            ),
-                                          ),
-
-                                          labelText: 'Password',
-                                          filled: true,
-                                          fillColor: Colors.white,
-                                          labelStyle: GoogleFonts.poppins(
-                                            color: Colors.black54, // Set the label text color to black
-                                          ),
-
-                                          focusedBorder: UnderlineInputBorder(
-                                            borderSide: BorderSide(color: Colors.black),
-
-                                          ),
-                                        ),
-                                        obscureText: _obscureText,
-
-                                        validator: (value)
-                                        {
-                                          if (value == null || value.isEmpty)
-                                          {
-                                            return 'Please enter your password';
-                                          }
-                                          return null;
-                                        },
-                                        onSaved: (value) => password = value!,
-                                      ),
-
-                                      SizedBox(height: 5), // Ad
-
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.end,
-                                        children: [
-                                          GestureDetector(
-                                            onTap: () {
-                                              // Handle "Forgot Password" tap event here
-                                              setState(() {
-                                                /*isVisibleLoginForm = false;*/
-
-                                                /*resetemailController.text = usernameController.text;*/
-
-                                                /*passwordController.clear();*/
-                                                /*isVisibleResetPassForm = true;*/
-                                              });
-                                            },
-                                            child: Text(
-                                              'Forgot Password?',
-                                              style: GoogleFonts.poppins(
-                                                color: Colors.black54,
-                                                decoration: TextDecoration.underline,
-                                              ),
-                                            ),
-                                          ),
-                                        ],),
-
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Expanded(child: Row(mainAxisAlignment: MainAxisAlignment.start,children: [
-
-                                            Checkbox(
-                                              value: remember_me,
-                                              activeColor: appbar_color,
-                                              checkColor: Colors.white, // Optional: sets the color of the check icon
-                                              onChanged: (bool? value) {
-                                                setState(() {
-                                                  remember_me = value!;
-                                                });
-                                              },
-                                            ),
-
-                                            Text(
-                                              'Remember Me',
-                                              style: GoogleFonts.poppins(fontSize: 16,color: Colors.black54),
-                                            ),
-                                          ]))
-                                        ],
-                                      ),
-
-                                      SizedBox(height: 32.0),
-
-                                      Container(
-                                        width: MediaQuery.of(context).size.width,
-                                        child: _isLoading
-                                            ? CupertinoActivityIndicator(
-                                          radius: 20.0,
-                                        )
-                                            : ElevatedButton(
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor: _buttonColor,
-                                            elevation: 5, // Adjust the elevation to make it look elevated
-                                            shadowColor: Colors.black.withOpacity(0.5), // Optional: adjust the shadow color
-                                          ),
-                                          onPressed: () {
-                                            if (_formKey.currentState != null &&
-                                              _formKey.currentState!.validate()) {
-                                            _formKey.currentState!.save();
-
-                                            String email = emailController.text;
-                                            String pass = passwordController.text;
-                                            loginUser(email,pass,isAdmin,isLandlord);
-                                            /*_adminlogin(email,pass,isAdmin);*/
-                                          }
-                                          },
-                                          child: Text('Login',
-                                              style: GoogleFonts.poppins(
-                                                  color: Colors.white
-                                              )),
-                                        ),
-                                      ),
-
-                                    /*SizedBox(height: 5),
-
-                                    GestureDetector(onTap: ()
-                                    {
-                                      navigateToPDFView(context);
-                                    },
-                                        child: Container(
-                                            width: MediaQuery.of(context).size.width,
-                                            child : Row(
-                                                mainAxisAlignment: MainAxisAlignment.center,
-                                                children:[
-                                                  Text('Not Registered?',
-                                                      style: GoogleFonts.poppins(color: Colors.black54)),
-
-                                                  Text('Click here for instructions',
-                                                      style: GoogleFonts.poppins(color: Colors.black54,
-                                                          fontWeight: FontWeight.bold,
-                                                          decoration: TextDecoration.underline))
-                                                ])))*/
-                                    ])))),
-                    /*Visibility(
-                      visible: isVisibleResetPassForm,
-                      child:Expanded(child:Container(
-                          padding: EdgeInsets.only(left: 32,right: 32,top: 70),
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.1),
-                                  spreadRadius: 0, // Spread radius
-                                  blurRadius: 20, // Blur radius
-                                  offset: Offset(0, -10),
-
-                                  // Shadow position
-                                ),
-                              ],
-
-                              borderRadius: BorderRadius.only(
-                                  topLeft: Radius.circular(50),
-                                  topRight: Radius.circular(50)
-                              )
-                          ),
-                          child: Form(
-                              key: _resetformKey,
-                              child: ListView(
-
-                                  children: [
-                                    Container(
-
-                                      padding: EdgeInsets.only(top: 5),
-                                      child: TextFormField(
-
-                                        controller: resetemailController,
-                                        focusNode: _resetemailFocusNode,
-                                        decoration: InputDecoration(
-                                          labelText: 'Registered Email Address',
-                                          filled: true,
-                                          enabledBorder: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(5.0),
-                                            borderSide: BorderSide(
-                                              color: Colors.black12,
-                                            ),
-                                          ),
-                                          fillColor: Colors.white,
-                                          labelStyle: GoogleFonts.poppins(
-                                            color: Colors.black54, // Set the label text color to black
-                                          ),
-                                          focusedBorder: UnderlineInputBorder(
-                                            borderSide: BorderSide(color: Color(int.parse('0xFF30D5C8'))),
-                                          ),
-                                        ),
-                                        style: GoogleFonts.poppins(
-                                          color: Colors.black,
-                                        ),
-
-                                        validator: (value) {
-                                          if (value == null || value.isEmpty)
-                                          {
-                                            return 'Please enter your email address';
-                                          }
-                                          if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value))
-                                          {
-                                            return 'Please enter a valid email address';
-                                          }
-                                          return null;
-                                        },
-                                        onSaved: (value) => resetemail = value!,
-                                      ),),
-
-
-                                    SizedBox(height: 32.0),
-
-                                    Container(
-                                      width: MediaQuery.of(context).size.width,
-                                      child: _isLoadingResetPass
-                                          ? CupertinoActivityIndicator(
-                                        radius: 20.0,
-                                      )
-                                          : ElevatedButton(
-                                        style: ElevatedButton.styleFrom(
-                                          backgroundColor: _resetbuttonColor,
-                                          elevation: 5, // Adjust the elevation to make it look elevated
-                                          shadowColor: Colors.black.withOpacity(0.5), // Optional: adjust the shadow color
-                                        ),
-                                        onPressed: isResetPassButtonDisabled ? null : () {
-                                          if (_resetformKey.currentState != null &&
-                                              _resetformKey.currentState!.validate()) {
-                                            _resetformKey.currentState!.save();
-
-                                            if(resetemailController.text.trim() == 'demouser@ca-eim.com')
-                                            {
-                                              _scaffoldMessengerKey.currentState?.showSnackBar(
-                                                SnackBar(
-                                                  content: Text('Reset password is not allowed for Demo User'),
-                                                ),
-                                              );
-                                            }
-                                            else
-                                            {
-                                              _resetpass();
-                                            }
-                                          }
-                                        },
-                                        child: Text('Reset Password',
-                                            style: GoogleFonts.poppins(
-                                                color: Colors.white
-                                            )),
-                                      ),
-                                    ),
-
-                                    Container(
-                                        width: MediaQuery.of(context).size.width,
-                                        child:ElevatedButton(
-                                            style: ElevatedButton.styleFrom(
-                                              backgroundColor: Color(int.parse('0xFF30D5C8')),
-                                              elevation: 5, // Adjust the elevation to make it look elevated
-                                              shadowColor: Colors.black.withOpacity(0.5), // Optional: adjust the shadow color
-                                            ),
-                                            onPressed: () {
-
-                                              setState(() {
-                                                usernameController.text = resetemailController.text;
-                                                resetemailController.clear();
-                                                isVisibleResetPassForm = false;
-                                                isVisibleLoginForm = true;
-                                              });
-                                            },
-                                            child: Text('Cancel',
-                                                style: GoogleFonts.poppins(
-                                                    color: Colors.white
-                                                ))))]))))),
-                  Visibility(
-                      visible: isVisibleOTPForm,
-                      child:Expanded(child:Container(
-
-                          padding: EdgeInsets.only(left: 32,right: 32,top: 30),
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.1),
-                                  spreadRadius: 0, // Spread radius
-                                  blurRadius: 20, // Blur radius
-                                  offset: Offset(0, -10),
-                                  // Shadow position
-                                ),
-                              ],
-                              borderRadius: BorderRadius.only(
-                                  topLeft: Radius.circular(50),
-                                  topRight: Radius.circular(50)
-                              )
-                          ),
-                          child: Form(
-                              key: _otpformKey,
-                              child: ListView(
-                                  children:[
-
-                                    Icon(Icons.mark_email_read_outlined, size: 100,
-                                        color: Color(0xFF30D5C8)), // Mobile phone icon
-                                    SizedBox(height: 20),
-                                    Text(
-                                      'Enter Verification Code',
-                                      style: GoogleFonts.poppins(fontWeight: FontWeight.bold,
-                                          fontSize: 18),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                    SizedBox(height: 5.0),
-                                    Center(child: RichText(
-                                      text: TextSpan(
-                                        children: [
-                                          TextSpan(
-                                            text: "We've sent you an OTP on ",
-                                            style: GoogleFonts.poppins(color: Colors.black54),
-
-                                          ),
-                                          TextSpan(
-                                            text: maskedEmail, // The masked email value
-                                            style: GoogleFonts.poppins(fontWeight: FontWeight.bold, color: Colors.black54), // Bold style
-                                          ),
-
-                                        ],
-                                      ),
-                                    ),),
-
-                                    Text(
-                                        ". Please enter that code below to continue."
-                                        ,style: GoogleFonts.poppins(color: Colors.black54),
-                                        textAlign: TextAlign.center// Regular text style
-                                    ),
-
-                                    Padding(
-                                      padding: EdgeInsets.only(left: 5,right: 5,top: 16),
-                                      child: PinCodeTextField(
-                                        appContext: context,
-                                        pastedGoogleFonts.poppins: GoogleFonts.poppins(
-                                          color: Colors.green.shade600,
-                                          fontWeight: FontWeight.normal,
-                                        ),
-                                        length: 4, // Specify the length of OTP
-                                        onChanged: (value) {
-                                          currentText = value;
-                                        },
-                                        pinTheme: PinTheme(
-                                            shape: PinCodeFieldShape.box,
-                                            borderRadius: BorderRadius.circular(15),
-                                            fieldHeight: 50,
-                                            fieldWidth: 50,
-                                            activeFillColor: Color(0xFF30D5C8),
-                                            inactiveFillColor: Colors.white,
-                                            activeColor: Color(0xFF30D5C8),
-                                            inactiveColor: Colors.grey,
-                                            borderWidth: 1,
-                                            selectedColor: Color(0xFF30D5C8)
-                                        ),
-                                        controller: otpController,
-                                        keyboardType: TextInputType.number,
-                                        onCompleted: (value) {
-                                          // OTP entry is complete
-                                        },
-                                        obscureText: true,
-                                      ),
-                                    ),
-                                    SizedBox(height: 20),
-
-                                    Visibility(visible: isVisibleTimer,
-                                      child: Column(children: [
-                                        Text(
-                                          "Resend OTP in: $_formattedTime", // Display remaining time
-                                          textAlign: TextAlign.center,
-                                          style: GoogleFonts.poppins(fontSize: 16, color: Colors.black54),
-                                        ),
-                                        SizedBox(height: 20),
-
-
-                                      ],),),
-
-                                    Visibility(visible: _isButtonEnabled,
-                                      child: ElevatedButton(
-                                        style: ElevatedButton.styleFrom(
-                                          backgroundColor: Color(int.parse('0xFF30D5C8')), // Change button color based on enabled state
-                                        ),
-                                        onPressed: () {
-                                          sendOTP(usernamee);
-                                          setState(() {
-                                            _isButtonEnabled = false;
-                                            isVisibleTimer = true;
-                                            _startTimer();
-                                          });
-
-                                        }, // Disable button if not enabled
-                                        child: Text(
-                                          'Resend OTP',
-                                          style: GoogleFonts.poppins(color: Colors.white),
-                                        ),
-                                      ),),
-
-                                    SizedBox(height: 10),
-
-                                    ElevatedButton(
-
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: _buttonColor,
-                                      ),
-                                      onPressed: () {
-
-                                        if (currentText.length == 4) {
-                                          final generatedOTP = generatedotp;
-                                          final enteredOTP = currentText;
-
-                                          if (enteredOTP == generatedOTP) {
-
-                                            socket.emit('deleteMyId', socket_data);
-
-                                            isOTPVerified = true;
-                                            isAnotherDevice = true;
-
-                                            _directlogin();
-                                          }
-                                          else {
-                                            isOTPVerified = false;
-                                            isAnotherDevice = false;
-                                            Fluttertoast.showToast(msg: 'Incorrect OTP');
-                                          }
-                                        }
-                                        else
-                                        {
-                                          isOTPVerified = false;
-                                          isAnotherDevice = false;
-                                          Fluttertoast.showToast(msg: 'Please enter a 4-digit OTP');
-                                        }
-                                      },
-                                      child: Text('Verify',
-                                          style: GoogleFonts.poppins(
-                                              color: Colors.white
-                                          )),
-                                    )
-                                  ]
-                              ))))),*/
-                  ])
+              const SizedBox(height: 8),
+              Text(
+                "Login to your account",
+                style: GoogleFonts.poppins(
+                  color: appbar_color,
+                ),
+              ),
+              const SizedBox(height: 30),
+            CupertinoSegmentedControl<String>(
+              padding: const EdgeInsets.all(4),
+              groupValue: selectedRole,
+              selectedColor : appbar_color, // segment background when selected
+              unselectedColor: Colors.transparent,
+              borderColor: appbar_color.withOpacity(0.7),
+              pressedColor: appbar_color.withOpacity(0.2),
+              children: {
+                'Tenant': _buildSegmentLabel('Tenant'),
+                'Admin': _buildSegmentLabel('Admin'),
+                'Landlord': _buildSegmentLabel('Landlord'),
+              },
+              onValueChanged: (String value) {
+                setState(() {
+                  selectedRole = value;
+                  isAdmin = value == "Admin";
+                  isLandlord = value == "Landlord";
+                });
+              },
             ),
-           )
-        );}
-  Widget _buildToggleChip(String label, bool isSelected, VoidCallback onTap) {
+
+          const SizedBox(height: 30),
+              _buildGlassCard(context),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSegmentLabel(String text) {
+    final bool isSelected = selectedRole == text;
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: Text(
+        text,
+        style: GoogleFonts.poppins(
+          fontWeight: FontWeight.w600,
+          fontSize: 14,
+          color: isSelected ? Colors.white : appbar_color,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildGlassCard(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.white.withOpacity(0.2)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.2),
+            blurRadius: 10,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
+      child: Form(
+        key: _formKey,
+        child: Column(
+          children: [
+            _buildInputField(
+              controller: emailController,
+              focusNode: _emailFocusNode,
+              label: "Email Address",
+              icon: Icons.email_outlined,
+              validator: (value) {
+                if (value == null || value.isEmpty) return 'Please enter your email';
+                if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) return 'Invalid email';
+                return null;
+              },
+            ),
+            const SizedBox(height: 20),
+            _buildPasswordField(),
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    Checkbox(
+                      value: remember_me,
+                      activeColor: Colors.white,
+                      checkColor: Colors.black,
+                      onChanged: (val) => setState(() => remember_me = val!),
+                    ),
+                    Text(
+                      'Remember Me',
+                      style: GoogleFonts.poppins(color: Colors.white70),
+                    ),
+                  ],
+                ),
+                GestureDetector(
+                  onTap: () {
+                    // forgot password logic
+                  },
+                  child: Text(
+                    'Forgot Password?',
+                    style: GoogleFonts.poppins(
+                      color: Colors.white,
+                    ),
+                  ),
+                )
+              ],
+            ),
+            const SizedBox(height: 30),
+            _isLoading
+                ? const CupertinoActivityIndicator(radius: 16, color: Colors.white)
+                : SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white.withOpacity(0.9),
+                  foregroundColor: Colors.black,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+                onPressed: () {
+                  if (_formKey.currentState!.validate()) {
+                    _formKey.currentState!.save();
+                    loginUser(
+                      emailController.text,
+                      passwordController.text,
+                      isAdmin,
+                      isLandlord,
+                    );
+                  }
+                },
+                child: Text(
+                  'Login',
+                  style: GoogleFonts.poppins(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16,
+                  ),
+                ),
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInputField({
+    required TextEditingController controller,
+    required FocusNode focusNode,
+    required String label,
+    required IconData icon,
+    required String? Function(String?) validator,
+  }) {
+    return TextFormField(
+      controller: controller,
+      focusNode: focusNode,
+      style: const TextStyle(color: Colors.white),
+      decoration: InputDecoration(
+        labelText: label,
+        labelStyle: GoogleFonts.poppins(color: Colors.white70),
+        prefixIcon: Icon(icon, color: Colors.white70),
+        filled: true,
+        fillColor: Colors.white.withOpacity(0.05),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: Colors.white.withOpacity(0.3)),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Colors.white),
+        ),
+      ),
+      validator: validator,
+    );
+  }
+
+  Widget _buildPasswordField() {
+    return TextFormField(
+      controller: passwordController,
+      focusNode: _passwordFocusNode,
+      obscureText: _obscureText,
+      style: const TextStyle(color: Colors.white),
+      decoration: InputDecoration(
+        labelText: 'Password',
+        labelStyle: GoogleFonts.poppins(color: Colors.white70),
+        prefixIcon: const Icon(Icons.lock_outline, color: Colors.white70),
+        suffixIcon: IconButton(
+          icon: Icon(_obscureText ? Icons.visibility_off : Icons.visibility, color: Colors.white70),
+          onPressed: () => setState(() => _obscureText = !_obscureText),
+        ),
+        filled: true,
+        fillColor: Colors.white.withOpacity(0.05),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: Colors.white.withOpacity(0.3)),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Colors.white),
+        ),
+      ),
+      validator: (value) => value == null || value.isEmpty ? 'Please enter your password' : null,
+    );
+  }
+
+  Widget _buildRoleSelector() {
+    return Wrap(
+      spacing: 10,
+      children: [
+        _buildToggleChip("Tenant", !isAdmin && !isLandlord),
+        _buildToggleChip("Admin", isAdmin),
+        _buildToggleChip("Landlord", isLandlord),
+      ],
+    );
+  }
+
+  Widget _buildToggleChip(String label, bool isSelected) {
     return GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
+      onTap: () {
+        setState(() {
+          if (label == 'Tenant') {
+            isAdmin = false;
+            isLandlord = false;
+          } else if (label == 'Admin') {
+            isAdmin = true;
+            isLandlord = false;
+          } else {
+            isAdmin = false;
+            isLandlord = true;
+          }
+        });
+      },
+      child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         decoration: BoxDecoration(
-          color: isSelected ? appbar_color : Colors.white,
-          borderRadius: BorderRadius.circular(30),
-          border: Border.all(color: isSelected ? appbar_color : Colors.grey.withOpacity(0.5)),
-          boxShadow: isSelected
-              ? [BoxShadow(color: appbar_color.withOpacity(0.3), blurRadius: 6)]
-              : [],
+          color: isSelected ? Colors.white.withOpacity(0.3) : Colors.transparent,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: Colors.white.withOpacity(0.5)),
         ),
         child: Text(
           label,
-          style: TextStyle(
-            color: isSelected ? Colors.white : Colors.black54,
-            fontWeight: FontWeight.w600,
+          style: GoogleFonts.poppins(
+            color: Colors.white,
+            fontWeight: FontWeight.w500,
           ),
         ),
       ),

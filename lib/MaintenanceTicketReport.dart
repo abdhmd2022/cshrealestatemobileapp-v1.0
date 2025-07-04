@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:ui';
 import 'package:cshrealestatemobile/MaintenanceTicketCreation.dart';
 import 'package:cshrealestatemobile/MaintenanceTicketFollowUp.dart';
 import 'package:cshrealestatemobile/constants.dart';
@@ -8,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:printing/printing.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -16,6 +18,9 @@ import 'Sidebar.dart';
 import 'package:http/http.dart' as http;
 import 'package:pdf/widgets.dart' as pw;
 import 'package:pdf/pdf.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:path_provider/path_provider.dart';
+
 
 
 class MaintenanceTicketReport extends StatefulWidget {
@@ -841,13 +846,15 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
     }
   }
 
-  Future<void> generateInvoicePDF({
+  Future<File> generateInvoicePDF({
     required String invoiceNumber,
     required String maintenanceType,
     required double amount,
     required DateTime receiptDate,
     required DateTime dueDate,
-  }) async {
+    required BuildContext context
+  }) async
+  {
     final pdf = pw.Document();
 
     final vatRate = 0.05;
@@ -954,7 +961,12 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
     );
 
 
-    await Printing.layoutPdf(onLayout: (format) async => pdf.save());
+    final dir = await getTemporaryDirectory();
+    final file = File('${dir.path}/invoice_$invoiceNumber.pdf');
+    await file.writeAsBytes(await pdf.save());
+    return file;
+
+
   }
 
 
@@ -1731,6 +1743,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
           elevation: 8,
         ),
       ) : null
+
     );
   }
 
@@ -1741,9 +1754,11 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
     required String amount,
     required DateTime receiptDate,
     required String maintenanceType,
-    DateTime? dueDate, // ✅ Made optional
-  }) async {
-    // 🔑 Validation
+    required BuildContext parentContext,
+    DateTime? dueDate,
+  }) async
+  {
+    // Validation
     if (subTicketId.isEmpty) {
       Fluttertoast.showToast(msg: "Please select a maintenance type!");
       return;
@@ -1776,8 +1791,6 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
     }
 
     try {
-      print("Sending invoice: $requestBody");
-
       final response = await http.post(
         Uri.parse(url),
         headers: {
@@ -1789,20 +1802,48 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final responseBody = jsonDecode(response.body);
-        Fluttertoast.showToast(
+       /* Fluttertoast.showToast(
           msg: responseBody['message'] ?? "Invoice saved successfully!",
           backgroundColor: Colors.green,
           textColor: Colors.white,
-        );
+        );*/
+
 
         final invoice = responseBody['data']['invoice'];
 
-        showDialog(
-          context: context,
+        // ✅ Don't pop the bottom sheet yet
+        final action = await showGeneralDialog<String>(
+          context: parentContext,
           barrierDismissible: false,
-          builder: (_) => WillPopScope(
-            onWillPop: () async => false,
-            child: Dialog(
+          barrierColor: Colors.black.withOpacity(0.5),
+          transitionDuration: Duration(milliseconds: 300),
+          pageBuilder: (context, anim1, anim2) {
+            return Center(
+              child: _buildInvoiceDialogContent(context),
+            );
+          },
+          transitionBuilder: (context, anim1, anim2, child) {
+            return FadeTransition(
+              opacity: anim1,
+              child: ScaleTransition(
+                scale: Tween<double>(begin: 0.95, end: 1.0).animate(
+                  CurvedAnimation(parent: anim1, curve: Curves.easeOutBack),
+                ),
+                child: child,
+              ),
+            );
+          },
+        );
+
+
+
+
+        // ✅ Handle action
+        if (action == 'download' || action == 'print' || action == 'share') {
+          showDialog(
+            context: parentContext,
+            barrierDismissible: false,
+            builder: (_) => Dialog(
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               child: Padding(
                 padding: const EdgeInsets.all(20.0),
@@ -1814,24 +1855,38 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                       strokeWidth: 3.5,
                     ),
                     SizedBox(width: 16),
-                    Text("Generating invoice...", style: TextStyle(fontSize: 16)),
+                    Text("Preparing invoice...", style: TextStyle(fontSize: 16)),
                   ],
                 ),
               ),
             ),
-          ),
-        );
+          );
 
-        await generateInvoicePDF(
-          invoiceNumber: invoice['id'].toString(),
-          maintenanceType: invoice['sub_ticket']['type']['name'] ?? 'N/A',
-          amount: double.parse(invoice['amount'].toString()),
-          receiptDate: DateTime.parse(invoice['date']),
-          dueDate: dueDate ?? DateTime.parse(invoice['date']), // Fallback if missing
-        );
+          final file = await generateInvoicePDF(
+              invoiceNumber: invoice['id'].toString(),
+              maintenanceType: invoice['sub_ticket']['type']['name'] ?? 'N/A',
+              amount: double.parse(invoice['amount'].toString()),
+              receiptDate: DateTime.parse(invoice['date']),
+              dueDate: dueDate ?? DateTime.parse(invoice['date']),
+              context: parentContext
+          );
 
-        Navigator.of(context, rootNavigator: true).pop(); // Close loading dialog
-        Navigator.pop(context); // Close modal
+          Navigator.of(parentContext, rootNavigator: true).pop(); // Close loader
+
+          if (action == 'download' || action == 'print') {
+            await Printing.layoutPdf(onLayout: (_) => file.readAsBytesSync());
+          } else if (action == 'share') {
+            await Share.shareXFiles([XFile(file.path)], text: "Here is your tax invoice.");
+          }
+
+
+          // ✅ Now close the bottom sheet
+          Navigator.of(parentContext).pop();
+        } else if (action == 'no') {
+          // ✅ Just close the bottom sheet
+          Navigator.of(parentContext).pop();
+        }
+
       } else {
         final errorBody = jsonDecode(response.body);
         Fluttertoast.showToast(
@@ -1839,7 +1894,6 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
           backgroundColor: Colors.red,
           textColor: Colors.white,
         );
-        print("Error response: ${response.body}");
       }
     } catch (e) {
       Fluttertoast.showToast(
@@ -1847,12 +1901,11 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
         backgroundColor: Colors.red,
         textColor: Colors.white,
       );
-      print("Exception during invoice save: $e");
     }
   }
 
 
-  void _showCreateInvoicePopup(BuildContext context, Map<String, dynamic> ticket) {
+  void _showCreateInvoicePopup(BuildContext screenContext, Map<String, dynamic> ticket) {
     final nonClosedTypes = ticket['maintenanceTypesFiltered'] ?? [];
     final TextEditingController amountController = TextEditingController();
     DateTime? receiptDate;
@@ -1864,7 +1917,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
 
 
     showModalBottomSheet(
-      context: context,
+      context: screenContext,
       isScrollControlled: true,
       backgroundColor: Colors.white, // ✅ This sets the modal sheet background to white
       shape: RoundedRectangleBorder(
@@ -2076,8 +2129,6 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                                 return;
                               }
 
-                              // ✅ If validation passes, now show submitting indicator
-                              setState(() => isSubmitting = true);
 
                               await saveInvoice(
                                 ticketId: ticket['ticketNumber'],
@@ -2086,6 +2137,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                                 amount: amountController.text.trim(),
                                 receiptDate: receiptDate!,
                                 dueDate: dueDate,
+                                parentContext: context
                               );
 
                               setState(() => isSubmitting = false);
@@ -2166,8 +2218,142 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
     );
   }
 
+  Widget _buildInvoiceDialogContent(BuildContext dialogContext) {
+    return Material(
+      color: Colors.transparent,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            width: MediaQuery.of(dialogContext).size.width * 0.85,
+            color: Colors.white,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Animated success icon
+                TweenAnimationBuilder<double>(
+                  tween: Tween(begin: 0.8, end: 1.0),
+                  duration: Duration(milliseconds: 500),
+                  curve: Curves.elasticOut,
+                  builder: (context, scale, child) {
+                    return Transform.scale(
+                      scale: scale,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.green.withOpacity(0.1),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.greenAccent.withOpacity(0.4),
+                              blurRadius: 20,
+                              spreadRadius: 2,
+                            )
+                          ],
+                        ),
+                        padding: EdgeInsets.all(16),
+                        child: Icon(
+                          Icons.check_circle_rounded,
+                          color: Colors.green.shade600,
+                          size: 64,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+                SizedBox(height: 16),
+                Text(
+                  "Invoice Ready",
+                  style: GoogleFonts.poppins(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.black87,
+                  ),
+                ),
+                SizedBox(height: 8),
+                Text(
+                  "Your invoice has been generated",
+                  style: GoogleFonts.poppins(
+                    fontSize: 14,
+                    color: Colors.black54,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: 24),
+                Column(
+                  children: [
+                    _modernActionButton(
+                      icon: Icons.download,
+                      label: "Download",
+                      onPressed: () => Navigator.pop(dialogContext, 'download'),
+                      color: Colors.blueAccent,
+                    ),
+                    SizedBox(height: 10),
+                    _modernActionButton(
+                      icon: Icons.print,
+                      label: "Print",
+                      onPressed: () => Navigator.pop(dialogContext, 'print'),
+                      color: Colors.indigoAccent,
+                    ),
+                    SizedBox(height: 10),
+                    _modernActionButton(
+                      icon: Icons.share,
+                      label: "Share",
+                      onPressed: () => Navigator.pop(dialogContext, 'share'),
+                      color: Colors.teal,
+                    ),
+                    SizedBox(height: 10),
+                    OutlinedButton(
+                      onPressed: () => Navigator.pop(dialogContext, 'no'),
+                      style: OutlinedButton.styleFrom(
+                        minimumSize: Size(double.infinity, 48),
+                        side: BorderSide(color: Colors.grey.shade300),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      ),
+                      child: Text(
+                        "No,Thanks",
+                        style: GoogleFonts.poppins(
+                          fontSize: 14,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ),
+                  ],
+                )
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 
 
+  Widget _modernActionButton({
+    required IconData icon,
+    required String label,
+    required VoidCallback onPressed,
+    required Color color,
+  }) {
+    return ElevatedButton.icon(
+      onPressed: onPressed,
+      icon: Icon(icon, color: Colors.white),
+      label: Text(
+        label,
+        style: GoogleFonts.poppins(
+          fontSize: 14,
+          color: Colors.white,
+        ),
+      ),
+      style: ElevatedButton.styleFrom(
+        minimumSize: Size(double.infinity, 48),
+        backgroundColor: color,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        elevation: 0,
+      ),
+    );
+  }
 
 
   Widget _buildTicketCard(Map<String, dynamic> ticket, int index) {
@@ -3579,7 +3765,9 @@ class _ComplaintBottomSheetState extends State<ComplaintBottomSheet> {
         ),
       ),
     );
+
   }
+
 
 
 

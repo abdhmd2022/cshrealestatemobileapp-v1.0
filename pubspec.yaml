@@ -49,6 +49,7 @@ dependencies:
   path:
   mime:
   google_fonts:
+  share_plus:
   font_awesome_flutter:
   flutter_signature_pad:
   dio:

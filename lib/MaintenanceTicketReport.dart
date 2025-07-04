@@ -1135,154 +1135,6 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
     }
   }
 
-
-  // updated on 18 mar 2025
-  /*Future<void> fetchTickets() async {
-    setState(() {
-      isLoading = true;
-    });
-
-
-    String url = is_admin
-        ? "$baseurl/maintenance/ticket"
-        : "$baseurl/maintenance/ticket"; *//*"$baseurl/maintenance/?tenent_id=$user_id&flat_id=$flat_id";*//*
-
-
-    print('Fetching tickets from URL: $url');
-
-    try {
-      final Map<String, String> headers = {
-        'Authorization': 'Bearer $Company_Token',
-        'Content-Type': 'application/json',
-      };
-
-      final response = await http.get(Uri.parse(url), headers: headers);
-
-      if (response.statusCode == 200) {
-        final Map<String, dynamic> responseBody = json.decode(response.body);
-        if (responseBody['success'] == true) {
-          final List<dynamic> apiTickets = responseBody['data']['tickets'];
-
-          final List<Map<String, dynamic>> formattedTickets = apiTickets.map((apiTicket) {
-            return {
-              'ticketNumber': apiTicket['id'].toString(),
-              'unitNumber': apiTicket['tenent_flat']['flat']['name'].toString(),
-              'buildingName': apiTicket['tenent_flat']['flat']['building']['name'].toString(),
-              'emirate': apiTicket['tenent_flat']['flat']['building']['area']['state']['name'] ?? 'N/A',
-              'status': 'N/A',
-              'date': apiTicket['created_at']?.split('T')[0] ?? '',
-              'maintenanceTypes': apiTicket['sub_tickets'].map((subTicket) {
-                return {
-                  'subTicketId': subTicket['id'].toString(),
-                  'type': subTicket['type']['name'],
-                  'category': subTicket['type']['category']
-                };
-              }).toList(),
-              'description': apiTicket['description'] ?? '',
-            };
-          }).toList();
-
-          setState(() {
-            tickets = formattedTickets;
-            filterTickets(); // Apply date filter after fetching tickets
-          });
-        } else {
-          print("API returned success: false");
-        }
-      } else {
-
-        // to display error message and error status code
-        Map<String, dynamic> data = json.decode(response.body);
-        String error = '';
-
-        if (data.containsKey('message')) {
-          setState(() {
-            error = 'Code: ${response.statusCode} , Message: ${data['message']}';
-          });
-        }
-        else
-        {
-          error = 'Something went wrong!!!';
-        }
-        Fluttertoast.showToast(msg: error);
-
-        print("Error fetching data: ${response.statusCode}");
-        print("Response: ${response.body}");
-      }
-    } catch (e) {
-      print("Error fetching data: $e");
-    }
-
-    setState(() {
-      isLoading = false;
-    });
-  }*/
-
-  /*Future<void> fetchTickets() async {
-    setState(() {
-      isLoading = true;
-    });
-
-    String url = is_admin
-        ? "$BASE_URL_config/v1/maintenance"
-        : "$BASE_URL_config/v1/tenent/maintenance?tenent_id=$user_id&flat_id=$flat_id";
-
-    *//*final String url = "$BASE_URL_config/v1/maintenance"; // will change it for tenant*//*
-
-    print('url $url');
-
-    try {
-      final Map<String, String> headers = {
-        'Authorization': 'Bearer $Company_Token', // Example of an Authorization header
-        'Content-Type': 'application/json', // Example Content-Type header
-        // Add other headers as required
-      };
-      final response = await http.get(Uri.parse(url), headers: headers);
-      if (response.statusCode == 200) {
-        final Map<String, dynamic> responseBody = json.decode(response.body);
-        if (responseBody['success'] == true) {
-          // Transform the API data to match your UI format
-          final List<dynamic> apiTickets = responseBody['data']['tickets'];
-          final List<Map<String, dynamic>> formattedTickets = apiTickets.map((apiTicket) {
-            return {
-              'ticketNumber': apiTicket['id'].toString(),
-              'unitNumber': apiTicket['tenent_flat']['flat']['name'].toString(),
-              'buildingName':  apiTicket['tenent_flat']['flat']['building']['name'].toString(),
-              'emirate': apiTicket['tenent_flat']['flat']['building']['area']['state']['name'] ?? 'N/A',
-              'status': 'N/A', // Update this based on actual data if available
-              'date': apiTicket['created_at']?.split('T')[0] ?? '',
-              'maintenanceTypes': apiTicket['sub_tickets'].map((subTicket) {
-                return {
-                  'subTicketId': subTicket['id'].toString(),
-                  'type': subTicket['type']['name'],
-                  'category': subTicket['type']['category']
-                };
-              }).toList(), // Stores sub-ticket ID, type, and category as a list of maps
-              'description': apiTicket['description'] ?? '',
-            };
-          }).toList();
-
-          setState(() {
-            tickets = formattedTickets;
-            filteredTickets = tickets; // Initially set to show all tickets
-            _expandedTickets = List<bool>.filled(tickets.length, false);
-          });
-        } else {
-          print("API returned success: false");
-        }
-      } else {
-        print("Error fetching data: ${response.statusCode}");
-        print("Error fetching data: ${response.body}");
-
-      }
-    } catch (e) {
-      print("Error fetching data: $e");
-    }
-    setState(() {
-      isLoading = false;
-    });
-  }*/
-
   Future<void> saveFeedback(int ticketId, String description, num rating) async {
 
     try {
@@ -1400,21 +1252,6 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
     }
   }
 
-  /*void _updateSearchQuery(String query) {
-    setState(() {
-      searchQuery = query;
-      filteredTickets = tickets
-          .where((ticket) =>
-      ticket['ticketNumber'].toLowerCase().contains(query.toLowerCase()) ||
-          ticket['unitNumber'].toLowerCase().contains(query.toLowerCase()) ||
-          ticket['buildingName'].toLowerCase().contains(query.toLowerCase()) ||
-          ticket['emirate'].toLowerCase().contains(query.toLowerCase()) ||
-          ticket['status'].toLowerCase().contains(query.toLowerCase()) ||
-          ticket['maintenanceType'].toLowerCase().contains(query.toLowerCase()))
-          .toList();
-    });
-  }*/
-
   void filterTickets() {
     print("Filtering tickets by date...");
     _applyFilters(); // ✅ This now applies BOTH filters
@@ -1496,7 +1333,6 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
 
     return "$unit - $building";
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -1713,10 +1549,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                 ),
               ),
             ]
-
-
           ],
-
         ),
       ),
     floatingActionButton: hasPermission('canCreateMaintenanceTicket') ? Container(
@@ -1746,7 +1579,6 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
 
     );
   }
-
 
   Future<void> saveInvoice({
     required String ticketId,
@@ -1968,7 +1800,6 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
       );
     }
   }
-
 
   void _showCreateInvoicePopup(BuildContext screenContext, Map<String, dynamic> ticket) {
     final nonClosedTypes = ticket['maintenanceTypesFiltered'] ?? [];

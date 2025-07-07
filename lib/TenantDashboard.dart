@@ -1535,7 +1535,6 @@ class _AnimatedReminderDialogState extends State<_AnimatedReminderDialog> {
                   label: Text('Got it (${secondsLeft}s)'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: appbar_color,
-
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),

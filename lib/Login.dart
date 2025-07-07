@@ -1273,6 +1273,7 @@ class _LoginPageState extends State<Login> {
       appBar: AppBar(
         backgroundColor: appbar_color.withOpacity(0.9),
         elevation: 0,
+        leading: null,
         centerTitle: true,
         title: Text(
           widget.title,

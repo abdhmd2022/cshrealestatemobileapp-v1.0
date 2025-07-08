@@ -8,7 +8,6 @@ import 'constants.dart';
 import 'models/serial_model.dart';
 import 'package:http/http.dart' as http;
 
-
 class CompanySelection extends StatefulWidget {
   @override
   _CompanySelectionState createState() => _CompanySelectionState();

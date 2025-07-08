@@ -400,7 +400,6 @@ class _CompanySelectionState extends State<CompanySelection> {
     fetchAndSaveCompanyData(company.baseurl, company.id, company.token);
   }
 
-
   String _formatDateToDDMMMYYYY(DateTime? date) {
     if (date == null) return "N/A";
     return "${date.day.toString().padLeft(2, '0')}-${_monthName(

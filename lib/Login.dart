@@ -563,6 +563,7 @@ class _LoginPageState extends State<Login> {
           companiesJson.add({
             'id': userJson['company_id'] ?? 0,
             'name': company['name'] ?? 'Unknown Company',
+            'allowed_users_per_company': hosting['allowed_users_per_company'] ?? 0,
             'token': userJson['accessToken'] ?? responseData['accessToken'],
             'token_expiry': userJson['accessTokenExpiresAt'] ?? responseData['accessTokenExpiresAt'],
             'baseurl': hosting['baseurl'] ?? '',
@@ -606,7 +607,7 @@ class _LoginPageState extends State<Login> {
 
         loadTokens();
 
-        if (companiesJson.length > 1) {
+        if (companiesJson.length > 0) {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => CompanySelection()),
@@ -626,11 +627,7 @@ class _LoginPageState extends State<Login> {
               return; // Don't proceed to dashboard
             }
           }
-
           fetchAndSaveCompanyData(first["baseurl"],first["id"],first["token"]);
-
-
-
         }
       } else {
         await prefs!.setBool('remember_me', false);

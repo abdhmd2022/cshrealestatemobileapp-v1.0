@@ -13,11 +13,15 @@ class RegisteredCompany {
   final String userName;
   final bool isAdmin;
   final bool isActive;
+  final int allowedUsersPerCompany;
+
 
   RegisteredCompany({
     required this.id,
     required this.name,
     required this.token,
+    required this.allowedUsersPerCompany, // ✅ NEW FIELD
+
     required this.tokenExpiry,
     required this.baseurl,
     required this.adminurl,
@@ -47,9 +51,10 @@ class RegisteredCompany {
       userName: json['user_name'] ?? '',
       isAdmin: json['is_admin'] ?? false,
       isActive: json['is_active'] ?? false,
+      allowedUsersPerCompany: json['allowed_users_per_company'] ?? 0,
+
     );
   }
-
   Map<String, dynamic> toJson() {
     return {
       'id': id,

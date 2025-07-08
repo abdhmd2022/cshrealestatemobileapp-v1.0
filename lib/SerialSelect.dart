@@ -216,12 +216,12 @@ class _CompanySelectionState extends State<CompanySelection> {
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              color: isSelected ? Colors.blueAccent.withOpacity(0.3) : Colors.black12,
+              color: isSelected ? appbar_color.withOpacity(0.3) : Colors.black12,
               blurRadius: isSelected ? 16 : 12,
               offset: const Offset(0, 6),
             ),
           ],
-          border: isSelected ? Border.all(color: Colors.blueAccent, width: 1.4) : null,
+          border: isSelected ? Border.all(color: appbar_color, width: 1.4) : null,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

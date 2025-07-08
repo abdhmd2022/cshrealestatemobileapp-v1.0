@@ -249,7 +249,6 @@ class _CompanySelectionState extends State<CompanySelection> {
                     ],
                   ),
                 ),
-
               ],
             ),
 
@@ -301,7 +300,6 @@ class _CompanySelectionState extends State<CompanySelection> {
             ),
 
             const SizedBox(height: 6),*/
-
 
             // Row: Expiry
             Row(

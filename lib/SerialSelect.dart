@@ -43,8 +43,7 @@ class _CompanySelectionState extends State<CompanySelection> {
     print("✅ Loaded ${companies.length} Companies");
   }
 
-  Future<void> fetchAndSaveCompanyData(String baseurll, int company_id,
-      String token) async {
+  Future<void> fetchAndSaveCompanyData(String baseurll, int company_id, String token) async {
     print('calling -> $baseurll');
     try {
       final url = Uri.parse('$baseurll/company/details/$company_id');
@@ -200,7 +199,6 @@ class _CompanySelectionState extends State<CompanySelection> {
     );
   }
 
-
   Widget _buildCompanyCard(RegisteredCompany company) {
      final expiryDate = DateTime.tryParse(company.licenseExpiry);
     // final expiryDate = DateTime.tryParse("2025-07-07");
@@ -336,7 +334,6 @@ class _CompanySelectionState extends State<CompanySelection> {
       ),
     );
   }
-
 
   Widget _buildStatusBadge(bool isActive) {
     return Container(

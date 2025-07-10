@@ -42,6 +42,7 @@ dependencies:
   intl:
   http:
   url_launcher:
+  pin_code_fields:
   country_picker:
   fluttertoast:
   uuid:

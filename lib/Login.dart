@@ -1,10 +1,14 @@
 import 'dart:convert';
+import 'dart:math';
 import 'package:cshrealestatemobile/TenantDashboard.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:cshrealestatemobile/AdminDashboard.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mailer/mailer.dart';
+import 'package:mailer/smtp_server.dart';
+import 'package:pin_code_fields/pin_code_fields.dart';
+
 import 'package:shared_preferences/shared_preferences.dart';
 import 'FlatSelection.dart';
 import 'SerialSelect.dart';
@@ -65,6 +69,15 @@ class User {
 
 class _LoginPageState extends State<Login> {
 
+  bool isForgotPasswordMode = false;
+  String? generatedotp; // already using this
+  bool otpSent = false;
+  bool otpVerified = false;
+  String? resetToken;
+  late TextEditingController otpController;
+  final TextEditingController newPasswordController = TextEditingController();
+  final TextEditingController confirmPasswordController = TextEditingController();
+
   bool isVisibleAdminLoginForm= true,_isLoading = false,isButtonDisabled = false;
 
   Color _buttonColor = Colors.grey;
@@ -96,6 +109,9 @@ class _LoginPageState extends State<Login> {
   final requiredLength = 4; // the required length of the password
 
   String selectedRole = "Tenant"; // Default selection
+
+  bool emailLocked = false;
+
 
 
   // landlord permissions
@@ -282,9 +298,23 @@ class _LoginPageState extends State<Login> {
   void initState() {
     super.initState();
     passwordController.addListener(_onPasswordChanged);
+    otpController = TextEditingController();
 
     _initSharedPreferences();
   }
+
+  @override
+  void dispose() {
+    passwordController.dispose();
+    emailController.dispose();
+    otpController.dispose();
+    newPasswordController.dispose();
+    confirmPasswordController.dispose();
+    _emailFocusNode.dispose();
+    _passwordFocusNode.dispose();
+    super.dispose();
+  }
+
 
   Future<void> _initSharedPreferences() async {
      prefs= await SharedPreferences.getInstance();
@@ -1152,6 +1182,185 @@ class _LoginPageState extends State<Login> {
     }
   }*/
 
+  bool isValidEmail(String email) {
+    final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+    return emailRegex.hasMatch(email.trim());
+  }
+
+
+  Future<void> sendResetRequest() async {
+
+
+    final url = Uri.parse("$OAuth_URL/oauth/forgot");
+    final body = {
+      "email": emailController.text.trim(),
+      "scope": selectedRole.toLowerCase() == "admin" ? "user" : selectedRole.toLowerCase(),
+    };
+
+    setState(() => _isLoading = true);
+
+
+    try {
+      final response = await http.post(url,
+        headers: {"Content-Type": "application/json"},
+        body: json.encode(body),
+      );
+      final random = Random();
+      generatedotp = '${random.nextInt(10)}${random.nextInt(10)}${random.nextInt(10)}${random.nextInt(10)}'; // Generates a 4-digit random OTP
+
+      print('otp -> $generatedotp');
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+
+        if(mounted)
+          {
+            setState(() {
+              otpController.clear(); // ✅ safe
+              resetToken = data["token"]; // <-- store the token for next step
+              otpSent = true;
+              otpVerified = false;
+              emailLocked = true; // ✅ lock it
+
+            });
+          }
+
+        // sendOTP(emailController.text.trim()) ;
+
+
+      } else {
+        final error = json.decode(response.body);
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error['message'] ?? "Failed")));
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Server error: $e")));
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
+
+  void sendOTP(String email) async {
+    final random = Random();
+    generatedotp = '${random.nextInt(10)}${random.nextInt(10)}${random.nextInt(10)}${random.nextInt(10)}'; // Generates a 4-digit random OTP
+
+    final smtpServer = SmtpServer('smtp.zoho.com',
+        username: 'contact@tallyuae.ae', // email id
+        password: '355dD@3988', // password
+        port: 587
+    );
+
+    final message = Message()
+      ..from = Address('contact@tallyuae.ae','noreply') // Replace with your Outlook email
+      ..recipients.add(email) // Use the email entered by the user
+      ..subject = 'Your One-Time Passcode from Real Estate'
+      ..html =
+      '''
+                  <div style="border: 1px solid #ccc; padding-left: 30px; padding-right: 30px; padding-top: 30px; padding-bottom: 30px; margin-left: 20px; margin-right: 20px; margin-top: 0px; text-align: center;">
+                 
+                <a href="https://tallyuae.ae/">
+                <img src="https://mobile.chaturvedigroup.com/fincore_logo/tally_1.png" alt="Image" style="width: 150px; height: auto; margin-bottom: 10px;">
+            </a>
+                <div style="text-align: center;"><p style="font-size: 12px; font-family: Arial, sans-serif; color: #333;">Your one-time passcode (OTP) to log into the Fincore Mobile app is</p></div>
+                <br>
+                <div style="text-align: center;">
+                
+                <p style="display: inline-block; background-color: #30D5C8; color: #fff; font-size: 16px; font-family: Arial, sans-serif; text-decoration: none; padding: 10px 20px; border-radius: 5px;">$generatedotp</p>
+                </div >
+                <br>
+                <div style="text-align: start;"><p style="font-size: 12px; font-family: Arial, sans-serif; color: #333;">If you did not attempt this, please contact <a href="mailto:saadan@ca-eim.com">saadan@ca-eim.com</a></p></div>
+                
+                <br>
+                      <div style="text-align: start;"><p style="color: #999999; font-style: italic; font-size: 12px">Disclaimer: 
+                      This email is for verification purposes only.
+                      Please do not share your OTP with anyone.<br><br>
+                      This is system generated email. Do not reply.</p>
+                </div>
+              
+                <div style="text-align: start;"><div style="text-align: start; border-top: 1px solid #ccc; padding-top: 10px;  "><p style="font-size: 10px; font-family: Arial, sans-serif; color: #a3a2a2;">© 2024 Chaturvedi Software House LLC. All Rights Reserved</p>
+                <p style="font-size: 10px; font-family: Arial, sans-serif; color: #a3a2a2; padding-top: 0px">513 Al Khaleej Center Bur Dubai, Dubai United Arab Emirates, +97143258361 </p>
+                
+                </div>
+                </div>''';
+
+    try {
+      final sendReport = await send(message, smtpServer); // send mail
+
+      setState(() {
+        otpSent = true;
+        otpVerified = false;
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("OTP sent to your email.")));
+
+      print('Message sent: ${sendReport.toString()}');
+    }
+    catch (e)
+    {
+      _scaffoldMessengerKey.currentState?.showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+        ),
+      );
+      /*print('$e');*/
+    }
+  }
+
+
+  void verifyOtp() {
+    if (otpController.text.trim() == generatedotp) {
+      setState(() => otpVerified = true);
+
+      // ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("OTP verified successfully.")));
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Incorrect OTP.")));
+    }
+  }
+
+
+  Future<void> resetPassword() async {
+    if (newPasswordController.text != confirmPasswordController.text) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Passwords do not match")));
+      return;
+    }
+
+    final url = Uri.parse("$OAuth_URL/oauth/change");
+    final body = {
+      "password":newPasswordController.text.trim(),
+      "confirmPassword":confirmPasswordController.text.trim()
+    };
+
+    try {
+      final response = await http.post(url,
+          headers: {
+            'Authorization': 'Bearer $resetToken',
+            'Content-Type': 'application/json',
+          },
+
+        body: jsonEncode(body),
+      );
+
+
+      if (response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Password reset successful.")));
+        setState(() {
+          isForgotPasswordMode = false;
+          otpSent = false;
+          otpVerified = false;
+          resetToken = null;
+          newPasswordController.clear();
+          confirmPasswordController.clear();
+          otpController.clear();
+          emailLocked = false; // ✅ unlock
+        });
+      } else {
+        final error = jsonDecode(response.body);
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error["message"] ?? "Reset failed")));
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error: $e")));
+    }
+  }
+
 
   void loginUser(String email, String password, bool isAdmin, bool isLandlord) {
     if (isAdmin) {
@@ -1280,6 +1489,7 @@ class _LoginPageState extends State<Login> {
           ),
         ),
       ),
+
       body: Container(
         width: double.infinity,
         height: double.infinity,
@@ -1381,9 +1591,11 @@ class _LoginPageState extends State<Login> {
         key: _formKey,
         child: Column(
           children: [
+
             _buildInputField(
               controller: emailController,
               focusNode: _emailFocusNode,
+              readOnly: emailLocked, // ✅ this controls the field
               label: "Email Address",
               icon: Icons.email_outlined,
               validator: (value) {
@@ -1392,71 +1604,280 @@ class _LoginPageState extends State<Login> {
                 return null;
               },
             ),
+
             const SizedBox(height: 20),
-            _buildPasswordField(),
-            const SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    Checkbox(
-                      value: remember_me,
-                      activeColor: Colors.white,
-                      checkColor: Colors.black,
-                      onChanged: (val) => setState(() => remember_me = val!),
+
+            if (!isForgotPasswordMode) ...[
+              _buildPasswordField(),
+              const SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      Checkbox(
+                        value: remember_me,
+                        activeColor: Colors.white,
+                        checkColor: Colors.black,
+                        onChanged: (val) => setState(() => remember_me = val!),
+                      ),
+                      Text(
+                        'Remember Me',
+                        style: GoogleFonts.poppins(color: Colors.white70),
+                      ),
+                    ],
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        isForgotPasswordMode = true;
+                        otpSent = false;
+                        otpVerified = false;
+                      });
+                    },
+
+                    child: Text(
+                      'Forgot Password?',
+                      style: GoogleFonts.poppins(color: Colors.white),
                     ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 30),
+              _isLoading
+                  ? const CupertinoActivityIndicator(radius: 16, color: Colors.white)
+                  : SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white.withOpacity(0.9),
+                    foregroundColor: Colors.black,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                  onPressed: () {
+                    if (_formKey.currentState!.validate()) {
+                      _formKey.currentState!.save();
+                      loginUser(
+                        emailController.text,
+                        passwordController.text,
+                        isAdmin,
+                        isLandlord,
+                      );
+                    }
+                  },
+                  child: Text(
+                    'Login',
+                    style: GoogleFonts.poppins(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+              ),
+            ] else ...[
+              if (!otpSent)
+                SizedBox(
+                  width: double.infinity,
+                  child:  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white.withOpacity(0.9),
+                      foregroundColor: Colors.black,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
+                    onPressed: _isLoading ? null :  () {
+
+                    if (_formKey.currentState!.validate()) {
+                      _formKey.currentState!.save();
+
+                      sendResetRequest();
+                    }
+                    },
+                    child: _isLoading ? CircularProgressIndicator(color: Colors.white) : Text("Send OTP",
+                      style: GoogleFonts.poppins(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16,
+                      ),),
+                  ),
+                ),
+
+
+              if (otpSent && !otpVerified) ...[
+                const SizedBox(height: 12),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Icon(Icons.mark_email_read_outlined, size: 100,
+                        color: Colors.white.withOpacity(0.9)), // Mobile phone icon
+                    SizedBox(height: 20),
                     Text(
-                      'Remember Me',
-                      style: GoogleFonts.poppins(color: Colors.white70),
+                      'Enter Verification Code',
+                      style: GoogleFonts.poppins(fontWeight: FontWeight.bold,
+                          color: Colors.white.withOpacity(0.9),
+                          fontSize: 18),
+                      textAlign: TextAlign.center,
+                    ),
+                    SizedBox(height: 5.0),
+                    Center(child: RichText(
+                      text: TextSpan(
+                        children: [
+                          TextSpan(
+                            text: "We've sent you an OTP on ",
+                            style: GoogleFonts.poppins(color: Colors.white.withOpacity(0.9)),
+
+                          ),
+                          TextSpan(
+                            text: emailController.text, // The masked email value
+                            style: GoogleFonts.poppins(fontWeight: FontWeight.bold, color: Colors.white.withOpacity(0.9)), // Bold style
+                          ),
+                        ],
+                      ),
+                    ),),
+
+                    Text(
+                        "Please enter that code below to continue."
+                        ,style: GoogleFonts.poppins(color: Colors.white.withOpacity(0.9)),
+                        textAlign: TextAlign.center// Regular text style
+                    ),
+
+                    const SizedBox(height: 20),
+
+                    PinCodeTextField(
+                      appContext: context,
+                      autoDisposeControllers: false,
+                      length: 4,
+                      controller: otpController,
+                      obscureText: true,
+                      obscuringCharacter: '●',
+                      keyboardType: TextInputType.number,
+                      animationType: AnimationType.fade,
+                      pinTheme: PinTheme(
+                        shape: PinCodeFieldShape.box,
+                        borderRadius: BorderRadius.circular(10),
+                        fieldHeight: 50,
+                        fieldWidth: 50,
+                        activeFillColor: Colors.white.withOpacity(0.1),
+                        inactiveFillColor: Colors.white.withOpacity(0.05),
+                        selectedFillColor: Colors.white.withOpacity(0.15),
+                        activeColor: Colors.white,
+                        selectedColor: Colors.white,
+                        inactiveColor: Colors.white.withOpacity(0.3),
+                      ),
+                      animationDuration: const Duration(milliseconds: 300),
+                      enableActiveFill: true,
+                      validator: (value) {
+                        if (value == null || value.length != 4) {
+                          return "Enter 4-digit OTP";
+                        }
+                        return null;
+                      },
+                      onChanged: (value) {},
+                      onCompleted: (value) {
+                        print("OTP Entered: $value");
+                        verifyOtp();
+                      },
                     ),
                   ],
                 ),
-                GestureDetector(
-                  onTap: () {
-                    // forgot password logic
-                  },
-                  child: Text(
-                    'Forgot Password?',
-                    style: GoogleFonts.poppins(
-                      color: Colors.white,
+
+
+               /* const SizedBox(height: 16),
+                SizedBox(
+                  width: double.infinity,
+                  child:    ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white.withOpacity(0.9),
+                      foregroundColor: Colors.black,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     ),
+                    onPressed: _isLoading ? null : verifyOtp,
+                    child: _isLoading ? CircularProgressIndicator(color: Colors.white) : Text("Verify OTP",
+                      style: GoogleFonts.poppins(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16,
+                      ),),
                   ),
-                )
+                ),*/
+
+
               ],
-            ),
-            const SizedBox(height: 30),
-            _isLoading
-                ? const CupertinoActivityIndicator(radius: 16, color: Colors.white)
-                : SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
+
+              if (otpVerified) ...[
+                const SizedBox(height: 16),
+                _buildInputField(
+                  controller: newPasswordController,
+                  focusNode: FocusNode(),
+                  label: "New Password",
+                  icon: Icons.lock,
+                  validator: (v) => v!.length < 6 ? "Minimum 6 characters" : null,
+                ),
+                const SizedBox(height: 16),
+                _buildInputField(
+                  controller: confirmPasswordController,
+                  focusNode: FocusNode(),
+                  label: "Confirm Password",
+                  icon: Icons.lock,
+                  validator: (v) {
+                    if (v != newPasswordController.text) return "Passwords do not match";
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 20),
+                SizedBox(
+                  width: double.infinity,
+                  child:    ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white.withOpacity(0.9),
+                      foregroundColor: Colors.black,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
+                    onPressed: _isLoading ? null : resetPassword,
+                    child: _isLoading ? CircularProgressIndicator(color: Colors.white) : Text("Update Password",
+                        style: GoogleFonts.poppins(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 16,
+                        )),
+                  ),
+                ),
+
+              ],
+
+              const SizedBox(height: 12),
+              TextButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white.withOpacity(0.9),
-                  foregroundColor: Colors.black,
+                  backgroundColor: Colors.transparent,
+                  foregroundColor: Colors.white.withOpacity(0.9),
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),
                 onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    _formKey.currentState!.save();
-                    loginUser(
-                      emailController.text,
-                      passwordController.text,
-                      isAdmin,
-                      isLandlord,
-                    );
-                  }
+                  if (!mounted) return;
+
+
+
+                  setState(() {
+                    isForgotPasswordMode = false;
+                    otpSent = false;
+                    otpVerified = false;
+                    otpController.clear();
+                    resetToken = null;
+                    emailLocked = false; // ✅ unlock
+
+                    newPasswordController.clear();
+                    confirmPasswordController.clear();
+
+                  });
                 },
-                child: Text(
-                  'Login',
-                  style: GoogleFonts.poppins(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 16,
-                  ),
-                ),
+                child: Text("Back to Login", style: GoogleFonts.poppins(
+                  fontWeight: FontWeight.normal,
+                  fontSize: 16,
+                ),),
               ),
-            )
+
+            ],
           ],
         ),
       ),
@@ -1469,10 +1890,15 @@ class _LoginPageState extends State<Login> {
     required String label,
     required IconData icon,
     required String? Function(String?) validator,
+    bool readOnly = false, // ✅ add this optional param
+
+
   }) {
     return TextFormField(
       controller: controller,
       focusNode: focusNode,
+      readOnly: readOnly, // ✅ respect it here
+
       style: const TextStyle(color: Colors.white),
       decoration: InputDecoration(
         labelText: label,
@@ -1522,49 +1948,6 @@ class _LoginPageState extends State<Login> {
     );
   }
 
-  Widget _buildRoleSelector() {
-    return Wrap(
-      spacing: 10,
-      children: [
-        _buildToggleChip("Tenant", !isAdmin && !isLandlord),
-        _buildToggleChip("Admin", isAdmin),
-        _buildToggleChip("Landlord", isLandlord),
-      ],
-    );
-  }
 
-  Widget _buildToggleChip(String label, bool isSelected) {
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          if (label == 'Tenant') {
-            isAdmin = false;
-            isLandlord = false;
-          } else if (label == 'Admin') {
-            isAdmin = true;
-            isLandlord = false;
-          } else {
-            isAdmin = false;
-            isLandlord = true;
-          }
-        });
-      },
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-        decoration: BoxDecoration(
-          color: isSelected ? Colors.white.withOpacity(0.3) : Colors.transparent,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: Colors.white.withOpacity(0.5)),
-        ),
-        child: Text(
-          label,
-          style: GoogleFonts.poppins(
-            color: Colors.white,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-      ),
-    );
-  }
 
 }

@@ -383,11 +383,12 @@ class _CompanySelectionState extends State<CompanySelection> {
     await prefs.setString("baseurl", company.baseurl);
     await prefs.setString("adminurl", company.adminurl);
     await prefs.setString("license_expiry", company.licenseExpiry);
-    await prefs.setBool("is_admin", company.isAdmin);
-    await prefs.setBool("is_admin_from_api", company.isAdmin);
+    await prefs.setBool("is_admin", is_admin);
+    await prefs.setBool("is_admin_from_api", is_admin_from_api);
     await prefs.setString("user_name", company.userName);
     await prefs.setString("user_email", company.userEmail);
     await prefs.setInt("user_id", company.userId);
+
     await prefs.setString("user_permissions", jsonEncode(company.permissions));
     await prefs.setString("role_name", company.roleName);
 

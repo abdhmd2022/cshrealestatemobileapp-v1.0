@@ -75,7 +75,7 @@ class _SidebarState extends State<Sidebar> {
       /*serialID = prefs.getInt("serial_id") ?? 0;*/
       companyID = prefs.getInt("flat_id") ?? prefs.getInt("company_id") ?? 0;
       userID = prefs.getInt("user_id") ?? 0;
-      is_admin = prefs.getBool("is_admin") ?? true;
+      is_admin = prefs.getBool("is_admin") ?? false;
     });
   }
 
@@ -132,13 +132,11 @@ class _SidebarState extends State<Sidebar> {
 
             Future<void> sendResetRequest() async {
               final prefs = await SharedPreferences.getInstance();
-              final isLandlord = prefs.getBool("is_landlord") ?? false;
-              final isAdmin = prefs.getBool("is_admin") ?? false;
               final email = prefs.getString("user_email") ?? "";
 
-              final scope = isLandlord
+              final scope = is_landlord
                   ? "landlord"
-                  : (isAdmin ? "user" : "tenant");
+                  : (is_admin ? "user" : "tenant");
 
               final url = Uri.parse("$OAuth_URL/oauth/forgot");
               final body = {

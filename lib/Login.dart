@@ -112,6 +112,9 @@ class _LoginPageState extends State<Login> {
 
   bool emailLocked = false;
 
+  bool showNewPassword = false;
+  bool showConfirmPassword = false;
+  bool isStrongPassword = false;
 
 
   // landlord permissions
@@ -299,6 +302,13 @@ class _LoginPageState extends State<Login> {
     super.initState();
     passwordController.addListener(_onPasswordChanged);
     otpController = TextEditingController();
+    newPasswordController.addListener(() {
+      final text = newPasswordController.text;
+      final isValid = _isStrongPassword(text) && text.length >= 6;
+      if (isStrongPassword != isValid) {
+        setState(() => isStrongPassword = isValid);
+      }
+    });
 
     _initSharedPreferences();
   }
@@ -1227,7 +1237,6 @@ class _LoginPageState extends State<Login> {
 
         // sendOTP(emailController.text.trim()) ;
 
-
       } else {
         final error = json.decode(response.body);
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error['message'] ?? "Failed")));
@@ -1472,6 +1481,16 @@ class _LoginPageState extends State<Login> {
     }
   }*/
 
+  bool _isStrongPassword(String password) {
+    final upperCase = RegExp(r'[A-Z]');
+    final lowerCase = RegExp(r'[a-z]');
+    final specialChar = RegExp(r'[!@#\$&*~%^()_+=\-]');
+
+    return upperCase.hasMatch(password) &&
+        lowerCase.hasMatch(password) &&
+        specialChar.hasMatch(password);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -1573,6 +1592,8 @@ class _LoginPageState extends State<Login> {
   }
 
   Widget _buildGlassCard(BuildContext context) {
+
+
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -1811,14 +1832,48 @@ class _LoginPageState extends State<Login> {
                   focusNode: FocusNode(),
                   label: "New Password",
                   icon: Icons.lock,
-                  validator: (v) => v!.length < 6 ? "Minimum 6 characters" : null,
+                  isPassword: true,
+                  obscureText: !showNewPassword,
+                  onToggleVisibility: () {
+                    setState(() => showNewPassword = !showNewPassword);
+                  },
+                  validator: (v) {
+                    if (v == null || v.isEmpty) return "Enter password";
+                    if (v.length < 8) return "Minimum 8 characters";
+                    return null;
+                  },
+                  // ✅ Real-time strength check
                 ),
+
+                const SizedBox(height: 4),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 8),
+                    child: Text(
+                      isStrongPassword
+                          ? "✅ Strong password"
+                          : "Entered password must contains one upper case, one lower case & special characters",
+                      style: GoogleFonts.poppins(
+                        fontSize: 12,
+                        color: isStrongPassword ? Colors.green : Colors.white,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ),
+
                 const SizedBox(height: 16),
                 _buildInputField(
                   controller: confirmPasswordController,
                   focusNode: FocusNode(),
                   label: "Confirm Password",
                   icon: Icons.lock,
+                  isPassword: true,
+                  obscureText: !showConfirmPassword,
+                  onToggleVisibility: () {
+                    setState(() => showConfirmPassword = !showConfirmPassword);
+                  },
                   validator: (v) {
                     if (v != newPasswordController.text) return "Passwords do not match";
                     return null;
@@ -1834,7 +1889,12 @@ class _LoginPageState extends State<Login> {
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     ),
-                    onPressed: _isLoading ? null : resetPassword,
+                    onPressed: _isLoading ? null : (){
+                      if(isStrongPassword)
+                      {
+                        resetPassword();
+                      }
+                    },
                     child: _isLoading ? CircularProgressIndicator(color: Colors.white) : Text("Update Password",
                         style: GoogleFonts.poppins(
                           fontWeight: FontWeight.w600,
@@ -1890,7 +1950,11 @@ class _LoginPageState extends State<Login> {
     required String label,
     required IconData icon,
     required String? Function(String?) validator,
+    bool isPassword = false, // ✅ NEW
+    bool obscureText = false, // ✅ NEW
+    VoidCallback? onToggleVisibility, // ✅ NEW
     bool readOnly = false, // ✅ add this optional param
+
 
 
   }) {
@@ -1898,12 +1962,22 @@ class _LoginPageState extends State<Login> {
       controller: controller,
       focusNode: focusNode,
       readOnly: readOnly, // ✅ respect it here
-
+      obscureText: obscureText,
       style: const TextStyle(color: Colors.white),
       decoration: InputDecoration(
         labelText: label,
         labelStyle: GoogleFonts.poppins(color: Colors.white70),
         prefixIcon: Icon(icon, color: Colors.white70),
+
+        suffixIcon: isPassword
+            ? IconButton(
+          icon: Icon(
+            obscureText ? Icons.visibility_off : Icons.visibility,
+            color: Colors.white54,
+          ),
+          onPressed: onToggleVisibility,
+        )
+            : null,
         filled: true,
         fillColor: Colors.white.withOpacity(0.05),
         enabledBorder: OutlineInputBorder(
@@ -1914,6 +1988,7 @@ class _LoginPageState extends State<Login> {
           borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(color: Colors.white),
         ),
+
       ),
       validator: validator,
     );

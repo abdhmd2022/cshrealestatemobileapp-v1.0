@@ -388,7 +388,6 @@ class _CompanySelectionState extends State<CompanySelection> {
     await prefs.setString("user_name", company.userName);
     await prefs.setString("user_email", company.userEmail);
     await prefs.setInt("user_id", company.userId);
-
     await prefs.setString("user_permissions", jsonEncode(company.permissions));
     await prefs.setString("role_name", company.roleName);
 

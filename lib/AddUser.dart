@@ -893,8 +893,6 @@ class _AddUserPageState extends State<AddUser> with TickerProviderStateMixin {
                                             ),
                                             contentPadding: EdgeInsets.symmetric(horizontal: 10),
                                           ),
-
-
                                           hint: Text('Role Name'), // Add a hint
                                           value: _selectedrole,
                                           items: myData_roles.map((item) {
@@ -906,7 +904,6 @@ class _AddUserPageState extends State<AddUser> with TickerProviderStateMixin {
                                           onChanged: (value) async {
                                             _selectedrole = value!;
                                           },
-
                                           onTap: ()
                                           {
                                             setState(() {
@@ -914,47 +911,9 @@ class _AddUserPageState extends State<AddUser> with TickerProviderStateMixin {
                                               _isFocus_name = false;
                                               _isFocused_password = false;
                                             });
-
                                           },
                                         ),
                                       ),
-
-                                      /*Padding(padding: EdgeInsets.only(top: 10,left:20),
-
-                          child:Text(
-                            'Allowed Companies',
-                            style: GoogleFonts.poppins(
-
-                                fontWeight: FontWeight.bold
-                            ),)
-                          ,),*/
-
-                                      /* Padding(
-                          padding: EdgeInsets.only(top:5,left:20,right:20,bottom :0),
-
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              GestureDetector(
-                                onTap: _openMultiSelectDialog,
-                                child: Container(
-                                  width: MediaQuery.of(context).size.width,
-                                  decoration: BoxDecoration(
-                                    border: Border.all(color: Colors.black),
-                                    borderRadius: BorderRadius.circular(5.0),
-                                  ),
-                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                                  child: Text(
-                                    _selectedCompanies.isNotEmpty
-                                        ? _selectedCompanies.map((e) => e).join('\n')
-                                        : 'Tap to select companies',
-                                    style: const GoogleFonts.poppins(color: Colors.black),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),*/
                                     ],
                                   ),
                                 ),

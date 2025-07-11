@@ -1265,7 +1265,6 @@ class _LoginPageState extends State<Login> {
       ..html =
       '''
                   <div style="border: 1px solid #ccc; padding-left: 30px; padding-right: 30px; padding-top: 30px; padding-bottom: 30px; margin-left: 20px; margin-right: 20px; margin-top: 0px; text-align: center;">
-                 
                 <a href="https://tallyuae.ae/">
                 <img src="https://mobile.chaturvedigroup.com/fincore_logo/tally_1.png" alt="Image" style="width: 150px; height: auto; margin-bottom: 10px;">
             </a>

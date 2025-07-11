@@ -1313,7 +1313,6 @@ class _LoginPageState extends State<Login> {
     }
   }
 
-
   void verifyOtp() {
     if (otpController.text.trim() == generatedotp) {
       setState(() => otpVerified = true);
@@ -1323,7 +1322,6 @@ class _LoginPageState extends State<Login> {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Incorrect OTP.")));
     }
   }
-
 
   Future<void> resetPassword() async {
     if (newPasswordController.text != confirmPasswordController.text) {
@@ -1368,7 +1366,6 @@ class _LoginPageState extends State<Login> {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error: $e")));
     }
   }
-
 
   void loginUser(String email, String password, bool isAdmin, bool isLandlord) {
     if (isAdmin) {

@@ -659,7 +659,6 @@ class _AddUserPageState extends State<AddUser> with TickerProviderStateMixin {
                                           _isFocused_password = false;
                                         });
                                       },
-
                                     )),
 
                                 Container(
@@ -740,7 +739,6 @@ class _AddUserPageState extends State<AddUser> with TickerProviderStateMixin {
                                           _isFocused_email = true;
                                           _isFocus_name = false;
                                           _isFocused_password = false;
-
                                         });
                                       },
                                       onEditingComplete: () {
@@ -750,7 +748,6 @@ class _AddUserPageState extends State<AddUser> with TickerProviderStateMixin {
                                           _isFocused_password = false;
                                         });
                                       },
-
                                     )),
 
                                 Container(
@@ -764,7 +761,6 @@ class _AddUserPageState extends State<AddUser> with TickerProviderStateMixin {
                                           style: GoogleFonts.poppins(
                                               fontWeight: FontWeight.bold,
                                               fontSize: 16
-
                                           )
                                       ),
                                       SizedBox(width: 2),
@@ -796,7 +792,6 @@ class _AddUserPageState extends State<AddUser> with TickerProviderStateMixin {
                                       decoration: InputDecoration(
                                         hintText: 'Enter Password',
                                         contentPadding: EdgeInsets.all(15),
-
                                         suffixIcon: IconButton(
                                           icon: Icon(
                                             _obscureText ? Icons.visibility_off : Icons.visibility,
@@ -853,24 +848,19 @@ class _AddUserPageState extends State<AddUser> with TickerProviderStateMixin {
                                         });
                                       },
                                     )
-
-
                                 ),
 
                                 Container(
                                   child: Column(
-
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Padding(padding: EdgeInsets.only(top: 15,left:20),
-
                                         child:Row(
                                           children: [
                                             Text("Select Role:",
                                                 style: GoogleFonts.poppins(
                                                     fontWeight: FontWeight.bold,
                                                     fontSize: 16
-
                                                 )
                                             ),
                                             SizedBox(width: 2),
@@ -887,10 +877,8 @@ class _AddUserPageState extends State<AddUser> with TickerProviderStateMixin {
 
                                       Padding(
                                         padding: EdgeInsets.only(top:0,left:20,right:20,bottom :0),
-
                                         child: DropdownButtonFormField<dynamic>(
                                           decoration: InputDecoration(
-
                                             border: OutlineInputBorder(
                                               borderSide: BorderSide(color: Colors.black),
                                               borderRadius: BorderRadius.circular(10.0),

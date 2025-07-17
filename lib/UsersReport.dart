@@ -382,9 +382,7 @@ class _UserReportPageState extends State<UsersReport> with TickerProviderStateMi
                                                     children: [
                                                       Row(
                                                           children : [
-
                                                             Icon(
-
                                                                 Icons.person
                                                             ),
                                                             SizedBox(width: 10),
@@ -397,7 +395,6 @@ class _UserReportPageState extends State<UsersReport> with TickerProviderStateMi
                                                           child: Row(
                                                               children : [
                                                                 Icon(
-
                                                                   Icons.email_outlined
                                                                 ),
                                                                 SizedBox(width: 10),
@@ -410,7 +407,6 @@ class _UserReportPageState extends State<UsersReport> with TickerProviderStateMi
                                                           child: Row(
                                                               children : [
                                                                 Icon(
-
                                                                   Icons.group
                                                                 ),
                                                                 SizedBox(width: 10),
@@ -418,8 +414,7 @@ class _UserReportPageState extends State<UsersReport> with TickerProviderStateMi
                                                                   scrollDirection: Axis.horizontal,
                                                                   child: Text(card.role_name),
                                                                 ),)
-                                                              ])),
-
+                                         ])),
 
                                         Padding(
                                           padding: EdgeInsets.only(top: 20, bottom: 0),
@@ -475,7 +470,7 @@ class _UserReportPageState extends State<UsersReport> with TickerProviderStateMi
                                           ),
                                         )
                                         ]),
-                                               ))));})),
+                      ))));})),
                       Visibility(
                         visible: _isLoading,
                         child: Center(
@@ -488,9 +483,9 @@ class _UserReportPageState extends State<UsersReport> with TickerProviderStateMi
                         child: ElevatedButton(
                           onPressed: () {
                             Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(builder: (context) => AddUser()),
-                                  );
+                              context,
+                              MaterialPageRoute(builder: (context) => AddUser()),
+                          );
                           },
                           style: ElevatedButton.styleFrom(
                             shape: CircleBorder(), // Makes the button circular

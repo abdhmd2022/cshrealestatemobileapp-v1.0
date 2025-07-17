@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:cshrealestatemobile/AddUser.dart';
 import 'package:cshrealestatemobile/ModifyUser.dart';
 import 'package:flutter/material.dart';
@@ -6,7 +5,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'Sidebar.dart';
 import 'constants.dart';
-import 'package:http/http.dart' as http;
 
 class UserModel {
   final String role_name;

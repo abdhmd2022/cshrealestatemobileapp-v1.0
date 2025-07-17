@@ -470,7 +470,9 @@ class _UserReportPageState extends State<UsersReport> with TickerProviderStateMi
                                           ),
                                         )
                                         ]),
-                      ))));})),
+                      ))));}
+                          )
+                      ),
                       Visibility(
                         visible: _isLoading,
                         child: Center(

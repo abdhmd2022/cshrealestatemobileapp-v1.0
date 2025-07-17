@@ -1053,7 +1053,6 @@ class _LoginPageState extends State<Login> {
     }
   }
 
-
   // old landlord function
   /*Future<void> landlordLogin(String email, String password) async {
     prefs!.clear();

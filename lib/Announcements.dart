@@ -129,10 +129,6 @@ class _AnnouncementScreenState extends State<AnnouncementScreen> {
         selectedBuilding = pills.first; // Default to first pill
         isLoading = false;
       });
-
-
-
-
     } catch (e) {
       print("Error fetching announcements: $e");
       setState(() => isLoading = false);

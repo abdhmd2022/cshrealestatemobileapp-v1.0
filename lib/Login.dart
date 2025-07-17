@@ -1262,7 +1262,7 @@ class _LoginPageState extends State<Login> {
       ..subject = 'Your One-Time Passcode from Real Estate'
       ..html =
       '''
-                  <div style="border: 1px solid #ccc; padding-left: 30px; padding-right: 30px; padding-top: 30px; padding-bottom: 30px; margin-left: 20px; margin-right: 20px; margin-top: 0px; text-align: center;">
+                <div style="border: 1px solid #ccc; padding-left: 30px; padding-right: 30px; padding-top: 30px; padding-bottom: 30px; margin-left: 20px; margin-right: 20px; margin-top: 0px; text-align: center;">
                 <a href="https://tallyuae.ae/">
                 <img src="https://mobile.chaturvedigroup.com/fincore_logo/tally_1.png" alt="Image" style="width: 150px; height: auto; margin-bottom: 10px;">
             </a>
@@ -1697,7 +1697,6 @@ class _LoginPageState extends State<Login> {
                   ],
                 ),
 
-
                /* const SizedBox(height: 16),
                 SizedBox(
                   width: double.infinity,
@@ -1716,7 +1715,6 @@ class _LoginPageState extends State<Login> {
                       ),),
                   ),
                 ),*/
-
 
               ],
 
@@ -1917,7 +1915,5 @@ class _LoginPageState extends State<Login> {
       validator: (value) => value == null || value.isEmpty ? 'Please enter your password' : null,
     );
   }
-
-
 
 }

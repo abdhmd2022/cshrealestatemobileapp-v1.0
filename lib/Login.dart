@@ -982,7 +982,6 @@ class _LoginPageState extends State<Login> {
       await prefs!.setString("adminurl", hosting['adminurl']);
       await prefs!.setString("user_permissions", jsonEncode(landlordPermissions));
 
-
       await Future.delayed(Duration(seconds: 1));
 
       final landlordUrl = "${hosting['baseurl']}/landlord/$landlordId";

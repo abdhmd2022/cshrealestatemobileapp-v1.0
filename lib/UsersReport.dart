@@ -501,4 +501,5 @@ class _UserReportPageState extends State<UsersReport> with TickerProviderStateMi
                           ),
                         ),
                       ),
-                    ]))));}}
+                    ]))));}
+}

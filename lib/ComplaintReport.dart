@@ -223,7 +223,7 @@ child: Container(
                         if (index < 0 || index >= sortedKeys.length) return SizedBox.shrink();
                         final month = DateFormat('MMM').format(DateTime.parse("${sortedKeys[index]}-01"));
                         return SideTitleWidget(
-                          axisSide: meta.axisSide,
+                          meta:meta,
                           space: 6,
                           child: Text(
                             month,

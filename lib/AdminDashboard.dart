@@ -477,7 +477,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Ticker
                                     reservedSize: 30,
                                     interval: 1,
                                     getTitlesWidget: (value, meta) => SideTitleWidget(
-                                      axisSide: meta.axisSide,
+                                      meta: meta, // ✅ Required in new version
                                       space: 4,
                                       child: Text(
                                         value.toInt().toString(),
@@ -492,7 +492,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Ticker
                                     interval: 1,
                                     reservedSize: 30,
                                     getTitlesWidget: (value, meta) => SideTitleWidget(
-                                      axisSide: meta.axisSide,
+                                    meta:meta ,
                                       space: 4,
                                       child: Text(
                                         value.toInt().toString(),
@@ -1159,7 +1159,7 @@ class SalesBarChart extends StatelessWidget {
                   showTitles: true,
                   getTitlesWidget: (value, meta) {
                     return SideTitleWidget(
-                      axisSide: meta.axisSide,
+                      meta:meta,
                       child: Text(
                         _getFormattedMonth(value.toInt(), selectedYear), // Use formatted month names from data
                         style: GoogleFonts.poppins(fontSize: 10),
@@ -1177,7 +1177,7 @@ class SalesBarChart extends StatelessWidget {
                   getTitlesWidget: (value, meta) {
                     if (value % 1 != 0) return const SizedBox(); // Skip non-integers
                     return SideTitleWidget(
-                      axisSide: meta.axisSide,
+                      meta:meta,
                       space: 4,
                       child: Text(
                         value.toInt().toString(),

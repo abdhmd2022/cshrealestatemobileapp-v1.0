@@ -195,19 +195,19 @@ bool hasPermissionInCategory(String categoryName) {
 
 // Global Font Family
 final TextTheme globalTextTheme = TextTheme(
-  headline1: GoogleFonts.poppins(),
-  headline2: GoogleFonts.poppins(),
-  headline3: GoogleFonts.poppins(),
-  headline4: GoogleFonts.poppins(),
-  headline5: GoogleFonts.poppins(),
-  headline6: GoogleFonts.poppins(),
-  subtitle1: GoogleFonts.poppins(),
-  subtitle2: GoogleFonts.poppins(),
-  bodyText1: GoogleFonts.poppins(),
-  bodyText2: GoogleFonts.poppins(),
-  button: GoogleFonts.poppins(),
-  caption: GoogleFonts.poppins(),
-  overline: GoogleFonts.poppins(),
+  displayLarge: GoogleFonts.poppins(),
+  displayMedium: GoogleFonts.poppins(),
+  displaySmall: GoogleFonts.poppins(),
+  headlineMedium: GoogleFonts.poppins(),
+  headlineSmall: GoogleFonts.poppins(),
+  titleLarge: GoogleFonts.poppins(),
+  titleMedium: GoogleFonts.poppins(),
+  titleSmall: GoogleFonts.poppins(),
+  bodyLarge: GoogleFonts.poppins(),
+  bodyMedium: GoogleFonts.poppins(),
+  labelLarge: GoogleFonts.poppins(),
+  bodySmall: GoogleFonts.poppins(),
+  labelSmall: GoogleFonts.poppins(),
 );
 
 String formatDate(String dateString) {

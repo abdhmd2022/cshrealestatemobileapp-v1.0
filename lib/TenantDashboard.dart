@@ -1050,7 +1050,7 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
                                     getTitlesWidget: (value, meta) {
                                       final label = value % 1 == 0 ? value.toInt().toString() : '';
                                       return SideTitleWidget(
-                                        axisSide: meta.axisSide,
+                                        meta:meta,
                                         child: Text(label, style: GoogleFonts.poppins(fontSize: 11)),
                                       );
                                     },
@@ -1066,7 +1066,7 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
                                       if (index >= buildingFlatCount.length) return const SizedBox.shrink();
                                       final label = buildingFlatCount.keys.elementAt(index);
                                       return SideTitleWidget(
-                                        axisSide: meta.axisSide,
+                                        meta:meta,
                                         child: Text(
                                           label,
                                           style: GoogleFonts.poppins(fontSize: 10),

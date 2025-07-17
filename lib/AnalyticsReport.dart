@@ -533,7 +533,7 @@ class BarGraph extends StatelessWidget {
                   reservedSize: 40, // Increased reserved space
                   getTitlesWidget: (value, meta) {
                     return SideTitleWidget(
-                      axisSide: meta.axisSide,
+                      meta:meta,
                       child: Text(
                         buildingNames[value.toInt()],
                         style: GoogleFonts.poppins(fontSize: 10), // Adjust font size

@@ -17,7 +17,6 @@ class AnnouncementScreen extends StatefulWidget {
 class _AnnouncementScreenState extends State<AnnouncementScreen> {
   List<Map<String, dynamic>> announcements = [];
   bool isLoading = true;
-  final CarouselController _carouselController = CarouselController();
   int _current = 0;
 
   List<String> buildingNames = []; // All building names from announcements

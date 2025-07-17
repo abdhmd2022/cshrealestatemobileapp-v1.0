@@ -1524,21 +1524,21 @@ class _LoginPageState extends State<Login> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Icon(Icons.real_estate_agent_outlined, size: 70, color: appbar_color),
+              Icon(Icons.real_estate_agent_outlined, size: 70, color: Colors.white),
               const SizedBox(height: 20),
               Text(
                 "Welcome Back!",
                 style: GoogleFonts.poppins(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
-                  color: appbar_color,
+                  color: Colors.white,
                 ),
               ),
               const SizedBox(height: 8),
               Text(
                 "Login to your account",
                 style: GoogleFonts.poppins(
-                  color: appbar_color,
+                  color: Colors.white,
                 ),
               ),
               const SizedBox(height: 30),

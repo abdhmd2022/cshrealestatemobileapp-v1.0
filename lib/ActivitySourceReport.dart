@@ -23,7 +23,7 @@ class _ActivitySourceReportState extends State<ActivitySourceReport>
   @override
   void initState() {
     super.initState();
-    if(hasPermission('canViewActivitySource')){
+    if(hasPermission('canViewActivitySource')) {
       fetchActivitySources();
     }
   }

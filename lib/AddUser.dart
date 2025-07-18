@@ -502,7 +502,6 @@ class _AddUserPageState extends State<AddUser> with TickerProviderStateMixin {
                   ),
                   SizedBox(width: 10), // Add some spacing between text and image
                   Icon(
-
                     Icons.edit,
                     color: appbar_color
                   )
@@ -512,14 +511,14 @@ class _AddUserPageState extends State<AddUser> with TickerProviderStateMixin {
           ),
           backgroundColor: appbar_color,
           automaticallyImplyLeading: false,
-
         ),
         drawer: Sidebar(
             isDashEnable: isDashEnable,
             isRolesVisible: isRolesVisible,
             isRolesEnable: isRolesEnable,
             isUserEnable: isUserEnable,
-            isUserVisible: isUserVisible,),
+            isUserVisible: isUserVisible
+        ),
         body:Stack(
           children: [
             Visibility(

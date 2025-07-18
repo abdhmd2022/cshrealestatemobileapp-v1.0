@@ -467,7 +467,6 @@ class _AddUserPageState extends State<AddUser> with TickerProviderStateMixin {
       child:Scaffold(
         key: _scaffoldKey,
         appBar: AppBar(
-
           leading: GestureDetector(
             onTap: ()
             {

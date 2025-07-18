@@ -219,7 +219,6 @@ class _ActivitySourceReportState extends State<ActivitySourceReport>
                   Navigator.pop(context);
 
                 }
-
               },
               style: ElevatedButton.styleFrom(backgroundColor: appbar_color),
               child: Text("Submit",style: GoogleFonts.poppins(color: Colors.white)),

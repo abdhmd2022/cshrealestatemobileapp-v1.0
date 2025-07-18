@@ -481,8 +481,8 @@ class _ActivitySourceReportState extends State<ActivitySourceReport>
                                     Icons.delete,
                                     Colors.redAccent,
                                         () {
-
-                                      deleteActivitySource(activitysource['id']); },
+                                      deleteActivitySource(activitysource['id']);
+                                      },
                                   ),
                                   SizedBox(width:5)
                                 ]

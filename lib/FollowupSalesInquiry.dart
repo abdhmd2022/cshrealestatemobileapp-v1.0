@@ -2073,6 +2073,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: appbar_color.withOpacity(0.9),
         centerTitle: true,

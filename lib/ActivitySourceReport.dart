@@ -65,7 +65,7 @@ class _ActivitySourceReportState extends State<ActivitySourceReport>
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('$message'),
-          ),);
+          ));
         // Handle success
         fetchActivitySources();
 

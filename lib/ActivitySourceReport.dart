@@ -176,7 +176,6 @@ class _ActivitySourceReportState extends State<ActivitySourceReport>
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-
                 TextFormField(
                   controller: activitySourceController,
                   validator: (value) {

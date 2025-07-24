@@ -197,8 +197,6 @@ class _ActivitySourceReportState extends State<ActivitySourceReport>
                     ),
                   ),
                 ),
-
-
               ],
             ),
           ),

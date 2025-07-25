@@ -628,7 +628,6 @@ class _ChequeListScreenState extends State<ChequeListScreen> {
                     final receivedOn = cheque['received_on'];
                     final depositedOn = cheque['deposited_on'];
 
-
                     String dateLabel = "Pending";
                     String dateValue = "-";
 

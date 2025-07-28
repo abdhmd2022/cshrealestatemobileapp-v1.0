@@ -1047,8 +1047,6 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
     );
   }
 
-
-
   Widget _buildInfoRow(IconData icon, String text) {
     return Row(
       children: [
@@ -1079,7 +1077,6 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
     // Return true if this unit's rent equals the min
     return unit.basicRent == minRent;
   }
-
 
 }
 
@@ -1386,48 +1383,6 @@ class AvailableUnitsDialog extends StatelessWidget {
   }
 }
 
-Widget _buildDecentButton(
-    String label, IconData icon, Color color, VoidCallback onPressed) {
-  return InkWell(
-    onTap: onPressed,
-    borderRadius: BorderRadius.circular(30.0),
-    splashColor: color.withOpacity(0.2),
-    highlightColor: color.withOpacity(0.1),
-    child: Container(
-      margin: EdgeInsets.only(top: 10.0),
-      padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(30.0),
-        color: Colors.white,
-        border: Border.all(
-          color: color.withOpacity(0.3),
-          width: 1.5,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: color.withOpacity(0.1),
-            blurRadius: 8.0,
-            offset: Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Icon(icon, color: color),
-          SizedBox(width: 8.0),
-          Text(
-            label,
-            style: GoogleFonts.poppins(
-              color: color,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ],
-      ),
-    ),
-  );
-}
-
 class ApiService {
 
   Future<List<String>> fetchFlatTypes() async {
@@ -1469,7 +1424,6 @@ class ApiService {
   }
 }
 
-// Model Class
 class Flat {
   final int id;
   final String name;

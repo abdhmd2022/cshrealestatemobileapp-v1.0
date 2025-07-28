@@ -43,7 +43,6 @@ bool is_active = false;
 
 late String mailing_name,address,pincode,state,country,trn,phone,mobile,email,website,logo_path,whatsapp_no;
 
-
 /// Load tokens from SharedPreferences
 /// new function
 

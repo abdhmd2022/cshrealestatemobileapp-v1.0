@@ -1449,6 +1449,7 @@ class _LoginPageState extends State<Login> {
               borderColor: appbar_color.withOpacity(0.7),
               pressedColor: appbar_color.withOpacity(0.2),
               children: {
+
                 'Tenant': _buildSegmentLabel('Tenant'),
                 'Admin': _buildSegmentLabel('Admin'),
                 'Landlord': _buildSegmentLabel('Landlord'),

@@ -250,7 +250,6 @@ class _ChequeListScreenState extends State<ChequeListScreen> {
     }
   }
 
-
   Widget _buildDetailTile(IconData icon, String label, String value) {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 5, horizontal: 15),

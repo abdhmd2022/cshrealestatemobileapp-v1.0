@@ -369,7 +369,6 @@ class _ChequeListScreenState extends State<ChequeListScreen> {
     return 'Pending';
   }
 
-
   void _applyDateFilter() {
     setState(() {
       filteredCheques = allCheques.where((cheque) {

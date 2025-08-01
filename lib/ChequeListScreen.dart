@@ -394,60 +394,6 @@ class _ChequeListScreenState extends State<ChequeListScreen> {
     });
   }
 
-  String _getStatusLabel(Map<String, dynamic> cheque) {
-    DateTime? returnedOn = _parseDate(cheque['payment']?['returned_on']);
-    DateTime? receivedOn = _parseDate(cheque['payment']?['received_date']);
-    DateTime? clearedOn = _parseDate(cheque['cleared_on']);
-    DateTime? depositedOn = _parseDate(cheque['deposited_on']);
-
-    DateTime? chequeDate = _parseDate(cheque['date']);
-
-    final isReceived = cheque['is_received'].toString().toLowerCase() == 'true';
-    final isDeposited = cheque['is_deposited'].toString().toLowerCase() == 'true';
-
-    // Normalize to remove time part
-    DateTime normalize(DateTime dt) => DateTime(dt.year, dt.month, dt.day);
-
-    final start = normalize(_startDate!);
-    final end = normalize(_endDate!);
-
-    if (returnedOn != null &&
-        !normalize(returnedOn).isBefore(start) &&
-        !normalize(returnedOn).isAfter(end)) {
-      return 'Returned';
-    }
-
-    if (isReceived && isDeposited && clearedOn == null &&
-        depositedOn != null &&
-        !depositedOn.isBefore(_startDate!) &&
-        !depositedOn.isAfter(_endDate!)) {
-      return 'Deposited';
-    }
-
-    if (isReceived && !isDeposited &&
-        receivedOn != null &&
-        !normalize(receivedOn).isBefore(start) &&
-        !normalize(receivedOn).isAfter(end)) {
-      return 'Received';
-    }
-
-    if (isReceived && isDeposited &&
-        clearedOn != null &&
-        !normalize(clearedOn).isBefore(start) &&
-        !normalize(clearedOn).isAfter(end)) {
-      return 'Cleared';
-    }
-
-    if (!isReceived && !isDeposited &&
-        chequeDate != null &&
-        !normalize(chequeDate).isBefore(start) &&
-        !normalize(chequeDate).isAfter(end)) {
-      return 'Pending';
-    }
-
-    return '';
-  }
-
   DateTime? _parseDate(dynamic dateStr) {
     if (dateStr == null) return null;
     return DateTime.tryParse(dateStr.toString());

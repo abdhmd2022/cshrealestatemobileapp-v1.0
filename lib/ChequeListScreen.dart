@@ -24,7 +24,7 @@ class _ChequeListScreenState extends State<ChequeListScreen> {
 
    DateTime? _startDate;
    DateTime? _endDate;
-  List<dynamic> filteredCheques = [];
+   List<dynamic> filteredCheques = [];
 
   late SharedPreferences prefs;
 

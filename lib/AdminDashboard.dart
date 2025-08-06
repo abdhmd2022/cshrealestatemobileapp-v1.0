@@ -310,15 +310,15 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Ticker
           icon: Icon(Icons.menu, color: Colors.white),
           onPressed: () => _scaffoldKey.currentState!.openDrawer(),
         ),
-        actions: [
+        /*actions: [
           Padding(
             padding: const EdgeInsets.only(right: 12.0),
             child: InkWell(
               onTap: () {
-                /*Navigator.pushReplacement(
+                *//*Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(builder: (context) => SalesProfileScreen()), // Navigate to the profile screen
-                );*/
+                );*//*
               },
               child: Container(
                 width: 40,
@@ -345,7 +345,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Ticker
               ),
             ),
           ),
-        ],
+        ],*/
       ),
       drawer: Sidebar(
         isDashEnable: true,

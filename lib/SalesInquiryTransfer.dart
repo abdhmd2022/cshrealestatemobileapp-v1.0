@@ -87,7 +87,7 @@ class _SalesInquiryTransferPageState extends State<SalesInquiryTransfer> with Ti
 
     transfer_to_list.clear();
 
-    final url = '$BASE_URL_config/v1/users'; // Replace with your API endpoint
+    final url = '$baseurl/v1/users'; // Replace with your API endpoint
     String token = 'Bearer $Company_Token'; // auth token for request
 
     Map<String, String> headers = {
@@ -125,7 +125,7 @@ class _SalesInquiryTransferPageState extends State<SalesInquiryTransfer> with Ti
   Future<void> sendTransferInquiryRequest() async {
 
     // Replace with your API endpoint
-    final String url = "$BASE_URL_config/v1/leads/${widget.id}";
+    final String url = "$baseurl/v1/leads/${widget.id}";
 
     var uuid = const Uuid();
 

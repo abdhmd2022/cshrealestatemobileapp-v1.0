@@ -529,7 +529,7 @@ class _SidebarState extends State<Sidebar> {
     Navigator.push(context, MaterialPageRoute(builder: (context) => screen));
   }
 
-  /// ✅ Logout Confirmation Dialog
+  /// Logout Confirmation Dialog
   Future<void> _showLogoutDialog(BuildContext contextt) async {
     return showDialog<void>(
       context: context,

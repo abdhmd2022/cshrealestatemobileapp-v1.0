@@ -610,7 +610,7 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
-                      colors: [appbar_color.withOpacity(0.3), Colors.white],
+                      colors: [Colors.teal.shade50, Colors.white],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                     ),
@@ -629,7 +629,7 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
                       // Avatar
                       CircleAvatar(
                         radius: 30,
-                        backgroundColor: appbar_color,
+                        backgroundColor: Colors.teal,
                         child: Text(
                           user['name'] != null && user['name'].isNotEmpty
                               ? user['name'][0].toUpperCase()
@@ -661,7 +661,7 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
                               style: GoogleFonts.poppins(
                                 fontSize: 15,
                                 fontWeight: FontWeight.bold,
-                                color: appbar_color.shade700,
+                                color: Colors.teal.shade800,
                               ),
                             ),
 
@@ -1337,7 +1337,7 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
   }
   Future<Map<String, dynamic>> fetchUserDetails({required bool isLandlord}) async {
     final String apiUrl = isLandlord
-        ? '$baseurl/landlord-profile'
+        ? '$baseurl/landlord/$user_id'
         : '$baseurl/tenant/$user_id';
 
     try {
@@ -1346,15 +1346,16 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
         headers: {
           'Authorization': 'Bearer $Company_Token',
           'Accept': 'application/json',
-        },
+        }
       );
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
 
+
         // ✅ Adjust parsing based on landlord/tenant
         if (isLandlord) {
-          return data['user'] ?? {};
+          return data['data']?['landlord'] ?? {};
         } else {
           return data['data']?['tenant'] ?? {};
         }
@@ -1381,6 +1382,8 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
               }
 
               final user = snapshot.data!;
+              String mobile = user['mobile_no'] ?? user['phone_no'] ?? '-';
+
 
               return Container(
                 decoration: const BoxDecoration(
@@ -1405,7 +1408,7 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
                                 children: [
                                   CircleAvatar(
                                     radius: 38,
-                                    backgroundColor: appbar_color,
+                                    backgroundColor: Colors.orange,
                                     child: Text(
                                       user['name']?.isNotEmpty == true
                                           ? user['name'][0].toUpperCase()
@@ -1430,13 +1433,76 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
                             ),
 
 
-                            const SizedBox(height: 24),
+                            const SizedBox(height: 16),
                             Divider(),
 
-                            _buildInfoTile(Icons.phone, "Mobile No", user['mobile_no']),
-                            _buildInfoTile(Icons.badge, "Emirates ID", user['emirates_id']),
-                            _buildInfoTile(Icons.airplane_ticket, "Passport No", user['passport_no']),
-                            _buildInfoTile(Icons.language, "Nationality", user['nationality']),
+                            ListTile(
+                              contentPadding: EdgeInsets.zero,
+                              leading: CircleAvatar(
+                                backgroundColor: Colors.deepPurple.withOpacity(1.0),
+
+                                child: Icon(Icons.phone, color: Colors.white),
+                              ),
+                              title: Text(
+                                "Mobile No",
+                                style: GoogleFonts.poppins(fontWeight: FontWeight.w500, fontSize: 14),
+                              ),
+                              subtitle: Text(
+                                mobile,
+                                style: GoogleFonts.poppins(fontSize: 13, color: Colors.black87),
+                              ),
+                            ),
+
+                            ListTile(
+                              contentPadding: EdgeInsets.zero,
+                              leading: CircleAvatar(
+                                backgroundColor: Colors.black.withOpacity(1.0),
+
+                                child: Icon(Icons.badge, color: Colors.white),
+                              ),
+                              title: Text(
+                                "Emirates ID",
+                                style: GoogleFonts.poppins(fontWeight: FontWeight.w500, fontSize: 14),
+                              ),
+                              subtitle: Text(
+                                user['emirates_id'],
+                                style: GoogleFonts.poppins(fontSize: 13, color: Colors.black87),
+                              ),
+                            ),
+
+                            ListTile(
+                              contentPadding: EdgeInsets.zero,
+                              leading: CircleAvatar(
+                                backgroundColor: Colors.brown.withOpacity(1.0),
+
+                                child: Icon(Icons.airplane_ticket, color: Colors.white),
+                              ),
+                              title: Text(
+                                "Passport No",
+                                style: GoogleFonts.poppins(fontWeight: FontWeight.w500, fontSize: 14),
+                              ),
+                              subtitle: Text(
+                                user['passport_no'],
+                                style: GoogleFonts.poppins(fontSize: 13, color: Colors.black87),
+                              ),
+                            ),
+
+                            ListTile(
+                              contentPadding: EdgeInsets.zero,
+                              leading: CircleAvatar(
+                                backgroundColor: Colors.green.withOpacity(1.0),
+
+                                child: Icon(Icons.language, color: Colors.white),
+                              ),
+                              title: Text(
+                                "Nationality",
+                                style: GoogleFonts.poppins(fontWeight: FontWeight.w500, fontSize: 14),
+                              ),
+                              subtitle: Text(
+                                user['nationality'],
+                                style: GoogleFonts.poppins(fontSize: 13, color: Colors.black87),
+                              ),
+                            ),
 
                             const SizedBox(height: 20),
                           ],
@@ -1482,7 +1548,7 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
       contentPadding: EdgeInsets.zero,
       leading: CircleAvatar(
         backgroundColor: appbar_color.withOpacity(1.0),
-        
+
         child: Icon(icon, color: Colors.white),
       ),
       title: Text(

@@ -533,11 +533,13 @@ class _SidebarState extends State<Sidebar> {
   Future<void> _showLogoutDialog(BuildContext contextt) async {
     return showDialog<void>(
       context: context,
+
       barrierDismissible: false,
       builder: (contextt) {
         return AlertDialog(
           title: Text("Logout Confirmation"),
           content: Text("Do you really want to logout?"),
+          backgroundColor: Colors.white,
           actions: [
             TextButton(
               child: Text("No", style: GoogleFonts.poppins(color: appbar_color)),

@@ -397,7 +397,6 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
     return "$day-$month-$year";
   }
 
-
   bool isEditing = false;
   Map<String, int> buildingFlatCount = {};
 

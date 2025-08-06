@@ -28,10 +28,20 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   int announcementCount = 0;
 
+  Map<String, dynamic> user = {
+    "name": "",
+    "email": "",
+    "id": 0,
+  };
 
   @override
   void initState() {
     super.initState();
+    setState(() {
+      user['name'] = user_name ?? 'Guest';
+      user['email'] = user_email ?? '-';
+      user['id'] = user_id ?? 0;
+    });
     loadAnnouncementCount();
     fetchDashboardData();
 
@@ -539,7 +549,7 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
                           constraints: const BoxConstraints(minWidth: 18, minHeight: 18),
                           child: Text(
                             '$announcementCount',
-                            style: const TextStyle(
+                            style:GoogleFonts.poppins(
                               color: Colors.white,
                               fontSize: 11,
                               fontWeight: FontWeight.bold,
@@ -592,6 +602,86 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+
+            GestureDetector(
+              onTap: () => _showUserProfileBottomSheet(context),
+              child: Container(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [appbar_color.withOpacity(0.3), Colors.white],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(18),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black12,
+                        blurRadius: 12,
+                        offset: Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child:Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Avatar
+                      CircleAvatar(
+                        radius: 30,
+                        backgroundColor: appbar_color,
+                        child: Text(
+                          user['name'] != null && user['name'].isNotEmpty
+                              ? user['name'][0].toUpperCase()
+                              : '?',
+                          style: GoogleFonts.poppins(color: Colors.white, fontSize: 26, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+
+                      // User Name & Welcome Message
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // User Name
+                            Text(
+                              "Welcome!",
+                              style: GoogleFonts.poppins(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w700,
+                                color: Colors.black87,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            // Welcome Text
+                            Text(
+                              user['name'] ?? 'User',
+
+                              style: GoogleFonts.poppins(
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                                color: appbar_color.shade700,
+                              ),
+                            ),
+
+                            const SizedBox(height: 4),
+
+                            // Subtitle
+                            Text(
+                              "Tap to view your profile",
+                              style: GoogleFonts.poppins(
+                                fontSize: 12,
+                                color: Colors.grey.shade600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  )
+              )
+            ),
 
             isLoading
                 ? Center(
@@ -1245,6 +1335,168 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
       ),
     );
   }
+  Future<Map<String, dynamic>> fetchUserDetails({required bool isLandlord}) async {
+    final String apiUrl = isLandlord
+        ? '$baseurl/landlord-profile'
+        : '$baseurl/tenant/$user_id';
+
+    try {
+      final response = await http.get(
+        Uri.parse(apiUrl),
+        headers: {
+          'Authorization': 'Bearer $Company_Token',
+          'Accept': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+
+        // ✅ Adjust parsing based on landlord/tenant
+        if (isLandlord) {
+          return data['user'] ?? {};
+        } else {
+          return data['data']?['tenant'] ?? {};
+        }
+      } else {
+        throw Exception('Failed to fetch profile. Status: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error fetching user profile: $e');
+      return {};
+    }
+  }
+
+  void _showUserProfileBottomSheet(BuildContext context) async {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+        builder: (context) {
+          return FutureBuilder<Map<String, dynamic>>(
+            future: fetchUserDetails(isLandlord: is_landlord),
+            builder: (context, snapshot) {
+              if (!snapshot.hasData) {
+                return const Center(child: CircularProgressIndicator());
+              }
+
+              final user = snapshot.data!;
+
+              return Container(
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+                ),
+                child: Stack(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 20, 20, 10), // ⬅️ reduced bottom padding
+                      child: SingleChildScrollView(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min, // 👈 This makes the height wrap content
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const SizedBox(height: 10),
+
+                            // Avatar & Name
+                            // Avatar + Name + Email (Centered vertically)
+                            Center(
+                              child: Column(
+                                children: [
+                                  CircleAvatar(
+                                    radius: 38,
+                                    backgroundColor: appbar_color,
+                                    child: Text(
+                                      user['name']?.isNotEmpty == true
+                                          ? user['name'][0].toUpperCase()
+                                          : '?',
+                                      style:  GoogleFonts.poppins(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.white),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 12),
+                                  Text(
+                                    user['name'] ?? 'N/A',
+                                    style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.bold),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    user['email'] ?? '-',
+                                    style: GoogleFonts.poppins(fontSize: 13, color: Colors.grey.shade600),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ],
+                              ),
+                            ),
+
+
+                            const SizedBox(height: 24),
+                            Divider(),
+
+                            _buildInfoTile(Icons.phone, "Mobile No", user['mobile_no']),
+                            _buildInfoTile(Icons.badge, "Emirates ID", user['emirates_id']),
+                            _buildInfoTile(Icons.airplane_ticket, "Passport No", user['passport_no']),
+                            _buildInfoTile(Icons.language, "Nationality", user['nationality']),
+
+                            const SizedBox(height: 20),
+                          ],
+                        ),
+                      ),
+                    ),
+
+                    // Close Icon (top-right)
+                    Positioned(
+                      top: 20,
+                      right: 20,
+                      child: GestureDetector(
+                        onTap: () => Navigator.pop(context),
+                        child: Container(
+                          padding: const EdgeInsets.all(6),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.grey.shade200,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black12,
+                                blurRadius: 4,
+                              ),
+                            ],
+                          ),
+                          child: const Icon(Icons.close, size: 20),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          );
+        }
+    );
+  }
+
+  Widget _buildInfoTile(IconData icon, String label, String? value) {
+    if (value == null || value.trim().isEmpty) return SizedBox.shrink();
+
+    return ListTile(
+      contentPadding: EdgeInsets.zero,
+      leading: CircleAvatar(
+        backgroundColor: appbar_color.withOpacity(1.0),
+        
+        child: Icon(icon, color: Colors.white),
+      ),
+      title: Text(
+        label,
+        style: GoogleFonts.poppins(fontWeight: FontWeight.w500, fontSize: 14),
+      ),
+      subtitle: Text(
+        value,
+        style: GoogleFonts.poppins(fontSize: 13, color: Colors.black87),
+      ),
+    );
+  }
+
+
 
   Widget _buildDashboardButton(IconData icon, String label, Color color, VoidCallback onTap) {
     return Expanded(

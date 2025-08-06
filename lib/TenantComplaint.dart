@@ -166,6 +166,7 @@ class _TenantComplaintPageState extends State<TenantComplaint> with TickerProvid
   Widget build(BuildContext context) {
     return Scaffold(
         key: _scaffoldKey,
+        backgroundColor: Colors.white,
         appBar: AppBar(
           backgroundColor: appbar_color.withOpacity(0.9),
           automaticallyImplyLeading: false,

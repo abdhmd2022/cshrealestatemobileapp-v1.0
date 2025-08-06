@@ -404,14 +404,22 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
   void _showContractExpiryNotice(BuildContext context, Map<String, dynamic> contract) {
     if (contract['contract_type'] != 'rental' || contract['expiry_date'] == null) return;
 
-    final expiryDate = DateTime.tryParse(contract['expiry_date']);
+    dynamic expiryDate = DateTime.tryParse(contract['expiry_date']);
+     // dynamic expiryDate = DateTime.tryParse("2025-08-05");
+     expiryDate = expiryDate != null
+        ? DateTime(expiryDate.year, expiryDate.month, expiryDate.day, 23, 59, 59, 999)
+        : null;
     if (expiryDate == null) return;
 
-    final now = DateTime.now();
-    final daysLeft = expiryDate.difference(now).inDays;
+    dynamic  now = DateTime.now();
+    now = now != null
+        ? DateTime(now.year, now.month, now.day, 23, 59, 59, 999)
+        : null;
+    dynamic daysLeft = expiryDate.difference(now).inDays;
     final formattedDate = _formatDateToDDMMMYYYY(expiryDate);
 
-    if (!(daysLeft < 0 || daysLeft == 0 || daysLeft <= 3 || daysLeft <= 300)) return;
+
+    if (!(daysLeft < 0 || daysLeft == 0 || daysLeft <= 3 || daysLeft <= 30)) return;
 
     String expiryText = '';
     if (daysLeft < 0) {
@@ -419,7 +427,7 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
     } else if (daysLeft == 0) {
       expiryText = 'This contract is expiring today ($formattedDate)';
     } else {
-      expiryText = 'Expiring in $daysLeft day${daysLeft == 1 ? '' : 's'} on $formattedDate';
+      expiryText = 'Expiring in ${daysLeft} day${daysLeft == 1 ? '' : 's'} on $formattedDate';
     }
 
     final contractNo = contract['contract_no'] ?? 'N/A';

@@ -12,11 +12,11 @@ const MaterialAccentColor appbar_color = Colors.blueAccent;
 
 const String authTokenBase = r'!1--3*%*%*%*9$api$8*%*%*%*5--0!X19fIUBBUyQlYXMxOTI4MzdfX18=KSgqL2FzZGFzZGlvQ0VEQUZf';
 
-const String BASE_URL_config = "http://192.168.2.185:7750/api";
+const String BASE_URL_config = "http://192.168.2.185:6551/api";
 
-const String OAuth_URL = "http://192.168.2.185:4555";
+const String OAuth_URL = "http://192.168.2.185:4556";
 
-const String client_id_constant = "90be135cf5302354e29d64c2dc1259011fcca0b8";
+const String client_id_constant = "af54faf8154e92d988599d3b9b4d1797b016ba96";
 
 const String client_password_constant = "internal@001";
 

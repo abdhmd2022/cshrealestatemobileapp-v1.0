@@ -4,7 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-const String app_name = "Real Estate";
+const String app_name = "Fincore RMS";
 
 const MaterialAccentColor appbar_color = Colors.blueAccent;
 

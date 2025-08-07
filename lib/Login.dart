@@ -9,14 +9,19 @@ import 'package:flutter/material.dart';
 import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
-
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'FlatSelection.dart';
 import 'SerialSelect.dart';
 import 'constants.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:typed_data';
 import 'package:flutter/services.dart' show rootBundle;
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+import 'dart:io';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key, required this.title});
@@ -146,6 +151,70 @@ class _LoginPageState extends State<Login> {
     });
   }
 
+  Future<void> _handleGoogleSignIn() async {
+    try {
+      final GoogleSignIn _googleSignIn = GoogleSignIn(scopes: ['email']);
+
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+
+      if (googleUser == null) return; // cancelled
+
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+
+      final String? idToken = googleAuth.idToken; // ⬅️ THIS is what we need
+      final String? accessToken = googleAuth.accessToken;
+
+      final String? email = googleUser.email;
+      final String? name = googleUser.displayName;
+
+      print("📧 Google email: $email");
+      print("🪪 ID Token: $idToken");
+
+      // ⬇️ Now call your API
+       loginUser(
+        emailController.text,
+        passwordController.text,
+        isAdmin,
+        isLandlord,
+      );
+
+    } catch (e) {
+      showErrorSnackbar(context, "Google Sign-In failed: $e");
+    }
+  }
+
+  Future<void> _handleFacebookSignIn() async {
+    try {
+      final LoginResult result = await FacebookAuth.instance.login();
+
+      if (result.status == LoginStatus.success) {
+        final userData = await FacebookAuth.instance.getUserData();
+        print("Facebook Login -> ${userData["email"]}");
+
+        // TODO: Send this info to your backend if needed or store in prefs
+      } else {
+        showErrorSnackbar(context, 'Facebook login failed');
+      }
+    } catch (e) {
+      showErrorSnackbar(context, 'Facebook login error');
+    }
+  }
+
+  Future<void> _handleAppleSignIn() async {
+    if (!Platform.isIOS) return;
+
+    try {
+      final credential = await SignInWithApple.getAppleIDCredential(
+        scopes: [AppleIDAuthorizationScopes.email, AppleIDAuthorizationScopes.fullName],
+      );
+
+      print("Apple Login -> ${credential.email} | ${credential.givenName}");
+
+      // TODO: Send this info to your backend if needed or store in prefs
+    } catch (e) {
+      showErrorSnackbar(context, 'Apple Sign-In failed');
+    }
+  }
 
 
   // landlord permissions
@@ -1488,6 +1557,7 @@ class _LoginPageState extends State<Login> {
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -1508,7 +1578,8 @@ class _LoginPageState extends State<Login> {
         width: double.infinity,
         height: double.infinity,
         decoration:  BoxDecoration(
-            gradient: LinearGradient(
+          color: Colors.white,
+            /*gradient: LinearGradient(
               colors: [
                 Colors.blueGrey.shade700,
                 Colors.white,
@@ -1516,7 +1587,7 @@ class _LoginPageState extends State<Login> {
               ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-            )
+            )*/
         ),
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
@@ -1527,8 +1598,7 @@ class _LoginPageState extends State<Login> {
                 width: 90,
                 height: 90,
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.4),
-
+                  color: Colors.white,
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(color: Colors.white.withOpacity(0.5)),
                   boxShadow: [
@@ -1554,26 +1624,26 @@ class _LoginPageState extends State<Login> {
                 style: GoogleFonts.poppins(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                  color: Colors.black,
                 ),
               ),
               const SizedBox(height: 8),
               Text(
                 "Login to your account",
                 style: GoogleFonts.poppins(
-                  color: Colors.white,
+                  color: Colors.black,
                 ),
               ),
               const SizedBox(height: 30),
-            CupertinoSegmentedControl<String>(
+
+        CupertinoSegmentedControl<String>(
               padding: const EdgeInsets.all(4),
               groupValue: selectedRole,
               selectedColor : appbar_color, // segment background when selected
               unselectedColor: Colors.transparent,
-              borderColor: appbar_color.withOpacity(0.7),
+              borderColor: Colors.grey,
               pressedColor: appbar_color.withOpacity(0.2),
               children: {
-
                 'Tenant': _buildSegmentLabel('Tenant'),
                 'Admin': _buildSegmentLabel('Admin'),
                 'Landlord': _buildSegmentLabel('Landlord'),
@@ -1605,7 +1675,7 @@ class _LoginPageState extends State<Login> {
         style: GoogleFonts.poppins(
           fontWeight: FontWeight.w600,
           fontSize: 14,
-          color: isSelected ? Colors.white : appbar_color,
+          color: isSelected ? Colors.white : Colors.black.withOpacity(0.7),
         ),
       ),
     );
@@ -1616,14 +1686,14 @@ class _LoginPageState extends State<Login> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.3),
+        color: Colors.white,
 
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: Colors.white.withOpacity(0.3)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.2),
-            blurRadius: 10,
+            blurRadius: 25,
             offset: const Offset(0, 5),
           ),
         ],
@@ -1658,13 +1728,13 @@ class _LoginPageState extends State<Login> {
                     children: [
                       Checkbox(
                         value: remember_me,
-                        activeColor: Colors.white,
-                        checkColor: Colors.black,
+                        activeColor: appbar_color,
+                        checkColor: Colors.white,
                         onChanged: (val) => setState(() => remember_me = val!),
                       ),
                       Text(
                         'Remember Me',
-                        style: GoogleFonts.poppins(color: Colors.white70),
+                        style: GoogleFonts.poppins(color: Colors.black),
                       ),
                     ],
                   ),
@@ -1679,20 +1749,40 @@ class _LoginPageState extends State<Login> {
 
                     child: Text(
                       'Forgot Password?',
-                      style: GoogleFonts.poppins(color: Colors.white),
+                      style: GoogleFonts.poppins(color: Colors.black),
                     ),
                   ),
                 ],
               ),
+
+              /*const SizedBox(height: 10),
+              Text("Or continue with", style: GoogleFonts.poppins()),
+              const SizedBox(height: 16),
+
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _buildPngSocialIcon('assets/google.png', _handleGoogleSignIn),
+                  _buildPngSocialIcon('assets/facebook.png', _handleFacebookSignIn),
+                  if (Platform.isIOS)
+                    _buildPngSocialIcon('assets/apple.png', _handleAppleSignIn),
+                ],
+              ),*/
+
+
+
+
               const SizedBox(height: 30),
+
+
               _isLoading
                   ? const CupertinoActivityIndicator(radius: 16, color: Colors.white)
                   : SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white.withOpacity(0.9),
-                    foregroundColor: Colors.black,
+                    backgroundColor: appbar_color.withOpacity(0.9),
+                    foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
@@ -1723,8 +1813,8 @@ class _LoginPageState extends State<Login> {
                     width: double.infinity,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white.withOpacity(0.9),
-                        foregroundColor: Colors.black,
+                        backgroundColor: appbar_color.withOpacity(0.9),
+                        foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                       ),
@@ -1757,12 +1847,12 @@ class _LoginPageState extends State<Login> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Icon(Icons.mark_email_read_outlined, size: 100,
-                        color: Colors.white.withOpacity(0.9)), // Mobile phone icon
+                        color: Colors.orange.withOpacity(0.9)), // Mobile phone icon
                     SizedBox(height: 20),
                     Text(
                       'Enter Verification Code',
                       style: GoogleFonts.poppins(fontWeight: FontWeight.bold,
-                          color: Colors.white.withOpacity(0.9),
+                          color: Colors.black.withOpacity(0.9),
                           fontSize: 18),
                       textAlign: TextAlign.center,
                     ),
@@ -1772,12 +1862,12 @@ class _LoginPageState extends State<Login> {
                         children: [
                           TextSpan(
                             text: "We've sent you an OTP on ",
-                            style: GoogleFonts.poppins(color: Colors.white.withOpacity(0.9)),
+                            style: GoogleFonts.poppins(color: Colors.black.withOpacity(0.9)),
 
                           ),
                           TextSpan(
                             text: emailController.text, // The masked email value
-                            style: GoogleFonts.poppins(fontWeight: FontWeight.bold, color: Colors.white.withOpacity(0.9)), // Bold style
+                            style: GoogleFonts.poppins(fontWeight: FontWeight.bold, color: Colors.black.withOpacity(0.9)), // Bold style
                           ),
                         ],
                       ),
@@ -1785,7 +1875,7 @@ class _LoginPageState extends State<Login> {
 
                     Text(
                         "Please enter that code below to continue."
-                        ,style: GoogleFonts.poppins(color: Colors.white.withOpacity(0.9)),
+                        ,style: GoogleFonts.poppins(color: Colors.black.withOpacity(0.9)),
                         textAlign: TextAlign.center// Regular text style
                     ),
 
@@ -1802,15 +1892,15 @@ class _LoginPageState extends State<Login> {
                       animationType: AnimationType.fade,
                       pinTheme: PinTheme(
                         shape: PinCodeFieldShape.box,
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(30),
                         fieldHeight: 50,
                         fieldWidth: 50,
-                        activeFillColor: Colors.white.withOpacity(0.1),
-                        inactiveFillColor: Colors.white.withOpacity(0.05),
+                        activeFillColor: Colors.black.withOpacity(0.1),
+                        inactiveFillColor: Colors.black.withOpacity(0.05),
                         selectedFillColor: Colors.white.withOpacity(0.15),
-                        activeColor: Colors.white,
-                        selectedColor: Colors.white,
-                        inactiveColor: Colors.white.withOpacity(0.3),
+                        activeColor: Colors.black,
+                        selectedColor: appbar_color,
+                        inactiveColor: Colors.black.withOpacity(0.3),
                       ),
                       animationDuration: const Duration(milliseconds: 300),
                       enableActiveFill: true,
@@ -1832,8 +1922,8 @@ class _LoginPageState extends State<Login> {
                     _showResendButton
                         ? ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white.withOpacity(0.9),
-                        foregroundColor: Colors.black,
+                        backgroundColor: appbar_color.withOpacity(0.9),
+                        foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                       ),
@@ -1854,7 +1944,7 @@ class _LoginPageState extends State<Login> {
                         : Text(
                       "Resend OTP in 00:${_remainingSeconds.toString().padLeft(2, '0')}",
                       style: GoogleFonts.poppins(
-                        color: Colors.white70,
+                        color: Colors.black.withOpacity(0.8),
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -1897,7 +1987,7 @@ class _LoginPageState extends State<Login> {
                           : "Entered password must contains one upper case, one lower case & special characters",
                       style: GoogleFonts.poppins(
                         fontSize: 12,
-                        color: isStrongPassword ? Colors.green : Colors.white,
+                        color: isStrongPassword ? Colors.green : Colors.red,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -1925,8 +2015,8 @@ class _LoginPageState extends State<Login> {
                   width: double.infinity,
                   child:    ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white.withOpacity(0.9),
-                      foregroundColor: Colors.black,
+                      backgroundColor: appbar_color.withOpacity(0.9),
+                      foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     ),
@@ -1950,7 +2040,7 @@ class _LoginPageState extends State<Login> {
               TextButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.transparent,
-                  foregroundColor: Colors.white.withOpacity(0.9),
+                  foregroundColor: Colors.black.withOpacity(0.9),
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),
@@ -2005,17 +2095,17 @@ class _LoginPageState extends State<Login> {
       controller: controller,
       enabled: readOnly, // ✅ respect it here
       obscureText: obscureText,
-      style: const TextStyle(color: Colors.white),
+      style: GoogleFonts.poppins(color: Colors.black),
       decoration: InputDecoration(
         labelText: label,
-        labelStyle: GoogleFonts.poppins(color: Colors.white70),
-        prefixIcon: Icon(icon, color: Colors.white70),
+        labelStyle: GoogleFonts.poppins(color: Colors.black),
+        prefixIcon: Icon(icon, color: Colors.black),
 
         suffixIcon: isPassword
             ? IconButton(
           icon: Icon(
             obscureText ? Icons.visibility_off : Icons.visibility,
-            color: Colors.white54,
+            color: Colors.black,
           ),
           onPressed: onToggleVisibility,
         )
@@ -2024,11 +2114,11 @@ class _LoginPageState extends State<Login> {
         fillColor: Colors.white.withOpacity(0.05),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.white.withOpacity(0.3)),
+          borderSide: BorderSide(color: Colors.black.withOpacity(0.3)),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Colors.white),
+          borderSide: const BorderSide(color: appbar_color),
         ),
 
       ),
@@ -2041,28 +2131,52 @@ class _LoginPageState extends State<Login> {
       controller: passwordController,
       focusNode: _passwordFocusNode,
       obscureText: _obscureText,
-      style: const TextStyle(color: Colors.white),
+      style: GoogleFonts.poppins(color: Colors.black),
       decoration: InputDecoration(
         labelText: 'Password',
-        labelStyle: GoogleFonts.poppins(color: Colors.white70),
-        prefixIcon: const Icon(Icons.lock_outline, color: Colors.white70),
+        labelStyle: GoogleFonts.poppins(color: Colors.black),
+        prefixIcon: const Icon(Icons.lock_outline, color: Colors.black),
         suffixIcon: IconButton(
-          icon: Icon(_obscureText ? Icons.visibility_off : Icons.visibility, color: Colors.white70),
+          icon: Icon(_obscureText ? Icons.visibility_off : Icons.visibility, color: Colors.black),
           onPressed: () => setState(() => _obscureText = !_obscureText),
         ),
         filled: true,
         fillColor: Colors.white.withOpacity(0.05),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.white.withOpacity(0.3)),
+          borderSide: BorderSide(color: Colors.black.withOpacity(0.3)),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Colors.white),
+          borderSide: const BorderSide(color: appbar_color),
         ),
       ),
       validator: (value) => value == null || value.isEmpty ? 'Please enter your password' : null,
     );
   }
+
+  Widget _buildPngSocialIcon(String asset, VoidCallback onTap) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(30),
+      child: Container(
+        width: 40,
+        height: 40,
+        margin: EdgeInsets.symmetric(horizontal: 8),
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(color: Colors.black12, blurRadius: 5),
+          ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(6),
+          child: Image.asset(asset),
+        ),
+      ),
+    );
+  }
+
 
 }

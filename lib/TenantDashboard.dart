@@ -689,7 +689,7 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
             children: [
 
               Platform.isIOS
-                  ? const CupertinoActivityIndicator(radius: 18)
+                  ? const CupertinoActivityIndicator(radius: 18,color: appbar_color)
                   : CircularProgressIndicator(
                 valueColor: AlwaysStoppedAnimation<Color>(appbar_color),
               ),

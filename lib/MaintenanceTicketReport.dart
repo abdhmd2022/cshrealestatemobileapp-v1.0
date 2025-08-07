@@ -1494,7 +1494,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                         Icon(Icons.search_off, size: 48, color: Colors.grey),
                         SizedBox(height: 10),
                         Text(
-                          "No data available",
+                          "No Ticket Found",
                           style: GoogleFonts.poppins(
                             fontSize: 16,
                             color: Colors.grey,

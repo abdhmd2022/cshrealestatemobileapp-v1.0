@@ -1076,7 +1076,7 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
                             Icon(Icons.search_off, size: 48, color: Colors.grey),
                             SizedBox(height: 10),
                             Text(
-                              "No data available",
+                              "No Inquiry Found",
                               style: GoogleFonts.poppins(
                                 fontSize: 16,
                                 color: Colors.grey,

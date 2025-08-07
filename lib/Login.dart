@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 import 'package:cshrealestatemobile/TenantDashboard.dart';
@@ -88,6 +89,12 @@ class _LoginPageState extends State<Login> {
 
   bool isLandlord = false;
 
+  Timer? _otpTimer;
+  int _remainingSeconds = 60;
+  bool  _showResendButton = true;
+
+
+
 
   final _formKey = GlobalKey<FormState>();
 
@@ -112,11 +119,33 @@ class _LoginPageState extends State<Login> {
 
   String selectedRole = "Tenant"; // Default selection
 
-  bool emailLocked = false;
+  bool emailLocked = true;
 
   bool showNewPassword = false;
   bool showConfirmPassword = false;
   bool isStrongPassword = false;
+
+  void startOtpTimer() {
+    setState(() {
+      _remainingSeconds = 60;
+      _showResendButton = false;
+    });
+
+    _otpTimer?.cancel();
+    _otpTimer = Timer.periodic(Duration(seconds: 1), (timer) {
+      if (_remainingSeconds == 0) {
+        timer.cancel();
+        setState(() {
+          _showResendButton = true;
+        });
+      } else {
+        setState(() {
+          _remainingSeconds--;
+        });
+      }
+    });
+  }
+
 
 
   // landlord permissions
@@ -324,6 +353,7 @@ class _LoginPageState extends State<Login> {
     confirmPasswordController.dispose();
     _emailFocusNode.dispose();
     _passwordFocusNode.dispose();
+    _otpTimer?.cancel();
     super.dispose();
   }
 
@@ -1230,7 +1260,7 @@ class _LoginPageState extends State<Login> {
               resetToken = data["token"]; // <-- store the token for next step
               otpSent = true;
               otpVerified = false;
-              emailLocked = true; // ✅ lock it
+              emailLocked = false; // ✅ lock it
             });
           }
 
@@ -1323,7 +1353,34 @@ class _LoginPageState extends State<Login> {
 
       // ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("OTP verified successfully.")));
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Incorrect OTP.")));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: [
+              Icon(Icons.error_outline, color: Colors.white),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  "Incorrect OTP",
+                  style: GoogleFonts.poppins(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: Colors.redAccent.shade400,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          elevation: 6,
+          margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          duration: Duration(seconds: 3),
+        ),
+      );
+
     }
   }
 
@@ -1332,6 +1389,10 @@ class _LoginPageState extends State<Login> {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Passwords do not match")));
       return;
     }
+
+    setState(() {
+      _isLoading = true;
+    });
 
     final url = Uri.parse("$OAuth_URL/oauth/change");
     final body = {
@@ -1351,7 +1412,34 @@ class _LoginPageState extends State<Login> {
 
 
       if (response.statusCode == 200) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Password reset successful.")));
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                Icon(Icons.error_outline, color: Colors.white),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    "Password Reset Successful",
+                    style: GoogleFonts.poppins(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            behavior: SnackBarBehavior.floating,
+            backgroundColor: Colors.green.shade400,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            elevation: 6,
+            margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            duration: Duration(seconds: 3),
+          ),
+        );
         setState(() {
           isForgotPasswordMode = false;
           otpSent = false;
@@ -1359,8 +1447,10 @@ class _LoginPageState extends State<Login> {
           resetToken = null;
           newPasswordController.clear();
           confirmPasswordController.clear();
+          showNewPassword = false;
+          showConfirmPassword: false;
           otpController.clear();
-          emailLocked = false; // ✅ unlock
+          emailLocked = true; // ✅ unlock
         });
       } else {
         final error = jsonDecode(response.body);
@@ -1369,6 +1459,10 @@ class _LoginPageState extends State<Login> {
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error: $e")));
     }
+    setState(() {
+      _isLoading = false;
+    });
+
   }
 
   void loginUser(String email, String password, bool isAdmin, bool isLandlord) {
@@ -1624,30 +1718,37 @@ class _LoginPageState extends State<Login> {
               ),
             ] else ...[
               if (!otpSent)
-                SizedBox(
-                  width: double.infinity,
-                  child:  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white.withOpacity(0.9),
-                      foregroundColor: Colors.black,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                if (!otpSent)
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white.withOpacity(0.9),
+                        foregroundColor: Colors.black,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      ),
+                      onPressed: _isLoading
+                          ? null
+                          : () {
+                        if (_formKey.currentState!.validate()) {
+                          _formKey.currentState!.save();
+                          sendResetRequest();
+                          startOtpTimer();
+                        }
+                      },
+                      child: _isLoading
+                          ? CircularProgressIndicator(color: Colors.white)
+                          : Text(
+                        "Send OTP",
+                        style: GoogleFonts.poppins(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 16,
+                        ),
+                      ),
                     ),
-                    onPressed: _isLoading ? null :  () {
-
-                    if (_formKey.currentState!.validate()) {
-                      _formKey.currentState!.save();
-
-                      sendResetRequest();
-                    }
-                    },
-                    child: _isLoading ? CircularProgressIndicator(color: Colors.white) : Text("Send OTP",
-                      style: GoogleFonts.poppins(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 16,
-                      ),),
                   ),
-                ),
+
 
 
               if (otpSent && !otpVerified) ...[
@@ -1725,27 +1826,43 @@ class _LoginPageState extends State<Login> {
                         verifyOtp();
                       },
                     ),
+
+                    const SizedBox(height: 20),
+
+                    _showResendButton
+                        ? ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white.withOpacity(0.9),
+                        foregroundColor: Colors.black,
+                        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      ),
+                      onPressed: () {
+                        sendResetRequest(); // <-- your existing resend OTP logic
+                        startOtpTimer();    // <-- restart timer
+                      },
+                      child: _isLoading
+                          ? CircularProgressIndicator(color: Colors.white)
+                          : Text(
+                        'Send OTP Again',
+                        style: GoogleFonts.poppins(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 14,
+                        ),
+                      ),
+                    )
+                        : Text(
+                      "Resend OTP in 00:${_remainingSeconds.toString().padLeft(2, '0')}",
+                      style: GoogleFonts.poppins(
+                        color: Colors.white70,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+
+
                   ],
                 ),
 
-               /* const SizedBox(height: 16),
-                SizedBox(
-                  width: double.infinity,
-                  child:    ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white.withOpacity(0.9),
-                      foregroundColor: Colors.black,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                    ),
-                    onPressed: _isLoading ? null : verifyOtp,
-                    child: _isLoading ? CircularProgressIndicator(color: Colors.white) : Text("Verify OTP",
-                      style: GoogleFonts.poppins(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 16,
-                      ),),
-                  ),
-                ),*/
 
               ],
 
@@ -1848,10 +1965,12 @@ class _LoginPageState extends State<Login> {
                     otpVerified = false;
                     otpController.clear();
                     resetToken = null;
-                    emailLocked = false; // ✅ unlock
+                    emailLocked = true; // ✅ unlock
 
                     newPasswordController.clear();
                     confirmPasswordController.clear();
+                    showNewPassword = false;
+                    showConfirmPassword: false;
 
                   });
                 },
@@ -1877,15 +1996,14 @@ class _LoginPageState extends State<Login> {
     bool isPassword = false, // ✅ NEW
     bool obscureText = false, // ✅ NEW
     VoidCallback? onToggleVisibility, // ✅ NEW
-    bool readOnly = false, // ✅ add this optional param
+    bool readOnly = true, // ✅ add this optional param
 
 
 
   }) {
     return TextFormField(
       controller: controller,
-      focusNode: focusNode,
-      readOnly: readOnly, // ✅ respect it here
+      enabled: readOnly, // ✅ respect it here
       obscureText: obscureText,
       style: const TextStyle(color: Colors.white),
       decoration: InputDecoration(

@@ -14,6 +14,8 @@ import 'FlatSelection.dart';
 import 'SerialSelect.dart';
 import 'constants.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'dart:typed_data';
+import 'package:flutter/services.dart' show rootBundle;
 
 class Login extends StatefulWidget {
   const Login({super.key, required this.title});
@@ -1213,10 +1215,10 @@ class _LoginPageState extends State<Login> {
         headers: {"Content-Type": "application/json"},
         body: json.encode(body),
       );
-      final random = Random();
-      generatedotp = '${random.nextInt(10)}${random.nextInt(10)}${random.nextInt(10)}${random.nextInt(10)}'; // Generates a 4-digit random OTP
+      // final random = Random();
+      // generatedotp = '${random.nextInt(10)}${random.nextInt(10)}${random.nextInt(10)}${random.nextInt(10)}'; // Generates a 4-digit random OTP
 
-      print('otp -> $generatedotp');
+     //  print('otp -> $generatedotp');
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
@@ -1229,11 +1231,10 @@ class _LoginPageState extends State<Login> {
               otpSent = true;
               otpVerified = false;
               emailLocked = true; // ✅ lock it
-
             });
           }
 
-        // sendOTP(emailController.text.trim()) ;
+         sendOTP(emailController.text.trim()) ;
 
       } else {
         final error = json.decode(response.body);
@@ -1246,9 +1247,17 @@ class _LoginPageState extends State<Login> {
     }
   }
 
+  Future<String> getBase64Image() async {
+    final bytes = await rootBundle.load('assets/icon_realestate.png');
+    final buffer = bytes.buffer;
+    String base64Image = base64Encode(Uint8List.view(buffer));
+    return base64Image;
+  }
+
   void sendOTP(String email) async {
-    final random = Random();
-    generatedotp = '${random.nextInt(10)}${random.nextInt(10)}${random.nextInt(10)}${random.nextInt(10)}'; // Generates a 4-digit random OTP
+     final random = Random();
+     generatedotp = '${random.nextInt(10)}${random.nextInt(10)}${random.nextInt(10)}${random.nextInt(10)}'; // Generates a 4-digit random OTP
+     print('otp -> $generatedotp');
 
     final smtpServer = SmtpServer('smtp.zoho.com',
         username: 'contact@tallyuae.ae', // email id
@@ -1256,21 +1265,23 @@ class _LoginPageState extends State<Login> {
         port: 587
     );
 
+    final base64Image = await getBase64Image();
+
     final message = Message()
       ..from = Address('contact@tallyuae.ae','noreply') // Replace with your Outlook email
       ..recipients.add(email) // Use the email entered by the user
-      ..subject = 'Your One-Time Passcode from Real Estate'
+      ..subject = 'Your One-Time Passcode from Fincore RMS'
       ..html =
       '''
                 <div style="border: 1px solid #ccc; padding-left: 30px; padding-right: 30px; padding-top: 30px; padding-bottom: 30px; margin-left: 20px; margin-right: 20px; margin-top: 0px; text-align: center;">
-                <a href="https://tallyuae.ae/">
-                <img src="https://mobile.chaturvedigroup.com/fincore_logo/tally_1.png" alt="Image" style="width: 150px; height: auto; margin-bottom: 10px;">
+                <a href="https://cshllc.ae/">
+                <img src="data:image/png;base64,$base64Image" style="width: 150px; height: auto;" alt="Fincore RMS Logo">
             </a>
-                <div style="text-align: center;"><p style="font-size: 12px; font-family: Arial, sans-serif; color: #333;">Your one-time passcode (OTP) to log into the Fincore Mobile app is</p></div>
+                <div style="text-align: center;"><p style="font-size: 12px; font-family: Arial, sans-serif; color: #333;">Your one-time passcode (OTP) to log into the Fincore RMS is</p></div>
                 <br>
                 <div style="text-align: center;">
                 
-                <p style="display: inline-block; background-color: #30D5C8; color: #fff; font-size: 16px; font-family: Arial, sans-serif; text-decoration: none; padding: 10px 20px; border-radius: 5px;">$generatedotp</p>
+                <p style="display: inline-block; background-color: #448AFF; color: #fff; font-size: 16px; font-family: Arial, sans-serif; text-decoration: none; padding: 10px 20px; border-radius: 5px;">$generatedotp</p>
                 </div >
                 <br>
                 <div style="text-align: start;"><p style="font-size: 12px; font-family: Arial, sans-serif; color: #333;">If you did not attempt this, please contact <a href="mailto:saadan@ca-eim.com">saadan@ca-eim.com</a></p></div>
@@ -1282,7 +1293,7 @@ class _LoginPageState extends State<Login> {
                       This is system generated email. Do not reply.</p>
                 </div>
               
-                <div style="text-align: start;"><div style="text-align: start; border-top: 1px solid #ccc; padding-top: 10px;  "><p style="font-size: 10px; font-family: Arial, sans-serif; color: #a3a2a2;">© 2024 Chaturvedi Software House LLC. All Rights Reserved</p>
+                <div style="text-align: start;"><div style="text-align: start; border-top: 1px solid #ccc; padding-top: 10px;  "><p style="font-size: 10px; font-family: Arial, sans-serif; color: #a3a2a2;">© 2024-2025 Chaturvedi Software House LLC. All Rights Reserved</p>
                 <p style="font-size: 10px; font-family: Arial, sans-serif; color: #a3a2a2; padding-top: 0px">513 Al Khaleej Center Bur Dubai, Dubai United Arab Emirates, +97143258361 </p>
                 
                 </div>
@@ -1291,12 +1302,7 @@ class _LoginPageState extends State<Login> {
     try {
       final sendReport = await send(message, smtpServer); // send mail
 
-      setState(() {
-        otpSent = true;
-        otpVerified = false;
-      });
-
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("OTP sent to your email.")));
+      // ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("OTP sent to your email.")));
 
       print('Message sent: ${sendReport.toString()}');
     }
@@ -1423,7 +1429,31 @@ class _LoginPageState extends State<Login> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Icon(Icons.real_estate_agent_outlined, size: 70, color: Colors.white),
+              Container(
+                width: 90,
+                height: 90,
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.4),
+
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: Colors.white.withOpacity(0.5)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.2),
+                      blurRadius: 10,
+                      offset: const Offset(0, 5),
+                    ),
+                  ],
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Image.asset(
+                    'assets/icon_realestate.png', // Replace with your asset path
+                    fit: BoxFit.contain,
+                  ),
+                ),
+              ),
+
               const SizedBox(height: 20),
               Text(
                 "Welcome Back!",
@@ -1487,15 +1517,15 @@ class _LoginPageState extends State<Login> {
     );
   }
 
+
   Widget _buildGlassCard(BuildContext context) {
-
-
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.1),
+        color: Colors.white.withOpacity(0.3),
+
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withOpacity(0.2)),
+        border: Border.all(color: Colors.white.withOpacity(0.3)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.2),

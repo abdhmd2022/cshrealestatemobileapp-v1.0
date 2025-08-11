@@ -1835,8 +1835,6 @@ class _LoginPageState extends State<Login> {
                     ),
                   ),
 
-
-
               if (otpSent && !otpVerified) ...[
                 const SizedBox(height: 12),
                 Column(
@@ -1944,12 +1942,8 @@ class _LoginPageState extends State<Login> {
                         fontWeight: FontWeight.w500,
                       ),
                     ),
-
-
                   ],
                 ),
-
-
               ],
 
               if (otpVerified) ...[
@@ -1969,7 +1963,6 @@ class _LoginPageState extends State<Login> {
                     if (v.length < 8) return "Minimum 8 characters";
                     return null;
                   },
-                  // ✅ Real-time strength check
                 ),
 
                 const SizedBox(height: 4),

@@ -1769,11 +1769,7 @@ class _LoginPageState extends State<Login> {
                 ],
               ),*/
 
-
-
-
               const SizedBox(height: 30),
-
 
               _isLoading
                   ? const CupertinoActivityIndicator(radius: 16, color: Colors.white)

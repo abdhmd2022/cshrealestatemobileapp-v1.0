@@ -785,7 +785,6 @@ class _LoginPageState extends State<Login> {
   }
 
   // old tenant login function
-
   /*Future<void> tenantLogin(String email, String password) async {
     String url = "$OAuth_URL/oauth/token";
     String token = 'Bearer $authTokenBase';
@@ -883,7 +882,6 @@ class _LoginPageState extends State<Login> {
   }*/
 
   // new tenant login function
-
   Future<void> tenantLogin(String email, String password) async {
     prefs!.clear();
 
@@ -1296,9 +1294,7 @@ class _LoginPageState extends State<Login> {
     return emailRegex.hasMatch(email.trim());
   }
 
-
   Future<void> sendResetRequest() async {
-
 
     final url = Uri.parse("$OAuth_URL/oauth/forgot");
     final body = {
@@ -1307,7 +1303,6 @@ class _LoginPageState extends State<Login> {
     };
 
     setState(() => _isLoading = true);
-
 
     try {
       final response = await http.post(url,

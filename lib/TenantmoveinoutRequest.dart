@@ -1,12 +1,9 @@
-import 'package:cshrealestatemobile/AdminDashboard.dart';
 import 'package:cshrealestatemobile/TenantDashboard.dart';
 import 'package:cshrealestatemobile/constants.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
-import 'SalesInquiryReport.dart';
 import 'Sidebar.dart';
 import 'package:google_fonts/google_fonts.dart';
 

@@ -96,9 +96,6 @@ class _LoginPageState extends State<Login> {
   int _remainingSeconds = 60;
   bool  _showResendButton = true;
 
-
-
-
   final _formKey = GlobalKey<FormState>();
 
   GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();

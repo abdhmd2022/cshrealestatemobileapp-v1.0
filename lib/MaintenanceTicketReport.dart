@@ -1847,8 +1847,6 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                           icon: Icon(Icons.close),
                             onPressed: () {
                               Navigator.pop(context);
-
-
                             }
                             )
                       ],
@@ -1862,6 +1860,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                           primary: appbar_color, // For focus border, button etc
                           onPrimary: Colors.white,
                           onSurface: Colors.black, // Default text color
+
                         ),
                         hoverColor: appbar_color.withOpacity(0.1),
                         highlightColor: Colors.transparent, // ✅ Prevent over-corner highlight
@@ -1873,7 +1872,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                           labelText: "Select Maintenance Type",
                           border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                           filled: true,
-                          fillColor: Colors.grey.shade100,
+                          fillColor: Colors.white,
                         ),
                         icon: Icon(Icons.keyboard_arrow_down, color: appbar_color),
                         style: GoogleFonts.poppins(color: Colors.black87), // ✅ Forces text color to black
@@ -1933,7 +1932,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                           borderSide: BorderSide(color: appbar_color, width: 2),
                         ),
                         filled: true,
-                        fillColor: Colors.grey.shade100,
+                        fillColor: Colors.white,
                       ),
                     ),
 
@@ -2084,7 +2083,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
           border: Border.all(color: Colors.grey.shade300),
-          color: Colors.grey.shade100,
+          color: Colors.white,
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.03),

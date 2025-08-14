@@ -16,9 +16,6 @@ import 'constants.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:typed_data';
 import 'package:flutter/services.dart' show rootBundle;
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
-import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'dart:io';
 
 class Login extends StatefulWidget {
@@ -146,7 +143,7 @@ class _LoginPageState extends State<Login> {
     });
   }
 
-  Future<void> _handleGoogleSignIn() async {
+  /*Future<void> _handleGoogleSignIn() async {
     try {
       final GoogleSignIn _googleSignIn = GoogleSignIn(scopes: ['email']);
 
@@ -209,7 +206,7 @@ class _LoginPageState extends State<Login> {
     } catch (e) {
       showErrorSnackbar(context, 'Apple Sign-In failed');
     }
-  }
+  }*/
 
 
   // landlord permissions
@@ -1762,7 +1759,7 @@ class _LoginPageState extends State<Login> {
               const SizedBox(height: 30),
 
               _isLoading
-                  ? const CupertinoActivityIndicator(radius: 16, color: Colors.white)
+                  ? const CupertinoActivityIndicator(radius: 16, color: Colors.grey)
                   : SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(

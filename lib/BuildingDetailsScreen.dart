@@ -410,7 +410,7 @@ class _BuildingReportScreenState extends State<BuildingReportScreen> {
                               final area = flat['building']?['area']?['name'] ?? 'N/A';
                               final emirate = flat['building']?['area']?['state']?['name'] ?? 'N/A';
                               final unittype = flat['flat_type']?['name'] ?? 'N/A';
-                              final rent = (flat['basic_rent']?.toString() ?? '0') + ' AED';
+                              final rent = flat['basic_rent']?.toString() ?? '0';
                               final parking = flat['no_of_parkings']?.toString() ?? 'N/A';
                               final balcony = 'N/A';
                               final bathrooms = flat['no_of_bathrooms']?.toString() ?? 'N/A';
@@ -870,7 +870,54 @@ class AvailableUnitsDialog extends StatelessWidget {
                         _buildDetailTile(Icons.apartment, "Unit Type", unittype),
                         _buildDetailTile(Icons.business, "Building", building_name),
                         _buildDetailTile(Icons.location_on, "Location", "$area, $emirate"),
-                        _buildDetailTile(Icons.attach_money, "Price", rent),
+                        Container(
+                          padding: EdgeInsets.symmetric(vertical: 5, horizontal: 15),
+                          color: Colors.white,
+                          child: Row(
+                            children: [
+                              Icon(Icons.attach_money, color: appbar_color.shade200),
+                              SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      "Price",
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    SizedBox(height: 2),
+                                    Row(
+                                      children: [
+                                        Image.asset(
+                                          'assets/dirham.png',
+                                          width: 14,
+                                          height: 14,
+                                          fit: BoxFit.contain,
+                                        ),
+                                        const SizedBox(width: 6),
+                                        Text(
+                                          rent,
+                                          style: GoogleFonts.poppins(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.normal,
+                                            color: Colors.black87,
+                                          ),
+                                          overflow: TextOverflow.ellipsis,
+                                          softWrap: true,
+                                          maxLines: 2,
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        // _buildDetailTile(Icons.attach_money, "Price", rent),
                         _buildDetailTile(Icons.local_parking, "Parking", parking),
                         _buildDetailTile(Icons.balcony, "Balcony", balcony),
                         _buildDetailTile(Icons.bathtub, "Bathrooms", bathrooms),

@@ -20,6 +20,21 @@ const String client_id_constant = "af54faf8154e92d988599d3b9b4d1797b016ba96";
 
 const String client_password_constant = "internal@001";
 
+// Path constant
+const String dirhamIconPath = 'assets/dirham.png';
+
+// Widget constant (for reuse everywhere)
+
+final Widget dirhamPrefix = Padding(
+  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+  child: Image.asset(
+    dirhamIconPath,
+    width: 12,
+    height: 12,
+    fit: BoxFit.contain,
+  ),
+);
+
 // Serial & Company Tokens (Loaded Dynamically)
 /*late String Company_Token;*/
 late String Company_Token;

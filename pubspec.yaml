@@ -94,6 +94,7 @@ flutter:
   assets:
     - assets/icon_realestate.png
     - assets/building_location.png
+    - assets/dirham.png
 
   # To add assets to your application, add an assets section, like this:
   # assets:

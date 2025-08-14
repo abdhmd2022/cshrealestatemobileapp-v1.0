@@ -286,7 +286,30 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      Text("Price Range (AED)", style: GoogleFonts.poppins(fontWeight: FontWeight.w500)),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            "Price Range",
+                            style: GoogleFonts.poppins(fontWeight: FontWeight.w500),
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            "(",
+                            style: GoogleFonts.poppins(fontWeight: FontWeight.w500),
+                          ),
+                          Image.asset(
+                            'assets/dirham.png',
+                            width: 16,
+                            height: 16,
+                            fit: BoxFit.contain,
+                          ),
+                          Text(
+                            ")",
+                            style: GoogleFonts.poppins(fontWeight: FontWeight.w500),
+                          ),
+                        ],
+                      ),
                       SliderTheme(
                         data: SliderTheme.of(context).copyWith(
                           activeTrackColor: appbar_color,             // ✅ selected range color
@@ -808,11 +831,35 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
                                             _buildBadgeChip(Icons.check_circle_outline, a, onTap: () => _showFiltersDialog(context))),
 
                                         if (isPriceRangeModified)
-                                          _buildBadgeChip(
-                                            Icons.price_change,
-                                            "AED ${selectedPriceRange.start.round()} - ${selectedPriceRange.end.round()}",
-                                            onTap: () => _showFiltersDialog(context),
-                                          ),
+    GestureDetector(
+      onTap: () => _showFiltersDialog(context),
+      child: Chip(
+        avatar: Icon(Icons.price_change, size: 16, color: appbar_color),
+        label: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Image.asset(
+              'assets/dirham.png',
+              width: 14,
+              height: 14,
+              fit: BoxFit.contain,
+            ),
+            const SizedBox(width: 4),
+            Text(
+              "${selectedPriceRange.start.round()} - ${selectedPriceRange.end.round()}",
+              style: GoogleFonts.poppins(fontSize: 13, fontWeight: FontWeight.w500),
+            ),
+          ],
+        ),
+        backgroundColor: Colors.grey.shade100,
+        side: BorderSide(color: Colors.grey.shade300),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      ),
+    ),
+
                                       ]
                                   ).map((chip) => Padding(
                                     padding: const EdgeInsets.only(left: 6),
@@ -982,7 +1029,7 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
                                 area: unit.areaName,
                                 emirate: unit.stateName,
                                 unittype: unit.flatTypeName,
-                                rent: unit.basicRent != null ? "AED ${unit.basicRent}" : "AED N/A",
+                                rent: unit.basicRent != null ? "${unit.basicRent}" : "N/A",
                                 parking: unit.noOfParking.toString(),
                                 balcony: unit.amenities.contains("Balcony") ? "Yes" : "No",
                                 bathrooms: unit.noOfBathrooms.toString(),
@@ -1108,14 +1155,36 @@ Widget buildPriceChip(int? rent,String? flattype, {bool isBest = false}) {
             /*Icon(Icons.attach_money, size: 16, color: Colors.black87),
             SizedBox(width: 6),*/
 
-            Text(
-              rent != null ? "AED $rent" : "Rent N/A",
+            rent != null
+                ? Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Image.asset(
+                  'assets/dirham.png', // your PNG path
+                  width: 14,
+                  height: 14,
+                  fit: BoxFit.contain,
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  "$rent",
+                  style: GoogleFonts.poppins(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black87,
+                  ),
+                ),
+              ],
+            )
+                : Text(
+              "Rent N/A",
               style: GoogleFonts.poppins(
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
                 color: Colors.black87,
               ),
-            ),
+            )
+
           ],
         ),
       ),
@@ -1124,7 +1193,7 @@ Widget buildPriceChip(int? rent,String? flattype, {bool isBest = false}) {
       if (isBest)
         Positioned(
           top: -18,
-          right: -8,
+          left:-5,
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
@@ -1244,7 +1313,54 @@ class AvailableUnitsDialog extends StatelessWidget {
                         _buildDetailTile(Icons.apartment, "Unit Type", unittype),
                         _buildDetailTile(Icons.business, "Building", building_name),
                         _buildDetailTile(Icons.location_on, "Location", "$area, $emirate"),
-                        _buildDetailTile(Icons.attach_money, "Price", rent),
+                        Container(
+                          padding: EdgeInsets.symmetric(vertical: 5, horizontal: 15),
+                          color: Colors.white,
+                          child: Row(
+                            children: [
+                              Icon(Icons.attach_money, color: appbar_color.shade200),
+                              SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      "Price",
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    SizedBox(height: 2),
+                                    Row(
+                                      children: [
+                                        Image.asset(
+                                          'assets/dirham.png',
+                                          width: 14,
+                                          height: 14,
+                                          fit: BoxFit.contain,
+                                        ),
+                                        const SizedBox(width: 6),
+                                        Text(
+                                          rent,
+                                          style: GoogleFonts.poppins(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.normal,
+                                            color: Colors.black87,
+                                          ),
+                                          overflow: TextOverflow.ellipsis,
+                                          softWrap: true,
+                                          maxLines: 2,
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        // _buildDetailTile(Icons.attach_money, "Price", rent),
                         _buildDetailTile(Icons.local_parking, "Parking", parking),
                         _buildDetailTile(Icons.balcony, "Balcony", balcony),
                         _buildDetailTile(Icons.bathtub, "Bathrooms", bathrooms),

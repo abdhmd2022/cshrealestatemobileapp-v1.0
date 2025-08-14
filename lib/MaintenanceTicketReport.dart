@@ -6,6 +6,7 @@ import 'package:cshrealestatemobile/MaintenanceTicketFollowUp.dart';
 import 'package:cshrealestatemobile/constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -83,6 +84,10 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
       fetchAllTickets();
     }
 
+  }
+  Future<pw.MemoryImage> loadDirhamImage() async {
+    final bytes = await rootBundle.load('assets/dirham.png');
+    return pw.MemoryImage(bytes.buffer.asUint8List());
   }
 
 
@@ -855,6 +860,8 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
     required BuildContext context
   }) async
   {
+    final dirhamImage = await loadDirhamImage();
+
     final pdf = pw.Document();
 
     final vatRate = 0.05;
@@ -896,7 +903,25 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                         ),
                         pw.Padding(
                           padding: pw.EdgeInsets.all(8),
-                          child: pw.Text("Amount (AED)"),
+                          child: pw.Row(
+                            crossAxisAlignment: pw.CrossAxisAlignment.center,
+                            children: [
+                              pw.Text(
+                                "Amount",
+                                style: pw.TextStyle(fontSize: 12),
+                              ),
+                              pw.SizedBox(width: 4),
+                              pw.Text(
+                                "(",
+                                style: pw.TextStyle(fontSize: 12),
+                              ),
+                              pw.Image(dirhamImage, width: 12, height: 12), // AED PNG
+                              pw.Text(
+                                ")",
+                                style: pw.TextStyle(fontSize: 12),
+                              ),
+                            ],
+                          ),
                         ),
                       ],
                     ),
@@ -1914,11 +1939,8 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                       decoration: InputDecoration(
                         labelText: "Amount",
                         labelStyle: GoogleFonts.poppins(color: Colors.grey),
-                        prefixText: "AED ",
-                        prefixStyle: GoogleFonts.poppins(
-                          color: Colors.grey,
-                          fontWeight: FontWeight.w600,
-                        ),
+                        prefixIcon: dirhamPrefix,
+
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide(color: appbar_color),

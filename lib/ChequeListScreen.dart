@@ -135,14 +135,27 @@ class _ChequeListScreenState extends State<ChequeListScreen> {
                         children: [
                           Icon(Icons.receipt_long, color: Colors.white, size: 40),
                           SizedBox(height: 8),
-                          Text(
-                            "AED ${payment['amount_incl']}",
-                            style: GoogleFonts.poppins(
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          ),
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Image.asset(
+                                'assets/dirham.png', // path to your PNG
+                                width: 18,
+                                height: 18,
+                                fit: BoxFit.contain,
+                              ),
+                              const SizedBox(width: 6),
+                              Text(
+                                "${payment['amount_incl']}",
+                                style: GoogleFonts.poppins(
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ],
+                          )
+
                         ],
                       ),
                     ),
@@ -610,14 +623,27 @@ class _ChequeListScreenState extends State<ChequeListScreen> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(
-                                "AED ${payment['amount_incl']}",
-                                style: GoogleFonts.poppins(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black87,
-                                ),
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Image.asset(
+                                    'assets/dirham.png', // path to your PNG
+                                    width: 16,
+                                    height: 16,
+                                    fit: BoxFit.contain,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    "${payment['amount_incl']}",
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black87,
+                                    ),
+                                  ),
+                                ],
                               ),
+
                               buildStatusChip(status.isNotEmpty ? status : 'Pending'),
                             ],
                           ),

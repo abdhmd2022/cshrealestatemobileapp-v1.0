@@ -70,6 +70,8 @@ class _AnnouncementScreenState extends State<AnnouncementScreen> {
           },
         );
 
+        print('url -> ${'$baseurl/master/Announcement?page=$currentPage&size=$pageSize'}');
+
         if (response.statusCode == 200) {
           final Map<String, dynamic> jsonBody = json.decode(response.body);
           final List<dynamic> pageData = jsonBody['data']['announcements'] ?? [];

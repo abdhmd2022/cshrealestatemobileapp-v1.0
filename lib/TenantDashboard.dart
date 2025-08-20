@@ -428,7 +428,7 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
     final formattedDate = _formatDateToDDMMMYYYY(expiryDate);
 
 
-    if (!(daysLeft < 0 || daysLeft == 0 || daysLeft <= 3 || daysLeft <= 30)) return;
+    if (!(daysLeft < 0 || daysLeft == 0 || daysLeft <= 3 || daysLeft <= 300)) return;
 
     String expiryText = '';
     if (daysLeft < 0) {

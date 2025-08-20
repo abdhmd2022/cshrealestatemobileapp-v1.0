@@ -161,7 +161,8 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
               },
               child: Text("Submit",style: GoogleFonts.poppins(),),
             ),
-          ]);});}
+          ]);});
+  }
 
   Future<Map<String, dynamic>> fetchCommentHistory(String id, {int page = 1}) async {
     // ✅ Don't clear list here, let popup manage list updates
@@ -844,19 +845,12 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
   int totalPages = 1;
   bool isFetchingMore = false;
 
-  void _filterSubTicketsIfNeeded(Map<String, dynamic> ticket, bool isAdmin, bool isAdminFromApi, int userId) {
-    if (isAdmin && !isAdminFromApi) {
-      final allSubs = ticket['sub_tickets'] ?? [];
-      ticket['sub_tickets'] = allSubs.where((sub) => sub['assigned_to'] == userId).toList();
-    }
-  }
-
   Future<File> generateInvoicePDF({
     required String invoiceNumber,
     required String maintenanceType,
     required double amount,
-    required DateTime receiptDate,
-    required DateTime dueDate,
+   DateTime? receiptDate,
+     DateTime? dueDate,
     required BuildContext context
   }) async
   {
@@ -868,8 +862,13 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
     final vatAmount = amount * vatRate;
     final totalAmount = amount + vatAmount;
 
-    final formattedReceiptDate = DateFormat('dd-MMM-yyyy').format(receiptDate);
-    final formattedDueDate = DateFormat('dd-MMM-yyyy').format(dueDate);
+    // ✅ Use fallback if null
+    final formattedReceiptDate = receiptDate != null
+        ? DateFormat('dd-MMM-yyyy').format(receiptDate)
+        : "N/A";
+    final formattedDueDate = dueDate != null
+        ? DateFormat('dd-MMM-yyyy').format(dueDate)
+        : "N/A";
 
     pdf.addPage(
       pw.Page(
@@ -993,7 +992,6 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
 
 
   }
-
 
   Future<void> fetchAllTickets() async {
     List<Map<String, dynamic>> allFormattedTickets = [];
@@ -1347,17 +1345,6 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
     _applySearchFilter(dateFilteredTickets);
   }
 
-  String _getTicketLocation(Map ticket) {
-    final unit = ticket['unitNumber_rental']?.isNotEmpty == true
-        ? ticket['unitNumber_rental']
-        : ticket['unitNumber_sold'] ?? 'Unit';
-
-    final building = ticket['buildingName_rental']?.isNotEmpty == true
-        ? ticket['buildingName_rental']
-        : ticket['buildingName_sold'] ?? 'Building';
-
-    return "$unit - $building";
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -1609,7 +1596,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
     required String ticketId,
     required String subTicketId,
     required String amount,
-    required DateTime receiptDate,
+    DateTime? receiptDate,
     required String maintenanceType,
     required BuildContext parentContext,
     DateTime? dueDate,
@@ -1621,17 +1608,17 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
       return;
     }
     if (amount.trim().isEmpty || double.tryParse(amount) == null || double.parse(amount) <= 0) {
-      Fluttertoast.showToast(msg: "Please enter a valid positive amount!");
+      Fluttertoast.showToast(msg: "Please enter a valid amount");
       return;
     }
-    if (receiptDate == null) {
+    /*if (receiptDate == null) {
       Fluttertoast.showToast(msg: "Please select a receipt date!");
       return;
-    }
-    if (dueDate != null && dueDate.isBefore(receiptDate)) {
+    }*/
+    /*if (dueDate != null && dueDate.isBefore(receiptDate)) {
       Fluttertoast.showToast(msg: "Due date must be after receipt date!");
       return;
-    }
+    }*/
 
     final String url = "$baseurl/maintenance/invoices";
     String uuid = Uuid().v4();
@@ -1640,12 +1627,25 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
       "uuid": uuid,
       "sub_ticket_id": int.tryParse(subTicketId) ?? subTicketId,
       "amount": double.parse(amount),
-      "date": receiptDate.toIso8601String().split('T')[0],
     };
 
+    // ✅ Only include dates if provided
+    if (receiptDate != null) {
+      requestBody["date"] = receiptDate.toIso8601String().split('T')[0];
+    }
+    else
+      {
+        requestBody["date"] =null;
+      }
     if (dueDate != null) {
       requestBody["due_date"] = dueDate.toIso8601String().split('T')[0];
     }
+    else
+      {
+        requestBody["due_date"] = null;
+      }
+
+    print('request invoice body -> ${requestBody}');
 
     try {
       final response = await http.post(
@@ -1659,11 +1659,11 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final responseBody = jsonDecode(response.body);
-       /* Fluttertoast.showToast(
+        Fluttertoast.showToast(
           msg: responseBody['message'] ?? "Invoice saved successfully!",
           backgroundColor: Colors.green,
           textColor: Colors.white,
-        );*/
+        );
 
 
         final invoice = responseBody['data']['invoice'];
@@ -1788,8 +1788,16 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
               invoiceNumber: invoice['id'].toString(),
               maintenanceType: invoice['sub_ticket']['type']['name'] ?? 'N/A',
               amount: double.parse(invoice['amount'].toString()),
-              receiptDate: DateTime.parse(invoice['date']),
-              dueDate: dueDate ?? DateTime.parse(invoice['date']),
+              // ✅ Only pass receiptDate if invoice['date'] exists
+              receiptDate: invoice['date'] != null && invoice['date'].toString().isNotEmpty
+                  ? DateTime.tryParse(invoice['date'].toString())
+                  : null,
+
+              // ✅ Prefer user-selected dueDate, else fallback to invoice date if available
+              dueDate: dueDate ??
+                  (invoice['date'] != null && invoice['date'].toString().isNotEmpty
+                      ? DateTime.tryParse(invoice['date'].toString())
+                      : null),
               context: parentContext
           );
 
@@ -1812,7 +1820,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
       } else {
         final errorBody = jsonDecode(response.body);
         Fluttertoast.showToast(
-          msg: errorBody['message'] ?? "Error: ${response.statusCode}",
+          msg:" ${errorBody['message']} : ${response.statusCode} "?? "Error: ${response.statusCode}",
           backgroundColor: Colors.red,
           textColor: Colors.white,
         );
@@ -1964,7 +1972,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
 
                     _buildDateField(
                       context,
-                      label: "Receipt Date",
+                      label: "Receipt Date (Optional)",
                       date: receiptDate,
                       onPick: (picked) => setState(() => receiptDate = picked),
                     ),
@@ -1973,7 +1981,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
 
                     _buildDateField(
                       context,
-                      label: "Due Date",
+                      label: "Due Date (Optional)",
                       date: dueDate,
                       onPick: (picked) => setState(() => dueDate = picked),
                     ),
@@ -2034,25 +2042,25 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                               if (amountController.text.trim().isEmpty ||
                                   double.tryParse(amountController.text.trim()) == null ||
                                   double.parse(amountController.text.trim()) <= 0) {
-                                Fluttertoast.showToast(msg: "Please enter a valid positive amount!");
+                                Fluttertoast.showToast(msg: "Please enter a valid amount");
                                 return;
                               }
-                              if (receiptDate == null) {
+                              /*if (receiptDate == null) {
                                 Fluttertoast.showToast(msg: "Please select a receipt date!");
                                 return;
                               }
                               if (dueDate != null && dueDate!.isBefore(receiptDate!)) {
                                 Fluttertoast.showToast(msg: "Due date must be after receipt date!");
                                 return;
-                              }
-
+                              }*/
+                              print('submitting');
 
                               await saveInvoice(
                                 ticketId: ticket['ticketNumber'],
                                 subTicketId: selectedSubTicketId!,
                                 maintenanceType: selectedMaintenanceType ?? "",
                                 amount: amountController.text.trim(),
-                                receiptDate: receiptDate!,
+                                receiptDate: receiptDate,
                                 dueDate: dueDate,
                                 parentContext: context
                               );

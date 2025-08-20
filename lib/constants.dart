@@ -16,7 +16,7 @@ const String authTokenBase = r'!1--3*%*%*%*9$api$8*%*%*%*5--0!X19fIUBBUyQlYXMxOT
 
 const String OAuth_URL = "http://192.168.2.185:4555";
 
-const String client_id_constant = "af54faf8154e92d988599d3b9b4d1797b016ba96";
+const String client_id_constant = "90be135cf5302354e29d64c2dc1259011fcca0b8";
 
 const String client_password_constant = "internal@001";
 

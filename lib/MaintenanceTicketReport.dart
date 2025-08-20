@@ -984,13 +984,10 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
       ),
     );
 
-
     final dir = await getTemporaryDirectory();
     final file = File('${dir.path}/invoice_$invoiceNumber.pdf');
     await file.writeAsBytes(await pdf.save());
     return file;
-
-
   }
 
   Future<void> fetchAllTickets() async {
@@ -1345,7 +1342,6 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
     _applySearchFilter(dateFilteredTickets);
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -1664,7 +1660,6 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
           backgroundColor: Colors.green,
           textColor: Colors.white,
         );
-
 
         final invoice = responseBody['data']['invoice'];
 

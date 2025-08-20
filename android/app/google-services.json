@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "475964676852",
+    "project_id": "fincore-rms",
+    "storage_bucket": "fincore-rms.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:475964676852:android:4fea85935de98475f4dca1",
+        "android_client_info": {
+          "package_name": "com.csh.realestate.cshrealestatemobile"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBY3gqWa5R8lZ4_dn-DqhWkyFIqxTY4ZBw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

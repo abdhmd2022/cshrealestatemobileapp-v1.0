@@ -12,12 +12,13 @@ const MaterialAccentColor appbar_color = Colors.blueAccent;
 
 const String authTokenBase = r'!1--3*%*%*%*9$api$8*%*%*%*5--0!X19fIUBBUyQlYXMxOTI4MzdfX18=KSgqL2FzZGFzZGlvQ0VEQUZf';
 
-
 // const String BASE_URL_config = "http://192.168.2.185:6551/api";
 
-const String OAuth_URL = "http://192.168.2.185:4555";
+//const String OAuth_URL = "http://192.168.2.185:4555";
 
-const String client_id_constant = "90be135cf5302354e29d64c2dc1259011fcca0b8";
+const String OAuth_URL = "http://realestate.chaturvedigroup.com/oauth";
+
+const String client_id_constant = "3beca39997dc69a761afe408987e46589cb75a5e";
 
 const String client_password_constant = "internal@001";
 
@@ -25,7 +26,6 @@ const String client_password_constant = "internal@001";
 const String dirhamIconPath = 'assets/dirham.png';
 
 // Widget constant (for reuse everywhere)
-
 final Widget dirhamPrefix = Padding(
   padding: const EdgeInsets.symmetric(horizontal: 8.0),
   child: Image.asset(

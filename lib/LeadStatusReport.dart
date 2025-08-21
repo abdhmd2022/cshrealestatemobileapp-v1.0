@@ -127,7 +127,7 @@ class _LeadStatusReportState extends State<LeadStatusReport> {
       "Content-Type": "application/json"
     };
 
-     String url = "$baseurl/v1/leadStatus/$id";
+     String url = "$baseurl/leadStatus/$id";
 
     try{
       final response = await http.put(

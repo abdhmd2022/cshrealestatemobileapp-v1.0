@@ -45,7 +45,7 @@ class _TenantProfileState extends State<TenantProfile> with TickerProviderStateM
   }
 
   Future<void> fetchTicketCount() async {
-    String url = "$baseurl/v1/tenent/maintenance?tenent_id=$user_id&flat_id=$flat_id";
+    String url = "$baseurl/tenent/maintenance?tenent_id=$user_id&flat_id=$flat_id";
 
     print('Fetching ticket count from URL: $url');
 

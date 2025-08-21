@@ -1125,17 +1125,20 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
       if (response.statusCode == 200 || response.statusCode == 201) {
         // Request was successful
         print("Response Data: ${response.body}");
+        Map<String, dynamic> decodedResponse = jsonDecode(response.body);
+
+        showResponseSnackbar(context, decodedResponse);
         setState(() {
-          /*_formKey.currentState?.reset();
+          _formKey.currentState?.reset();
           nextFollowUpDate = null;
           selectedfollowup_status = null;
           selectedfollowup_type = null;
-          remarksController.clear();*/
+          remarksController.clear();
 
-          Navigator.pushReplacement(
+          /*Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => SalesInquiryReport()),
-          );
+          );*/
         });
 
       } else {
@@ -1251,7 +1254,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
 
     emirates.clear();
 
-    final url = '$baseurl/v1/masters/emirates'; // Replace with your API endpoint
+    final url = '$baseurl/masters/emirates'; // Replace with your API endpoint
     String token = 'Bearer $Company_Token'; // auth token for request
 
     Map<String, String> headers = {
@@ -1284,7 +1287,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
 
     areas.clear();
 
-    final url = '$baseurl/v1/masters/areas'; // Replace with your API endpoint
+    final url = '$baseurl/masters/areas'; // Replace with your API endpoint
     String token = 'Bearer $Company_Token'; // auth token for request
 
     Map<String, String> headers = {
@@ -1337,7 +1340,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
     print('fetching unit types');
     unitTypes.clear();
 
-    final url = '$baseurl/v1/masters/flatTypes'; // Replace with your API endpoint
+    final url = '$baseurl/masters/flatTypes'; // Replace with your API endpoint
     String token = 'Bearer $Company_Token'; // auth token for request
 
     Map<String, String> headers = {
@@ -1370,7 +1373,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
 
     activitysource_list.clear();
 
-    final url = '$baseurl/v1/activitySources'; // Replace with your API endpoint
+    final url = '$baseurl/activitySources'; // Replace with your API endpoint
     String token = 'Bearer $Company_Token'; // auth token for request
 
     Map<String, String> headers = {
@@ -1412,7 +1415,7 @@ class _FollowupSaleInquiryPageState extends State<FollowupSalesInquiry> {
 
     amenities.clear();
 
-    final url = '$baseurl/v1/amenities'; // Replace with your API endpoint
+    final url = '$baseurl/amenities'; // Replace with your API endpoint
     String token = 'Bearer $Company_Token'; // auth token for request
 
     print('fetch url $url');

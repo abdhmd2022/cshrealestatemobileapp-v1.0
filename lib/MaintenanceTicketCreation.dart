@@ -1227,7 +1227,7 @@ late int loaded_flat_id;
                                       ? '${selectedFlat!['tenant_name'] ?? "Unknown Tenant"} | '
                                       '${selectedFlat!['flat_name'] ?? "Unknown Flat"} | '
                                       '${selectedFlat?['building_name'] ?? "Unknown Building"}'
-                                      : "Select Flat",
+                                      : "No Flat Assigned",
                                   style: GoogleFonts.poppins(
                                     color: appbar_color.shade700,
                                     fontSize: 16,

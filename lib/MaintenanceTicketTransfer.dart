@@ -115,7 +115,7 @@ class _MaintenanceTicketTransferPageState extends State<MaintenanceTicketTransfe
 
     transfer_to_list.clear();
 
-    final url = '$baseurl/v1/users'; // Replace with your API endpoint
+    final url = '$baseurl/users'; // Replace with your API endpoint
     String token = 'Bearer $Company_Token'; // auth token for request
 
     Map<String, String> headers = {
@@ -150,7 +150,7 @@ class _MaintenanceTicketTransferPageState extends State<MaintenanceTicketTransfe
   /*Future<void> sendTransferInquiryRequest() async {
 
     // Replace with your API endpoint
-    final String url = "$BASE_URL_config/v1/leads/${widget.id}";
+    final String url = "$BASE_URL_config/leads/${widget.id}";
 
     var uuid = Uuid();
 

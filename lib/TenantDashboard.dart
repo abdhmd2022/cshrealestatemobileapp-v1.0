@@ -1465,7 +1465,7 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
                                 style: GoogleFonts.poppins(fontWeight: FontWeight.w500, fontSize: 14),
                               ),
                               subtitle: Text(
-                                user['emirates_id'],
+                                user['emirates_id']?? "N/A",
                                 style: GoogleFonts.poppins(fontSize: 13, color: Colors.black87),
                               ),
                             ),
@@ -1482,7 +1482,7 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
                                 style: GoogleFonts.poppins(fontWeight: FontWeight.w500, fontSize: 14),
                               ),
                               subtitle: Text(
-                                user['passport_no'],
+                                user['passport_no']?? 'N/A',
                                 style: GoogleFonts.poppins(fontSize: 13, color: Colors.black87),
                               ),
                             ),
@@ -1499,7 +1499,7 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
                                 style: GoogleFonts.poppins(fontWeight: FontWeight.w500, fontSize: 14),
                               ),
                               subtitle: Text(
-                                user['nationality'],
+                                user['nationality']?? "N/A",
                                 style: GoogleFonts.poppins(fontSize: 13, color: Colors.black87),
                               ),
                             ),

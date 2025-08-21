@@ -748,6 +748,8 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
     };
     }
 
+
+
       print('create request body $requestBody');
 
     try {
@@ -763,6 +765,10 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
       if (response.statusCode == 200 || response.statusCode == 201) {
         // Request was successful
         print("Response Data: ${response.body}");
+        Map<String, dynamic> decodedResponse = jsonDecode(response.body);
+
+        showResponseSnackbar(context, decodedResponse);
+
         setState(() {
 
           _formKey.currentState?.reset();

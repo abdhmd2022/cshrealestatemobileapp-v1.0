@@ -657,7 +657,7 @@ class _LoginPageState extends State<Login> {
   // new admin login function
   Future<void> _adminlogin(String email, String password) async {
     prefs!.clear();
-    String url = "$OAuth_URL/oauth/token";
+    String url = "$OAuth_URL/token";
     setState(() => _isLoading = true);
     dynamic responseData;
 
@@ -877,7 +877,7 @@ class _LoginPageState extends State<Login> {
   Future<void> tenantLogin(String email, String password) async {
     prefs!.clear();
 
-    String loginUrl = "$OAuth_URL/oauth/token";
+    String loginUrl = "$OAuth_URL/token";
     setState(() => _isLoading = true);
 
     try {
@@ -1024,7 +1024,7 @@ class _LoginPageState extends State<Login> {
   Future<void> landlordLogin(String email, String password) async {
     prefs!.clear();
 
-    String loginUrl = "$OAuth_URL/oauth/token";
+    String loginUrl = "$OAuth_URL/token";
     setState(() => _isLoading = true);
 
     try {

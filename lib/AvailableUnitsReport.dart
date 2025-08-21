@@ -5,6 +5,16 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'dart:typed_data';
+import 'package:printing/printing.dart';
+import 'package:flutter/services.dart' show rootBundle;
+
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
+import 'dart:io';
+import 'package:pdf/pdf.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'Sidebar.dart';
@@ -26,6 +36,9 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
       isUserVisible = true,
       isRolesEnable = true,
       isVisibleNoUserFound = false;
+
+  String statusFilter = "All"; // NEW: "All" | "Rent" | "Buy"
+
 
   bool isLoading = true;
 
@@ -60,6 +73,13 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
   RangeValues selectedPriceRange = const RangeValues(0, 2000000);
   List<String> selectedAmenities = [];
 
+  PdfColor _statusColor(String? status) {
+    final s = (status ?? '').toLowerCase();
+    if (s == 'buy') return PdfColors.blue600;
+    if (s == 'rent') return PdfColors.green600;
+    return PdfColors.grey600;
+  }
+
   Future<void> _initSharedPreferences() async {
     prefs = await SharedPreferences.getInstance();
 
@@ -72,6 +92,48 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
 
       fetchFlats();
     });
+  }
+  // CHANGED: unit-wise price when statusFilter == "All"
+  // --- Dynamic price & label (unit-wise) ---
+  int? _currentPrice(Flat u) {
+    return (u.status == "Buy") ? u.basicSaleValue : u.basicRent;
+  }
+
+  String _priceLabelFor(Flat u) {
+    return (u.status == "Buy") ? "Price" : "Rent";
+  }
+
+
+
+
+// NEW: “best price” per flat type under current status
+  bool _isBestPriceInFlatType(Flat unit) {
+    // determine cohort (which units to compare against)
+    final String unitStatus = (unit.status ?? '').toLowerCase();
+    final String filter = statusFilter.toLowerCase();
+
+    // when "All", compare within the unit's own status; otherwise, use the selected category
+    final String cohortStatus = (filter == 'all') ? unitStatus : filter;
+
+    // gather comparable units: same flat type, same cohort status, with a price
+    final candidates = filteredUnits.where((u) {
+      final s = (u.status ?? '').toLowerCase();
+      if (u.flatTypeName != unit.flatTypeName) return false;
+      if (s != cohortStatus) return false;
+
+      final p = _currentPrice(u);
+      return p != null;
+    }).toList();
+
+    if (candidates.length < 2) return false;
+
+    // find min within the cohort
+    final minPrice = candidates
+        .map((u) => _currentPrice(u)!)
+        .reduce((a, b) => a < b ? a : b);
+
+    final myPrice = _currentPrice(unit);
+    return myPrice != null && myPrice == minPrice;
   }
 
 
@@ -155,6 +217,24 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
 
       setState(() {
         allUnits = combinedFlats.reversed.toList(); // Optional: reverse order
+        // ✅ Dynamic min & max based on unit prices
+        final prices = allUnits
+            .map((u) => _currentPrice(u))
+            .where((p) => p != null)
+            .cast<int>()
+            .toList();
+
+
+        if (prices.isNotEmpty) {
+          double minPrice = prices.reduce((a, b) => a < b ? a : b).toDouble();
+          double maxPrice = prices.reduce((a, b) => a > b ? a : b).toDouble();
+
+          // ✅ Add buffer ±5000
+          rangeMin = (minPrice - 5000).clamp(0, double.infinity); // prevent negative
+          rangeMax = maxPrice + 5000;
+
+          selectedPriceRange = RangeValues(rangeMin, rangeMax);
+        }
         filteredUnits = allUnits;
       });
     } catch (e) {
@@ -167,6 +247,273 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
     });
   }
 
+  Future<Uint8List> buildModernUnitsPdfBytes(List<Flat> units) async {
+    final pdf = pw.Document();
+
+    // ---- 1) Load fonts (embed to avoid spacing/kerning issues) ----
+    final regData  = await rootBundle.load('Inter-Regular.ttf');
+    final boldData = await rootBundle.load('Inter-SemiBold.ttf');
+
+// Pass ByteData directly (no .buffer.asUint8List())
+    final fontRegular = pw.Font.ttf(regData);
+    final fontBold    = pw.Font.ttf(boldData);
+
+    // ---- 2) Optional assets (logo, AED icon) ----
+    pw.ImageProvider? logoImage;
+    try {
+      final data = await rootBundle.load('assets/icon_realestate.png');
+      logoImage = pw.MemoryImage(data.buffer.asUint8List());
+    } catch (_) {}
+    pw.ImageProvider? aedIcon;
+    try {
+      final data = await rootBundle.load('assets/dirham.png');
+      aedIcon = pw.MemoryImage(data.buffer.asUint8List());
+    } catch (_) {}
+
+    // ---- 3) Page theme (A4) with embedded fonts ----
+    final pageTheme = pw.PageTheme(
+      pageFormat: PdfPageFormat.a4,
+      margin: const pw.EdgeInsets.all(24),
+      theme: pw.ThemeData.withFont(base: fontRegular, bold: fontBold),
+    );
+
+    final now = DateFormat("dd MMM yyyy, hh:mm a").format(DateTime.now());
+
+    // ---- 4) Small helpers ----
+    PdfColor _statusColor(String? status) {
+      final s = (status ?? '').toLowerCase();
+      if (s == 'buy')  return PdfColors.blue600;
+      if (s == 'rent') return PdfColors.green600;
+      return PdfColors.grey600;
+    }
+
+    pw.Widget _chip(String text, {PdfColor color = PdfColors.grey300, PdfColor textColor = PdfColors.black}) {
+      return pw.Container(
+        padding: const pw.EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+        decoration: pw.BoxDecoration(color: color, borderRadius: pw.BorderRadius.circular(12)),
+        child: pw.Text(text, style: pw.TextStyle(fontSize: 9, color: textColor)),
+      );
+    }
+
+    pw.Widget _statusChip(String? status) {
+      final color = _statusColor(status);
+      return _chip(status ?? 'Unknown', color: color, textColor: PdfColors.white);
+    }
+
+    pw.Widget _kvTable(Map<String, String> data) {
+      return pw.Table(
+        border: null,
+        columnWidths: const {
+          0: pw.FixedColumnWidth(95),   // label column width (tweak 85–110 if needed)
+          1: pw.FlexColumnWidth(),      // value column takes remaining space
+        },
+        defaultVerticalAlignment: pw.TableCellVerticalAlignment.middle,
+        children: data.entries.map((e) {
+          return pw.TableRow(
+            children: [
+              pw.Padding(
+                padding: const pw.EdgeInsets.symmetric(vertical: 3),
+                child: pw.Text(
+                  e.key,
+                  style: pw.TextStyle(fontSize: 10, fontWeight: pw.FontWeight.bold),
+                  textAlign: pw.TextAlign.left,
+                ),
+              ),
+              pw.Padding(
+                padding: const pw.EdgeInsets.symmetric(vertical: 3),
+                child: pw.Text(
+                  e.value,
+                  style: const pw.TextStyle(fontSize: 10),
+                  textAlign: pw.TextAlign.left,
+                  softWrap: true,
+                ),
+              ),
+            ],
+          );
+        }).toList(),
+      );
+    }
+
+    pw.Widget _priceLine(String label, String value) {
+      return pw.Row(
+        mainAxisSize: pw.MainAxisSize.min,
+        children: [
+          pw.Text(label, style: pw.TextStyle(fontSize: 11, fontWeight: pw.FontWeight.bold)),
+          pw.SizedBox(width: 6),
+          if (aedIcon != null) pw.Image(aedIcon, width: 10, height: 10),
+          if (aedIcon != null) pw.SizedBox(width: 3),
+          pw.Text(value, style: const pw.TextStyle(fontSize: 11)),
+        ],
+      );
+    }
+
+    pw.Widget _unitCard(Flat u) {
+      final isBuy      = (u.status ?? '').toLowerCase() == 'buy';
+      final priceLabel = isBuy ? 'Price' : 'Rent';
+      final priceStr   = (isBuy ? u.basicSaleValue : u.basicRent)?.toString() ?? 'N/A';
+
+      return pw.Container(
+        decoration: pw.BoxDecoration(
+          color: PdfColors.white,
+          borderRadius: pw.BorderRadius.circular(14),
+          border: pw.Border.all(color: PdfColors.grey300),
+          boxShadow: [pw.BoxShadow(color: PdfColors.grey300, blurRadius: 8, spreadRadius: 1)],
+        ),
+        child: pw.Padding(
+          padding: const pw.EdgeInsets.fromLTRB(14, 12, 14, 12),
+          child: pw.Column(
+            crossAxisAlignment: pw.CrossAxisAlignment.start,
+            children: [
+              // Header row: Unit + status chip
+              pw.Row(
+                mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                children: [
+                  pw.Text(u.name, style: pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold)),
+                  _statusChip(u.status),
+                ],
+              ),
+              pw.SizedBox(height: 8),
+              _priceLine(priceLabel, priceStr),
+              pw.SizedBox(height: 8),
+              pw.Divider(color: PdfColors.grey300),
+              pw.SizedBox(height: 4),
+
+              // Aligned key–value info
+              _kvTable({
+                'Building' : u.buildingName,
+                'Type'     : u.flatTypeName,
+                'Location' : '${u.areaName}, ${u.stateName}',
+                'Parking'  : u.noOfParking.toString(),
+                'Bathrooms': u.noOfBathrooms.toString(),
+                'Balcony'  : u.amenities.contains('Balcony') ? 'Yes' : 'No',
+              }),
+
+              if (u.amenities.isNotEmpty) pw.SizedBox(height: 8),
+              if (u.amenities.isNotEmpty)
+                pw.Wrap(
+                  spacing: 6, runSpacing: 6,
+                  children: u.amenities.map((a) => _chip(a)).toList(),
+                ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    pw.Widget _headerBlock() {
+      return pw.Container(
+        padding: const pw.EdgeInsets.all(14),
+        decoration: pw.BoxDecoration(
+          color: PdfColors.white,
+          borderRadius: pw.BorderRadius.circular(14),
+          border: pw.Border.all(color: PdfColors.grey300),
+        ),
+        child: pw.Row(
+          crossAxisAlignment: pw.CrossAxisAlignment.center,
+          children: [
+            if (logoImage != null)
+              pw.Container(
+                width: 48,
+                height: 48,
+                padding: pw.EdgeInsets.all(5),
+                decoration: pw.BoxDecoration(
+                  shape: pw.BoxShape.circle,
+                  border: pw.Border.all(color: PdfColors.grey300),
+                ),
+                child: pw.ClipOval(
+                  child: pw.Image(logoImage!, fit: pw.BoxFit.cover),
+                ),
+              ),
+            if (logoImage != null) pw.SizedBox(width: 12),
+            pw.Column(
+              crossAxisAlignment: pw.CrossAxisAlignment.start,
+              children: [
+                pw.Text('Available Units Report', style: pw.TextStyle(fontSize: 20, fontWeight: pw.FontWeight.bold)),
+                pw.SizedBox(height: 2),
+                pw.Text(now, style: const pw.TextStyle(fontSize: 10, color: PdfColors.grey700)),
+              ],
+
+            ),
+          ],
+        ),
+      );
+    }
+
+    // ---- 5) Build pages (synchronous build; grid via Table to avoid width math) ----
+    pdf.addPage(
+      pw.MultiPage(
+        pageTheme: pageTheme,
+        footer: (ctx) => pw.Padding(
+          padding: const pw.EdgeInsets.only(top: 12),
+          child: pw.Row(
+            mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+            children: [
+              pw.Text('Generated on $now', style: const pw.TextStyle(fontSize: 9, color: PdfColors.grey600)),
+              pw.Text('Page ${ctx.pageNumber}/${ctx.pagesCount}', style: const pw.TextStyle(fontSize: 9, color: PdfColors.grey600)),
+            ],
+          ),
+        ),
+        build: (pw.Context context) {
+          // Build a 2-column grid by chunking units into rows of two
+          final rows = <pw.TableRow>[];
+          for (int i = 0; i < units.length; i += 2) {
+            final left  = _unitCard(units[i]);
+            final right = (i + 1 < units.length) ? _unitCard(units[i + 1]) : pw.SizedBox();
+
+            rows.add(
+              pw.TableRow(
+                children: [
+                  pw.Padding(padding: const pw.EdgeInsets.only(right: 6, bottom: 12), child: left),
+                  pw.Padding(padding: const pw.EdgeInsets.only(left: 6, bottom: 12), child: right),
+                ],
+              ),
+            );
+          }
+
+          return [
+            _headerBlock(),
+            pw.SizedBox(height: 16),
+            pw.Table(
+              border: null,
+              columnWidths: const {
+                0: pw.FlexColumnWidth(1),
+                1: pw.FlexColumnWidth(1),
+              },
+              children: rows,
+            ),
+          ];
+        },
+      ),
+    );
+
+    return pdf.save();
+  }
+
+  Future<void> shareUnitsReport(List<Flat> units) async {
+    final bytes = await buildModernUnitsPdfBytes(units);
+
+    if (kIsWeb) {
+      await Printing.sharePdf(bytes: bytes, filename: 'units_report.pdf');
+    } else {
+      final dir = await getTemporaryDirectory();
+      final file = File('${dir.path}/units_report.pdf');
+      await file.writeAsBytes(bytes, flush: true);
+      await Share.shareXFiles([XFile(file.path)], text: 'Available Units Report');
+    }
+  }
+
+  Future<void> downloadUnitsReport(List<Flat> units) async {
+    final bytes = await buildModernUnitsPdfBytes(units);
+
+    if (kIsWeb) {
+      await Printing.sharePdf(bytes: bytes, filename: 'units_report.pdf');
+    } else {
+      final docs = await getApplicationDocumentsDirectory();
+      final file = File('${docs.path}/units_report.pdf');
+      await file.writeAsBytes(bytes, flush: true);
+      // Show a toast/snackbar with path if you like
+    }
+  }
 
   Future<void> fetchFiltersData() async {
     try {
@@ -207,6 +554,8 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
     List<String> tempAmenities = [...selectedAmenities];
     RangeValues tempPriceRange = selectedPriceRange;
     bool tempIsPriceModified = isPriceRangeModified;
+    String tempStatus = statusFilter; // put this near your other temp vars
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -228,7 +577,45 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
 
                   SizedBox(height: 20),
 
-                  // Flat Type
+
+// Inside the Column children (at the top, after "Filters" title):
+                SizedBox(height: 12),
+
+
+            Align(
+            alignment: Alignment.centerLeft,
+            child:  Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text("Category", style: GoogleFonts.poppins(fontWeight: FontWeight.bold, fontSize: 16)),
+
+                const SizedBox(height: 8),
+                Wrap(
+                  spacing: 8.0,
+                  runSpacing: 8.0,
+                  children: ["All", "Rent", "Buy"].map((s) {
+                    final selected = tempStatus == s;
+                    return ChoiceChip(
+                      checkmarkColor: Colors.white,
+
+                      label: Text(s, style: GoogleFonts.poppins(color: selected ? Colors.white : Colors.black87)),
+                      selected: selected,
+                      selectedColor: appbar_color,
+                      backgroundColor: Colors.grey.shade200,
+                      onSelected: (_) => setModalState(() => tempStatus = s),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                    );
+                  }).toList(),
+                ),
+              ],
+            ),),
+
+            SizedBox(height: 16),
+
+
+            SizedBox(height: 16),
+
+            // Flat Type
                   Align(
                     alignment: Alignment.centerLeft,
                     child: Column(
@@ -281,47 +668,133 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
 
                   SizedBox(height: 20),
 
-                  // Price Range
+                  // Price Range (fields + slider)
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text(
-                            "Price Range",
-                            style: GoogleFonts.poppins(fontWeight: FontWeight.w500),
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            "(",
-                            style: GoogleFonts.poppins(fontWeight: FontWeight.w500),
-                          ),
-                          Image.asset(
-                            'assets/dirham.png',
-                            width: 16,
-                            height: 16,
-                            fit: BoxFit.contain,
-                          ),
-                          Text(
-                            ")",
-                            style: GoogleFonts.poppins(fontWeight: FontWeight.w500),
-                          ),
+                          Text("Range", style: GoogleFonts.poppins(fontWeight: FontWeight.w500)),
+                          /*const SizedBox(width: 4),
+                          Image.asset('assets/dirham.png', width: 16, height: 16, fit: BoxFit.contain),*/
                         ],
                       ),
+                      const SizedBox(height: 10),
+
+                      // === NEW: two fields for min/max ===
+                      Builder(builder: (context) {
+                        // Keep controllers inside the StatefulBuilder scope
+                        final minFmt = NumberFormat.decimalPattern(); // intl already imported
+                        final maxFmt = NumberFormat.decimalPattern();
+
+                        // initialize controllers based on the temp range
+                        final TextEditingController minCtl = TextEditingController(
+                          text: tempPriceRange.start.round().toString(),
+                        );
+                        final TextEditingController maxCtl = TextEditingController(
+                          text: tempPriceRange.end.round().toString(),
+                        );
+
+                        // small helper to parse & clamp and keep min<=max
+                        void _applyFromFields({bool fromMin = false, bool fromMax = false}) {
+                          // parse
+                          int? minVal = int.tryParse(minCtl.text.replaceAll(',', '').trim());
+                          int? maxVal = int.tryParse(maxCtl.text.replaceAll(',', '').trim());
+
+                          // fallback to current values if parse fails
+                          double currentMin = tempPriceRange.start;
+                          double currentMax = tempPriceRange.end;
+
+                          double newMin = (minVal ?? currentMin.toInt()).toDouble();
+                          double newMax = (maxVal ?? currentMax.toInt()).toDouble();
+
+                          // clamp to slider bounds
+                          newMin = newMin.clamp(rangeMin, rangeMax);
+                          newMax = newMax.clamp(rangeMin, rangeMax);
+
+                          // ensure min <= max
+                          if (newMin > newMax) {
+                            if (fromMin) newMax = newMin;
+                            if (fromMax) newMin = newMax;
+                          }
+
+                          setModalState(() {
+                            tempPriceRange = RangeValues(newMin, newMax);
+                            tempIsPriceModified = true;
+
+                            // reformat text with grouping
+                            minCtl.text = minFmt.format(newMin.round());
+                            maxCtl.text = maxFmt.format(newMax.round());
+
+                            // move cursor to end
+                            minCtl.selection = TextSelection.fromPosition(TextPosition(offset: minCtl.text.length));
+                            maxCtl.selection = TextSelection.fromPosition(TextPosition(offset: maxCtl.text.length));
+                          });
+                        }
+
+                        InputDecoration _dec(String label) => InputDecoration(
+                          labelText: label,
+                          prefixIcon: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+                            child: Image.asset('assets/dirham.png', width: 16, height: 16, fit: BoxFit.contain),
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(color: Colors.grey.shade400, width: 1.2), // 👈 normal border
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(color: appbar_color, width: 1.8), // 👈 selected border
+                          ),
+                          isDense: true,
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                        );
+
+
+                        return Row(
+                          children: [
+                            // Min field
+                            Expanded(
+                              child: TextField(
+                                controller: minCtl,
+                                keyboardType: TextInputType.number,
+                                decoration: _dec("Min"),
+                                onChanged: (_) => _applyFromFields(fromMin: true),
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            // Max field
+                            Expanded(
+                              child: TextField(
+                                controller: maxCtl,
+                                keyboardType: TextInputType.number,
+                                decoration: _dec("Max"),
+                                onChanged: (_) => _applyFromFields(fromMax: true),
+                              ),
+                            ),
+                          ],
+                        );
+                      }),
+
+                      const SizedBox(height: 12),
+
+                      // === Slider ===
                       SliderTheme(
                         data: SliderTheme.of(context).copyWith(
-                          activeTrackColor: appbar_color,             // ✅ selected range color
-                          inactiveTrackColor: Colors.grey.shade300,   // ✅ unselected range
-                          thumbColor: appbar_color,                   // ✅ draggable circle
-                          overlayColor: appbar_color.withOpacity(0.2),// ✅ circle glow on press
-                          valueIndicatorColor: appbar_color,          // ✅ popup value indicator
+                          activeTrackColor: appbar_color,
+                          inactiveTrackColor: Colors.grey.shade300,
+                          thumbColor: appbar_color,
+                          overlayColor: appbar_color.withOpacity(0.2),
+                          valueIndicatorColor: appbar_color,
                           trackHeight: 4,
-                          thumbShape: RoundSliderThumbShape(enabledThumbRadius: 10),
-                          overlayShape: RoundSliderOverlayShape(overlayRadius: 20),
-                          rangeTrackShape: RoundedRectRangeSliderTrackShape(),
-                          rangeThumbShape: RoundRangeSliderThumbShape(),
+                          thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 10),
+                          overlayShape: const RoundSliderOverlayShape(overlayRadius: 20),
+                          rangeTrackShape: const RoundedRectRangeSliderTrackShape(),
+                          rangeThumbShape: const RoundRangeSliderThumbShape(),
                         ),
                         child: RangeSlider(
                           values: tempPriceRange,
@@ -339,9 +812,10 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
                             });
                           },
                         ),
-                      )
+                      ),
                     ],
                   ),
+
 
                   SizedBox(height: 20),
 
@@ -396,7 +870,9 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
                       // 🔁 Reset Button - Styled Outlined
                       OutlinedButton.icon(
                         onPressed: () {
+
                           setModalState(() {
+                            tempStatus = "All"; // ✅ reset category too
                             tempFlatTypes.clear();
                             tempAmenities.clear();
                             tempPriceRange = RangeValues(rangeMin, rangeMax); // shared prefs wala
@@ -425,6 +901,7 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
                       ElevatedButton.icon(
                         onPressed: () {
                           setState(() {
+                            statusFilter = tempStatus; // NEW
                             selectedFlatTypes = List.from(tempFlatTypes);
                             selectedAmenities = [...tempAmenities];
                             selectedPriceRange = tempPriceRange;
@@ -474,35 +951,27 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
 
 
   void applyFilters() {
-    if (allUnits.isEmpty) {
-      print("⚠️ allUnits is empty. Skipping filters.");
-      return;
-    }
-
-    print("🔥 APPLYING FILTERS 🔥");
-    print("Selected flat types: $selectedFlatTypes");
-    print("Selected price range: ${selectedPriceRange.start} - ${selectedPriceRange.end}");
-    print("Is price range modified: $isPriceRangeModified");
-    print("Selected amenities: $selectedAmenities");
+    if (allUnits.isEmpty) return;
 
     List<Flat> filtered = allUnits.where((unit) {
-      final rent = unit.basicRent ?? 0;
+      // ✅ Category filter first
+      final statusMatch = (statusFilter == "All") || ((unit.status ?? "") == statusFilter);
 
+      // ✅ Price is dynamic per unit
+      final price = _currentPrice(unit);
+
+      // ✅ Other filters
       final flatTypeMatch = selectedFlatTypes.isEmpty || selectedFlatTypes.contains(unit.flatTypeName);
 
       final priceMatch = !isPriceRangeModified ||
-          (rent >= selectedPriceRange.start && rent <= selectedPriceRange.end);
+          (price != null &&
+              price >= selectedPriceRange.start &&
+              price <= selectedPriceRange.end);
 
       final amenitiesMatch = selectedAmenities.every((a) => unit.amenities.contains(a));
 
-      final finalMatch = flatTypeMatch && priceMatch && amenitiesMatch;
-
-      print("🔎 ${unit.name} → flatTypeMatch: $flatTypeMatch | priceMatch: $priceMatch | rent: $rent | amenitiesMatch: $amenitiesMatch | Final Match: $finalMatch");
-
-      return finalMatch;
+      return statusMatch && flatTypeMatch && priceMatch && amenitiesMatch; // <-- include statusMatch
     }).toList();
-
-    print("✅ Filtered units before search: ${filtered.length}");
 
     if (searchQuery.trim().isNotEmpty) {
       filtered = filtered.where((unit) =>
@@ -512,13 +981,9 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
           unit.areaName.toLowerCase().contains(searchQuery.toLowerCase()) ||
           unit.stateName.toLowerCase().contains(searchQuery.toLowerCase())
       ).toList();
-
-      print("🔎 Applied search '$searchQuery' → Final count: ${filtered.length}");
     }
 
-    setState(() {
-      filteredUnits = filtered;
-    });
+    setState(() => filteredUnits = filtered);
   }
 
   void _showSortOptions(BuildContext context) {
@@ -663,15 +1128,15 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
   void _sortUnitsByPrice({required bool ascending}) {
     setState(() {
       filteredUnits.sort((a, b) {
-        final aIsBest = _isBestRentInFlatType(a);
-        final bIsBest = _isBestRentInFlatType(b);
+        final aIsBest = _isBestPriceInFlatType(a);
+        final bIsBest = _isBestPriceInFlatType(b);
 
         if (aIsBest && !bIsBest) return -1;
         if (!aIsBest && bIsBest) return 1;
 
-        int priceA = a.basicRent ?? 0;
-        int priceB = b.basicRent ?? 0;
-        return ascending ? priceA.compareTo(priceB) : priceB.compareTo(priceA);
+        final pa = _currentPrice(a) ?? 0;
+        final pb = _currentPrice(b) ?? 0;
+        return ascending ? pa.compareTo(pb) : pb.compareTo(pa);
       });
 
       selectedSort = ascending ? "low_to_high" : "high_to_low";
@@ -689,6 +1154,19 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
         key: _scaffoldKey,
         backgroundColor:  Colors.white,
         appBar: AppBar(
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.share, color: Colors.white),
+              tooltip: "Share",
+              onPressed: () async => await shareUnitsReport(filteredUnits),
+            ),
+            // Optional: direct download/save
+             IconButton(
+               icon: const Icon(Icons.download, color: Colors.white),
+               tooltip: "Download PDF",
+              onPressed: () async => await downloadUnitsReport(filteredUnits),
+             ),
+          ],
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(70),
             child: Container(
@@ -813,6 +1291,15 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
 
                             const SizedBox(width: 10),
 
+                            // NEW — always show current Status as a tappable badge
+                            _buildBadgeChip(
+                              Icons.assignment_turned_in_outlined,
+                              "Category: $statusFilter",
+                              onTap: () => _showFiltersDialog(context),
+                            ),
+                            const SizedBox(width: 10),
+
+
                             // 🔘 FILTER BADGES (right of Filter button)
                             Expanded(
                               child: SingleChildScrollView(
@@ -825,6 +1312,7 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
                                           ? [
                                         _buildBadgeChip(Icons.info_outline, "No filters selected"),
                                       ] : [
+
                                         ...selectedFlatTypes.map((type) =>
                                             _buildBadgeChip(Icons.apartment, type, onTap: () => _showFiltersDialog(context))),
                                         ...selectedAmenities.map((a) =>
@@ -980,6 +1468,12 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
   }
 
   Widget _buildModernUnitCard(Flat unit) {
+    final price = _currentPrice(unit);
+    final isBest = _isBestPriceInFlatType(unit);
+    final priceLabel = _priceLabelFor(unit);
+
+
+
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       decoration: BoxDecoration(
@@ -1019,7 +1513,7 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        buildPriceChip(unit.basicRent, unit.flatTypeName, isBest: _isBestRentInFlatType(unit)),
+                        buildPriceChip(price, unit.flatTypeName, priceLabel, isBest: isBest),
                         TextButton(
                           onPressed: () {
                             showDialog(
@@ -1027,9 +1521,9 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
                               builder: (context) => AvailableUnitsDialog(
                                 unitno: unit.name,
                                 area: unit.areaName,
+                                status: unit.status ?? "Rent",                        // ✅ NEW
                                 emirate: unit.stateName,
                                 unittype: unit.flatTypeName,
-                                rent: unit.basicRent != null ? "${unit.basicRent}" : "N/A",
                                 parking: unit.noOfParking.toString(),
                                 balcony: unit.amenities.contains("Balcony") ? "Yes" : "No",
                                 bathrooms: unit.noOfBathrooms.toString(),
@@ -1109,104 +1603,45 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
     );
   }
 
-  bool _isBestRentInFlatType(Flat unit) {
-    final type = unit.flatTypeName;
-
-    // Get all units of the same flat type
-    final typeUnits = filteredUnits.where((u) => u.flatTypeName == type && u.basicRent != null).toList();
-
-    // If less than 2 units of this type, don't mark any as best (nothing to compare)
-    if (typeUnits.length < 2) return false;
-
-    // Find the min rent
-    final minRent = typeUnits.map((u) => u.basicRent!).reduce((a, b) => a < b ? a : b);
-
-    // Return true if this unit's rent equals the min
-    return unit.basicRent == minRent;
-  }
-
 }
 
-Widget buildPriceChip(int? rent,String? flattype, {bool isBest = false}) {
+Widget buildPriceChip(int? price, String? flattype, String priceLabel, {bool isBest = false}) {
   return Stack(
     clipBehavior: Clip.none,
     children: [
-      // Main chip
-
-      if(rent!=null)
-      Container(
-        padding: EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-
-        decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.45),
-          borderRadius: BorderRadius.circular(30),
-          border: Border.all(color: Colors.grey.withOpacity(0.2)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black12.withOpacity(0.06),
-              blurRadius: 10,
-              offset: Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            /*Icon(Icons.attach_money, size: 16, color: Colors.black87),
-            SizedBox(width: 6),*/
-
-            rent != null
-                ? Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Image.asset(
-                  'assets/dirham.png', // your PNG path
-                  width: 14,
-                  height: 14,
-                  fit: BoxFit.contain,
-                ),
-                const SizedBox(width: 4),
-                Text(
-                  "$rent",
-                  style: GoogleFonts.poppins(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.black87,
-                  ),
-                ),
-              ],
-            )
-                : Text(
-              "Rent N/A",
-              style: GoogleFonts.poppins(
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-                color: Colors.black87,
+      if (price != null)
+        Container(
+          padding: EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.45),
+            borderRadius: BorderRadius.circular(30),
+            border: Border.all(color: Colors.grey.withOpacity(0.2)),
+            boxShadow: [BoxShadow(color: Colors.black12.withOpacity(0.06), blurRadius: 10, offset: Offset(0, 4))],
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              /*Text("$priceLabel: ", style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.w500)),
+              const SizedBox(width: 2),*/
+              Image.asset('assets/dirham.png', width: 14, height: 14, fit: BoxFit.contain),
+              const SizedBox(width: 4),
+              Text(
+                "$price",
+                style: GoogleFonts.poppins(fontSize: 13, fontWeight: FontWeight.w600, color: Colors.black87),
               ),
-            )
-
-          ],
+            ],
+          ),
         ),
-      ),
-
-      // "Best Price" ribbon
       if (isBest)
         Positioned(
           top: -18,
-          left:-5,
+          left: -5,
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            decoration: BoxDecoration(
-              color: Colors.blue.shade400,
-              borderRadius: BorderRadius.circular(12),
-            ),
+            decoration: BoxDecoration(color: Colors.blue.shade400, borderRadius: BorderRadius.circular(12)),
             child: Text(
-              "Best Price for $flattype",
-              style: GoogleFonts.poppins(
-                fontSize: 10.5,
-                fontWeight: FontWeight.w500,
-                color: Colors.white,
-              ),
+              "Best $priceLabel for $flattype",
+              style: GoogleFonts.poppins(fontSize: 10.5, fontWeight: FontWeight.w500, color: Colors.white),
             ),
           ),
         ),
@@ -1214,21 +1649,24 @@ Widget buildPriceChip(int? rent,String? flattype, {bool isBest = false}) {
   );
 }
 
+
 class AvailableUnitsDialog extends StatelessWidget {
   final String unitno;
   final String building_name;
   final String area;
   final String emirate;
   final String unittype;
-  final String rent;
+
+  // REMOVE: final String rent;  // ❌ not needed now
   final String parking;
   final String balcony;
   final String bathrooms;
 
-  // ✅ New fields
+  // ✅ New / existing fields
+  final String status;           // ✅ NEW: "Rent" | "Buy"
   final String ownership;
-  final String basicRent;
-  final String basicSaleValue;
+  final String basicRent;        // keep as String since you pass String
+  final String basicSaleValue;   // keep as String since you pass String
   final String isExempt;
   final List<String> amenities;
 
@@ -1239,10 +1677,11 @@ class AvailableUnitsDialog extends StatelessWidget {
     required this.building_name,
     required this.emirate,
     required this.unittype,
-    required this.rent,
+    // required this.rent,        // ❌ remove
     required this.parking,
     required this.balcony,
     required this.bathrooms,
+    required this.status,        // ✅ NEW
     required this.ownership,
     required this.basicRent,
     required this.basicSaleValue,
@@ -1254,6 +1693,61 @@ class AvailableUnitsDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     double screenHeight = MediaQuery.of(context).size.height;
     double maxDialogHeight = screenHeight * 0.8;
+// 🔽 compute dynamic label + value
+    final String priceLabel = (status == "Buy") ? "Price" : "Rent";
+    // Prefer sale value for Buy; rent for Rent. Fallback to "N/A" if empty.
+    final String priceValueRaw = (status == "Buy") ? basicSaleValue : basicRent;
+    final String priceValue = (priceValueRaw.isNotEmpty && priceValueRaw != "null") ? priceValueRaw : "N/A";
+
+
+    final priceTile = Container(
+      padding: EdgeInsets.symmetric(vertical: 5, horizontal: 15),
+      color: Colors.white,
+      child: Row(
+        children: [
+          Icon(Icons.attach_money, color: appbar_color.shade200),
+          SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // dynamic label here
+                Text(
+                  "$priceLabel",
+                  style: GoogleFonts.poppins(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                SizedBox(height: 2),
+                Row(
+                  children: [
+                    Image.asset(
+                      'assets/dirham.png',
+                      width: 14,
+                      height: 14,
+                      fit: BoxFit.contain,
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      priceValue, // dynamic value here
+                      style: GoogleFonts.poppins(
+                        fontSize: 16,
+                        fontWeight: FontWeight.normal,
+                        color: Colors.black87,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                      softWrap: true,
+                      maxLines: 2,
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
 
     return Dialog(
       shape: RoundedRectangleBorder(
@@ -1313,53 +1807,8 @@ class AvailableUnitsDialog extends StatelessWidget {
                         _buildDetailTile(Icons.apartment, "Unit Type", unittype),
                         _buildDetailTile(Icons.business, "Building", building_name),
                         _buildDetailTile(Icons.location_on, "Location", "$area, $emirate"),
-                        Container(
-                          padding: EdgeInsets.symmetric(vertical: 5, horizontal: 15),
-                          color: Colors.white,
-                          child: Row(
-                            children: [
-                              Icon(Icons.attach_money, color: appbar_color.shade200),
-                              SizedBox(width: 12),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      "Price",
-                                      style: GoogleFonts.poppins(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                    SizedBox(height: 2),
-                                    Row(
-                                      children: [
-                                        Image.asset(
-                                          'assets/dirham.png',
-                                          width: 14,
-                                          height: 14,
-                                          fit: BoxFit.contain,
-                                        ),
-                                        const SizedBox(width: 6),
-                                        Text(
-                                          rent,
-                                          style: GoogleFonts.poppins(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.normal,
-                                            color: Colors.black87,
-                                          ),
-                                          overflow: TextOverflow.ellipsis,
-                                          softWrap: true,
-                                          maxLines: 2,
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
+                        priceTile, // <-- use dynamic price tile here
+
                         // _buildDetailTile(Icons.attach_money, "Price", rent),
                         _buildDetailTile(Icons.local_parking, "Parking", parking),
                         _buildDetailTile(Icons.balcony, "Balcony", balcony),
@@ -1794,10 +2243,11 @@ Widget _buildBadgeChip(IconData icon, String label, {VoidCallback? onTap}) {
     onTap: onTap,
     child: Chip(
       avatar: Icon(icon, size: 16, color: appbar_color),
-      label: Text(
+      label: SingleChildScrollView(scrollDirection: Axis.horizontal,
+      child: Text(
         label,
         style: GoogleFonts.poppins(fontSize: 13, fontWeight: FontWeight.w500),
-      ),
+      ),),
       backgroundColor: Colors.grey.shade100,
       side: BorderSide(color: Colors.grey.shade300),
       shape: RoundedRectangleBorder(

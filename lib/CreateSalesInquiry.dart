@@ -100,6 +100,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
   bool isEmirateSelected = false;
 
+
   bool isAreasSelected = false;
 
   RangeValues _currentRangeValues = RangeValues(0.0, 100.0); // Default values
@@ -805,7 +806,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
           selectedPreferences.clear();
 
           range_min = prefs!.getDouble('range_min') ?? 10000;
-          range_max = prefs!.getDouble('range_max') ?? 100000;
+          range_max = prefs!.getDouble('range_max') ?? 1000000;
 
           double range_start = range_min! + (range_min! / 0.8);
           double range_end = range_max! - (range_max! * 0.2);
@@ -1626,7 +1627,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
     setState(() {
 
       range_min = prefs!.getDouble('range_min') ?? 10000;
-      range_max = prefs!.getDouble('range_max') ?? 100000;
+      range_max = prefs!.getDouble('range_max') ?? 1000000;
 
       double range_start = range_min! + (range_min! / 0.8);
       double range_end = range_max! - (range_max! * 0.2);
@@ -3294,7 +3295,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                   selectedPreferences.clear();
 
                                                   range_min = prefs!.getDouble('range_min') ?? 10000;
-                                                  range_max = prefs!.getDouble('range_max') ?? 100000;
+                                                  range_max = prefs!.getDouble('range_max') ?? 1000000;
 
                                                   double range_start = range_min! + (range_min! / 0.8);
                                                   double range_end = range_max! - (range_max! * 0.2);

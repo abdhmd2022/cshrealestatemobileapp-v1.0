@@ -390,7 +390,6 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
     return u.basicRent;
   }
 
-// If this screen doesn't have Flat defined, copy the model from your units screen.
 
   Future<List<Flat>> _fetchAvailableUnits({
     required String status,         // "Rent" or "Buy"

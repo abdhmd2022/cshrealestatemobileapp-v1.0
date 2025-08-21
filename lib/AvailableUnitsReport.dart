@@ -1125,19 +1125,36 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
     );
   }
 
+// 1) Price chosen for SORT, based on the statusFilter
+  int? _priceForSort(Flat u) {
+    final sel = (statusFilter).trim().toLowerCase();
+    if (sel == 'rent') return u.basicRent;           // only rent price matters
+    if (sel == 'buy')  return u.basicSaleValue;      // only sale value matters
+    // "All" → use dynamic price based on the unit's own status
+    return _currentPrice(u);
+  }
+
+// 2) Null-safe compare with "nulls last"
+  int _compareSortPrice(Flat a, Flat b, {required bool ascending}) {
+    final pa = _priceForSort(a);
+    final pb = _priceForSort(b);
+
+    if (pa == null && pb == null) {
+      // tie-breaker for stability when both are null (optional)
+      return a.id.compareTo(b.id);
+    }
+    if (pa == null) return 1;   // a after b
+    if (pb == null) return -1;  // b after a
+
+    final cmp = pa.compareTo(pb);
+    return ascending ? cmp : -cmp;
+  }
+
+// 3) Public sorter: strictly by price according to statusFilter
   void _sortUnitsByPrice({required bool ascending}) {
     setState(() {
-      filteredUnits.sort((a, b) {
-        final aIsBest = _isBestPriceInFlatType(a);
-        final bIsBest = _isBestPriceInFlatType(b);
-
-        if (aIsBest && !bIsBest) return -1;
-        if (!aIsBest && bIsBest) return 1;
-
-        final pa = _currentPrice(a) ?? 0;
-        final pb = _currentPrice(b) ?? 0;
-        return ascending ? pa.compareTo(pb) : pb.compareTo(pa);
-      });
+      // Pure price sort (no "best price" boost, no badge-based logic)
+      filteredUnits.sort((a, b) => _compareSortPrice(a, b, ascending: ascending));
 
       selectedSort = ascending ? "low_to_high" : "high_to_low";
       selectedSortLabel = ascending ? "Price: Low → High" : "Price: High → Low";
@@ -1154,6 +1171,7 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
         key: _scaffoldKey,
         backgroundColor:  Colors.white,
         appBar: AppBar(
+
           actions: [
             IconButton(
               icon: const Icon(Icons.share, color: Colors.white),

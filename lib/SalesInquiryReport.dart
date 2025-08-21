@@ -2160,12 +2160,28 @@ class _PotentialMatchesSheetState extends State<_PotentialMatchesSheet> {
                   final data = snap.data ?? [];
                   if (data.isEmpty) {
                     return Center(
-                      child: Text(
-                        "No matching units found.",
-                        style: GoogleFonts.poppins(color: Colors.grey.shade700),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.search_off, // 🏠 use housing icon
+                            size: 48,
+                            color: Colors.grey.shade400,
+                          ),
+                          const SizedBox(height: 10),
+                          Text(
+                            "No matching units found",
+                            style: GoogleFonts.poppins(
+                              color: Colors.grey.shade700,
+                              fontSize: 15,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
                       ),
                     );
                   }
+
 
                   return ListView.separated(
                     itemCount: data.length,

@@ -382,11 +382,6 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
       },
     );
   }
-// ------------ Potential Matches: helpers ------------
-
-// Parse the inquiry.unitType (comma-separated) — we’ll match each type
-  List<String> _parseUnitTypes(String unitTypeCsv) =>
-      unitTypeCsv.split(',').map((e) => e.trim()).where((e) => e.isNotEmpty).toList();
 
   int? _priceByStatus(Flat u, String status) {
     final s = status.trim().toLowerCase();
@@ -395,7 +390,6 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
     return u.basicRent;
   }
 
-// NOTE: This is the same Flat model you already use elsewhere.
 // If this screen doesn't have Flat defined, copy the model from your units screen.
 
   Future<List<Flat>> _fetchAvailableUnits({
@@ -405,8 +399,7 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
     required double maxPrice,
   }) async {
     final List<Flat> result = [];
-    // Your existing "available units" endpoint supports ?status= & pagination
-    // We'll page through and then filter on client.
+
     int page = 1;
     int totalPages = 1;
 
@@ -1433,7 +1426,6 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
               onTap: () => _openPotentialMatchesSheet(inquiry),
             ),
 
-
             if (_expandedinquirys[index])
               _buildExpandedinquiryView(inquiry),
 
@@ -2106,7 +2098,7 @@ class _PotentialMatchesSheetState extends State<_PotentialMatchesSheet> {
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    "Potential matches",
+                    "Potential Matches",
                     style: GoogleFonts.poppins(
                       fontSize: 18,
                       fontWeight: FontWeight.w700,
@@ -2181,7 +2173,6 @@ class _PotentialMatchesSheetState extends State<_PotentialMatchesSheet> {
                       ),
                     );
                   }
-
 
                   return ListView.separated(
                     itemCount: data.length,

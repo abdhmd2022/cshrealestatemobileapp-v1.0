@@ -1160,7 +1160,6 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
       selectedSortLabel = ascending ? "Price: Low → High" : "Price: High → Low";
     });
   }
-
   @override
   Widget build(BuildContext context) {
     return WillPopScope(

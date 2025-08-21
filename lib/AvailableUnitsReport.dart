@@ -1134,6 +1134,7 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
     return _currentPrice(u);
   }
 
+
 // 2) Null-safe compare with "nulls last"
   int _compareSortPrice(Flat a, Flat b, {required bool ascending}) {
     final pa = _priceForSort(a);

@@ -2714,48 +2714,40 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                         ],
                       ),
                       child:Row(
-                        crossAxisAlignment: CrossAxisAlignment.start, // important for multi-line
+                        crossAxisAlignment: CrossAxisAlignment.center, // important for multi-line
                         children: [
                           // Left Side: Subticket Info
                           Expanded(
-                            child: Column(
+                            child:  Row(
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Flexible(
-                                      child: Text(
-                                        subTicket['type'],
-                                        style: GoogleFonts.poppins(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w600,
-                                          color: Colors.black87,
-                                        ),
-                                        softWrap: true,
-                                        overflow: TextOverflow.visible, // allow wrapping
-                                      ),
+                                Flexible(
+                                  child: Text(
+                                    subTicket['type'],
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.black87,
                                     ),
-                                    const SizedBox(width: 4),
-                                    Flexible(
-
-                                      child: Text(
-                                        ' - ${subTicket['subTicket_assigned_user']['name']}',
-                                        style: GoogleFonts.poppins(
-                                          fontSize: 13,
-                                          fontWeight: FontWeight.w300,
-                                          color: Colors.black87,
-                                        ),
-                                        softWrap: true,
-                                        overflow: TextOverflow.visible, // ✅ wrap to next line
-                                      ),
-                                    ),
-                                  ],
+                                    softWrap: true,
+                                    overflow: TextOverflow.visible, // allow wrapping
+                                  ),
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  ' - ${subTicket['subTicket_assigned_user']['name']?? "Not Assigned"}',
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w300,
+                                    color: Colors.black87,
+                                  ),
+                                  softWrap: true,
+                                  overflow: TextOverflow.visible, // ✅ wrap to next line
                                 ),
                               ],
                             ),
                           ),
-
+                          const SizedBox(width: 8),
                           // Transfer Button with Gradient Effect
                           InkWell(
                             borderRadius: BorderRadius.circular(12),

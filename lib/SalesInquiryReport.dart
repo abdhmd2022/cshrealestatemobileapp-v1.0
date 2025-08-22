@@ -1421,6 +1421,8 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
                 )
             ),
 
+            SizedBox(height:12),
+
             // 🔎 Potential matches
             BlinkingChip(
               onTap: () => _openPotentialMatchesSheet(inquiry),
@@ -2130,21 +2132,26 @@ class _PotentialMatchesSheetState extends State<_PotentialMatchesSheet> {
           children: [
 
 
-            Row(
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(Icons.home_work_outlined, color: appbar_color),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-
-                    "Potential Matches",
-                    style: GoogleFonts.poppins(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.black87,
+                Row(
+                  children: [
+                    Icon(Icons.home_work_outlined, color: appbar_color),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        "Potential Matches",
+                        style: GoogleFonts.poppins(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.black87,
+                        ),
+                      ),
                     ),
-                  ),
+                  ],
                 ),
+                const SizedBox(height: 6),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                   decoration: BoxDecoration(
@@ -2163,6 +2170,7 @@ class _PotentialMatchesSheetState extends State<_PotentialMatchesSheet> {
                 ),
               ],
             ),
+
 
             // Search field
             const SizedBox(height: 12),

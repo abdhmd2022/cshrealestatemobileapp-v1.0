@@ -251,8 +251,8 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
     final pdf = pw.Document();
 
     // ---- 1) Load fonts (embed to avoid spacing/kerning issues) ----
-    final regData  = await rootBundle.load('Inter-Regular.ttf');
-    final boldData = await rootBundle.load('Inter-SemiBold.ttf');
+    final regData  = await rootBundle.load('assets/Inter-Regular.ttf');
+    final boldData = await rootBundle.load('assets/Inter-SemiBold.ttf');
 
 // Pass ByteData directly (no .buffer.asUint8List())
     final fontRegular = pw.Font.ttf(regData);
@@ -610,7 +610,6 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
               ],
             ),),
 
-            SizedBox(height: 16),
 
 
             SizedBox(height: 16),
@@ -736,8 +735,8 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
                         InputDecoration _dec(String label) => InputDecoration(
                           labelText: label,
                           prefixIcon: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
-                            child: Image.asset('assets/dirham.png', width: 16, height: 16, fit: BoxFit.contain),
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+                            child: Image.asset('assets/dirham.png', width: 12, height: 12, fit: BoxFit.contain),
                           ),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
@@ -1310,13 +1309,7 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
 
                             const SizedBox(width: 10),
 
-                            // NEW — always show current Status as a tappable badge
-                            _buildBadgeChip(
-                              Icons.assignment_turned_in_outlined,
-                              "Category: $statusFilter",
-                              onTap: () => _showFiltersDialog(context),
-                            ),
-                            const SizedBox(width: 10),
+
 
 
                             // 🔘 FILTER BADGES (right of Filter button)
@@ -1324,55 +1317,70 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
                               child: SingleChildScrollView(
                                 scrollDirection: Axis.horizontal,
                                 child: Row(
-                                  children: (
-                                      selectedFlatTypes.isEmpty &&
-                                          selectedAmenities.isEmpty &&
-                                          !isPriceRangeModified
-                                          ? [
-                                        _buildBadgeChip(Icons.info_outline, "No filters selected"),
-                                      ] : [
+                                  children: [
 
-                                        ...selectedFlatTypes.map((type) =>
-                                            _buildBadgeChip(Icons.apartment, type, onTap: () => _showFiltersDialog(context))),
-                                        ...selectedAmenities.map((a) =>
-                                            _buildBadgeChip(Icons.check_circle_outline, a, onTap: () => _showFiltersDialog(context))),
+                                    _buildBadgeChip(
+                                      Icons.assignment_turned_in_outlined,
+                                      "Category: $statusFilter",
+                                      onTap: () => _showFiltersDialog(context),
+                                    ),
+                                    const SizedBox(width: 10),
 
-                                        if (isPriceRangeModified)
-    GestureDetector(
-      onTap: () => _showFiltersDialog(context),
-      child: Chip(
-        avatar: Icon(Icons.price_change, size: 16, color: appbar_color),
-        label: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Image.asset(
-              'assets/dirham.png',
-              width: 14,
-              height: 14,
-              fit: BoxFit.contain,
-            ),
-            const SizedBox(width: 4),
-            Text(
-              "${selectedPriceRange.start.round()} - ${selectedPriceRange.end.round()}",
-              style: GoogleFonts.poppins(fontSize: 13, fontWeight: FontWeight.w500),
-            ),
-          ],
-        ),
-        backgroundColor: Colors.grey.shade100,
-        side: BorderSide(color: Colors.grey.shade300),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      ),
-    ),
+                                    Row(
+                                      children: (
 
-                                      ]
-                                  ).map((chip) => Padding(
-                                    padding: const EdgeInsets.only(left: 6),
-                                    child: chip,
-                                  )).toList(),
+
+                                          selectedFlatTypes.isEmpty &&
+                                              selectedAmenities.isEmpty &&
+                                              !isPriceRangeModified
+                                              ? [
+                                            _buildBadgeChip(Icons.info_outline, "No filters selected"),
+                                          ] : [
+
+                                            ...selectedFlatTypes.map((type) =>
+                                                _buildBadgeChip(Icons.apartment, type, onTap: () => _showFiltersDialog(context))),
+                                            ...selectedAmenities.map((a) =>
+                                                _buildBadgeChip(Icons.check_circle_outline, a, onTap: () => _showFiltersDialog(context))),
+
+                                            if (isPriceRangeModified)
+                                              GestureDetector(
+                                                onTap: () => _showFiltersDialog(context),
+                                                child: Chip(
+                                                  avatar: Icon(Icons.price_change, size: 16, color: appbar_color),
+                                                  label: Row(
+                                                    mainAxisSize: MainAxisSize.min,
+                                                    children: [
+                                                      Image.asset(
+                                                        'assets/dirham.png',
+                                                        width: 14,
+                                                        height: 14,
+                                                        fit: BoxFit.contain,
+                                                      ),
+                                                      const SizedBox(width: 4),
+                                                      Text(
+                                                        "${selectedPriceRange.start.round()} - ${selectedPriceRange.end.round()}",
+                                                        style: GoogleFonts.poppins(fontSize: 13, fontWeight: FontWeight.w500),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  backgroundColor: Colors.grey.shade100,
+                                                  side: BorderSide(color: Colors.grey.shade300),
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius: BorderRadius.circular(20),
+                                                  ),
+                                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                                ),
+                                              ),
+
+                                          ]
+                                      ).map((chip) => Padding(
+                                        padding: const EdgeInsets.only(left: 6),
+                                        child: chip,
+                                      )).toList(),
+                                    )
+                                  ],
                                 )
+
                         ))]),
 
                         const SizedBox(height: 8),

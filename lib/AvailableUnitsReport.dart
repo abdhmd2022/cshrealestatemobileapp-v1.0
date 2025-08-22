@@ -979,7 +979,8 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
           unit.buildingName.toLowerCase().contains(searchQuery.toLowerCase()) ||
           unit.name.toLowerCase().contains(searchQuery.toLowerCase()) ||
           unit.areaName.toLowerCase().contains(searchQuery.toLowerCase()) ||
-          unit.stateName.toLowerCase().contains(searchQuery.toLowerCase())
+          unit.stateName.toLowerCase().contains(searchQuery.toLowerCase()) ||
+          unit.status.toString().toLowerCase().contains(searchQuery.toLowerCase())
       ).toList();
     }
 
@@ -1666,7 +1667,6 @@ Widget buildPriceChip(int? price, String? flattype, String priceLabel, {bool isB
     ],
   );
 }
-
 
 class AvailableUnitsDialog extends StatelessWidget {
   final String unitno;

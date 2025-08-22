@@ -14,6 +14,7 @@ import 'AvailableUnitsReport.dart';
 import 'Sidebar.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'dart:async';
 
 
 class SalesInquiryReport extends StatefulWidget {
@@ -2041,6 +2042,11 @@ class _PotentialMatchesSheetState extends State<_PotentialMatchesSheet> {
   late final double _min;
   late final double _max;
 
+  // Search state
+  final TextEditingController _searchCtrl = TextEditingController();
+  Timer? _debounce;
+  String _query = '';
+
   @override
   void initState() {
     super.initState();
@@ -2051,7 +2057,11 @@ class _PotentialMatchesSheetState extends State<_PotentialMatchesSheet> {
 
     _unitTypes = widget.inquiry.unitType.trim().isEmpty
         ? <String>[]
-        : widget.inquiry.unitType.split(',').map((e) => e.trim()).where((e) => e.isNotEmpty).toList();
+        : widget.inquiry.unitType
+        .split(',')
+        .map((e) => e.trim())
+        .where((e) => e.isNotEmpty)
+        .toList();
 
     // Safety: if API stores zeros, widen a bit
     final minP = widget.inquiry.minPrice <= 0 ? 0.0 : widget.inquiry.minPrice;
@@ -2071,6 +2081,42 @@ class _PotentialMatchesSheetState extends State<_PotentialMatchesSheet> {
   }
 
   @override
+  void dispose() {
+    _debounce?.cancel();
+    _searchCtrl.dispose();
+    super.dispose();
+  }
+
+  void _onQueryChanged(String value) {
+    _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 250), () {
+      setState(() => _query = value.trim().toLowerCase());
+    });
+  }
+
+  // Search ONLY by: unit type, building, area
+  List<Flat> _filterResults(List<Flat> all) {
+    if (_query.isEmpty) return all;
+
+    // multi-word queries -> AND match across tokens
+    final tokens = _query
+        .split(RegExp(r'\s+'))
+        .where((t) => t.isNotEmpty)
+        .toList();
+
+    bool matches(Flat u) {
+      final unitType = (u.flatTypeName ?? '').toLowerCase();
+      final building = (u.buildingName ?? '').toLowerCase();
+      final area     = (u.areaName ?? '').toLowerCase();
+
+      final haystack = '$unitType $building $area';
+      return tokens.every((t) => haystack.contains(t));
+    }
+
+    return all.where(matches).toList();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Padding(
@@ -2082,21 +2128,15 @@ class _PotentialMatchesSheetState extends State<_PotentialMatchesSheet> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // drag handle
-            Container(
-              width: 40, height: 5,
-              decoration: BoxDecoration(
-                color: Colors.grey.shade300,
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-            const SizedBox(height: 12),
+
+
             Row(
               children: [
                 Icon(Icons.home_work_outlined, color: appbar_color),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
+
                     "Potential Matches",
                     style: GoogleFonts.poppins(
                       fontSize: 18,
@@ -2123,6 +2163,40 @@ class _PotentialMatchesSheetState extends State<_PotentialMatchesSheet> {
                 ),
               ],
             ),
+
+            // Search field
+            const SizedBox(height: 12),
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: Colors.grey.shade300),
+              ),
+              child: TextField(
+                controller: _searchCtrl,
+                onChanged: _onQueryChanged,
+                textInputAction: TextInputAction.search,
+                decoration: InputDecoration(
+                  hintText: 'Search by unit type, building, or area...',
+                  fillColor: Colors.white,
+                  hintStyle: GoogleFonts.poppins(color: Colors.grey.shade600, fontSize: 13.5),
+                  prefixIcon: const Icon(Icons.search),
+                  border: InputBorder.none,
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                  suffixIcon: (_query.isNotEmpty)
+                      ? IconButton(
+                    icon: const Icon(Icons.clear),
+                    onPressed: () {
+                      _searchCtrl.clear();
+                      _onQueryChanged('');
+                    },
+                  )
+                      : null,
+                ),
+                style: GoogleFonts.poppins(fontSize: 14.0),
+              ),
+            ),
+
             const SizedBox(height: 12),
 
             Expanded(
@@ -2149,19 +2223,19 @@ class _PotentialMatchesSheetState extends State<_PotentialMatchesSheet> {
                     );
                   }
                   final data = snap.data ?? [];
-                  if (data.isEmpty) {
+                  final filtered = _filterResults(data);
+
+                  if (filtered.isEmpty) {
                     return Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(
-                            Icons.search_off, // 🏠 use housing icon
-                            size: 48,
-                            color: Colors.grey.shade400,
-                          ),
+                          Icon(Icons.search_off, size: 48, color: Colors.grey.shade400),
                           const SizedBox(height: 10),
                           Text(
-                            "No matching units found",
+                            _query.isEmpty
+                                ? "No matching units found"
+                                : "No results for \"$_query\"",
                             style: GoogleFonts.poppins(
                               color: Colors.grey.shade700,
                               fontSize: 15,
@@ -2174,10 +2248,10 @@ class _PotentialMatchesSheetState extends State<_PotentialMatchesSheet> {
                   }
 
                   return ListView.separated(
-                    itemCount: data.length,
+                    itemCount: filtered.length,
                     separatorBuilder: (_, __) => const SizedBox(height: 10),
                     itemBuilder: (_, i) {
-                      final u = data[i];
+                      final u = filtered[i];
                       final price = _status.toLowerCase() == 'buy' ? u.basicSaleValue : u.basicRent;
 
                       return Container(
@@ -2204,8 +2278,10 @@ class _PotentialMatchesSheetState extends State<_PotentialMatchesSheet> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text("${u.areaName}, ${u.stateName}",
-                                    style: GoogleFonts.poppins(fontSize: 12.5, color: Colors.black87)),
+                                Text(
+                                  "${u.areaName}, ${u.stateName}",
+                                  style: GoogleFonts.poppins(fontSize: 12.5, color: Colors.black87),
+                                ),
                                 const SizedBox(height: 6),
                                 Row(
                                   children: [
@@ -2221,19 +2297,18 @@ class _PotentialMatchesSheetState extends State<_PotentialMatchesSheet> {
                                         children: [
                                           Image.asset('assets/dirham.png', width: 14, height: 14, fit: BoxFit.contain),
                                           const SizedBox(width: 4),
-                                          Text("${price ?? 'N/A'}",
-                                              style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
-                                          /*const SizedBox(width: 6),
                                           Text(
-                                            _status.toLowerCase() == 'buy' ? "(Price)" : "(Rent)",
-                                            style: GoogleFonts.poppins(fontSize: 12, color: Colors.grey.shade700),
-                                          ),*/
+                                            "${price ?? 'N/A'}",
+                                            style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+                                          ),
                                         ],
                                       ),
                                     ),
                                     const SizedBox(width: 8),
-                                    if (u.noOfBathrooms > 0) _smallBadge(Icons.bathtub, "${u.noOfBathrooms}"),
-                                    if (u.noOfParking > 0) _smallBadge(Icons.local_parking, "${u.noOfParking}"),
+                                    if (u.noOfBathrooms > 0)
+                                      _smallBadge(Icons.bathtub, "${u.noOfBathrooms}"),
+                                    if (u.noOfParking > 0)
+                                      _smallBadge(Icons.local_parking, "${u.noOfParking}"),
                                   ],
                                 ),
                               ],
@@ -2242,42 +2317,49 @@ class _PotentialMatchesSheetState extends State<_PotentialMatchesSheet> {
                           trailing: Container(
                             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                             decoration: BoxDecoration(
-                              color: (_status.toLowerCase() == 'buy' ? Colors.blue : Colors.green).withOpacity(0.12),
+                              color: (_status.toLowerCase() == 'buy'
+                                  ? Colors.blue
+                                  : Colors.green)
+                                  .withOpacity(0.12),
                               borderRadius: BorderRadius.circular(30),
                               border: Border.all(
-                                color: _status.toLowerCase() == 'buy' ? Colors.blue : Colors.green,
+                                color: _status.toLowerCase() == 'buy'
+                                    ? Colors.blue
+                                    : Colors.green,
                               ),
                             ),
                             child: Text(
                               u.status ?? _status,
                               style: GoogleFonts.poppins(
-                                color: _status.toLowerCase() == 'buy' ? Colors.blue : Colors.green,
+                                color: _status.toLowerCase() == 'buy'
+                                    ? Colors.blue
+                                    : Colors.green,
                                 fontWeight: FontWeight.w600,
                                 fontSize: 12,
                               ),
                             ),
                           ),
-
-                          // 👇 OPEN UNIT DETAILS DIALOG (same as Available Units page)
                           onTap: () {
                             showDialog(
-                              context: context, // opens above the sheet (no need to pop)
+                              context: context,
                               builder: (ctx) => AvailableUnitsDialog(
                                 unitno: u.name,
                                 area: u.areaName,
                                 building_name: u.buildingName,
                                 emirate: u.stateName,
                                 unittype: u.flatTypeName,
-                                // dynamic price handled inside dialog via status/basicRent/basicSaleValue
                                 parking: u.noOfParking.toString(),
-                                balcony: u.amenities.contains("Balcony") ? "Yes" : "No",
+                                balcony: (u.amenities ?? const <String>[])
+                                    .contains("Balcony")
+                                    ? "Yes"
+                                    : "No",
                                 bathrooms: u.noOfBathrooms.toString(),
-                                status: _status, // <- pass inquiry status so dialog shows Rent/Price correctly
+                                status: _status,
                                 ownership: u.ownership ?? "N/A",
                                 basicRent: u.basicRent?.toString() ?? "N/A",
                                 basicSaleValue: u.basicSaleValue?.toString() ?? "N/A",
                                 isExempt: u.isExempt ? "true" : "false",
-                                amenities: u.amenities, // List<String>
+                                amenities: u.amenities,
                               ),
                             );
                           },
@@ -2285,7 +2367,6 @@ class _PotentialMatchesSheetState extends State<_PotentialMatchesSheet> {
                       );
                     },
                   );
-
                 },
               ),
             ),
@@ -2314,8 +2395,8 @@ class _PotentialMatchesSheetState extends State<_PotentialMatchesSheet> {
       ),
     );
   }
-
 }
+
 class BlinkingChip extends StatefulWidget {
   final VoidCallback onTap;
   const BlinkingChip({Key? key, required this.onTap}) : super(key: key);

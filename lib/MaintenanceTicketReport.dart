@@ -2713,35 +2713,45 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                           ),
                         ],
                       ),
-                      child: Row(
+                      child:Row(
+                        crossAxisAlignment: CrossAxisAlignment.start, // important for multi-line
                         children: [
                           // Left Side: Subticket Info
                           Expanded(
                             child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Flexible(
+                                      child: Text(
+                                        subTicket['type'],
+                                        style: GoogleFonts.poppins(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.black87,
+                                        ),
+                                        softWrap: true,
+                                        overflow: TextOverflow.visible, // allow wrapping
+                                      ),
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Flexible(
 
-                                Row(children: [
-                            Text(
-                            subTicket['type'],
-                              style: GoogleFonts.poppins(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.black87,
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            Text(
-                              ' - ${subTicket['subTicket_assigned_user']['name']?? 'Not Assigned'}',
-                              style: GoogleFonts.poppins(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w300,
-                                color: Colors.black87,
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-
-                                ],)
+                                      child: Text(
+                                        ' - ${subTicket['subTicket_assigned_user']['name']}',
+                                        style: GoogleFonts.poppins(
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w300,
+                                          color: Colors.black87,
+                                        ),
+                                        softWrap: true,
+                                        overflow: TextOverflow.visible, // ✅ wrap to next line
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ],
                             ),
                           ),
@@ -2752,11 +2762,9 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                             onTap: () {
                               _showTransferDialog(context, subTicket);
                             },
-                            child:
-
-                            Container(
-                              margin: EdgeInsets.only(top: 0.0),
-                              padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 5.0),
+                            child: Container(
+                              margin: const EdgeInsets.only(top: 0.0),
+                              padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 5.0),
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(30.0),
                                 color: Colors.white,
@@ -2773,29 +2781,15 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                                 ],
                               ),
                               child: Row(
-                                children: [
+                                children: const [
                                   Icon(Icons.swap_horiz, color: Colors.redAccent),
-                                  /*SizedBox(width: 8.0),
-            Text(
-              label,
-              style: GoogleFonts.poppins(
-                color: color,
-                fontWeight: FontWeight.w600,
-              ),
-            ),*/
                                 ],
                               ),
                             ),
-
-
-
-
-
-
-
                           ),
                         ],
-                      ),
+                      )
+
                     );
                   }).toList(),
                 ),

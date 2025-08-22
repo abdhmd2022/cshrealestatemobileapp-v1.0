@@ -33,18 +33,18 @@ class InquiryStatus {
   }
 }
 
-class ActivitySource {
+class LeadSource {
   final int id;
   final String name;
 
-  ActivitySource({
+  LeadSource({
     required this.id,
     required this.name,
   });
 
   // Factory method to create a FollowUpStatus object from JSON
-  factory ActivitySource.fromJson(Map<String, dynamic> json) {
-    return ActivitySource(
+  factory LeadSource.fromJson(Map<String, dynamic> json) {
+    return LeadSource(
       id: json['id'],
       name: json['name'],
     );
@@ -94,7 +94,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
   InquiryStatus? selectedinquiry_status;
 
-  ActivitySource? selectedactivity_source;
+  LeadSource? selectedlead_source;
 
   DateTime? nextFollowUpDate;
 
@@ -109,7 +109,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
   List<InquiryStatus> inquirystatus_list = [];
 
-  List<ActivitySource> activitysource_list = [
+  List<LeadSource> leadsource_list = [
 
   ];
 
@@ -721,7 +721,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
           "min_price": _currentRangeValues.start.round().toString(),
           "amenities": amenitiesList,
           "description" : descriptioncontroller.text,
-          'activity_source_id' : selectedactivity_source!.id,
+          'activity_source_id' : selectedlead_source!.id,
           'whatsapp_no' : '$_selectedCountryCodeWhatsapp${whatsappnocontroller.text}',
           'assigned_to' : user_id
         };
@@ -744,7 +744,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
       "min_price": _currentRangeValues.start.round().toString(),
       "amenities": amenitiesList,
       "description" : descriptioncontroller.text,
-      'activity_source_id' : selectedactivity_source!.id,
+      'activity_source_id' : selectedlead_source!.id,
       'whatsapp_no' : '$_selectedCountryCodeWhatsapp${whatsappnocontroller.text}',
     };
     }
@@ -777,7 +777,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
           selectedinquiry_status = null;
           selectedInterestType = 0;
           selectedPropertyType = null;
-          selectedactivity_source = null;
+          selectedlead_source = null;
           nextFollowUpDate = null;
           selectedUnitIds.clear();
 
@@ -880,7 +880,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
   Future<void> fetchActivitySources() async {
 
-    activitysource_list.clear();
+    leadsource_list.clear();
 
     final url = '$baseurl/lead/activitySource'; // Replace with your API endpoint
     String token = 'Bearer $Company_Token'; // auth token for request
@@ -901,9 +901,9 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
           for (var status in activitySourceList) {
             // Create a FollowUpStatus object from JSON
-            ActivitySource activitySource = ActivitySource.fromJson(status);
+            LeadSource activitySource = LeadSource.fromJson(status);
 
-            activitysource_list.add(activitySource);
+            leadsource_list.add(activitySource);
 
             print('ID: ${activitySource.id}, Name: ${activitySource.name}');
           }
@@ -1844,12 +1844,12 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                 crossAxisAlignment: CrossAxisAlignment.start,
                                                 children: [
 
-                                                  DropdownButtonFormField<ActivitySource>(
-                                                    value: selectedactivity_source,  // This should be an object of FollowUpStatus
+                                                  DropdownButtonFormField<LeadSource>(
+                                                    value: selectedlead_source,  // This should be an object of FollowUpStatus
                                                     decoration: InputDecoration(
-                                                      hintText: 'Select Activity Source ',
+                                                      hintText: 'Select Lead Source ',
                                                       label: Text(
-                                                        'Activity Source',
+                                                        'Lead Source',
                                                         style: GoogleFonts.poppins(
                                                           fontWeight: FontWeight.normal,
                                                           color: Colors.black,
@@ -1871,14 +1871,14 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                     ),
                                                     validator: (value) {
                                                       if (value == null) {
-                                                        return 'Activity Source is required'; // Error message
+                                                        return 'Lead Source is required'; // Error message
                                                       }
                                                       return null; // No error if a value is selected
                                                     },
                                                     dropdownColor: Colors.white,
                                                     icon: Icon(Icons.arrow_drop_down, color: Colors.black),
-                                                    items: activitysource_list.map((ActivitySource status) {
-                                                      return DropdownMenuItem<ActivitySource>(
+                                                    items: leadsource_list.map((LeadSource status) {
+                                                      return DropdownMenuItem<LeadSource>(
                                                         value: status,
                                                         child: Text(
                                                           status.name,  // Display the 'name'
@@ -1886,9 +1886,9 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                         ),
                                                       );
                                                     }).toList(),
-                                                    onChanged: (ActivitySource? value) {
+                                                    onChanged: (LeadSource? value) {
                                                       setState(() {
-                                                        selectedactivity_source = value;
+                                                        selectedlead_source = value;
 
                                                       });
                                                     },
@@ -3271,7 +3271,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                                   selectedinquiry_status = null;
                                                   selectedInterestType = 0;
                                                   selectedPropertyType = null;
-                                                  selectedactivity_source = null;
+                                                  selectedlead_source = null;
                                                   nextFollowUpDate = null;
                                                   selectedUnitIds.clear();
 

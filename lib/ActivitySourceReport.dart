@@ -169,7 +169,7 @@ class _ActivitySourceReportState extends State<ActivitySourceReport>
 
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           title: Text(
-            "Activity Sources",
+            "Lead Sources",
             style: GoogleFonts.poppins(color: appbar_color[900]),
           ),
           content: Form(
@@ -182,13 +182,13 @@ class _ActivitySourceReportState extends State<ActivitySourceReport>
                   validator: (value) {
                     if (value == null || value.isEmpty)
                     {
-                      return 'Please enter activity source name';
+                      return 'Please enter lead source name';
                     }
 
                     return null;
                   },
                   decoration: InputDecoration(
-                    labelText: "Activity Source Name",
+                    labelText: "Lead Source Name",
                     labelStyle: GoogleFonts.poppins(color: Colors.black54.withOpacity(0.5)),
                     focusedBorder: OutlineInputBorder(
                       borderSide: BorderSide(color: appbar_color),
@@ -237,7 +237,7 @@ class _ActivitySourceReportState extends State<ActivitySourceReport>
           backgroundColor: appbar_color[50],
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           title: Text(
-            "Edit Activity Source",
+            "Edit Lead Source",
             style: GoogleFonts.poppins(color: appbar_color[900],
             ),
           ),
@@ -251,12 +251,12 @@ class _ActivitySourceReportState extends State<ActivitySourceReport>
                   validator: (value) {
                     if (value == null || value.isEmpty)
                     {
-                      return 'Please enter activity source name';
+                      return 'Please enter lead source name';
                     }
                     return null;
                   },
                   decoration: InputDecoration(
-                    labelText: "Activity Source Name",
+                    labelText: "Lead Source Name",
                     labelStyle: GoogleFonts.poppins(color: Colors.black54),
                     focusedBorder: OutlineInputBorder(
                       borderSide: BorderSide(color: appbar_color),
@@ -378,7 +378,7 @@ class _ActivitySourceReportState extends State<ActivitySourceReport>
             Icons.arrow_back,
             color: Colors.white,
           ),),
-        title: Text('Activity Sources',
+        title: Text('Lead Sources',
           style: GoogleFonts.poppins(
               color: Colors.white
           ),),
@@ -504,7 +504,7 @@ class _ActivitySourceReportState extends State<ActivitySourceReport>
                     style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   Text(
-                    "You don’t have permission to view activity source.",
+                    "You don’t have permission to view lead source.",
                     style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey),
                     textAlign: TextAlign.center,
                   ),

@@ -191,8 +191,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
           if (hasPermissionInCategory('Activity Source'))
             _buildGlassCard(
               icon: Icons.source,
-              title: 'Activity Source',
-              subtitle: 'Manage activity source masters for the app',
+              title: 'Lead Source',
+              subtitle: 'Manage lead source masters for the app',
               onTap: () => Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => ActivitySourceReport())),
             ),
           if (hasPermissionInCategory('Maintenance Types'))

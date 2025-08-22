@@ -31,6 +31,8 @@ class MaintenanceTicketReport extends StatefulWidget {
 class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with TickerProviderStateMixin {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
+  bool _showAssignedOnly = true; // default: show only tickets assigned to me
+
   List<Map<String, dynamic>> tickets = [];
   List<Map<String, dynamic>> filteredTickets = [];
   List<bool> _expandedTickets = [];
@@ -83,6 +85,267 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
     }
 
   }
+
+  Future<void> _transferSubTicket(String subTicketId, String technicianId) async {
+    String url = "$baseurl/maintenance/subticket/$subTicketId";
+
+    try {
+      final response = await http.patch(
+        Uri.parse(url),
+        headers: {
+          'Authorization': 'Bearer $Company_Token',
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({
+          'assigned_to': technicianId, // Selected technician ID
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+
+        if (data['success'] == true) {
+          String successMessage = data['message'] ?? "Transfer successful!"; // Extract message
+
+          setState(() {
+           fetchAllTickets();
+           filterTickets();
+          });
+          // Show toast with the response message
+          Fluttertoast.showToast(
+            msg: successMessage,
+            toastLength: Toast.LENGTH_LONG,
+            gravity: ToastGravity.BOTTOM,
+            backgroundColor: appbar_color,
+            textColor: Colors.white,
+          );
+
+
+        }
+      } else {
+        final data = json.decode(response.body);
+        String errorMessage = data['message'] ?? "Something went wrong!";
+        Fluttertoast.showToast(
+          msg: "Error: $errorMessage",
+          toastLength: Toast.LENGTH_LONG,
+          gravity: ToastGravity.BOTTOM,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+      }
+    } catch (e) {
+      Fluttertoast.showToast(
+        msg: "Error: $e",
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
+    }
+  }
+
+  void _showTransferDialog(BuildContext context, dynamic subTicket) {
+
+
+    String subTicketId = subTicket['subTicketId'];
+    int subTicket_assigned_to = subTicket['subTicket_assignedto']?? 0;
+
+
+    print('subticketassignedto -> $subTicket_assigned_to');
+
+
+    String? selectedTechnicianId;
+    List<Map<String, dynamic>> technicians = []; // List to store fetched technicians
+    bool isLoading = true;
+
+    // Fetch Technician List
+    Future<void> fetchTechnicians(StateSetter setState) async {
+      try {
+        final response = await http.get(
+          Uri.parse("$baseurl/user"),
+          headers: {
+            'Authorization': 'Bearer $Company_Token',
+            'Content-Type': 'application/json',
+          },
+        );
+
+        if (response.statusCode == 200) {
+          final data = json.decode(response.body);
+          if (data['success'] == true) {
+            final List<dynamic> usersJson = data['data']['users'];
+
+            technicians = usersJson
+                .where((user) {
+              final uid = user['id'].toString();
+              // Exclude: current user and already assigned user
+              return uid != user_id.toString() &&
+                  uid != subTicket_assigned_to.toString();
+            })
+                .map((userJson) {
+              return {
+                'id': userJson['id'].toString(),
+                'name': userJson['name'],
+              };
+            }).toList();
+
+            /*technicians = usersJson
+                .where((user) => user['id'] != user_id) // Fixed comparison
+                .map((userJson) {
+              return {
+                'id': userJson['id'].toString(),
+                'name': userJson['name'],
+              };
+            }).toList();*/
+
+            print('technicians: ${technicians}');
+          }
+        }
+      } catch (e) {
+        print("Error fetching technicians: $e");
+      } finally {
+        setState(() {
+          isLoading = false;
+        });
+      }
+    }
+
+    // Show Dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            // 👇 Only call fetchTechnicians ONCE after the first build
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (isLoading) fetchTechnicians(setState);
+            });
+
+            return AlertDialog(
+              backgroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12.0),
+              ),
+              title: Text(
+                "Transfer Job",
+                style: GoogleFonts.poppins(
+                  fontWeight: FontWeight.w500,
+                  color: Colors.black,
+                ),
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (isLoading)
+                    Center(
+                      child: Platform.isIOS
+                          ? CupertinoActivityIndicator(radius: 15)
+                          : CircularProgressIndicator(
+                        strokeWidth: 3,
+                        valueColor:
+                        AlwaysStoppedAnimation<Color>(appbar_color),
+                      ),
+                    )
+                  else if (technicians.isEmpty)
+                    Text(
+                      "No technicians available.",
+                      style: GoogleFonts.poppins(color: Colors.black87),
+                    )
+                  else
+                    DropdownButtonFormField<String>(
+                      value: selectedTechnicianId,
+                      isExpanded: true,
+                      decoration: InputDecoration(
+                        labelText: "Select Person",
+                        labelStyle: GoogleFonts.poppins(color: Colors.grey),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide:
+                          BorderSide(color: Colors.grey.shade400, width: 1),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide:
+                          BorderSide(color: Colors.grey.shade400, width: 1),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide:
+                          BorderSide(color: appbar_color, width: 1),
+                        ),
+                        filled: true,
+                        fillColor: Colors.white,
+                        contentPadding:
+                        EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                      ),
+                      dropdownColor: Colors.white,
+                      style: GoogleFonts.poppins(
+                          fontSize: 16, color: Colors.black87),
+                      icon: Icon(Icons.keyboard_arrow_down, color: Colors.black),
+                      items: technicians.map<DropdownMenuItem<String>>((tech) {
+                        return DropdownMenuItem<String>(
+                          value: tech['id'].toString(),
+                          child: Text(
+                            tech['name'],
+                            style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w500),
+                          ),
+                        );
+                      }).toList(),
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          selectedTechnicianId = newValue;
+                          print('technician id : $selectedTechnicianId');
+                        });
+                      },
+                    ),
+                  SizedBox(height: 10),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text(
+                    "Cancel",
+                    style: GoogleFonts.poppins(
+                        color: Colors.red, fontWeight: FontWeight.w500),
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    if (selectedTechnicianId == null) {
+                      Fluttertoast.showToast(msg: "Please select!");
+                      return;
+                    }
+                    _transferSubTicket(subTicketId, selectedTechnicianId!);
+                    Navigator.of(context).pop();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: appbar_color,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    padding:
+                    EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                    elevation: 3,
+                  ),
+                  child: Text(
+                    "Submit",
+                    style: GoogleFonts.poppins(fontWeight: FontWeight.w500),
+                  ),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+
   Future<pw.MemoryImage> loadDirhamImage() async {
     final bytes = await rootBundle.load('assets/dirham.png');
     return pw.MemoryImage(bytes.buffer.asUint8List());
@@ -988,6 +1251,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
     return file;
   }
 
+
   Future<void> fetchAllTickets() async {
     List<Map<String, dynamic>> allFormattedTickets = [];
     int page = 1;
@@ -1019,9 +1283,15 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
 
           if (responseBody['success'] == true) {
             final rawTickets = responseBody['data']['tickets'] as List<dynamic>;
+
+            print('raw tickets -> ${rawTickets}');
             List<dynamic> filteredTickets = [];
 
-            if (is_admin && !is_admin_from_api) {
+
+
+// For NON-API admins, apply "Assigned to me" filter only if the switch is ON
+            if (is_admin && !is_admin_from_api && _showAssignedOnly) {
+              filteredTickets = [];
               for (var ticket in rawTickets) {
                 final subtickets = ticket['sub_tickets'] ?? [];
                 final assigned = subtickets.where((sub) => sub['assigned_to'] == user_id).toList();
@@ -1030,9 +1300,24 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                   filteredTickets.add(ticket);
                 }
               }
-            } else {
+            }
+
+
+            /*else if (is_admin && !is_admin_from_api) {
+              for (var ticket in rawTickets) {
+                final subtickets = ticket['sub_tickets'] ?? [];
+                final assigned = subtickets.where((sub) => sub['assigned_to'] == user_id).toList();
+                if (assigned.isNotEmpty) {
+                  ticket['sub_tickets'] = assigned;
+                  filteredTickets.add(ticket);
+                }
+              }
+            }*/ else {
               filteredTickets = rawTickets;
             }
+
+            print('RAW: ${rawTickets.length}, AFTER FILTER: ${filteredTickets.length}, showAssignedOnly=$_showAssignedOnly');
+
 
             final formattedTickets = filteredTickets.map((ticket) {
               final subTickets = ticket['sub_tickets'] ?? [];
@@ -1098,6 +1383,8 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                     'type': type['name'],
                     'category': type['category'] ?? 'N/A',
                     'followps': sub['followps'] ?? [],
+                    'subTicket_assignedto': sub['assigned_to'] ?? 0,
+                    'subTicket_assigned_user' : sub['assigned_user'] ?? {}
                   };
                 }).toList(),
 
@@ -1111,6 +1398,8 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                     'subTicketId': sub['id'].toString(),
                     'type': type['name'],
                     'category': type['category'] ?? 'N/A',
+                    'subTicket_assignedto': sub['assigned_to'] ?? 0,
+                    'subTicket_assigned_user' : sub['assigned_user'] ?? {}
                   };
                 }).toList(),
 
@@ -1476,6 +1765,9 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                         ),
                       ),
                     ),
+
+                    _adminScopeChips(),
+
                   ],
                 ),
               ),
@@ -2136,6 +2428,89 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
     );
   }
 
+  Widget _adminScopeChips() {
+    if (!(is_admin && !is_admin_from_api)) return const SizedBox.shrink();
+
+    return Padding(
+      padding: const EdgeInsets.only(top: 10, bottom: 6),
+      child: Row(
+        children: [
+
+          Expanded(
+            child: Wrap(
+              spacing: 10,
+              runSpacing: 8,
+              children: [
+                _buildScopeChip(
+                  label: 'All tickets',
+                  icon: Icons.all_inbox_rounded,
+                  selected: !_showAssignedOnly,
+                  onTap: () async {
+                    if (_showAssignedOnly) {
+                      setState(() => _showAssignedOnly = false);
+                      await fetchAllTickets();
+                      filterTickets();
+                    }
+                  },
+                ),
+                _buildScopeChip(
+                  label: 'Assigned',
+                  icon: Icons.verified_user_rounded,
+                  selected: _showAssignedOnly,
+                  onTap: () async {
+                    if (!_showAssignedOnly) {
+                      setState(() => _showAssignedOnly = true);
+                      await fetchAllTickets();
+                      filterTickets();
+                    }
+                  },
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildScopeChip({
+    required String label,
+    required IconData icon,
+    required bool selected,
+    required VoidCallback onTap,
+  }) {
+    return ChoiceChip(
+      selected: selected,
+      onSelected: (_) => onTap(),
+      checkmarkColor: selected ? appbar_color : Colors.black87,
+      label: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 18, color: selected ? appbar_color : Colors.black87),
+          const SizedBox(width: 6),
+          Text(label),
+        ],
+      ),
+      labelStyle: GoogleFonts.poppins(
+        fontSize: 13.5,
+        fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
+        color: selected ? appbar_color : Colors.black87,
+      ),
+      shape: StadiumBorder(
+        side: BorderSide(
+          color: selected ? appbar_color : Colors.grey.shade300,
+          width: 1.2,
+        ),
+      ),
+      backgroundColor: Colors.grey.shade100,
+      selectedColor: appbar_color.withOpacity(0.12),
+      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      visualDensity: const VisualDensity(horizontal: -2, vertical: -2),
+      elevation: selected ? 1.5 : 0,
+      pressElevation: 0,
+    );
+  }
+
   Widget _modernActionButton({
     required IconData icon,
     required String label,
@@ -2345,16 +2720,28 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
-                                  subTicket['type'],
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
-                                    color: Colors.black87,
-                                  ),
-                                  overflow: TextOverflow.ellipsis,
-                                ),
 
+                                Row(children: [
+                            Text(
+                            subTicket['type'],
+                              style: GoogleFonts.poppins(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.black87,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            Text(
+                              ' - ${subTicket['subTicket_assigned_user']['name']?? 'Not Assigned'}',
+                              style: GoogleFonts.poppins(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w300,
+                                color: Colors.black87,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+
+                                ],)
                               ],
                             ),
                           ),
@@ -2363,7 +2750,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                           InkWell(
                             borderRadius: BorderRadius.circular(12),
                             onTap: () {
-                              _showTransferDialog(context, subTicket['subTicketId']);
+                              _showTransferDialog(context, subTicket);
                             },
                             child:
 
@@ -2829,235 +3216,6 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
   }
 }
 
-void _showTransferDialog(BuildContext context, String subTicketId) {
-  String? selectedTechnicianId;
-  List<Map<String, dynamic>> technicians = []; // List to store fetched technicians
-  bool isLoading = true;
-
-  // Fetch Technician List
-  Future<void> fetchTechnicians(StateSetter setState) async {
-    try {
-      final response = await http.get(
-        Uri.parse("$baseurl/user"),
-        headers: {
-          'Authorization': 'Bearer $Company_Token',
-          'Content-Type': 'application/json',
-        },
-      );
-
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        if (data['success'] == true) {
-          final List<dynamic> usersJson = data['data']['users'];
-
-          technicians = usersJson
-              .where((user) => user['id'] != user_id) // Fixed comparison
-              .map((userJson) {
-            return {
-              'id': userJson['id'].toString(),
-              'name': userJson['name'],
-            };
-          }).toList();
-
-          print('technicians: ${technicians}');
-        }
-      }
-    } catch (e) {
-      print("Error fetching technicians: $e");
-    } finally {
-      setState(() {
-        isLoading = false;
-      });
-    }
-  }
-
-  // Show Dialog
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return StatefulBuilder(
-        builder: (context, setState) {
-          // 👇 Only call fetchTechnicians ONCE after the first build
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (isLoading) fetchTechnicians(setState);
-          });
-
-          return AlertDialog(
-            backgroundColor: Colors.white,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12.0),
-            ),
-            title: Text(
-              "Transfer Job",
-              style: GoogleFonts.poppins(
-                fontWeight: FontWeight.w500,
-                color: Colors.black,
-              ),
-            ),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (isLoading)
-                  Center(
-                    child: Platform.isIOS
-                        ? CupertinoActivityIndicator(radius: 15)
-                        : CircularProgressIndicator(
-                      strokeWidth: 3,
-                      valueColor:
-                      AlwaysStoppedAnimation<Color>(appbar_color),
-                    ),
-                  )
-                else if (technicians.isEmpty)
-                  Text(
-                    "No technicians available.",
-                    style: GoogleFonts.poppins(color: Colors.black87),
-                  )
-                else
-                  DropdownButtonFormField<String>(
-                    value: selectedTechnicianId,
-                    isExpanded: true,
-                    decoration: InputDecoration(
-                      labelText: "Select Person",
-                      labelStyle: GoogleFonts.poppins(color: Colors.grey),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide:
-                        BorderSide(color: Colors.grey.shade400, width: 1),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide:
-                        BorderSide(color: Colors.grey.shade400, width: 1),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide:
-                        BorderSide(color: appbar_color, width: 1),
-                      ),
-                      filled: true,
-                      fillColor: Colors.white,
-                      contentPadding:
-                      EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                    ),
-                    dropdownColor: Colors.white,
-                    style: GoogleFonts.poppins(
-                        fontSize: 16, color: Colors.black87),
-                    icon: Icon(Icons.keyboard_arrow_down, color: Colors.black),
-                    items: technicians.map<DropdownMenuItem<String>>((tech) {
-                      return DropdownMenuItem<String>(
-                        value: tech['id'].toString(),
-                        child: Text(
-                          tech['name'],
-                          style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w500),
-                        ),
-                      );
-                    }).toList(),
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        selectedTechnicianId = newValue;
-                        print('technician id : $selectedTechnicianId');
-                      });
-                    },
-                  ),
-                SizedBox(height: 10),
-              ],
-            ),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: Text(
-                  "Cancel",
-                  style: GoogleFonts.poppins(
-                      color: Colors.red, fontWeight: FontWeight.w500),
-                ),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  if (selectedTechnicianId == null) {
-                    Fluttertoast.showToast(msg: "Please select!");
-                    return;
-                  }
-                  _transferSubTicket(subTicketId, selectedTechnicianId!);
-                  Navigator.of(context).pop();
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: appbar_color,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                  padding:
-                  EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-                  elevation: 3,
-                ),
-                child: Text(
-                  "Submit",
-                  style: GoogleFonts.poppins(fontWeight: FontWeight.w500),
-                ),
-              ),
-            ],
-          );
-        },
-      );
-    },
-  );
-}
-
-Future<void> _transferSubTicket(String subTicketId, String technicianId) async {
-  String url = "$baseurl/maintenance/subticket/$subTicketId";
-
-  try {
-    final response = await http.patch(
-      Uri.parse(url),
-      headers: {
-        'Authorization': 'Bearer $Company_Token',
-        'Content-Type': 'application/json',
-      },
-      body: jsonEncode({
-        'assigned_to': technicianId, // Selected technician ID
-      }),
-    );
-
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-
-      if (data['success'] == true) {
-        String successMessage = data['message'] ?? "Transfer successful!"; // Extract message
-
-        // Show toast with the response message
-        Fluttertoast.showToast(
-          msg: successMessage,
-          toastLength: Toast.LENGTH_LONG,
-          gravity: ToastGravity.BOTTOM,
-          backgroundColor: appbar_color,
-          textColor: Colors.white,
-        );
-      }
-    } else {
-      final data = json.decode(response.body);
-      String errorMessage = data['message'] ?? "Something went wrong!";
-      Fluttertoast.showToast(
-        msg: "Error: $errorMessage",
-        toastLength: Toast.LENGTH_LONG,
-        gravity: ToastGravity.BOTTOM,
-        backgroundColor: Colors.red,
-        textColor: Colors.white,
-        fontSize: 16.0,
-      );
-    }
-  } catch (e) {
-    Fluttertoast.showToast(
-      msg: "Error: $e",
-      toastLength: Toast.LENGTH_LONG,
-      gravity: ToastGravity.BOTTOM,
-      backgroundColor: Colors.red,
-      textColor: Colors.white,
-      fontSize: 16.0,
-    );
-  }
-}
 
 Widget _buildDecentButton(String label, IconData icon, Color color,
     VoidCallback onPressed) {
@@ -3101,47 +3259,7 @@ Widget _buildDecentButton(String label, IconData icon, Color color,
   );
 }
 
-Widget _buildDecentButtonWithLabel(String label, IconData icon, Color color,
-    VoidCallback onPressed) {
-  return InkWell(
-    onTap: onPressed,
-    borderRadius: BorderRadius.circular(30.0),
-    splashColor: color.withOpacity(0.2),
-    highlightColor: color.withOpacity(0.1),
-    child: Container(
-      margin: EdgeInsets.only(top: 10.0),
-      padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(30.0),
-        color: Colors.white,
-        border: Border.all(
-          color: color.withOpacity(0.3),
-          width: 1.5,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: color.withOpacity(0.1),
-            blurRadius: 8.0,
-            offset: Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Icon(icon, color: color),
-          SizedBox(width: 8.0),
-            Text(
-              label,
-              style: GoogleFonts.poppins(
-                color: color,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-        ],
-      ),
-    ),
-  );
-}
+
 
 class ComplaintBottomSheet extends StatefulWidget {
   final String ticketId;
@@ -3179,6 +3297,8 @@ class _ComplaintBottomSheetState extends State<ComplaintBottomSheet> {
       isLoading = false;
     });
   }
+
+
 
   Future<void> _fetchComplaintHistory(String token) async {
     int currentPage = 1;

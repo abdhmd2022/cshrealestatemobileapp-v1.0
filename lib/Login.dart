@@ -16,7 +16,6 @@ import 'constants.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:typed_data';
 import 'package:flutter/services.dart' show rootBundle;
-import 'dart:io';
 
 class Login extends StatefulWidget {
   const Login({super.key, required this.title});

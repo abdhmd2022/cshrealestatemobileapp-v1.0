@@ -978,7 +978,6 @@ class _LoginPageState extends State<Login> {
       await prefs.setString("user_permissions", jsonEncode(tenantPermissions));
       await prefs.setString("role_name", 'Tenant');
 
-
       // Step 3: Redirect user
       if (flatsList.length > 1) {
         loadTokens();
@@ -988,8 +987,6 @@ class _LoginPageState extends State<Login> {
         );
       }
       else if (flatsList.isNotEmpty) {
-
-
 
         var flat = flatsList.first;
         await prefs.setInt("flat_id", flat['id']);
@@ -1002,11 +999,8 @@ class _LoginPageState extends State<Login> {
           flat['accessToken'],
         );
 
-
-
-
       } else {
-        await prefs!.setBool('remember_me', false);
+        await prefs.setBool('remember_me', false);
 
         showErrorSnackbar(context, "No flats found for this tenant.");
       }

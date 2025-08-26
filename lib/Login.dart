@@ -1287,7 +1287,7 @@ class _LoginPageState extends State<Login> {
 
   Future<void> sendResetRequest() async {
 
-    final url = Uri.parse("$OAuth_URL/oauth/forgot");
+    final url = Uri.parse("$OAuth_URL/forgot");
     final body = {
       "email": emailController.text.trim(),
       "scope": selectedRole.toLowerCase() == "admin" ? "user" : selectedRole.toLowerCase(),
@@ -1449,7 +1449,7 @@ class _LoginPageState extends State<Login> {
       _isLoading = true;
     });
 
-    final url = Uri.parse("$OAuth_URL/oauth/change");
+    final url = Uri.parse("$OAuth_URL/change");
     final body = {
       "password":newPasswordController.text.trim(),
       "confirmPassword":confirmPasswordController.text.trim()

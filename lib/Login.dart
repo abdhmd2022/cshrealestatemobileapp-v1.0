@@ -1002,7 +1002,7 @@ class _LoginPageState extends State<Login> {
       } else {
         await prefs.setBool('remember_me', false);
 
-        showErrorSnackbar(context, "No flats found for this tenant.");
+        showErrorSnackbar(context, "No units found for this tenant.");
       }
     } catch (e) {
       await prefs!.setBool('remember_me', false);
@@ -1087,9 +1087,22 @@ class _LoginPageState extends State<Login> {
       }
 
       var landlord = landlordData['data']['landlord'];
-      var contracts = landlord['bought_contracts'] as List<dynamic>;
+      final List<dynamic> boughtContracts = (landlord['bought_contracts'] ?? []) as List<dynamic>;
 
-      List<Map<String, dynamic>> flatsList = contracts.expand((contract) {
+      List<Map<String, dynamic>> flatsList = [];
+
+      // 2) Try extracting from bought_contracts
+      if (boughtContracts.isNotEmpty) {
+        flatsList = _extractFlatsFromBoughtContracts(
+          boughtContracts: boughtContracts,
+          landlord: landlord,
+          hosting: hosting,
+          token: token,
+        );
+      }
+
+
+      /*List<Map<String, dynamic>> flatsList = contracts.expand((contract) {
         return (contract['flats'] as List<dynamic>).map((flatData) {
           var flat = flatData['flat'];
           return {
@@ -1104,7 +1117,34 @@ class _LoginPageState extends State<Login> {
             'accessToken': token,
           };
         });
-      }).toList();
+      }).toList();*/
+
+      // 3) Fallback: if bought_contracts empty, call second API to get landlord.flats
+      if (flatsList.isEmpty) {
+        final fallbackFlatsUrl = "${hosting['baseurl']}/landlord/$landlordId";
+        // Example: "${hosting['baseurl']}/landlord/$landlordId/flats"
+        final fallbackRes = await http.get(
+          Uri.parse(fallbackFlatsUrl),
+          headers: {
+            "Authorization": "Bearer $token",
+            "Accept": "application/json",
+          },
+        );
+
+        if (fallbackRes.statusCode == 200) {
+          final fallbackJson = json.decode(fallbackRes.body);
+          if (fallbackJson['success'] == true) {
+            final landlordObj = fallbackJson['data']?['landlord'] ?? {};
+            final List<dynamic> flatsArray = (landlordObj['flats'] ?? []) as List<dynamic>;
+            flatsList = _extractFlatsFromFlatArray(
+              flatsArray: flatsArray,
+              landlord: landlordObj.isNotEmpty ? landlordObj : landlord,
+              hosting: hosting,
+              token: token,
+            );
+          }
+        }
+      }
 
       await prefs!.setString("flats_list", jsonEncode(flatsList));
 
@@ -1135,6 +1175,54 @@ class _LoginPageState extends State<Login> {
     } finally {
       setState(() => _isLoading = false);
     }
+  }
+
+  /// Build flats list from bought_contracts structure
+  List<Map<String, dynamic>> _extractFlatsFromBoughtContracts({
+    required List<dynamic> boughtContracts,
+    required Map<String, dynamic> landlord,
+    required Map<String, dynamic> hosting,
+    required String token,
+  }) {
+    return boughtContracts.expand<Map<String, dynamic>>((contract) {
+      final List<dynamic> flats = (contract['flats'] ?? []) as List<dynamic>;
+      return flats.map((flatData) {
+        final flat = flatData['flat'] ?? {};
+        return {
+          'landlord_id': landlord['id'],
+          'id': flat['id'],
+          'name': flat['name'],
+          'building': (flat['building']?['name']) ?? 'Unknown Building',
+          'company_id': landlord['company_id'],
+          'baseurl': hosting['baseurl'],
+          'adminurl': hosting['adminurl'],
+          'license_expiry': hosting['license_expiry'],
+          'accessToken': token,
+        };
+      });
+    }).toList();
+  }
+
+  /// Build flats list from landlord.flats fallback structure (as in your sample JSON)
+  List<Map<String, dynamic>> _extractFlatsFromFlatArray({
+    required List<dynamic> flatsArray,
+    required Map<String, dynamic> landlord,
+    required Map<String, dynamic> hosting,
+    required String token,
+  }) {
+    return flatsArray.map<Map<String, dynamic>>((flat) {
+      return {
+        'landlord_id': landlord['id'],
+        'id': flat['id'],
+        'name': flat['name'],
+        'building': (flat['building']?['name']) ?? 'Unknown Building',
+        'company_id': landlord['company_id'],
+        'baseurl': hosting['baseurl'],
+        'adminurl': hosting['adminurl'],
+        'license_expiry': hosting['license_expiry'],
+        'accessToken': token,
+      };
+    }).toList();
   }
 
   // old landlord function
@@ -1365,7 +1453,7 @@ class _LoginPageState extends State<Login> {
                 <br>
                 <div style="text-align: start;"><p style="font-size: 12px; font-family: Arial, sans-serif; color: #333;">If you did not attempt this, please contact <a href="mailto:saadan@ca-eim.com">saadan@ca-eim.com</a></p></div>
                 
-                <br>
+                <br> 
                       <div style="text-align: start;"><p style="color: #999999; font-style: italic; font-size: 12px">Disclaimer: 
                       This email is for verification purposes only.
                       Please do not share your OTP with anyone.<br><br>
@@ -1379,11 +1467,11 @@ class _LoginPageState extends State<Login> {
                 </div>''';
 
     try {
-      final sendReport = await send(message, smtpServer); // send mail
+       // final sendReport = await send(message, smtpServer); // send mail
 
       // ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("OTP sent to your email.")));
 
-      print('Message sent: ${sendReport.toString()}');
+       // print('Message sent: ${sendReport.toString()}');
     }
     catch (e)
     {

@@ -348,7 +348,7 @@ late int loaded_flat_id;
         if (response.statusCode == 200) {
           final data = json.decode(response.body);
 
-          if (is_landlord) {
+          /*if (is_landlord) {
             var landlord = data['data']['landlord'];
             if (landlord != null) {
               String landlordName = landlord['name'] ?? '';
@@ -376,7 +376,69 @@ late int loaded_flat_id;
                 }
               }
             }
-          } else {
+          }*/
+
+          if (is_landlord) {
+            final landlord = data['data']?['landlord'];
+            if (landlord != null) {
+              final String landlordName = landlord['name'] ?? '';
+              final List<dynamic> boughtContracts = (landlord['bought_contracts'] ?? []) as List<dynamic>;
+
+              if (boughtContracts.isNotEmpty) {
+                for (final contract in boughtContracts) {
+                  final int? contractId = contract['id'];
+                  final List<dynamic> contractFlats = (contract['flats'] ?? []) as List<dynamic>;
+
+                  for (final flatData in contractFlats) {
+                    final flat = flatData['flat'];
+                    if (flat != null) {
+                      final building = (flat['building'] ?? {}) as Map<String, dynamic>;
+                      final area = (building['area'] ?? {}) as Map<String, dynamic>;
+                      final state = (area['state'] ?? {}) as Map<String, dynamic>;
+                      final flatType = (flat['flat_type'] ?? {}) as Map<String, dynamic>;
+
+                      flats.add({
+                        'user_type': 'Landlord',
+                        'tenant_name': landlordName,
+                        'flat_id': flat['id'],
+                        'flat_name': flat['name'],
+                        'building_name': building['name'],
+                        'area_name': area['name'],
+                        'emirate': state['name'],
+                        'flat_type': flatType['name'],
+                        'contract_id': contractId,
+                      });
+                    }
+                  }
+                }
+              } else {
+
+                final List<dynamic> flatsArray = (landlord['flats'] ?? []) as List<dynamic>;
+
+                for (final flat in flatsArray) {
+                  final building = (flat['building'] ?? {}) as Map<String, dynamic>;
+                  final area = (building['area'] ?? {}) as Map<String, dynamic>;
+                  final state = (area['state'] ?? {}) as Map<String, dynamic>;
+                  final flatType = (flat['flat_type'] ?? {}) as Map<String, dynamic>;
+
+                  flats.add({
+                    'user_type': 'Landlord',
+                    'tenant_name': landlordName,
+                    'flat_id': flat['id'],
+                    'flat_name': flat['name'],
+                    'building_name': building['name'],
+                    'area_name': area['name'],
+                    'emirate': state['name'],
+                    'flat_type': flatType['name'],
+                    'contract_id': null, // no contract in this fallback payload
+                  });
+                }
+
+
+              }
+            }
+          }
+          else {
             var tenant = data['data']['tenant'];
             if (tenant != null) {
               String tenantName = tenant['name'] ?? '';
@@ -2006,7 +2068,8 @@ late int loaded_flat_id;
           requestBody['rental_contract_id'] = selectedFlat?['contract_id'];
         }
       } else if (is_landlord) {
-        requestBody['sales_contract_id'] = selectedFlat?['contract_id'];
+          requestBody['sales_contract_id'] = selectedFlat?['contract_id'];
+
       } else {
         // Default = Tenant
         requestBody['rental_contract_id'] = selectedFlat?['contract_id'];

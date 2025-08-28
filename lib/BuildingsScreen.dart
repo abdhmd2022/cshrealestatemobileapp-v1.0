@@ -25,6 +25,23 @@ class _BuildingsScreenState extends State<BuildingsScreen> {
     super.initState();
     fetchBuildings();
   }
+  bool _isTruthy(dynamic v) {
+    if (v == null) return false;
+    if (v is bool) return v;
+    if (v is num) return v != 0;
+    if (v is String) return v.toLowerCase() == 'true' || v == '1';
+    return false;
+  }
+
+  String formatDate(String? date) {
+    if (date == null) return '';
+    try {
+      final d = DateTime.parse(date);
+      return DateFormat('dd-MMM-yyyy').format(d);
+    } catch (_) {
+      return date;
+    }
+  }
 
   Future<void> fetchBuildings() async {
     setState(() {
@@ -46,18 +63,25 @@ class _BuildingsScreenState extends State<BuildingsScreen> {
 
     if (response.statusCode == 200) {
       final jsonData = jsonDecode(response.body);
-      final buildingsJson = jsonData['data']['buildings'] as List;
+      final buildingsJson = (jsonData['data']?['buildings'] as List?) ?? [];
 
-      // Add available + occupied counts into each building map
-      final processedBuildings = buildingsJson.map((building) {
-        final flats = building['flats'] as List;
-        final availableRent = (building['availableFlatsForRent'] ?? 0) as int;
-        final occupied = flats.length - availableRent;
+      final processedBuildings = buildingsJson.map((b) {
+        final flats = (b['flats'] as List?) ?? [];
+
+        final int availableRent = (b['availableFlatsForRent'] ?? 0) as int;
+        final int availableSale = (b['availableFlatsForSale'] ?? 0) as int;
+
+        final int totalFlats = flats.length;
+        final int availableTotal = availableRent + availableSale;
+        final int occupiedTotal = (totalFlats - availableTotal).clamp(0, totalFlats);
 
         return {
-          ...building,
-          'available_count': availableRent,
-          'occupied_count': occupied
+          ...b,
+          'total_flats': totalFlats,
+          'available_total': availableTotal,
+          'occupied_total': occupiedTotal,
+          'available_rent': availableRent,
+          'available_sale': availableSale,
         };
       }).toList();
 
@@ -65,7 +89,8 @@ class _BuildingsScreenState extends State<BuildingsScreen> {
         buildings = processedBuildings;
       });
 
-    } else {
+    }
+    else {
       setState(() {
         buildings = [];
       });
@@ -108,8 +133,13 @@ class _BuildingsScreenState extends State<BuildingsScreen> {
     final area = building['area'] ?? {};
     final state = area['state'] ?? {};
     final country = state['country'] ?? {};
-    final available = building['available_count'] ?? 0;
-    final occupied = building['occupied_count'] ?? 0;
+
+    final int availableTotal = building['available_total'] ?? 0;
+    final int occupiedTotal = building['occupied_total'] ?? 0;
+    final int availableRent  = building['available_rent'] ?? 0;
+    final int availableSale  = building['available_sale'] ?? 0;
+
+
 
     return GestureDetector(
       onTap: () {
@@ -205,7 +235,7 @@ class _BuildingsScreenState extends State<BuildingsScreen> {
 
             SizedBox(height: 12),
 
-            // Available + Occupied pills
+// TOTAL Available + Occupied pills
             Row(
               children: [
                 Expanded(
@@ -217,10 +247,10 @@ class _BuildingsScreenState extends State<BuildingsScreen> {
                     ),
                     alignment: Alignment.center,
                     child: Text(
-                      'Available: $available',
+                      'Available: $availableTotal',
                       style: GoogleFonts.poppins(
                         fontSize: 12,
-                        fontWeight: FontWeight.w500,
+                        fontWeight: FontWeight.w600,
                         color: Colors.green.shade700,
                       ),
                     ),
@@ -236,10 +266,10 @@ class _BuildingsScreenState extends State<BuildingsScreen> {
                     ),
                     alignment: Alignment.center,
                     child: Text(
-                      'Occupied: $occupied',
+                      'Occupied: $occupiedTotal',
                       style: GoogleFonts.poppins(
                         fontSize: 12,
-                        fontWeight: FontWeight.w500,
+                        fontWeight: FontWeight.w600,
                         color: Colors.red.shade700,
                       ),
                     ),
@@ -247,6 +277,55 @@ class _BuildingsScreenState extends State<BuildingsScreen> {
                 ),
               ],
             ),
+
+            /*SizedBox(height: 8),
+
+// Breakdown row (available split)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Container(
+                    padding: EdgeInsets.symmetric(vertical: 6),
+                    decoration: BoxDecoration(
+                      color: Colors.blue.shade50,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    alignment: Alignment.center,
+                    child: Text(
+                      'Sale • Avail: $availableSale',
+                      style: GoogleFonts.poppins(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.blue.shade700,
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(width: 8),
+                Expanded(
+                  child: Container(
+                    padding: EdgeInsets.symmetric(vertical: 6),
+                    decoration: BoxDecoration(
+                      color: Colors.teal.shade50,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    alignment: Alignment.center,
+                    child: Text(
+                      'Rent • Avail: $availableRent',
+                      style: GoogleFonts.poppins(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.teal.shade700,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),*/
+
+
+
           ],
         ),
       ),

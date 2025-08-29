@@ -61,6 +61,15 @@ class _LandlordDashboardScreenState extends State<LandlordDashboardScreen> with 
       }
   }
 
+   bool _truthy(dynamic v) {
+     if (v == null) return false;
+     if (v is bool) return v;
+     if (v is num) return v != 0;
+     if (v is String) return v.toLowerCase() == 'true' || v == '1';
+     return false;
+   }
+
+
    Future<void> fetchBuildingData() async {
      setState(() {
        isLoadingBarChart = true;
@@ -84,8 +93,14 @@ class _LandlordDashboardScreenState extends State<LandlordDashboardScreen> with 
 
        for (var b in buildings) {
          final flats = (b['flats'] ?? []) as List;
-         final available = (b['availableFlatsForRent'] ?? 0) as int;
-         final occupied = flats.length - available;
+
+         // building-level counts from API
+         final int availRent = (b['availableFlatsForRent'] ?? 0) as int;
+         final int availSale = (b['availableFlatsForSale'] ?? 0) as int;
+         final int available = availRent + availSale;
+
+         final int total = flats.length;
+         final int occupied = (total - available).clamp(0, total);
 
          if (available > 0 || occupied > 0) {
            buildingNames.add(b['name']);
@@ -97,6 +112,7 @@ class _LandlordDashboardScreenState extends State<LandlordDashboardScreen> with 
            });
          }
        }
+
      } else {
        throw Exception('Failed to load buildings');
      }
@@ -110,13 +126,10 @@ class _LandlordDashboardScreenState extends State<LandlordDashboardScreen> with 
      final flats = (building['flats'] as List).cast<Map<String, dynamic>>();
 
      final filtered = flats.where((flat) {
-       final forRent = flat['forRent'] == true;
-       if (status == 'Available') {
-         return forRent;
-       } else {
-         return !forRent;
-       }
+       final isAvailable = _truthy(flat['forRent']) || _truthy(flat['forSales']);
+       return status == 'Available' ? isAvailable : !isAvailable; // status is 'Available' or 'Occupied'
      }).toList();
+
 
      showDialog(
 
@@ -187,13 +200,13 @@ class _LandlordDashboardScreenState extends State<LandlordDashboardScreen> with 
                      Container(
                        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                        decoration: BoxDecoration(
-                         color: status == 'Available' ? Colors.green[100] : Colors.orange[100],
+                         color: status == 'Available' ? Colors.green.withOpacity(0.2) : Colors.redAccent.withOpacity(0.2),
                          borderRadius: BorderRadius.circular(12),
                        ),
                        child: Text(
                          status,
                          style: TextStyle(
-                           color: status == 'Available' ? Colors.green : Colors.orange,
+                           color: status == 'Available' ? Colors.green : Colors.redAccent,
                            fontSize: 12,
                            fontWeight: FontWeight.w500,
                          ),
@@ -282,27 +295,65 @@ class _LandlordDashboardScreenState extends State<LandlordDashboardScreen> with 
 
                         isLoadingBarChart
                             ? Center(
-                          child: Platform.isIOS
-                              ? const CupertinoActivityIndicator(radius: 18)
-                              : CircularProgressIndicator(
-                            valueColor: AlwaysStoppedAnimation<Color>(appbar_color),
+                          child:  Container(
+                            height: 370,
+
+                            width: MediaQuery.of(context).size.width,
+                            margin: EdgeInsets.only(bottom: 16),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(16),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black12,
+                                  blurRadius: 10,
+                                  offset: Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                            padding: EdgeInsets.all(20),
+                            child: Platform.isIOS
+                                ? const CupertinoActivityIndicator(radius: 18)
+                                : CircularProgressIndicator(
+                              valueColor: AlwaysStoppedAnimation<Color>(appbar_color),
+                            ),
                           ),
+
                         )
                             :
                         buildingNames.isEmpty
                             ? Center(
-                          child: Column(
+                          child: Container(
+                            height: 370,
 
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.domain_disabled, color: Colors.grey, size: 48),
-                              SizedBox(height: 12),
-                              Text(
-                                'Building(s) Not Found',
-                                style: GoogleFonts.poppins(fontSize: 15, color: Colors.black54),
-                                textAlign: TextAlign.center,
-                              ),
-                            ],
+                            width: MediaQuery.of(context).size.width,
+                            margin: EdgeInsets.only(bottom: 16),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(16),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black12,
+                                  blurRadius: 10,
+                                  offset: Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                            padding: EdgeInsets.all(20),
+                            child:Column(
+
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.domain_disabled, color: Colors.grey, size: 48),
+                                SizedBox(height: 12),
+                                Text(
+                                  'Building(s) Not Found',
+                                  style: GoogleFonts.poppins(fontSize: 15, color: Colors.black54),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ],
+
+                            ),
                           ),
                         )
                             :
@@ -358,37 +409,20 @@ class _LandlordDashboardScreenState extends State<LandlordDashboardScreen> with 
                                     child: Row(
                                       mainAxisAlignment: MainAxisAlignment.center,
                                       children: [
-                                        Row(
-                                          children: [
-                                            Container(
-                                              width: 15,
-                                              height: 15,
-                                              decoration: BoxDecoration(
-                                                color: Colors.orangeAccent,
-                                                shape: BoxShape.circle,
-                                              ),
-                                            ),
-                                            SizedBox(width: 8),
-                                            Text('Occupied'),
-                                          ],
-                                        ),
-                                        SizedBox(width: 16),
-                                        Row(
-                                          children: [
-                                            Container(
-                                              width: 15,
-                                              height: 15,
-                                              decoration: BoxDecoration(
-                                                color: Colors.blueAccent,
-                                                shape: BoxShape.circle,
-                                              ),
-                                            ),
-                                            SizedBox(width: 8),
-                                            Text('Available'),
-                                          ],
-                                        ),
+                                        Row(children: [
+                                          Container(width: 15, height: 15, decoration: const BoxDecoration(color: Colors.redAccent, shape: BoxShape.circle)),
+                                          const SizedBox(width: 8),
+                                          const Text('Occupied'),
+                                        ]),
+                                        const SizedBox(width: 16),
+                                        Row(children: [
+                                          Container(width: 15, height: 15, decoration:  BoxDecoration(color: Colors.green.withOpacity(0.9), shape: BoxShape.circle)),
+                                          const SizedBox(width: 8),
+                                          const Text('Available'),
+                                        ]),
                                       ],
                                     ),
+
                                   ),
                                 ],
                               ),
@@ -574,7 +608,7 @@ class BarGraph extends StatelessWidget {
                     fromY: 0,
                     toY: occupiedUnits[index].toDouble(),
                     gradient: LinearGradient(
-                      colors: [Colors.orangeAccent.shade100,Colors.orangeAccent.shade200, Colors.orangeAccent.shade200], // Gradient background
+                      colors: [Colors.redAccent.withOpacity(0.5), Colors.redAccent.withOpacity(0.9)],
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                     ),
@@ -585,9 +619,8 @@ class BarGraph extends StatelessWidget {
                     fromY: 0,
                     toY: availableUnits[index].toDouble(),
                     gradient: LinearGradient(
-                      colors: [appbar_color.withOpacity(0.5),appbar_color.withOpacity(0.7), appbar_color.withOpacity(0.9)], // Gradient background
+                      colors: [Colors.green.withOpacity(0.5), Colors.green.withOpacity(0.9)],
                       begin: Alignment.topCenter,
-
                       end: Alignment.bottomCenter,
                     ),
                     width: barWidth,
@@ -602,9 +635,6 @@ class BarGraph extends StatelessWidget {
         ),
       ),
     );
-
-
-
   }
 }
 

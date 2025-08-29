@@ -199,7 +199,7 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
               };
             }).toList();*/
 
-            print('technicians: ${technicians}');
+            print('technicians: ${usersJson}');
           }
         }
       } catch (e) {
@@ -2714,11 +2714,13 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                         ],
                       ),
                       child:Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.center, // important for multi-line
                         children: [
                           // Left Side: Subticket Info
                           Expanded(
                             child:  Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 Flexible(
@@ -2733,8 +2735,8 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                                     overflow: TextOverflow.visible, // allow wrapping
                                   ),
                                 ),
-                                const SizedBox(width: 4),
-                                Text(
+                                const SizedBox(width: 6),
+                                Flexible(child: Text(
                                   ' - ${subTicket['subTicket_assigned_user']['name']?? "Not Assigned"}',
                                   style: GoogleFonts.poppins(
                                     fontSize: 13,
@@ -2743,7 +2745,8 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
                                   ),
                                   softWrap: true,
                                   overflow: TextOverflow.visible, // ✅ wrap to next line
-                                ),
+                                ),)
+
                               ],
                             ),
                           ),

@@ -101,7 +101,6 @@ class _BuildingReportScreenState extends State<BuildingReportScreen> {
     );
   }
 
-
   Future<void> _onTapFetchFlat(int flatId, String category) async {
     setState(() => loadingTileIndex = flatId);
 
@@ -169,14 +168,6 @@ class _BuildingReportScreenState extends State<BuildingReportScreen> {
 
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  Widget _availabilityHeader(String text, Color dotColor) => Padding(
-    padding: const EdgeInsets.only(top: 12, bottom: 6),
-    child: Row(children: [
-      Container(width: 8, height: 8, decoration: BoxDecoration(color: dotColor, shape: BoxShape.circle)),
-      const SizedBox(width: 8),
-      Text(text, style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w700)),
-    ]),
-  );
 
   Widget _sectionHeader(String text, Color dotColor) => Padding(
     padding: const EdgeInsets.only(top: 8, bottom: 6),

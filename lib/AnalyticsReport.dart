@@ -299,7 +299,7 @@ class _LandlordDashboardScreenState extends State<LandlordDashboardScreen> with 
                             height: 370,
 
                             width: MediaQuery.of(context).size.width,
-                            margin: EdgeInsets.only(bottom: 16),
+
                             decoration: BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(16),
@@ -325,7 +325,6 @@ class _LandlordDashboardScreenState extends State<LandlordDashboardScreen> with 
                             ? Center(
                           child: Container(
                             height: 370,
-
                             width: MediaQuery.of(context).size.width,
                             margin: EdgeInsets.only(bottom: 16),
                             decoration: BoxDecoration(
@@ -358,11 +357,6 @@ class _LandlordDashboardScreenState extends State<LandlordDashboardScreen> with 
                         )
                             :
 
-                        SizedBox(height: 0),
-
-
-
-                        if(buildingNames.isNotEmpty)...[
 
                           Container(
                             height: 370,
@@ -392,16 +386,16 @@ class _LandlordDashboardScreenState extends State<LandlordDashboardScreen> with 
 
                                   SizedBox(height: 20),
                                   Expanded(
-                                    flex: 1,
+                                      flex: 1,
 
-                                    child: BarGraph(
-                                      occupiedUnits: occupiedUnits,
-                                      buildingNames: buildingNames,
-                                      availableUnits: availableUnits,
-                                      onBarTap: (index, status) {
-                                        _showUnitsPopup(buildingData[index], status,context);
-                                      },
-                                    )
+                                      child: BarGraph(
+                                        occupiedUnits: occupiedUnits,
+                                        buildingNames: buildingNames,
+                                        availableUnits: availableUnits,
+                                        onBarTap: (index, status) {
+                                          _showUnitsPopup(buildingData[index], status,context);
+                                        },
+                                      )
 
                                   ),                        SizedBox(height: 10),
                                   Padding(
@@ -431,11 +425,11 @@ class _LandlordDashboardScreenState extends State<LandlordDashboardScreen> with 
 
 
 
-                          SizedBox(height: 16),
 
-                        ],
+
                       ],
 
+                      SizedBox(height: 16),
 
 
 

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:cshrealestatemobile/CreateSalesInquiry.dart';
@@ -9,12 +10,15 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
+import 'package:mailer/mailer.dart';
+import 'package:mailer/smtp_server.dart';
 import 'AdminDashboard.dart';
 import 'AvailableUnitsReport.dart';
 import 'Sidebar.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'dart:async';
+import 'dart:async' show unawaited;
 
 
 class SalesInquiryReport extends StatefulWidget {
@@ -211,7 +215,49 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
     fetchLeadStatus();
   }
 
-  void _showTransferDialog(BuildContext context, String inquiryId) {
+  Future<void> _sendTicketEmailSMTP({
+    required String toEmail,
+    required String toName,
+    required String subject,
+    required String htmlBody,
+  }) async {
+    if (kIsWeb) {
+      Fluttertoast.showToast(
+        msg: 'SMTP email is not supported on Web (use server-side).',
+        backgroundColor: Colors.black, textColor: Colors.white,
+      );
+      return;
+    }
+
+    final smtpServer = SmtpServer(
+      kSmtpHost,
+      port: kSmtpPort,
+      ssl: kSmtpUseSsl,
+      username: kSmtpUsername,
+      password: kSmtpPassword,
+    );
+
+    final message = Message()
+      ..from = Address(kFromEmail, kFromName)
+      ..recipients.add(Address(toEmail, toName))
+      ..subject = subject
+      ..html = htmlBody;
+
+    /*final message = Message()
+      ..from = Address(kFromEmail, kFromName)
+      ..recipients.add(Address("anish@ca-eim.com","Anish"))
+      ..subject = subject
+      ..html = htmlBody;*/
+
+    try {
+      await send(message, smtpServer);
+    } catch (e) {
+      debugPrint('SMTP error: $e');
+    }
+  }
+
+
+  void _showTransferDialog(BuildContext context, InquiryModel inquiry) {
     String? selectedUserId;
     List<Map<String, dynamic>> users = [];
     bool isLoading = true;
@@ -238,6 +284,8 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
               return {
                 'id': userJson['id'].toString(),
                 'name': userJson['name'],
+                'email': userJson['email'] as String? ?? '', // <-- add this
+
               };
             }).toList();
           }
@@ -358,7 +406,13 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
                       Fluttertoast.showToast(msg: "Please select user!");
                       return;
                     }
-                    _submitTransfer(inquiryId, selectedUserId!);
+                    final selectedUser = users.firstWhere((u) => u['id'] == selectedUserId);
+                    _submitTransfer(
+                      inquiry,
+                      selectedUserId!,
+                      selectedUser['email'] ?? '',
+                      selectedUser['name'] ?? '',
+                    );
                     Navigator.of(context).pop();
                   },
                   style: ElevatedButton.styleFrom(
@@ -458,10 +512,10 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
   }
 
 
-  Future<void> _submitTransfer(String inquiryId, String userId) async {
+  Future<void> _submitTransfer(InquiryModel inquiry, String userId,String recipientEmail, String recipientName) async {
     try {
       final response = await http.patch(
-        Uri.parse("$baseurl/lead/$inquiryId"),
+        Uri.parse("$baseurl/lead/${inquiry.inquiryNo}"),
         headers: {
           'Authorization': 'Bearer $Company_Token',
           'Content-Type': 'application/json',
@@ -486,6 +540,40 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
         );
 
         fetchInquiries();
+
+        final String customerName   = inquiry.customerName.isEmpty
+            ? 'Customer' : inquiry.customerName;
+        final String interestType   = inquiry.interest_type;
+        final String propertyType   = (inquiry.unitType ?? '').toString();
+        final String priceRange     = _formatCurrencyRange(
+          inquiry.minPrice.round(),
+          inquiry.maxPrice.round(),
+        );
+
+        // minimal email HTML
+        final html = _buildInquiryTransferEmailHtmlMinimal(
+          assigneeName: recipientName.isEmpty ? 'Teammate' : recipientName,
+          assignedBy: (user_name.isNotEmpty ? user_name : 'Admin'),
+          customerName: customerName,
+          interestType: interestType,
+          propertyType: propertyType,
+          priceRange: priceRange,
+        );
+
+        // fire-and-forget (no UI delay)
+        if (recipientEmail.isNotEmpty) {
+          unawaited(
+            _sendTicketEmailSMTP(
+              toEmail: recipientEmail,
+              toName: recipientName.isEmpty ? 'Teammate' : recipientName,
+              subject: 'New Inquiry Assigned - #${inquiry.inquiryNo}',
+              htmlBody: html,
+            ).catchError((e, st) => debugPrint('Transfer email error: $e')),
+          );
+        }
+
+
+
 
       } else {
         String successMessage = data['message'] ?? "Transfer successful!"; // Extract message
@@ -1397,7 +1485,7 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
                                 'Transfer',
                                 Icons.swap_horiz,
                                 Colors.orange,
-                                    () => _showTransferDialog(context, inquiry.inquiryNo),
+                                    () => _showTransferDialog(context, inquiry),
                               ),
                               SizedBox(width: 5),
                             ]
@@ -2557,6 +2645,72 @@ class Flat {
     );
   }
 }
+
+String _brandHex(Color c) {
+  // Converts a Color to #RRGGBB (ignore alpha)
+  return '#${c.value.toRadixString(16).padLeft(8, '0').substring(2)}';
+}
+
+String _buildInquiryTransferEmailHtmlMinimal({
+  required String assigneeName,   // new user
+  required String assignedBy,     // current user
+  required String customerName,
+  required String interestType,
+  required String propertyType,
+  required String priceRange,
+}) {
+  final brand = _brandHex(appbar_color);
+  const subtle = '#f6f9fc';
+  const muted  = '#6b7280';
+
+  return '''
+  <!doctype html>
+  <html>
+  <head>
+    <meta name="viewport" content="width=device-width"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>New Inquiry Assigned</title>
+  </head>
+  <body style="margin:0;padding:0;background:${subtle};font-family:Inter,Segoe UI,Roboto,Arial,sans-serif;color:#111827;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${subtle};padding:24px 0;">
+      <tr><td align="center">
+        <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="background:#fff;border-radius:12px;box-shadow:0 4px 16px rgba(0,0,0,0.08);overflow:hidden;">
+          <tr>
+            <td style="background:${brand};padding:20px;text-align:center;color:#fff;">
+              <h2 style="margin:0;font-size:18px;">New Inquiry Assigned</h2>
+            </td>
+          </tr>
+          <tr><td style="padding:24px;">
+            <p style="margin:0 0 12px;font-size:15px;">
+              Hi <strong>$assigneeName</strong>, an inquiry was transferred to you by <strong>$assignedBy</strong>.
+            </p>
+            <div style="border:1px solid #eee;border-radius:10px;padding:16px;background:#fafafa;">
+              <p style="margin:0 0 6px;font-size:14px;"><strong>Customer:</strong> $customerName</p>
+              <p style="margin:0 0 6px;font-size:14px;"><strong>Interest:</strong> $interestType</p>
+              <p style="margin:0 0 6px;font-size:14px;"><strong>Property Type:</strong> $propertyType</p>
+              <p style="margin:0;font-size:14px;"><strong>Budget:</strong> $priceRange</p>
+            </div>
+            <p style="margin:16px 0 0;font-size:12px;color:$muted;">Please follow up accordingly.</p>
+          </td></tr>
+          <tr>
+            <td style="background:#fafafa;padding:12px;text-align:center;font-size:12px;color:$muted;">
+              © ${DateTime.now().year} CSH Real Estate
+            </td>
+          </tr>
+        </table>
+      </td></tr>
+    </table>
+  </body>
+  </html>
+  ''';
+}
+
+String _formatCurrencyRange(num start, num end) {
+  // e.g., AED 50,000 – 120,000
+  final f = NumberFormat.decimalPattern(); // 50,000 style
+  return 'AED ${f.format(start)} – AED ${f.format(end)}';
+}
+
 
 
 

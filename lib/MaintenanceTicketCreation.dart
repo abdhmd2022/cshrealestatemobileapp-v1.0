@@ -19,6 +19,8 @@ import 'package:http/http.dart' as http;
 import 'package:path/path.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:mailer/mailer.dart';
+import 'package:mailer/smtp_server.dart';
 
 class MaintanceType {
   final int id;
@@ -63,6 +65,7 @@ late int loaded_flat_id;
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
+
   bool isDashEnable = true,
       isRolesVisible = true,
       isUserEnable = true,
@@ -71,7 +74,6 @@ late int loaded_flat_id;
       isVisibleNoRoleFound = false;
 
   final DateFormat dateFormatter = DateFormat('dd-MMM-yyyy');
-
 
   DateTimeRange? selectedDateRange;
   TimeOfDay? startTime;
@@ -89,6 +91,8 @@ late int loaded_flat_id;
   List<dynamic> _attachment = []; // List to store selected images
 
   final ImagePicker _picker = ImagePicker();
+
+  bool _isSubmitting = false;
 
   Future<void> _showFlatPicker(BuildContext context) async {
     TextEditingController searchController = TextEditingController();
@@ -217,6 +221,7 @@ late int loaded_flat_id;
   }
 
 
+
   Future<void> fetchMaintenanceTypes() async {
 
     maintenance_types_list.clear();
@@ -278,6 +283,8 @@ late int loaded_flat_id;
 
           for (var tenant in tenants) {
             String tenantName = tenant['name'] ?? '';
+            String tenantEmail = tenant['email'] ?? '';
+
             List<dynamic> contracts = tenant['contracts'] ?? [];
 
             for (var contract in contracts) {
@@ -290,6 +297,7 @@ late int loaded_flat_id;
                   flats.add({
                     'user_type': 'Tenant',
                     'tenant_name': tenantName,
+                    'tenant_email': tenantEmail,
                     'flat_id': flat['id'],
                     'flat_name': flat['name'],
                     'building_name': flat['building']['name'],
@@ -312,6 +320,8 @@ late int loaded_flat_id;
 
           for (var landlord in landlords) {
             String landlordName = landlord['name'] ?? '';
+            String landlordEmail = landlord['email'] ?? '';
+
             List<dynamic> boughtContracts = landlord['bought_contracts'] ?? [];
 
             for (var contract in boughtContracts) {
@@ -324,6 +334,7 @@ late int loaded_flat_id;
                   flats.add({
                     'user_type': 'Landlord',
                     'tenant_name': landlordName,
+                    'tenant_email': landlordEmail,
                     'flat_id': flat['id'],
                     'flat_name': flat['name'],
                     'building_name': flat['building']['name'],
@@ -348,40 +359,12 @@ late int loaded_flat_id;
         if (response.statusCode == 200) {
           final data = json.decode(response.body);
 
-          /*if (is_landlord) {
-            var landlord = data['data']['landlord'];
-            if (landlord != null) {
-              String landlordName = landlord['name'] ?? '';
-              List<dynamic> boughtContracts = landlord['bought_contracts'] ?? [];
-
-              for (var contract in boughtContracts) {
-                int contractId = contract['id'];
-                List<dynamic> contractFlats = contract['flats'] ?? [];
-
-                for (var flatData in contractFlats) {
-                  var flat = flatData['flat'];
-                  if (flat != null) {
-                    flats.add({
-                      'user_type': 'Landlord',
-                      'tenant_name': landlordName,
-                      'flat_id': flat['id'],
-                      'flat_name': flat['name'],
-                      'building_name': flat['building']['name'],
-                      'area_name': flat['building']['area']['name'],
-                      'emirate': flat['building']['area']['state']['name'],
-                      'flat_type': flat['flat_type']['name'],
-                      'contract_id': contractId,
-                    });
-                  }
-                }
-              }
-            }
-          }*/
-
           if (is_landlord) {
             final landlord = data['data']?['landlord'];
             if (landlord != null) {
               final String landlordName = landlord['name'] ?? '';
+              final String landlordEmail = landlord['email'] ?? '';
+
               final List<dynamic> boughtContracts = (landlord['bought_contracts'] ?? []) as List<dynamic>;
 
               if (boughtContracts.isNotEmpty) {
@@ -400,6 +383,7 @@ late int loaded_flat_id;
                       flats.add({
                         'user_type': 'Landlord',
                         'tenant_name': landlordName,
+                        'tenant_email': landlordEmail,
                         'flat_id': flat['id'],
                         'flat_name': flat['name'],
                         'building_name': building['name'],
@@ -424,6 +408,7 @@ late int loaded_flat_id;
                   flats.add({
                     'user_type': 'Landlord',
                     'tenant_name': landlordName,
+                    'tenant_email': landlordEmail,
                     'flat_id': flat['id'],
                     'flat_name': flat['name'],
                     'building_name': building['name'],
@@ -442,6 +427,8 @@ late int loaded_flat_id;
             var tenant = data['data']['tenant'];
             if (tenant != null) {
               String tenantName = tenant['name'] ?? '';
+              String tenantEmail = tenant['email'] ?? '';
+
               List<dynamic> contracts = tenant['contracts'] ?? [];
 
               for (var contract in contracts) {
@@ -454,6 +441,7 @@ late int loaded_flat_id;
                     flats.add({
                       'user_type': 'Tenant',
                       'tenant_name': tenantName,
+                      'tenant_email': tenantEmail,
                       'flat_id': flat['id'],
                       'flat_name': flat['name'],
                       'building_name': flat['building']['name'],
@@ -1098,89 +1086,55 @@ late int loaded_flat_id;
     );
   }
 
-  /*void _showAttachmentOptions() {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true, // Control the height based on content
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
-      ),
-      builder: (BuildContext context) {
-        return Padding(
-          padding: const EdgeInsets.only(left: 16,top: 20,right: 20,bottom: 50),
-          child: Wrap(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.pop(context);
-                      _pickImages(ImageSource.gallery); // Open gallery to pick multiple images
-                    },
-                    child: Column(
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Colors.black, // Set the background color
-                            shape: BoxShape.circle, // Make it round
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black26, // Shadow color
-                                blurRadius: 8, // Shadow blur
-                                offset: Offset(4, 4), // Shadow position
-                              ),
-                            ],
-                          ),
-                          padding: EdgeInsets.all(16),
-                          child: Icon(Icons.upload, size: 40, color: Colors.white),
-                        ),
-                        SizedBox(height: 8),
-                        Text('Upload'),
-                      ],
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.pop(context);
-                      _pickImages(ImageSource.gallery); // Open gallery to pick multiple images
-                    },
-                    child: Column(
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Colors.black, // Set the background color
-                            shape: BoxShape.circle, // Make it round
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black26, // Shadow color
-                                blurRadius: 8, // Shadow blur
-                                offset: Offset(4, 4), // Shadow position
-                              ),
-                            ],
-                          ),
-                          padding: EdgeInsets.all(16),
-                          child: Icon(Icons.camera_alt, size: 40, color: Colors.white),
-                        ),
-                        SizedBox(height: 8),
-                        Text('Capture'),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        );
-      },
+
+  Future<void> _sendTicketEmailSMTP({
+    required String toEmail,
+    required String toName,
+    required String subject,
+    required String htmlBody,
+  }) async {
+    if (kIsWeb) {
+      Fluttertoast.showToast(
+        msg: 'SMTP email is not supported on Web (use server-side).',
+        backgroundColor: Colors.black, textColor: Colors.white,
+      );
+      return;
+    }
+
+    final smtpServer = SmtpServer(
+      kSmtpHost,
+      port: kSmtpPort,
+      ssl: kSmtpUseSsl,
+      username: kSmtpUsername,
+      password: kSmtpPassword,
     );
-  }*/
+
+    final message = Message()
+      ..from = Address(kFromEmail, kFromName)
+      ..recipients.add(Address(toEmail, toName))
+      ..subject = subject
+      ..html = htmlBody;
+
+    /*final message = Message()
+      ..from = Address(kFromEmail, kFromName)
+      ..recipients.add(Address("saadan@ca-eim.com", "Saadan"))
+      ..subject = subject
+      ..html = htmlBody;*/
+
+    try {
+      await send(message, smtpServer);
+    } catch (e) {
+      debugPrint('SMTP error: $e');
+    }
+  }
+
 
   @override
   void initState() {
     super.initState();
     _initSharedPreferences();
   }
+
 
   Future<void> _initSharedPreferences() async {
      prefs = await SharedPreferences.getInstance();
@@ -1287,7 +1241,7 @@ late int loaded_flat_id;
                                 child: Text(
                                   selectedFlat != null
                                       ? '${selectedFlat!['tenant_name'] ?? "Unknown Tenant"} | '
-                                      '${selectedFlat!['flat_name'] ?? "Unknown Flat"} | '
+                                      '${selectedFlat!['flat_name'] ?? "Unknown Unit"} | '
                                       '${selectedFlat?['building_name'] ?? "Unknown Building"}'
                                       : "No Flat Assigned",
                                   style: GoogleFonts.poppins(
@@ -1924,51 +1878,54 @@ late int loaded_flat_id;
 
                     Container(
                       width: MediaQuery.of(context).size.width,
-                      margin: EdgeInsets.only(left: 20,right: 20,top: 20,bottom: 80),
+                      margin: EdgeInsets.only(left: 20, right: 20, top: 20, bottom: 80),
                       child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: appbar_color,
-                        elevation: 5, // Adjust the elevation to make it look elevated
-                        shadowColor: Colors.black.withOpacity(0.5), // Optional: adjust the shadow color
-                      ),
-                      onPressed: () {
-                        {
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: appbar_color,
+                          elevation: 5,
+                          shadowColor: Colors.black.withOpacity(0.5),
+                          padding: EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        onPressed: _isSubmitting
+                            ? null // disable button while loading
+                            : () {
                           if (selectedMaintenanceType!.any((type) =>
                           _descriptionControllers[type.id]?.text.trim().isEmpty ?? true)) {
                             Fluttertoast.showToast(
                               msg: 'Please enter description for all selected types.',
-                              toastLength: Toast.LENGTH_SHORT,
-                              gravity: ToastGravity.BOTTOM,
                               backgroundColor: Colors.black,
                               textColor: Colors.white,
-                              fontSize: 16.0,
                             );
-                          }
-
-
-                          else if (_attachment.length > 5)
-                          {
+                          } else if (_attachment.length > 5) {
                             Fluttertoast.showToast(
                               msg: 'You can attach a maximum of 5 images only',
-                              toastLength: Toast.LENGTH_SHORT,
-                              gravity: ToastGravity.BOTTOM,
                               backgroundColor: Colors.black,
                               textColor: Colors.white,
-                              fontSize: 16.0,
                             );
+                          } else {
+                            sendFormData(context);
                           }
-                          else
-                            {
-                              sendFormData(context);
-                            }
-                        }
-                      },
-                      child: Text('Submit',
-                          style: GoogleFonts.poppins(
-                              color: Colors.white
-                          )),
-                    ))
-                    ])
+                        },
+                        child: _isSubmitting
+                            ? SizedBox(
+                          height: 22,
+                          width: 22,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2,
+                          ),
+                        )
+                            : Text(
+                          'Submit',
+                          style: GoogleFonts.poppins(color: Colors.white, fontSize: 16),
+                        ),
+                      ),
+                    )
+
+                  ])
                     )
                     )
                     );
@@ -1992,6 +1949,9 @@ late int loaded_flat_id;
           }
 
   Future<void> sendFormData(BuildContext context) async {
+    if (_isSubmitting) return; // prevent multiple taps
+    setState(() => _isSubmitting = true);
+
     String? availableFromStr;
     String? availableToStr;
     final DateFormat dateTimeFormatter = DateFormat('yyyy-MM-dd HH:mm:ss');
@@ -2088,6 +2048,63 @@ late int loaded_flat_id;
       Map<String, dynamic> decodedResponse = jsonDecode(response.body);
 
       if (response.statusCode == 201) {
+        final int ticketId = decodedResponse['data']['ticket']['id'];
+
+        if (_attachment.length > 0) {
+          await sendImageData(ticketId, context);
+        }
+
+
+
+
+        final String recipientName  = selectedFlat?['tenant_name'] ?? 'Customer';
+        final String recipientEmail = selectedFlat?['tenant_email'] ?? '';
+
+        // If for some flows you want to also CC your ops team, you can add here.
+
+        // Prepare nice readable strings
+        final String dateRangeText = selectedDateRange != null
+            ? '${dateFormatter.format(selectedDateRange!.start)} → ${dateFormatter.format(selectedDateRange!.end)}'
+            : '-';
+
+        final String timeRangeText = (startTime != null && endTime != null)
+            ? '${startTime!.format(context)} → ${endTime!.format(context)}'
+            : '-';
+
+        final List<Map<String, String>> typesWithDescriptions = (requestBody['types'] as List<dynamic>).map((e) {
+          final name = (selectedMaintenanceType ?? []).firstWhere(
+                (m) => m.id == e['id'],
+            orElse: () => MaintanceType(id: e['id'], name: 'Type ${e['id']}', category: ''),
+          ).name;
+          return {
+            'type': name,
+            'desc': (e['description'] ?? '').toString(),
+          };
+        }).toList();
+
+
+        final String html = _buildTicketEmailHtml(
+          title: 'Maintenance Ticket Created',
+          recipientName: recipientName,
+          ticketIdText: 'MT-$ticketId',
+          flatName: selectedFlat?['flat_name']?.toString() ?? '-',
+          buildingName: selectedFlat?['building_name']?.toString() ?? '-',
+          areaName: selectedFlat?['area_name']?.toString() ?? '-',
+          emirate: selectedFlat?['emirate']?.toString() ?? '-',
+          dateRangeText: dateRangeText,
+          timeRangeText: timeRangeText,
+          typesWithDescriptions: typesWithDescriptions,
+        );
+
+        if (recipientEmail.isNotEmpty) {
+          await _sendTicketEmailSMTP(
+            toEmail: recipientEmail,
+            toName: recipientName,
+            subject: 'Your Maintenance Ticket #MT-$ticketId has been created',
+            htmlBody: html,
+          );
+        }
+
         setState(() {
           selectedMaintenanceType = [];
           selectedMaintenanceTypeIds = [];
@@ -2099,13 +2116,10 @@ late int loaded_flat_id;
           endTime = null;
         });
 
+
         showResponseSnackbar(context, decodedResponse);
 
-        int ticketId = decodedResponse['data']['ticket']['id'];
-        if(_attachment.length>0)
-          {
-            await sendImageData(ticketId, context); // ✅ separate request for attachments
-          }
+
 
       } else {
         showResponseSnackbar(context, decodedResponse);
@@ -2114,6 +2128,9 @@ late int loaded_flat_id;
       }
     } catch (e) {
       print('Error during upload: $e');
+    }
+    finally {
+      setState(() => _isSubmitting = false);
     }
   }
 
@@ -2391,4 +2408,105 @@ Widget _attachmentOption({required IconData icon, required String label, require
                       ),
                     ),
                   )]))));});}}
+
+
+String _brandHex(Color c) {
+  // Converts a Color to #RRGGBB (ignore alpha)
+  return '#${c.value.toRadixString(16).padLeft(8, '0').substring(2)}';
+}
+
+String _buildTicketEmailHtml({
+  required String title,
+  required String recipientName,
+  required String ticketIdText,
+  required String flatName,
+  required String buildingName,
+  required String areaName,
+  required String emirate,
+  required String dateRangeText,
+  required String timeRangeText,
+  required List<Map<String, String>> typesWithDescriptions,
+}) {
+  final brand = _brandHex(appbar_color);
+  final subtle = '#f6f9fc';
+  final muted  = '#6b7280';
+
+  final typesRows = typesWithDescriptions.map((t) => '''
+    <tr>
+      <td style="padding:10px 12px;border:1px solid #eee;">${t['type']}</td>
+      <td style="padding:10px 12px;border:1px solid #eee;">${t['desc']}</td>
+    </tr>
+  ''').join();
+
+  return '''
+  <!doctype html>
+  <html><head>
+    <meta name="viewport" content="width=device-width"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>$title</title>
+  </head>
+  <body style="margin:0;padding:0;background:${subtle};font-family:Inter,Segoe UI,Roboto,Arial,sans-serif;color:#111827;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${subtle};padding:24px 0;">
+      <tr><td align="center">
+        <table role="presentation" width="620" cellpadding="0" cellspacing="0" style="background:#fff;border-radius:16px;box-shadow:0 6px 24px rgba(0,0,0,0.06);overflow:hidden;">
+          <tr>
+            <td style="background:${brand};padding:24px 28px;color:#ffffff;text-align:center">
+              <h1 style="margin:0;font-size:20px;letter-spacing:.3px;">$title</h1>
+              
+            </td>
+          </tr>
+          
+
+          <tr><td style="padding:24px 28px;">
+            <p style="margin:0 0 14px 0;font-size:15px;">Hi <strong>$recipientName</strong>,</p>
+            <p style="margin:0 0 14px 0;font-size:15px;line-height:1.6;">
+              Your maintenance ticket <strong>$ticketIdText</strong> has been created. Our team will contact you within the selected availability window.
+            </p>
+
+            <div style="border:1px solid #eee;border-radius:12px;padding:16px;background:#fff;margin-top:14px;">
+              <h3 style="font-size:16px;margin:0 0 10px 0;">Property</h3>
+              <table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;font-size:14px;">
+                <tr><td style="padding:6px 0;color:${muted};width:140px;">Unit</td><td style="padding:6px 0;">$flatName</td></tr>
+                <tr><td style="padding:6px 0;color:${muted};">Building</td><td style="padding:6px 0;">$buildingName</td></tr>
+                <tr><td style="padding:6px 0;color:${muted};">Area</td><td style="padding:6px 0;">$areaName, $emirate</td></tr>
+              </table>
+            </div>
+            <div style="border:1px solid #eee;border-radius:12px;padding:16px;background:#fff;margin-top:14px;">
+              <h3 style="font-size:16px;margin:0 0 10px 0;">Availability</h3>
+              <table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;font-size:14px;">
+                <tr><td style="padding:6px 0;color:${muted};width:140px;">Dates</td><td style="padding:6px 0;">$dateRangeText</td></tr>
+                <tr><td style="padding:6px 0;color:${muted};">Time</td><td style="padding:6px 0;">$timeRangeText</td></tr>
+              </table>
+            </div>
+
+            <div style="border:1px solid #eee;border-radius:12px;padding:16px;background:#fff;margin-top:14px;">
+              <h3 style="font-size:16px;margin:0 10px 10px 0;display:inline-block;">Issues Reported</h3>
+              <table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;font-size:14px;border-collapse:collapse;">
+                <thead>
+                  <tr style="background:${subtle};">
+                    <th align="left" style="padding:10px 12px;border:1px solid #eee;">Type</th>
+                    <th align="left" style="padding:10px 12px;border:1px solid #eee;">Description</th>
+                  </tr>
+                </thead>
+                <tbody>$typesRows</tbody>
+              </table>
+            </div>
+
+            <p style="margin:18px 0 0 0;font-size:12px;color:${muted};line-height:1.6;">
+              If any details are incorrect, contact us directly. Please ensure someone is available in the selected time window to grant access for inspection.
+            </p>
+          </td></tr>
+
+          <tr>
+            <td style="padding:16px 28px;background:#fafafa;color:${muted};font-size:12px;text-align:center;">
+              © ${DateTime.now().year} CSH Real Estate — This is an automated message.
+            </td>
+          </tr>
+        </table>
+      </td></tr>
+    </table>
+  </body></html>
+  ''';
+}
+
 

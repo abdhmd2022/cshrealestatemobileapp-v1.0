@@ -1467,7 +1467,7 @@ class _LoginPageState extends State<Login> {
                 </div>''';
 
     try {
-       // final sendReport = await send(message, smtpServer); // send mail
+       final sendReport = await send(message, smtpServer); // send mail
 
       // ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("OTP sent to your email.")));
 

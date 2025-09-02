@@ -59,8 +59,18 @@ bool is_active = false;
 
 late String mailing_name,address,pincode,state,country,trn,phone,mobile,email,website,logo_path,whatsapp_no;
 
+late String kSmtpHost ;
+late int    kSmtpPort ;
+late bool   kSmtpUseSsl;
+late String kSmtpUsername;
+late String kSmtpPassword;
+late String kFromEmail;
+late String kFromName;
+
 /// Load tokens from SharedPreferences
 /// new function
+
+
 
 Future<void> loadTokens() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -124,6 +134,16 @@ Future<void> loadTokens() async {
   if (!is_admin) {
     flatsList = jsonDecode(flatsJson);
   }
+
+
+   kSmtpHost = 'smtp.zoho.com'; // e.g. 'smtp.gmail.com'
+      kSmtpPort = 587;                   // 465 for SSL, 587 for TLS
+     kSmtpUseSsl = false;               // true if you use port 465
+   kSmtpUsername = 'contact@tallyuae.ae';
+   kSmtpPassword = '355dD@3988'; // use an App Password / API key
+   kFromEmail    = 'contact@tallyuae.ae';
+   kFromName     = 'noreply';
+
 
   print("🔑 Loaded Access Token: $Company_Token");
   print("🕒 Access Token Expiry: $access_token_expiry");
@@ -247,5 +267,7 @@ void showResponseSnackbar(BuildContext context, Map<String, dynamic> responseJso
     ),
   );
 }
+
+
 
 

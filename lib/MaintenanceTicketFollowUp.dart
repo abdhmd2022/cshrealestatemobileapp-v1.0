@@ -6,11 +6,14 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:mailer/mailer.dart';
+import 'package:mailer/smtp_server.dart';
 import 'package:mime/mime.dart';
 import 'package:path/path.dart';
 import 'package:signature/signature.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
+import 'dart:async' show unawaited;
 
 import 'dart:io';
 import 'package:flutter/foundation.dart'; // For kIsWeb check
@@ -66,6 +69,9 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
   DateTime? nextFollowupDate;
 
   MaintenanceStatus? selectedStatus;
+
+  String followupRecipientName = '';
+  String followupRecipientEmail = '';
 
    SignatureController _signatureController = SignatureController(
     penStrokeWidth: 2,
@@ -148,6 +154,45 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
         sendImageData(followupId);
 
         print('follow up without image successfull');
+
+
+        final bool isClosed = (selectedStatus?.category.toString().toLowerCase() == 'closed') ||
+            (selectedStatus?.category.toString().toLowerCase() == 'close');
+
+        final subTicketName = subTickets
+            .firstWhere((st) => st['id'] == selectedSubTicketId,
+            orElse: () => {'name': 'Maintenance'})
+        ['name']
+
+            .toString();
+
+        final String title = isClosed ? 'Ticket Closed' : 'Maintenance Update';
+        final String dateText = DateFormat('dd-MMM-yyyy').format(DateTime.now());
+        final String? nextText = isClosed
+            ? null
+            : (nextFollowupDate != null ? DateFormat('dd-MMM-yyyy').format(nextFollowupDate!) : null);
+
+        final html = _buildMaintenanceFollowupEmailHtml(
+          title: title,
+          subTicketName: subTicketName,   // 👈 include here
+          recipientName: followupRecipientName.isNotEmpty ? followupRecipientName : 'Customer',
+          statusLabel: selectedStatus?.name.toString() ?? 'Updated',
+          dateText: dateText,
+          notes: _remarksController.text.trim(),
+          nextFollowupDateText: nextText,
+        );
+
+// Only send if we have an email
+        if (followupRecipientEmail.isNotEmpty) {
+          unawaited(
+            _sendTicketEmailSMTP(
+              toEmail: followupRecipientEmail,
+              toName: followupRecipientName.isNotEmpty ? followupRecipientName : 'Customer',
+              subject: title,
+              htmlBody: html,
+            ).catchError((e, st) => debugPrint('Follow-up email error: $e')),
+          );
+        }
 
         setState(() {
           _amountController.clear();
@@ -647,12 +692,14 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
 
               tenantFlatDetails = {
                 "tenantName": tenant["name"] ?? "N/A",
-                "tenantMobile": tenant["email"] ?? "",
+                "tenantEmail": tenant["email"] ?? "",
                 "flatName": flat["name"] ?? "N/A",
                 "buildingName": building["name"] ?? "N/A",
                 "areaName": area["name"] ?? "N/A",
                 "stateName": state["name"] ?? "N/A"
               };
+              followupRecipientName  = (tenant["name"]  ?? '').toString();
+              followupRecipientEmail = (tenant["email"] ?? '').toString();
             } else if (soldFlat != null) {
               final contract = soldFlat['contract'] ?? {};
               final buyer = contract['buyer'] ?? {};
@@ -664,14 +711,18 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
 
               tenantFlatDetails = {
                 "tenantName": buyer["name"] ?? "N/A",
-                "tenantMobile": buyer["email"] ?? "",
+                "tenantEmail": buyer["email"] ?? "",
                 "flatName": flat["name"] ?? "N/A",
                 "buildingName": building["name"] ?? "N/A",
                 "areaName": area["name"] ?? "N/A",
                 "stateName": state["name"] ?? "N/A"
               };
+              followupRecipientName  = (buyer["name"]  ?? '').toString();
+              followupRecipientEmail = (buyer["email"] ?? '').toString();
             } else {
               tenantFlatDetails = {};
+              followupRecipientName  = '';
+              followupRecipientEmail = '';
             }
           });
         } else {
@@ -750,7 +801,7 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
 
             tenantFlatDetails = {
               "tenantName": tenant["name"] ?? "N/A",
-              "tenantMobile": tenant["email"] ?? "", // Replace with mobile_no if available
+              "tenantEmail": tenant["email"] ?? "", // Replace with mobile_no if available
               "flatName": flat["name"] ?? "N/A",
               "buildingName": building["name"] ?? "N/A",
               "areaName": area["name"] ?? "N/A",
@@ -837,7 +888,7 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
 
             tenantFlatDetails = {
               "tenantName": contractFlat['contract']['tenant_id'].toString(), // Assuming tenant_id represents tenant
-              "tenantMobile": "", // Not present in new JSON
+              "tenantEmail": "", // Not present in new JSON
               "flatName": flatDetails["name"],
               "buildingName": building["name"],
               "areaName": area["name"],
@@ -944,14 +995,14 @@ class _MaintenanceFollowUpScreenState extends State<MaintenanceFollowUpScreen>  
                                 ],
                               ),
 
-                            if (tenantFlatDetails!["tenantMobile"].toString().isNotEmpty)
+                            if (tenantFlatDetails!["tenantEmail"].toString().isNotEmpty)
                               Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Icon(Icons.email_outlined, size: 16, color: Colors.green),
                                   SizedBox(width: 4),
                                   Text(
-                                    tenantFlatDetails!["tenantMobile"],
+                                    tenantFlatDetails!["tenantEmail"],
                                     style: GoogleFonts.poppins(fontSize: 12),
                                   ),
                                 ],
@@ -1716,4 +1767,124 @@ Widget _attachmentOption({required IconData icon, required String label, require
       ],
     ),
   );
+}
+String _brandHex(Color c) {
+  // Converts a Color to #RRGGBB (ignore alpha)
+  return '#${c.value.toRadixString(16).padLeft(8, '0').substring(2)}';
+}
+
+String _buildMaintenanceFollowupEmailHtml({
+  required String title,
+  required String recipientName,
+  required String statusLabel,
+  required String dateText,
+  required String subTicketName,     // 👈 NEW
+  String? notes,
+  String? nextFollowupDateText,
+}) {
+  final brand = _brandHex(appbar_color);
+  const subtle = '#f6f9fc';
+  const muted  = '#6b7280';
+
+  String row(String label, String? value) {
+    final v = (value ?? '').trim();
+    if (v.isEmpty) return '';
+    return '''
+      <tr>
+        <td style="padding:6px 0;color:${muted};width:150px;">$label</td>
+        <td style="padding:6px 0;">$v</td>
+      </tr>
+    ''';
+  }
+
+  final notesBlock = (notes == null || notes.trim().isEmpty)
+      ? ''
+      : '''
+        <div style="border:1px solid #eee;border-radius:12px;padding:14px;background:#fff;margin-top:12px;">
+          <h3 style="margin:0 0 8px 0;font-size:15px;">Note</h3>
+          <div style="font-size:14px;line-height:1.6;white-space:pre-wrap;">${notes.trim()}</div>
+        </div>
+      ''';
+
+  return '''
+  <!doctype html>
+  <html><body style="margin:0;padding:0;background:${subtle};font-family:Inter,Segoe UI,Roboto,Arial,sans-serif;color:#111827;">
+    <table role="presentation" width="100%" style="background:${subtle};padding:24px 0;">
+      <tr><td align="center">
+        <table role="presentation" width="620" style="background:#fff;border-radius:16px;box-shadow:0 6px 24px rgba(0,0,0,0.06);overflow:hidden;">
+          <tr>
+            <td style="background:${brand};padding:24px;color:#fff;text-align:center;">
+              <h2 style="margin:0;font-size:18px;">$title</h2>
+            </td>
+          </tr>
+          <tr><td style="padding:22px 26px;">
+            <p style="margin:0 0 12px 0;font-size:15px;">Hi <strong>$recipientName</strong>,</p>
+            <p style="margin:0 0 12px 0;font-size:15px;line-height:1.6;">
+              We’ve updated your maintenance request.
+            </p>
+
+            <div style="border:1px solid #eee;border-radius:12px;padding:14px;background:#fff;">
+              <table role="presentation" style="width:100%;font-size:14px;">
+                ${row('Maintenance Type', subTicketName)}      <!-- 👈 shows sub-ticket -->
+                ${row('Status', statusLabel)}
+                ${row('Date', dateText)}
+                ${row('Next follow-up', nextFollowupDateText)}
+              </table>
+            </div>
+
+            $notesBlock
+          </td></tr>
+          <tr>
+            <td style="padding:14px 26px;background:#fafafa;color:${muted};font-size:12px;text-align:center;">
+              © ${DateTime.now().year} CSH Real Estate
+            </td>
+          </tr>
+        </table>
+      </td></tr>
+    </table>
+  </body></html>
+  ''';
+}
+
+
+Future<void> _sendTicketEmailSMTP({
+  required String toEmail,
+  required String toName,
+  required String subject,
+  required String htmlBody,
+}) async {
+  if (kIsWeb) {
+    Fluttertoast.showToast(
+      msg: 'SMTP email is not supported on Web (use server-side).',
+      backgroundColor: Colors.black, textColor: Colors.white,
+    );
+    return;
+  }
+
+  final smtpServer = SmtpServer(
+    kSmtpHost,
+    port: kSmtpPort,
+    ssl: kSmtpUseSsl,
+    username: kSmtpUsername,
+    password: kSmtpPassword,
+  );
+
+  final message = Message()
+    ..from = Address(kFromEmail, kFromName)
+    ..recipients.add(Address(toEmail, toName))
+    ..subject = subject
+    ..html = htmlBody;
+
+  /*final message = Message()
+      ..from = Address(kFromEmail, kFromName)
+      ..recipients.add(Address("saadan@ca-eim.com","Saadan"))
+      ..subject = subject
+      ..html = htmlBody;*/
+
+
+  try {
+    await send(message, smtpServer);
+  } catch (e) {
+    debugPrint('SMTP error: $e');
+  }
 }

@@ -1,9 +1,13 @@
 import 'dart:convert';
 import 'package:country_picker/country_picker.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:mailer/mailer.dart';
+import 'package:mailer/smtp_server.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 import 'SalesInquiryReport.dart';
@@ -11,6 +15,7 @@ import 'constants.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_switch/flutter_switch.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'dart:async' show unawaited;
 
 class InquiryStatus {
   final int id;
@@ -83,6 +88,9 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
   final TextEditingController endController = TextEditingController();
 
   String? selectedasignedto;
+
+  bool _isSubmittingInquiry = false;
+
 
   bool isUnitSelected = false;
 
@@ -671,6 +679,8 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
   String? selectedPropertyType;
 
   Future<void> sendCreateInquiryRequest() async {
+    if (_isSubmittingInquiry) return; // prevent double-taps
+    setState(() => _isSubmittingInquiry = true);
 
     // converting amenities set to list
     final List<int> amenitiesList = selectedPreferences.union(selectedAmenities).toList();
@@ -768,73 +778,141 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
         print("Response Data: ${response.body}");
         Map<String, dynamic> decodedResponse = jsonDecode(response.body);
 
-        showResponseSnackbar(context, decodedResponse);
+        final List<Future<void>> emailTasks = [];
 
-        setState(() {
+        final String? currentUserEmail = user_email;
+        if (currentUserEmail != null && currentUserEmail.isNotEmpty) {
+          final html = _buildInquiryEmailHtml(
+            title: 'Inquiry Created',
+            recipientName: user_name.isNotEmpty ? user_name : 'User',
+            inquiryIdText: (decodedResponse['data']?['lead']?['id'] != null)
+                ? '#${decodedResponse['data']['lead']['id']}' : '',
+            customerName: customernamecontroller.text.trim(),
+            customerEmail: emailcontroller.text.trim(),
+            customerPhone: '$_selectedCountryCode${customercontactnocontroller.text.trim()}',
+            interestType: interestTypes[selectedInterestType ?? 0],
+            propertyType: (selectedPropertyType ?? '').toString().isNotEmpty
+                ? (selectedPropertyType ?? '').toString() : '-',
+            priceRange: _formatCurrencyRange(
+                _currentRangeValues.start.round(), _currentRangeValues.end.round()),
+            areasText: selectedAreasString,
+            unitTypesText: selectedUnitType,
+            nextFollowUpDateText: nextFollowUpDate != null
+                ? DateFormat('dd-MMM-yyyy').format(nextFollowUpDate!)
+                : null,
+            leadSource: selectedlead_source?.name ?? selectedlead_source?.toString(),
+            description: descriptioncontroller.text.trim(),
+          );
 
-          _formKey.currentState?.reset();
-          selectedasignedto = asignedto.first;
-          selectedinquiry_status = null;
-          selectedInterestType = 0;
-          selectedPropertyType = null;
-          selectedlead_source = null;
-          nextFollowUpDate = null;
-          selectedUnitIds.clear();
+          emailTasks.add(_sendTicketEmailSMTP(
+            toEmail: currentUserEmail,
+            toName: user_name.isNotEmpty ? user_name : 'User',
+            subject: 'Your Inquiry ${decodedResponse['data']?['lead']?['id'] != null ? "#${decodedResponse['data']['lead']['id']}" : ""}',
+            htmlBody: html,
+          ));
+        }
 
-          selectedUnitType = "Select Unit Types";
-          selectedEmiratesString = "Select Emirate";
-          selectedEmiratesList.clear();
-          _useContactAsWhatsapp = true;
+        if (selectedinquiry_status?.category == 'Normal') {
+          final String customerEmail = emailcontroller.text.trim();
+          if (customerEmail.isNotEmpty) {
+            final htmlThank = _buildCustomerThankYouEmailHtml(
+              customerName: customernamecontroller.text.trim().isEmpty
+                  ? 'Customer' : customernamecontroller.text.trim(),
+              interestTypeLabel: interestTypes[selectedInterestType ?? 0],
+              propertyTypeLabel: (selectedPropertyType ?? '').toString(),
+              priceRangeText: _formatCurrencyRange(
+                  _currentRangeValues.start.round(), _currentRangeValues.end.round()),
+              areasText: selectedAreasString,
+              unitTypesText: selectedUnitType,
+              contactEmail: email,   // your team email
+              contactPhone: phone,   // your team phone
+            );
 
-          for (var emirate in emirates) {
-            emirate['isSelected'] = false;
+            emailTasks.add(_sendTicketEmailSMTP(
+              toEmail: customerEmail,
+              toName: customernamecontroller.text.trim().isEmpty
+                  ? 'Customer' : customernamecontroller.text.trim(),
+              subject: 'Thank you — we’re on it',
+              htmlBody: htmlThank,
+            ));
           }
+        }
 
-          for (var unit in unitTypes) {
-            unit['isSelected'] = false;
-          }
-          isAllEmiratesSelected = false;
+        // Fire-and-forget with error guards (so UI is never blocked)
+        for (final f in emailTasks) {
+          unawaited(
+            f.catchError((e, st) => debugPrint('Email send error: $e')),
+          );
+        }
 
-          // Reset areas automatically
-          clearAreas();
+        if (mounted) {
+          setState(() {
+            _isSubmittingInquiry = false;
+            _formKey.currentState?.reset();
+            selectedasignedto = asignedto.first;
+            selectedinquiry_status = null;
+            selectedInterestType = 0;
+            selectedPropertyType = null;
+            selectedlead_source = null;
+            nextFollowUpDate = null;
+            selectedUnitIds.clear();
 
-          updateAreasDisplay();
+            selectedUnitType = "Select Unit Types";
+            selectedEmiratesString = "Select Emirate";
+            selectedEmiratesList.clear();
+            _useContactAsWhatsapp = true;
 
-          updateAreasSelection();
+            for (var emirate in emirates) {
+              emirate['isSelected'] = false;
+            }
 
-          selectedAmenities.clear();
-          selectedPreferences.clear();
+            for (var unit in unitTypes) {
+              unit['isSelected'] = false;
+            }
+            isAllEmiratesSelected = false;
 
-          range_min = prefs!.getDouble('range_min') ?? 10000;
-          range_max = prefs!.getDouble('range_max') ?? 1000000;
+            // Reset areas automatically
+            clearAreas();
 
-          double range_start = range_min! + (range_min! / 0.8);
-          double range_end = range_max! - (range_max! * 0.2);
+            updateAreasDisplay();
 
-          _currentRangeValues = RangeValues(range_start, range_end);
+            updateAreasSelection();
 
-          startController.text = _currentRangeValues.start.toStringAsFixed(0);
-          endController.text = _currentRangeValues.end.toStringAsFixed(0);
+            selectedAmenities.clear();
+            selectedPreferences.clear();
 
-          isAllEmiratesSelected = false;
+            range_min = prefs!.getDouble('range_min') ?? 10000;
+            range_max = prefs!.getDouble('range_max') ?? 1000000;
 
-          _selectedCountryCode = '+971'; // Default to UAE country code
-          _selectedCountryFlag = '🇦🇪'; // Default UAE flag emoji
+            double range_start = range_min! + (range_min! / 0.8);
+            double range_end = range_max! - (range_max! * 0.2);
 
-          _selectedCountryCodeWhatsapp = '+971'; // Default to UAE country code
-          _selectedCountryFlagWhatsapp = '🇦🇪'; // Default UAE flag emoji
+            _currentRangeValues = RangeValues(range_start, range_end);
 
-          customernamecontroller.clear();
-          whatsappnocontroller.clear();
+            startController.text = _currentRangeValues.start.toStringAsFixed(0);
+            endController.text = _currentRangeValues.end.toStringAsFixed(0);
 
-          customercontactnocontroller.clear();
-          emailcontroller.clear();
-          unittypecontroller.clear();
-          areacontroller.clear();
-          descriptioncontroller.clear();
+            isAllEmiratesSelected = false;
 
-        });
+            _selectedCountryCode = '+971'; // Default to UAE country code
+            _selectedCountryFlag = '🇦🇪'; // Default UAE flag emoji
 
+            _selectedCountryCodeWhatsapp = '+971'; // Default to UAE country code
+            _selectedCountryFlagWhatsapp = '🇦🇪'; // Default UAE flag emoji
+
+            customernamecontroller.clear();
+            whatsappnocontroller.clear();
+
+            customercontactnocontroller.clear();
+            emailcontroller.clear();
+            unittypecontroller.clear();
+            areacontroller.clear();
+            descriptioncontroller.clear();
+
+          });
+          showResponseSnackbar(context, decodedResponse);
+
+        }
       } else {
         // Error occurred
         print("Error: ${response.statusCode}");
@@ -844,7 +922,55 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
     } catch (error) {
       print("Exception: $error");
     }
+    finally {
+      if (mounted) {
+        setState(() => _isSubmittingInquiry = false);
+      }
+    }
   }
+
+  Future<void> _sendTicketEmailSMTP({
+    required String toEmail,
+    required String toName,
+    required String subject,
+    required String htmlBody,
+  }) async {
+    if (kIsWeb) {
+      Fluttertoast.showToast(
+        msg: 'SMTP email is not supported on Web (use server-side).',
+        backgroundColor: Colors.black, textColor: Colors.white,
+      );
+      return;
+    }
+
+    final smtpServer = SmtpServer(
+      kSmtpHost,
+      port: kSmtpPort,
+      ssl: kSmtpUseSsl,
+      username: kSmtpUsername,
+      password: kSmtpPassword,
+    );
+
+    final message = Message()
+      ..from = Address(kFromEmail, kFromName)
+      ..recipients.add(Address(toEmail, toName))
+      ..subject = subject
+      ..html = htmlBody;
+
+
+    /*final message = Message()
+      ..from = Address(kFromEmail, kFromName)
+      ..recipients.add(Address("anish@ca-eim.com", "Anish"))
+      ..subject = subject
+      ..html = htmlBody;*/
+
+    try {
+      await send(message, smtpServer);
+    } catch (e) {
+      debugPrint('SMTP error: $e');
+    }
+  }
+
 
   Future<void> fetchUnitTypes() async {
 
@@ -3325,56 +3451,52 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                                             SizedBox(width: 20,),
                                             ElevatedButton(
                                               style: ElevatedButton.styleFrom(
-                                                backgroundColor: appbar_color, // Button background color
+                                                backgroundColor: appbar_color,
                                                 foregroundColor: Colors.white,
                                                 shape: RoundedRectangleBorder(
-                                                  borderRadius: BorderRadius.circular(30), // Rounded corners
+                                                  borderRadius: BorderRadius.circular(30),
                                                   side: BorderSide(
-                                                    color: Colors.grey, // Border color
-                                                    width: 0.5, // Border width
+                                                    color: Colors.grey,
+                                                    width: 0.5,
                                                   ),
                                                 ),
                                               ),
-                                              onPressed: () {
-                                                if(selectedInterestType == null)
-                                                {
+                                              onPressed: _isSubmittingInquiry
+                                                  ? null // disable while submitting
+                                                  : () {
+                                                if (selectedInterestType == null) {
                                                   ScaffoldMessenger.of(context).showSnackBar(
-                                                    SnackBar(
-                                                      content: Text('Select Interest Type'),
-                                                      backgroundColor: Colors.red,
-                                                    ),
+                                                    SnackBar(content: Text('Select Interest Type'), backgroundColor: Colors.red),
                                                   );
+                                                } else if (selectedPropertyType == null) {
+                                                  ScaffoldMessenger.of(context).showSnackBar(
+                                                    SnackBar(content: Text('Select Property Type'), backgroundColor: Colors.red),
+                                                  );
+                                                } else {
+                                                  if (_formKey.currentState != null && _formKey.currentState!.validate()) {
+                                                    _formKey.currentState!.save();
+
+                                                    setState(() {
+                                                      _isFocused_email = false;
+                                                      _isFocus_name = false;
+                                                    });
+
+                                                    sendCreateInquiryRequest();
+                                                  }
                                                 }
-                                                else
-                                                {
-                                                  if(selectedPropertyType == null)
-                                                    {
-                                                      ScaffoldMessenger.of(context).showSnackBar(
-                                                        SnackBar(
-                                                          content: Text('Select Property Type'),
-                                                          backgroundColor: Colors.red,
-                                                        ),
-                                                      );
-                                                    }
-                                                  else
-                                                    {
-                                                      if (_formKey.currentState != null &&
-                                                          _formKey.currentState!.validate()) {
-                                                        _formKey.currentState!.save();
-
-                                                        setState(() {
-                                                          _isFocused_email = false;
-                                                          _isFocus_name = false;
-                                                        });
-
-                                                        sendCreateInquiryRequest();
-
-                                                      }
-                                                    }
-                                                }
-                                                },
-                                              child: Text('Create'),
+                                              },
+                                              child: _isSubmittingInquiry
+                                                  ? SizedBox(
+                                                height: 20,
+                                                width: 20,
+                                                child: CircularProgressIndicator(
+                                                  color: Colors.white,
+                                                  strokeWidth: 2,
+                                                ),
+                                              )
+                                                  : Text('Create'),
                                             ),
+
                                           ],)
                                     ),)
                                 ]))
@@ -3383,4 +3505,257 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
                 )
               ),)
           ],
-        ) ,);}}
+        ) ,);}
+
+
+
+
+  String _formatCurrencyRange(num start, num end) {
+    // e.g., AED 50,000 – 120,000
+    final f = NumberFormat.decimalPattern(); // 50,000 style
+    return 'AED ${f.format(start)} – AED ${f.format(end)}';
+  }
+
+  String _joinNamesFromAreas(List<dynamic> areas) {
+    // areas: [{'id':1,'name':'Marina'}, ...]
+    return areas.map((a) => (a['name'] ?? '').toString()).where((s) => s.isNotEmpty).join(', ');
+  }
+
+  String _joinUnitTypeNamesFromIds(List<int> ids) {
+    // assumes you have unitTypes like [{'id':1,'name':'1BR', 'isSelected':...}, ...]
+    try {
+      final names = unitTypes
+          .where((u) => ids.contains(u['id']))
+          .map((u) => (u['name'] ?? '').toString())
+          .where((s) => s.isNotEmpty)
+          .toList();
+      return names.isNotEmpty ? names.join(', ') : '-';
+    } catch (_) {
+      return '-';
+    }
+  }
+
+  String _joinAmenitiesFromSets(Set<int> prefs, Set<int> amenities) {
+    final combined = prefs.union(amenities).toList();
+
+    return combined.isEmpty ? '-' : '${combined}';
+  }
+}
+
+
+  String _brandHex(Color c) {
+    // Converts a Color to #RRGGBB (ignore alpha)
+    return '#${c.value.toRadixString(16).padLeft(8, '0').substring(2)}';
+  }
+
+String _buildCustomerThankYouEmailHtml({
+  required String customerName,           // e.g., "Ahmed"
+  required String interestTypeLabel,      // e.g., "Rent" / "Buy"
+  required String propertyTypeLabel,      // e.g., "Apartment" / "Villa"
+  required String priceRangeText,         // e.g., "AED 50,000 – AED 120,000"
+  String? areasText,                      // e.g., "Marina, JVC"
+  String? unitTypesText,                  // e.g., "1BR, 2BR"
+  String? followUpWindowText,             // e.g., "within 24 hours"
+  String? contactEmail,                   // your team contact
+  String? contactPhone,                   // your team phone/WhatsApp
+}) {
+  String brand = _brandHex(appbar_color); // reuse your helper for brand colour
+  const subtle = '#f6f9fc';
+  const muted  = '#6b7280';
+
+  String _row(String label, String? value) {
+    final v = (value ?? '').trim();
+    if (v.isEmpty) return '';
+    return '''
+      <tr>
+        <td style="padding:6px 0;color:${muted};width:160px;">$label</td>
+        <td style="padding:6px 0;">$v</td>
+      </tr>
+    ''';
+  }
+
+  return '''
+  <!doctype html>
+  <html>
+  <head>
+    <meta name="viewport" content="width=device-width"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>Thank you</title>
+  </head>
+  <body style="margin:0;padding:0;background:${subtle};font-family:Inter,Segoe UI,Roboto,Arial,sans-serif;color:#111827;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${subtle};padding:24px 0;">
+      <tr>
+        <td align="center">
+          <table role="presentation" width="620" cellpadding="0" cellspacing="0" style="background:#fff;border-radius:16px;box-shadow:0 6px 24px rgba(0,0,0,0.06);overflow:hidden;">
+            <!-- Header -->
+            <tr>
+              <td style="background:${brand};padding:28px;color:#ffffff;text-align:center;">
+                <h1 style="margin:0;font-size:20px;letter-spacing:.3px;">Thanks for your interest</h1>
+                <p style="margin:8px 0 0 0;opacity:.9;font-size:13px;">We’ve received your request</p>
+              </td>
+            </tr>
+
+            <!-- Body -->
+            <tr>
+              <td style="padding:24px 28px;">
+                <p style="margin:0 0 14px 0;font-size:15px;">Hi <strong>$customerName</strong>,</p>
+                <p style="margin:0 0 14px 0;font-size:15px;line-height:1.6;">
+                  Thanks for getting in touch. We’re reviewing your requirements and will reach out ${followUpWindowText ?? 'as soon as possible'} with options that match.
+                </p>
+
+                <div style="border:1px solid #eee;border-radius:12px;padding:16px;background:#fff;margin-top:14px;">
+                  <h3 style="font-size:16px;margin:0 0 10px 0;">Your preferences</h3>
+                  <table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;font-size:14px;">
+                    ${_row('Interest', interestTypeLabel)}
+                    ${_row('Property type', propertyTypeLabel)}
+                    ${_row('Budget', priceRangeText)}
+                    ${_row('Areas', (areasText ?? '').isEmpty ? null : areasText)}
+                    ${_row('Unit types', (unitTypesText ?? '').isEmpty ? null : unitTypesText)}
+                  </table>
+                </div>
+
+                <div style="border:1px dashed #e5e7eb;border-radius:12px;padding:14px;background:#fcfcfd;margin-top:14px;">
+                  <p style="margin:0;font-size:13px;color:${muted};">
+                    Need to adjust anything? Contact us directly and we’ll update your preferences.
+                  </p>
+                </div>
+
+                <p style="margin:18px 0 0 0;font-size:12px;color:${muted};line-height:1.6;">
+                  ${[
+    if ((contactEmail ?? '').isNotEmpty) 'Email: $contactEmail',
+    if ((contactPhone ?? '').isNotEmpty) 'Phone/WhatsApp: $contactPhone',
+  ].join(' • ')}
+                </p>
+              </td>
+            </tr>
+
+            <!-- Footer -->
+            <tr>
+              <td style="padding:16px 28px;background:#fafafa;color:${muted};font-size:12px;text-align:center;">
+                © ${DateTime.now().year} CSH Real Estate — Thank you for choosing us.
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+  </html>
+  ''';
+}
+
+
+String _buildInquiryEmailHtml({
+    required String title, // e.g., 'Inquiry Created'
+    required String recipientName, // current user's name (or fallback)
+    required String inquiryIdText,  // '#123 (uuid)' or similar
+    required String customerName,
+    required String customerEmail,
+    required String customerPhone,
+    required String interestType,   // Buy/Rent/etc.
+    required String propertyType,   // Apartment/Villa/etc.
+    required String priceRange,     // AED 50,000 – 100,000
+    required String areasText,      // JVC, Marina
+    required String unitTypesText,  // 1BR, 2BR
+    String? nextFollowUpDateText,   // optional
+    String? leadSource,             // optional
+    String? description,            // optional
+    String? amenitiesText,          // optional
+  }) {
+    final brand = _brandHex(appbar_color);
+    const subtle = '#f6f9fc';
+    const muted  = '#6b7280';
+
+    String _row(String label, String value) => '''
+    <tr>
+      <td style="padding:6px 0;color:${muted};width:160px;">$label</td>
+      <td style="padding:6px 0;">$value</td>
+    </tr>
+  ''';
+
+    final details = StringBuffer()
+      ..write(_row('Customer', customerName))
+      ..write(_row('Email', customerEmail.isNotEmpty ? customerEmail : '-'))
+      ..write(_row('Phone', customerPhone.isNotEmpty ? customerPhone : '-'))
+      ..write(_row('Interest', interestType))
+      ..write(_row('Property Type', propertyType))
+      ..write(_row('Budget', priceRange))
+      ..write(_row('Areas', areasText.isNotEmpty ? areasText : '-'))
+      ..write(_row('Unit Types', unitTypesText.isNotEmpty ? unitTypesText : '-'));
+
+    if ((nextFollowUpDateText ?? '').isNotEmpty) {
+      details.write(_row('Next Follow-up', nextFollowUpDateText!));
+    }
+    if ((leadSource ?? '').isNotEmpty) {
+      details.write(_row('Lead Source', leadSource!));
+    }
+    if ((amenitiesText ?? '').isNotEmpty) {
+      details.write(_row('Amenities/Prefs', amenitiesText!));
+    }
+
+    final descBlock = (description ?? '').trim().isEmpty
+        ? ''
+        : '''
+        <div style="border:1px solid #eee;border-radius:12px;padding:16px;background:#fff;margin-top:14px;">
+          <h3 style="font-size:16px;margin:0 0 10px 0;">Notes</h3>
+          <div style="font-size:14px;white-space:pre-wrap;line-height:1.6;">${description!.trim()}</div>
+        </div>
+      ''';
+
+    return '''
+  <!doctype html>
+  <html>
+  <head>
+    <meta name="viewport" content="width=device-width"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>$title</title>
+  </head>
+  <body style="margin:0;padding:0;background:${subtle};font-family:Inter,Segoe UI,Roboto,Arial,sans-serif;color:#111827;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${subtle};padding:24px 0;">
+      <tr>
+        <td align="center">
+          <table role="presentation" width="620" cellpadding="0" cellspacing="0" style="background:#fff;border-radius:16px;box-shadow:0 6px 24px rgba(0,0,0,0.06);overflow:hidden;">
+            <tr>
+              <td style="background:${brand};padding:24px 28px;color:#ffffff;text-align:center;">
+                <h1 style="margin:0;font-size:20px;letter-spacing:.3px;">$title</h1>
+                
+              </td>
+            </tr>
+
+            <tr>
+              <td style="padding:24px 28px;">
+                <p style="margin:0 0 14px 0;font-size:15px;">Hi <strong>$recipientName</strong>,</p>
+                <p style="margin:0 0 14px 0;font-size:15px;line-height:1.6;">
+                  Your inquiry <strong>$inquiryIdText</strong> has been created. Below are the details you submitted.
+                </p>
+
+                <div style="border:1px solid #eee;border-radius:12px;padding:16px;background:#fff;margin-top:14px;">
+                  <h3 style="font-size:16px;margin:0 0 10px 0;">Inquiry Details</h3>
+                  <table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;font-size:14px;">
+                    ${details.toString()}
+                  </table>
+                </div>
+
+                $descBlock
+
+                <p style="margin:18px 0 0 0;font-size:12px;color:${muted};line-height:1.6;">
+                  If any details are incorrect, contact management.
+                </p>
+              </td>
+            </tr>
+
+            <tr>
+              <td style="padding:16px 28px;background:#fafafa;color:${muted};font-size:12px;text-align:center;">
+                © ${DateTime.now().year} CSH Real Estate — This is an automated message.
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+  </html>
+  ''';
+  }
+
+

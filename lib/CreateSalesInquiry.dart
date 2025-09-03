@@ -3534,14 +3534,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
       return '-';
     }
   }
-
-  String _joinAmenitiesFromSets(Set<int> prefs, Set<int> amenities) {
-    final combined = prefs.union(amenities).toList();
-
-    return combined.isEmpty ? '-' : '${combined}';
-  }
 }
-
 
   String _brandHex(Color c) {
     // Converts a Color to #RRGGBB (ignore alpha)

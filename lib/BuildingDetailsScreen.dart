@@ -59,6 +59,8 @@ class _BuildingReportScreenState extends State<BuildingReportScreen> {
     final int flatId = flat['id'] ?? -1;
     final isLoading = loadingFlatId == flatId;
 
+    print('isLoading -> ${isLoading}');
+
     final flatName = flat['name']?.toString() ?? 'N/A';
     final flatType = flat['flat_type']?['name']?.toString() ?? 'N/A';
 
@@ -165,7 +167,6 @@ class _BuildingReportScreenState extends State<BuildingReportScreen> {
       showErrorSnackbar(context, errorMessage);
     }
   }
-
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -661,7 +662,7 @@ class _BuildingReportScreenState extends State<BuildingReportScreen> {
                           badgeColor: Colors.blue,
                           isAvailable: true,
                           loadingFlatId: loadingTileIndex,
-                          onTapFetch: _onTapFetchFlat, // 👈 unchanged name; signature (int, String)
+                          onTapFetch: _onTapFetchFlat,
                         ),
                       ),
                     ],
@@ -673,6 +674,7 @@ class _BuildingReportScreenState extends State<BuildingReportScreen> {
                         itemCount: listRentAvail.length,
                         itemBuilder: (context, i) => _buildUnitTile(
                           context: context,
+
                           flat: listRentAvail[i],
                           category: 'Rent',
                           badgeColor: Colors.teal,

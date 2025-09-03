@@ -27,6 +27,7 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
   List<Map<String, dynamic>> contracts = [];
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   int announcementCount = 0;
+  int? loadingTileIndex;
 
   Map<String, dynamic> user = {
     "name": "",
@@ -46,6 +47,74 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
     fetchDashboardData();
 
   }
+
+  Future<void> _onTapFetchFlat(int flatId, String category) async {
+    setState(() => loadingTileIndex = flatId);
+
+
+    final response = await http.get(
+      Uri.parse('$baseurl/master/flat/$flatId'),
+      headers: {"Authorization": "Bearer $Company_Token", "Content-Type": "application/json"},
+    );
+
+    setState(() => loadingTileIndex = null);
+
+    final data = json.decode(response.body);
+    if (response.statusCode == 200) {
+      final flat = data['data']['flat'];
+
+      final unitno       = flat['name'] ?? 'N/A';
+      final buildingName = flat['building']?['name'] ?? 'N/A';
+      final area         = flat['building']?['area']?['name'] ?? 'N/A';
+      final emirate      = flat['building']?['area']?['state']?['name'] ?? 'N/A';
+      final unittype     = flat['flat_type']?['name'] ?? 'N/A';
+
+      final parkingCount = ((flat['parkings'] as List?) ?? []).length;
+      final parking      = parkingCount.toString();
+
+      final balcony      = 'N/A';
+      final bathrooms    = flat['no_of_bathrooms']?.toString() ?? 'N/A';
+      final ownership    = flat['ownership'] ?? 'N/A';
+      final basicRent      = flat['basic_rent']?.toString() ?? 'N/A';
+      final basicSaleValue = flat['basic_sale_value']?.toString() ?? 'N/A';
+      final isExempt       = flat['is_exempt']?.toString() ?? 'false';
+
+      // 👇 category decides which price to show
+      final String priceLabel = category == 'Buy' ? 'Price' : 'Rent';
+      final String priceValue = category == 'Buy' ? basicSaleValue : basicRent;
+
+      final amenities = ((flat['amenities'] as List?) ?? [])
+          .map<String>((a) => a?['amenity']?['name']?.toString() ?? '')
+          .where((s) => s.isNotEmpty)
+          .toList();
+
+      showDialog(
+        context: context,
+        builder: (context) => AvailableUnitsDialog(
+          unitno: unitno,
+          area: area,
+          building_name: buildingName,
+          emirate: emirate,
+          unittype: unittype,
+          priceLabel: priceLabel,
+          price: priceValue,
+          parking: parking,
+          balcony: balcony,
+          bathrooms: bathrooms,
+          ownership: ownership,
+          basicRent: basicRent,
+          basicSaleValue: basicSaleValue,
+          isExempt: isExempt,
+          amenities: amenities,
+        ),
+      );
+    } else {
+      final errorMessage = data['message'] ?? 'Unknown error occurred';
+      showErrorSnackbar(context, errorMessage);
+    }
+  }
+
+
   void loadAnnouncementCount() async {
     List<dynamic> announcements = await fetchAllValidAnnouncements();
     setState(() {
@@ -53,6 +122,125 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
     });
   }
 
+  void _showUnitsPopup(BuildContext context, String buildingName) {
+    final units = contracts
+        .expand((contract) => contract['flats'] as List)
+        .where((flat) => flat['building']?['name'] == buildingName)
+        .toList();
+
+
+    print('Units for $buildingName: $units');
+
+    showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (context) {
+          return Container(
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+            ),
+            child: Stack(
+              children: [
+
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 10), // ⬅️ reduced bottom padding
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min, // 👈 This makes the height wrap content
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 10),
+
+                        // Avatar & Name
+                        // Avatar + Name + Email (Centered vertically)
+                        Center(
+                          child: Column(
+                            children: [
+                              CircleAvatar(
+                                radius: 38,
+                                backgroundColor: Colors.orange,
+                                child: Text(
+                                  buildingName.isNotEmpty
+                                      ? buildingName[0].toUpperCase()
+                                      : '?',
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 30,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+
+                              const SizedBox(height: 12),
+                              Text(
+                                buildingName ?? 'N/A',
+                                style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.bold),
+                                textAlign: TextAlign.center,
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                '${units.length.toString()} Unit(s)' ?? '-',
+                                style: GoogleFonts.poppins(fontSize: 13, color: Colors.grey.shade600),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          ),
+                        ),
+
+
+                        const SizedBox(height: 16),
+                        Divider(),
+
+                        ListView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: units.length,
+                          itemBuilder: (context, i) => _buildUnitTile(
+                            context: context,
+                            flat: units[i],
+                            badgeColor: Colors.blue,
+                            loadingFlatId: loadingTileIndex,
+                            onTapFetch: _onTapFetchFlat,
+                          ),
+                        ),
+
+                        const SizedBox(height: 20),
+                      ],
+                    ),
+                  ),
+                ),
+
+                // Close Icon (top-right)
+                Positioned(
+                  top: 20,
+                  right: 20,
+                  child: GestureDetector(
+                    onTap: () => Navigator.pop(context),
+                    child: Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.grey.shade200,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black12,
+                            blurRadius: 4,
+                          ),
+                        ],
+                      ),
+                      child: const Icon(Icons.close, size: 20),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+    );
+
+  }
 
   // new dashboard function
   Future<void> fetchDashboardData() async {
@@ -690,10 +878,11 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
 
               Platform.isIOS
                   ? const CupertinoActivityIndicator(radius: 18,color: appbar_color)
-                  : CircularProgressIndicator(
+                  : CircularProgressIndicator.adaptive(
                 valueColor: AlwaysStoppedAnimation<Color>(appbar_color),
               ),
               SizedBox(height: 20),
+
 
             ],
             )
@@ -1138,7 +1327,21 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
                             BarChartData(
                               alignment: BarChartAlignment.spaceAround,
                               maxY: (buildingFlatCount.values.reduce((a, b) => a > b ? a : b)).toDouble(), // for headroom
-                              barTouchData: BarTouchData(enabled: false),
+                              barTouchData: BarTouchData(
+                                enabled: true,
+                                touchCallback: (event, response) {
+                                  if (event is FlTapUpEvent && response != null && response.spot != null)
+                                    {
+                                      final index = response.spot!.touchedBarGroupIndex;
+                                      final buildingName = buildingFlatCount.keys.elementAt(index!);
+
+                                      _showUnitsPopup(context, buildingName);
+                                    }
+
+
+                                },
+                              ),
+
                               titlesData: FlTitlesData(
                                 leftTitles: AxisTitles(
                                   sideTitles: SideTitles(
@@ -1734,6 +1937,8 @@ class _AnimatedReminderDialogState extends State<_AnimatedReminderDialog> {
     super.dispose();
   }
 
+
+
   @override
   Widget build(BuildContext context) {
     final daysLeft = widget.daysLeft;
@@ -1873,4 +2078,351 @@ class _AnimatedReminderDialogState extends State<_AnimatedReminderDialog> {
       ),
     );
   }
+
+}
+
+class AvailableUnitsDialog extends StatelessWidget {
+  final String unitno;
+  final String building_name;
+  final String area;
+  final String emirate;
+  final String unittype;
+  final String price;        // renamed from 'rent'
+  final String priceLabel;   // new
+  final String parking;
+  final String balcony;
+  final String bathrooms;
+
+  final String ownership;
+  final String basicRent;
+  final String basicSaleValue;
+  final String isExempt;
+  final List<String> amenities;
+
+  const AvailableUnitsDialog({
+    Key? key,
+    required this.unitno,
+    required this.area,
+    required this.building_name,
+    required this.emirate,
+    required this.unittype,
+    required this.price,        // renamed
+    required this.priceLabel,   // new
+    required this.parking,
+    required this.balcony,
+    required this.bathrooms,
+    required this.ownership,
+    required this.basicRent,
+    required this.basicSaleValue,
+    required this.isExempt,
+    required this.amenities,
+  }) : super(key: key);
+
+
+  @override
+  Widget build(BuildContext context) {
+    double screenHeight = MediaQuery.of(context).size.height;
+    double maxDialogHeight = screenHeight * 0.8;
+
+    return Dialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+      ),
+      backgroundColor: Colors.white,
+      elevation: 10,
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            maxHeight: maxDialogHeight,
+          ),
+          child: IntrinsicHeight(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Header
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                    gradient: LinearGradient(
+                      colors: [appbar_color.shade200, appbar_color.shade400],
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                    ),
+                  ),
+                  padding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+                  width: double.infinity,
+                  child: Column(
+                    children: [
+                      Icon(Icons.home, color: Colors.white, size: 40),
+                      SizedBox(height: 8),
+                      Text(
+                        "$unitno",
+                        style: GoogleFonts.poppins(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                SizedBox(height: 10),
+
+                // Scrollable Details
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        _buildDetailTile(Icons.apartment, "Unit Type", unittype),
+                        _buildDetailTile(Icons.business, "Building", building_name),
+                        _buildDetailTile(Icons.location_on, "Location", "$area, $emirate"),
+                        Container(
+                          padding: EdgeInsets.symmetric(vertical: 5, horizontal: 15),
+                          color: Colors.white,
+                          child: Row(
+                            children: [
+                              Icon(Icons.attach_money, color: appbar_color.shade200),
+                              SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      priceLabel, // "Rent" or "Sale"
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 14,
+
+
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    SizedBox(height: 2),
+                                    Row(
+                                      children: [
+                                        Image.asset('assets/dirham.png', width: 14, height: 14, fit: BoxFit.contain),
+                                        const SizedBox(width: 6),
+                                        Text(
+                                          price,
+                                          style: GoogleFonts.poppins(fontSize: 16, color: Colors.black87),
+                                          overflow: TextOverflow.ellipsis,
+                                          softWrap: true,
+                                          maxLines: 2,
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        // _buildDetailTile(Icons.attach_money, "Price", rent),
+                        _buildDetailTile(Icons.local_parking, "Parking", parking),
+                        _buildDetailTile(Icons.balcony, "Balcony", balcony),
+                        _buildDetailTile(Icons.bathtub, "Bathrooms", bathrooms),
+
+                        // ✅ New fields
+                        if (amenities.isNotEmpty)
+                          Container(
+                            padding: EdgeInsets.symmetric(vertical: 5, horizontal: 15),
+                            color: Colors.white,
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Icon(Icons.checklist, color: appbar_color.shade200),
+                                SizedBox(width: 12),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        "Amenities",
+                                        style: GoogleFonts.poppins(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                      SizedBox(height: 6),
+                                      Wrap(
+                                        spacing: 8,
+                                        runSpacing: 8,
+                                        children: amenities.map((amenity) {
+                                          return Container(
+                                            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                            decoration: BoxDecoration(
+                                              color: Colors.grey.shade200,
+                                              borderRadius: BorderRadius.circular(20),
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: Colors.black12,
+                                                  blurRadius: 2,
+                                                  offset: Offset(0, 1),
+                                                ),
+                                              ],
+                                            ),
+                                            child: Text(
+                                              amenity,
+                                              style: GoogleFonts.poppins(
+                                                fontSize: 13,
+                                                fontWeight: FontWeight.w500,
+                                                color: Colors.black87,
+                                              ),
+                                            ),
+                                          );
+                                        }).toList(),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+
+                      ],
+                    ),
+                  ),
+                ),
+
+                SizedBox(height: 10),
+
+                // Close Button
+                Padding(
+                  padding: EdgeInsets.only(bottom: 10),
+                  child: ElevatedButton(
+                    onPressed: () => Navigator.pop(context),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: appbar_color.shade200,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                    ),
+                    child: Text(
+                      "Close",
+                      style: GoogleFonts.poppins(
+                        color: Colors.white,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+
+  // Detail Tile Widget
+  Widget _buildDetailTile(IconData icon, String label, String value) {
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 5, horizontal: 15),
+      color: Colors.white,
+      child: Row(
+        children: [
+          Icon(icon, color: appbar_color.shade200),
+          SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: GoogleFonts.poppins(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                SizedBox(height: 2),
+                Text(
+                  value,
+                  style: GoogleFonts.poppins(
+                    fontSize: 16,
+                    fontWeight: FontWeight.normal,
+                    color: Colors.black87,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                  softWrap: true,
+                  maxLines: 2,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+
+  }
+
+
+}
+
+Widget _buildUnitTile({
+  required BuildContext context,
+  required Map flat,
+  required Color badgeColor,
+  required int? loadingFlatId,
+  required Future<void> Function(int flatId, String category) onTapFetch,
+}) {
+  final int flatId = flat['id'] ?? -1;
+  final isLoading = loadingFlatId == flatId;
+
+  final flatName = flat['name']?.toString() ?? 'N/A';
+  final flatType = flat['flat_type']?['name']?.toString() ?? 'N/A';
+
+  final String category = flat['status'] ?? "";
+
+  return Container(
+    margin: const EdgeInsets.symmetric(vertical: 2),
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(16),
+      color: Colors.white,
+      boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 8, offset: const Offset(0, 2))],
+    ),
+    child: GestureDetector(
+      onTap: () => onTapFetch(flatId, category),   // 👈 send both
+      child: ListTile(
+        leading: Container(
+          padding: const EdgeInsets.all(6),
+          decoration: BoxDecoration(shape: BoxShape.circle, color: badgeColor.withOpacity(0.15)),
+          child: Icon(Icons.home_outlined, color: badgeColor, size: 24),
+        ),
+        title: Text('Unit $flatName', style: GoogleFonts.poppins(fontSize: 15, fontWeight: FontWeight.w600)),
+        subtitle: Text('Type: $flatType',
+            style: GoogleFonts.poppins(fontSize: 12, color: Colors.grey.shade600)),
+
+      ),
+
+    ),
+  );
+}
+
+void showErrorSnackbar(BuildContext context, String message) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Row(
+        children: [
+          Icon(Icons.error_outline, color: Colors.white),
+          SizedBox(width: 8),
+          Expanded(child: Text(message)),
+        ],
+      ),
+      backgroundColor: Colors.redAccent,
+      behavior: SnackBarBehavior.floating,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      margin: EdgeInsets.all(16),
+      duration: Duration(seconds: 3),
+    ),
+  );
 }

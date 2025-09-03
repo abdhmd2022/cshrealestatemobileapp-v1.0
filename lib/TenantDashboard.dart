@@ -153,8 +153,7 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
                       children: [
                         const SizedBox(height: 10),
 
-                        // Avatar & Name
-                        // Avatar + Name + Email (Centered vertically)
+                          // Avatar + Name + Email (Centered vertically)
                         Center(
                           child: Column(
                             children: [

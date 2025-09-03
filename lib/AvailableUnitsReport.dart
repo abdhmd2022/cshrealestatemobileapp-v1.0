@@ -1179,11 +1179,11 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
               onPressed: () async => await shareUnitsReport(filteredUnits),
             ),
             // Optional: direct download/save
-             IconButton(
+             /*IconButton(
                icon: const Icon(Icons.download, color: Colors.white),
                tooltip: "Download PDF",
               onPressed: () async => await downloadUnitsReport(filteredUnits),
-             ),
+             ),*/
           ],
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(70),

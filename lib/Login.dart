@@ -1713,7 +1713,7 @@ class _LoginPageState extends State<Login> {
               pressedColor: appbar_color.withOpacity(0.2),
               children: {
                 'Tenant': _buildSegmentLabel('Tenant'),
-                'Admin': _buildSegmentLabel('Admin'),
+                'Admin': _buildSegmentLabel('Company'),
                 'Landlord': _buildSegmentLabel('Landlord'),
               },
               onValueChanged: (String value) {

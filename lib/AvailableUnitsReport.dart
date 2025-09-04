@@ -1309,16 +1309,12 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
 
                             const SizedBox(width: 10),
 
-
-
-
                             // 🔘 FILTER BADGES (right of Filter button)
                             Expanded(
                               child: SingleChildScrollView(
                                 scrollDirection: Axis.horizontal,
                                 child: Row(
                                   children: [
-
                                     _buildBadgeChip(
                                       Icons.assignment_turned_in_outlined,
                                       "Category: $statusFilter",
@@ -1328,15 +1324,12 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
 
                                     Row(
                                       children: (
-
-
                                           selectedFlatTypes.isEmpty &&
                                               selectedAmenities.isEmpty &&
                                               !isPriceRangeModified
                                               ? [
                                             _buildBadgeChip(Icons.info_outline, "No filters selected"),
                                           ] : [
-
                                             ...selectedFlatTypes.map((type) =>
                                                 _buildBadgeChip(Icons.apartment, type, onTap: () => _showFiltersDialog(context))),
                                             ...selectedAmenities.map((a) =>

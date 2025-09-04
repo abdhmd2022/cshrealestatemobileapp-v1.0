@@ -2266,7 +2266,7 @@ Widget _buildBadgeChip(IconData icon, String label, {VoidCallback? onTap}) {
       child: Text(
         label,
         style: GoogleFonts.poppins(fontSize: 13, fontWeight: FontWeight.w500),
-      ),),
+      )),
       backgroundColor: Colors.grey.shade100,
       side: BorderSide(color: Colors.grey.shade300),
       shape: RoundedRectangleBorder(

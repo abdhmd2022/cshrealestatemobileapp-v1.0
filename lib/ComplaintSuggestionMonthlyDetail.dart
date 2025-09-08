@@ -104,40 +104,6 @@ class MonthlyDetailScreen extends StatefulWidget {
     }).toList();
   }
 
-
-  Future<Map<String, dynamic>?> _fetchTenantById(int id) async {
-    final headers = {
-      'Authorization': 'Bearer $Company_Token',
-      'Content-Type': 'application/json',
-    };
-    try {
-      final res = await http.get(
-          Uri.parse("$baseurl/tenant/$id"), headers: headers);
-      if (res.statusCode == 200) {
-        final body = json.decode(res.body);
-        return body['data']?['tenant'] as Map<String, dynamic>?;
-      }
-    } catch (_) {}
-    return null;
-  }
-
-  Future<Map<String, dynamic>?> _fetchLandlordById(int id) async {
-    final headers = {
-      'Authorization': 'Bearer $Company_Token',
-      'Content-Type': 'application/json',
-    };
-    try {
-      final res = await http.get(
-          Uri.parse("$baseurl/landlord/$id"), headers: headers);
-      if (res.statusCode == 200) {
-        final body = json.decode(res.body);
-        return body['data']?['landlord'] as Map<String, dynamic>?;
-      }
-    } catch (_) {}
-    return null;
-  }
-
-  // ---------- GROUPING / UTILS ----------
   Map<String, List<Map<String, dynamic>>> groupByDay(
       List<Map<String, dynamic>> data) {
     final Map<String, List<Map<String, dynamic>>> grouped = {};
@@ -257,7 +223,6 @@ class MonthlyDetailScreen extends StatefulWidget {
         ],
       );
 
-
   Widget _docChip(String name, String? no, String? expiry) {
     return Container(
       margin: const EdgeInsets.only(right: 8, bottom: 8),
@@ -275,257 +240,6 @@ class MonthlyDetailScreen extends StatefulWidget {
       ),
     );
   }
-
-  Widget _tenantCard(Map<String, dynamic> t) {
-    // Primary contact fields
-    final name = t["name"]?.toString();
-    final email = t["email"]?.toString();
-    final phone = (t["mobile_no"] ?? t["phone_no"])?.toString();
-    final nationality = t["nationality"]?.toString();
-    final address = t["address"]?.toString() ?? t["residential"]?.toString();
-
-    // IDs
-    final emiratesId = t["emirates_id"]?.toString();
-    final emiratesExp = t["emirates_id_expiry"]?.toString();
-    final passport = t["passport_no"]?.toString();
-    final passportExp = t["passport_expiry"]?.toString();
-
-    // Current unit/building (first contract → first flat)
-    String? unitName, buildingName, flatType;
-    try {
-      final contracts = (t["contracts"] as List?) ?? const [];
-      if (contracts.isNotEmpty) {
-        final flats = (contracts.first["flats"] as List?) ?? const [];
-        if (flats.isNotEmpty) {
-          final flat = flats.first["flat"] as Map<String, dynamic>?;
-          unitName = flat?["name"]?.toString();
-          buildingName = flat?["building"]?["name"]?.toString();
-          flatType = flat?["flat_type"]?["name"]?.toString();
-        }
-      }
-    } catch (_) {}
-
-    final kyc = (t["kyc_details"] as List?) ?? const [];
-
-    return _boxedSection(
-      title: "Tenant",
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _kv("Name", name),
-          _kv("Email", email),
-          _kv("Phone", phone),
-          const SizedBox(height: 6),
-          _kv("Nationality", nationality),
-          _kv("Address", address),
-          const SizedBox(height: 6),
-          _kv("Emirates ID", emiratesId),
-          _kv("Emirates Expiry", fmtDate(emiratesExp)),
-          _kv("Passport No", passport),
-          _kv("Passport Expiry", fmtDate(passportExp)),
-          const SizedBox(height: 10),
-          if (unitName != null || buildingName != null || flatType != null) ...[
-            Text("Current Unit",
-                style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
-            const SizedBox(height: 4),
-            _kv("Unit", unitName),
-            _kv("Building", buildingName),
-            _kv("Type", flatType),
-            const SizedBox(height: 10),
-          ],
-          if (kyc.isNotEmpty) ...[
-            Text(
-                "KYC", style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
-            const SizedBox(height: 6),
-            Wrap(
-              children: kyc.map((d) {
-                final docType = d["doc_type"]?["name"]?.toString() ??
-                    "Document";
-                final docNo = d["doc_no"]?.toString();
-                final exp = d["expiry_date"]?.toString();
-                return _docChip(docType, docNo, exp);
-              }).toList(),
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-
-  Widget _landlordCard(Map<String, dynamic> l) {
-    final name = l["name"]?.toString();
-    final email = l["email"]?.toString();
-    final phone = (l["mobile_no"] ?? l["phone_no"])?.toString();
-    final nationality = l["nationality"]?.toString();
-    final address = l["address"]?.toString() ?? l["residential"]?.toString();
-
-    // IDs
-    final emiratesId = l["emirates_id"]?.toString();
-    final emiratesExp = l["emirates_id_expiry"]?.toString();
-    final passport = l["passport_no"]?.toString();
-    final passportExp = l["passport_expiry"]?.toString();
-
-    final kyc = (l["kyc_details"] as List?) ?? const [];
-
-    return _boxedSection(
-      title: "Landlord",
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _kv("Name", name),
-          _kv("Email", email),
-          _kv("Phone", phone),
-          const SizedBox(height: 6),
-          _kv("Nationality", nationality),
-          _kv("Address", address),
-          const SizedBox(height: 6),
-          _kv("Emirates ID", emiratesId),
-          _kv("Emirates Expiry", fmtDate(emiratesExp)),
-          _kv("Passport No", passport),
-          _kv("Passport Expiry", fmtDate(passportExp)),
-          const SizedBox(height: 10),
-          if (kyc.isNotEmpty) ...[
-            Text(
-                "KYC", style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
-            const SizedBox(height: 6),
-            Wrap(
-              children: kyc.map((d) {
-                final docType = d["doc_type"]?["name"]?.toString() ??
-                    "Document";
-                final docNo = d["doc_no"]?.toString();
-                final exp = d["expiry_date"]?.toString();
-                return _docChip(docType, docNo, exp);
-              }).toList(),
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-
-  Widget _tenantDetails(Map<String, dynamic> t) {
-    final emiratesId = t["emirates_id"]?.toString();
-    final emiratesExp = t["emirates_id_expiry"]?.toString();
-    final passport = t["passport_no"]?.toString();
-    final passportExp = t["passport_expiry"]?.toString();
-    final nationality = t["nationality"]?.toString();
-    final address = t["address"]?.toString() ?? t["residential"]?.toString();
-    final kyc = (t["kyc_details"] as List?) ?? const [];
-
-    String? unitName, buildingName, flatType;
-    try {
-      final contracts = (t["contracts"] as List?) ?? const [];
-      if (contracts.isNotEmpty) {
-        final flats = (contracts.first["flats"] as List?) ?? const [];
-        if (flats.isNotEmpty) {
-          final flat = flats.first["flat"] as Map<String, dynamic>?;
-          unitName = flat?["name"]?.toString();
-          buildingName = flat?["building"]?["name"]?.toString();
-          flatType = flat?["flat_type"]?["name"]?.toString();
-        }
-      }
-    } catch (_) {}
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _kv("Nationality", nationality),
-        _kv("Address", address),
-        const SizedBox(height: 6),
-        _kv("Emirates ID", emiratesId),
-        _kv("Emirates Expiry", fmtDate(emiratesExp)),
-        _kv("Passport No", passport),
-        _kv("Passport Expiry", fmtDate(passportExp)),
-        if (unitName != null || buildingName != null || flatType != null) ...[
-          const SizedBox(height: 10),
-          Text("Current Unit",
-              style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
-          const SizedBox(height: 4),
-          _kv("Unit", unitName),
-          _kv("Building", buildingName),
-          _kv("Type", flatType),
-        ],
-        if (kyc.isNotEmpty) ...[
-          const SizedBox(height: 10),
-          Text("KYC", style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
-          const SizedBox(height: 6),
-          Wrap(
-            children: kyc.map((d) {
-              final docType = d["doc_type"]?["name"]?.toString() ?? "Document";
-              final docNo = d["doc_no"]?.toString();
-              final exp = d["expiry_date"]?.toString();
-              return _docChip(docType, docNo, exp);
-            }).toList(),
-          ),
-        ],
-      ],
-    );
-  }
-
-  Widget _landlordDetails(Map<String, dynamic> l) {
-    final emiratesId = l["emirates_id"]?.toString();
-    final emiratesExp = l["emirates_id_expiry"]?.toString();
-    final passport = l["passport_no"]?.toString();
-    final passportExp = l["passport_expiry"]?.toString();
-    final nationality = l["nationality"]?.toString();
-    final address = l["address"]?.toString() ?? l["residential"]?.toString();
-    final kyc = (l["kyc_details"] as List?) ?? const [];
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _kv("Nationality", nationality),
-        _kv("Address", address),
-        const SizedBox(height: 6),
-        _kv("Emirates ID", emiratesId),
-        _kv("Emirates Expiry", fmtDate(emiratesExp)),
-        _kv("Passport No", passport),
-        _kv("Passport Expiry", fmtDate(passportExp)),
-        if (kyc.isNotEmpty) ...[
-          const SizedBox(height: 10),
-          Text("KYC", style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
-          const SizedBox(height: 6),
-          Wrap(
-            children: kyc.map((d) {
-              final docType = d["doc_type"]?["name"]?.toString() ?? "Document";
-              final docNo = d["doc_no"]?.toString();
-              final exp = d["expiry_date"]?.toString();
-              return _docChip(docType, docNo, exp);
-            }).toList(),
-          ),
-        ],
-      ],
-    );
-  }
-
-  Widget _pillFromStatus(Map<String, dynamic>? status, String type) {
-    String text;
-    Color color;
-
-    if (status != null) {
-      text = (status["name"] ?? "Status").toString();
-      final cat = (status["category"] ?? "").toString().toLowerCase();
-      if (cat == "close") {
-        color = Colors.green;
-      } else if (cat.contains("normal")) {
-        color = Colors.orange;
-      } else {
-        color = Colors.blueGrey;
-      }
-    } else {
-      text = "Pending";
-      color = type == "Suggestion" ? Colors.teal : Colors.redAccent;
-    }
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(color: color.withOpacity(0.15),
-          borderRadius: BorderRadius.circular(16)),
-      child: Text(text, style: GoogleFonts.poppins(
-          fontSize: 12.5, fontWeight: FontWeight.w600, color: color)),
-    );
-  }
-
 
   Future<void> _openDetailsSheet(
       BuildContext context,
@@ -834,7 +548,6 @@ class MonthlyDetailScreen extends StatefulWidget {
     );
   }
 
-
   Widget _partyCard(String title, Map<String, dynamic> data) {
     return _boxedSection(
       title: title,
@@ -862,8 +575,6 @@ class MonthlyDetailScreen extends StatefulWidget {
     if (cat.contains('process')) return Icons.sync;
     return Icons.info_outline; // fallback
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -1073,7 +784,6 @@ class MonthlyDetailScreen extends StatefulWidget {
     );
   }
 
-
   Widget _typeChip(String type) {
     final bool isSuggestion = type == 'Suggestion';
     final color = isSuggestion ? Colors.teal : Colors.redAccent;
@@ -1137,7 +847,6 @@ class MonthlyDetailScreen extends StatefulWidget {
         const SnackBar(content: Text('No statuses available')),
       );
       return null;
-      
       
     }
 
@@ -1358,7 +1067,6 @@ class MonthlyDetailScreen extends StatefulWidget {
       }
       return count;
     }
-
   }
 
 

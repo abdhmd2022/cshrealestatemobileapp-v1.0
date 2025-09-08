@@ -143,7 +143,6 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
             ),
             child: Stack(
               children: [
-
                 Padding(
                   padding: const EdgeInsets.fromLTRB(20, 20, 20, 10), // ⬅️ reduced bottom padding
                   child: SingleChildScrollView(
@@ -152,7 +151,6 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const SizedBox(height: 10),
-
                           // Avatar + Name + Email (Centered vertically)
                         Center(
                           child: Column(
@@ -188,7 +186,6 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
                           ),
                         ),
 
-
                         const SizedBox(height: 16),
                         Divider(),
 
@@ -204,13 +201,11 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
                             onTapFetch: _onTapFetchFlat,
                           ),
                         ),
-
                         const SizedBox(height: 20),
                       ],
                     ),
                   ),
                 ),
-
                 // Close Icon (top-right)
                 Positioned(
                   top: 20,
@@ -238,7 +233,6 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
           );
         }
     );
-
   }
 
   // new dashboard function

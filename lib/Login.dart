@@ -1713,7 +1713,7 @@ class _LoginPageState extends State<Login> {
               pressedColor: appbar_color.withOpacity(0.2),
               children: {
                 'Tenant': _buildSegmentLabel('Tenant'),
-                'Admin': _buildSegmentLabel('Company'),
+                'Admin': _buildSegmentLabel('Management'),
                 'Landlord': _buildSegmentLabel('Landlord'),
               },
               onValueChanged: (String value) {
@@ -1735,14 +1735,20 @@ class _LoginPageState extends State<Login> {
   }
 
   Widget _buildSegmentLabel(String text) {
-    final bool isSelected = selectedRole == text;
+     bool isSelected = selectedRole == text;
+    if(text == 'Management' && selectedRole == "Admin")
+      {
+        isSelected = true;
+      }
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Text(
+        textAlign: TextAlign.center,
         text,
         style: GoogleFonts.poppins(
           fontWeight: FontWeight.w600,
           fontSize: 14,
+
           color: isSelected ? Colors.white : Colors.black.withOpacity(0.7),
         ),
       ),

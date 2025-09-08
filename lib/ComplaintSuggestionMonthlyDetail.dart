@@ -49,7 +49,7 @@ class MonthlyDetailScreen extends StatelessWidget {
 
     for (var item in data) {
       final createdAt = DateTime.tryParse(item['created_at'] ?? "") ?? DateTime.now();
-      final key = DateFormat('dd-MMM').format(createdAt);
+      final key = DateFormat('dd-MMM-yy').format(createdAt);
       if (!grouped.containsKey(key)) grouped[key] = [];
       grouped[key]!.add(item);
     }
@@ -583,7 +583,7 @@ class MonthlyDetailScreen extends StatelessWidget {
                                       ),
                                     ),
                                     SizedBox(width: 10),
-                                    Text("Loading contact info...")
+                                    Text("Loading info...")
                                   ],
                                 ),
                               );
@@ -679,7 +679,7 @@ class MonthlyDetailScreen extends StatelessWidget {
         centerTitle: true,
       ),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(12),
         children: grouped.entries.map((group) {
           final day = group.key;
           final feedbacks = group.value;
@@ -712,7 +712,7 @@ class MonthlyDetailScreen extends StatelessWidget {
                 final icon = isComplaint ? Icons.report_problem : Icons.lightbulb;
 
                 return Container(
-                  margin: const EdgeInsets.only(bottom: 14),
+                  margin: const EdgeInsets.only(bottom: 2),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(16),
@@ -724,7 +724,7 @@ class MonthlyDetailScreen extends StatelessWidget {
                       ),
                     ],
                   ),
-                  child: ListTile(
+                  child:ListTile(
                     onTap: () => _openDetailsSheet(context, entry), // <-- OPEN POPUP HERE
                     contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                     leading: Container(
@@ -749,25 +749,45 @@ class MonthlyDetailScreen extends StatelessWidget {
                     ),
                     title: Padding(
                       padding: const EdgeInsets.only(bottom: 4.0),
-                      child: Text(desc, style: GoogleFonts.poppins(fontSize: 15, fontWeight: FontWeight.w500)),
+                      child: Text(
+                        desc,
+                        style: GoogleFonts.poppins(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
                     ),
-                    subtitle: Text(
+                    subtitle:  Text(
                       "$tenant \n$dateLabel",
                       style: GoogleFonts.poppins(fontSize: 12.5, color: Colors.grey[700]),
                     ),
-                    trailing: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                      decoration: BoxDecoration(color: bgColor, borderRadius: BorderRadius.circular(16)),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(icon, size: 14, color: Colors.white),
-                          const SizedBox(width: 4),
-                          Text(type.toString(), style: GoogleFonts.poppins(fontSize: 11.5, color: Colors.white)),
-                        ],
-                      ),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: bgColor,
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(icon, size: 14, color: Colors.white),
+                              const SizedBox(width: 4),
+                              Text(
+                                type.toString(),
+                                style: GoogleFonts.poppins(fontSize: 11.5, color: Colors.white),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        const Icon(Icons.chevron_right, color: Colors.grey), // 👈 tap hint
+                      ],
                     ),
-                  ),
+                  )
+
                 );
               }).toList(),
               const SizedBox(height: 24),

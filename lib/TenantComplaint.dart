@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:convert'; // for jsonDecode
 import 'package:http/http.dart' as http;
@@ -55,8 +56,27 @@ class _TenantComplaintPageState extends State<TenantComplaint> with TickerProvid
   List<dynamic> complaintStatuses = [];
   dynamic selectedStatus;
 
+  void showResponseSnackbar(BuildContext context, Map<String, dynamic> responseJson) {
+    final bool isSuccess = responseJson['success'] == true;
+    final String message = responseJson['message'] ?? 'Unexpected response';
 
-  Future<void> _submitForm() async {
+    final Color backgroundColor = isSuccess ? Colors.green : Colors.red;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          message,
+          style: TextStyle(color: Colors.white),
+        ),
+        backgroundColor: backgroundColor,
+        duration: Duration(seconds: 3),
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
+
+
+  Future<void> _submitForm(BuildContext context) async {
     if (_formKey.currentState != null && _formKey.currentState!.validate()) {
       setState(() {
         _isSubmitting = true;
@@ -101,7 +121,16 @@ class _TenantComplaintPageState extends State<TenantComplaint> with TickerProvid
           });
         }
 
-        showResponseSnackbar(context, responseData);
+        String successMessage = responseData['message'] ?? "Transfer successful!"; // Extract message
+
+        // Show toast with the response message
+        Fluttertoast.showToast(
+          msg: successMessage,
+          toastLength: Toast.LENGTH_LONG,
+          gravity: ToastGravity.BOTTOM,
+          backgroundColor: appbar_color,
+          textColor: Colors.white,
+        );
 
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -285,68 +314,71 @@ class _TenantComplaintPageState extends State<TenantComplaint> with TickerProvid
                   ),
                   style: GoogleFonts.poppins(fontSize: 15),
                 ),
-
-                SizedBox(height: 30),
-
-                // Submit Button
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton.icon(
-                    icon: _isSubmitting
-                        ? Platform.isIOS
-                        ? CupertinoActivityIndicator(color: Colors.white)
-                        : SizedBox(
-                      height: 18,
-                      width: 18,
-                      child: CircularProgressIndicator(
-                        color: Colors.white,
-                        strokeWidth: 2,
-                      ),
-                    )
-
-                        : Icon(Icons.send_rounded,color:Colors.white),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: appbar_color,
-                      padding: EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      elevation: 5,
-                    ),
-                    onPressed: _isSubmitting ? null : _submitForm,
-
-
-                  label: _isSubmitting
-                        ? Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-
-                        Text(
-                          'Submitting...',
-                          style: GoogleFonts.poppins(
-                            color: Colors.white,
-                            fontSize: 16,
-                          ),
-                        ),
-                      ],
-                    )
-                        : Text(
-                      'Submit',
-                      style: GoogleFonts.poppins(
-                        color: Colors.white,
-                        fontSize: 16,
-                      ),
-                    ),
-                  ),
-                ),
-
-
               ],
             ),
           ),
         ),
 
+      ),
+
+      bottomNavigationBar: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: SizedBox(
+            width: double.infinity,
+            child:  ElevatedButton.icon(
+              icon: _isSubmitting
+                  ? Platform.isIOS
+                  ? CupertinoActivityIndicator(color: Colors.white)
+                  : SizedBox(
+                height: 18,
+                width: 18,
+                child: CircularProgressIndicator(
+                  color: Colors.white,
+                  strokeWidth: 2,
+                ),
+              )
+
+                  : Icon(Icons.send_rounded,color:Colors.white),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: appbar_color,
+                padding: EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                elevation: 5,
+              ),
+              onPressed:()
+              {
+                _isSubmitting ? null : _submitForm(context);
+              },
+
+
+              label: _isSubmitting
+                  ? Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+
+                  Text(
+                    'Submitting...',
+                    style: GoogleFonts.poppins(
+                      color: Colors.white,
+                      fontSize: 16,
+                    ),
+                  ),
+                ],
+              )
+                  : Text(
+                'Submit',
+                style: GoogleFonts.poppins(
+                  color: Colors.white,
+                  fontSize: 16,
+                ),
+              ),
+            ),
+          ),
+        ),
       ),
 
     );}}

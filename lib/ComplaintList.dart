@@ -38,12 +38,15 @@ class _ComplaintListScreenState extends State<ComplaintListScreen> {
     int page = 1;
     bool hasMore = true;
 
-    final url = is_landlord ? "$baseurl/tenant/complaint/?landlord_id=$user_id&page=$page" : "$baseurl/tenant/complaint/?tenant_id=$user_id&page=$page";
 
     setState(() => isLoading = true);
 
     try {
       while (hasMore) {
+        final url = is_landlord
+            ? "$baseurl/tenant/complaint/?landlord_id=$user_id&page=$page"
+            : "$baseurl/tenant/complaint/?tenant_id=$user_id&page=$page";
+
         final response = await http.get(
           Uri.parse(url),
           headers: {
@@ -51,6 +54,7 @@ class _ComplaintListScreenState extends State<ComplaintListScreen> {
             'Content-Type': 'application/json',
           },
         );
+
 
         final data = json.decode(response.body);
 
@@ -377,6 +381,7 @@ class _ComplaintListScreenState extends State<ComplaintListScreen> {
                       ),
                     ),
                   );
+
 
 
                 },

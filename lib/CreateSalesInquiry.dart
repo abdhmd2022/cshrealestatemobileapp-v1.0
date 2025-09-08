@@ -183,6 +183,26 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
   String _hintTextWhatsapp = 'Enter Whatsapp No'; // Default hint text
 
+  void showResponseSnackbar(BuildContext context, Map<String, dynamic> responseJson) {
+    final bool isSuccess = responseJson['success'] == true;
+    final String message = responseJson['message'] ?? 'Unexpected response';
+
+    final Color backgroundColor = isSuccess ? Colors.green : Colors.red;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          message,
+          style: TextStyle(color: Colors.white),
+        ),
+        backgroundColor: backgroundColor,
+        duration: Duration(seconds: 3),
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
+
+
   void _openAmenitiesSelector(BuildContext context) {
     TextEditingController searchController = TextEditingController();
     List<Map<String, dynamic>> filteredList = List.from(amenities);

@@ -31,6 +31,7 @@ class _ComplaintSuggestionReportScreenState extends State<ComplaintSuggestionRep
     fetchMonthlyStats();
   }
 
+
   Future<void> fetchMonthlyStats() async {
     setState(() => isLoading = true);
 

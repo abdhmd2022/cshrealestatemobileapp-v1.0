@@ -394,7 +394,7 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
   }
 
 
-// old 2 dashboard function
+// old dashboard function
 
   /*Future<void> fetchDashboardData() async {
     setState(() => isLoading = true);
@@ -528,55 +528,6 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
       setState(() => isLoading = false);
     }
   }*/
-
-
-  // old dashboard function
- /* Future<void> fetchDashboardData() async {
-
-    final response = await http.get(
-      Uri.parse('$baseurl/reports/tenant/cheques/$user_id'),
-      headers: {"Authorization": "Bearer $Company_Token"},
-    );
-
-    if (response.statusCode == 200) {
-      final List<dynamic> cheques = jsonDecode(response.body)['data']['tenant']['cheques'];
-
-      Map<String, Map<String, dynamic>> groupedContracts = {};
-
-      for (var cheque in cheques) {
-        final payment = cheque['payment'];
-        final contract = payment['contract'];
-        final contractNo = contract['contract_no'];
-        final contractId = contract['id'];
-
-        if (!groupedContracts.containsKey(contractNo)) {
-          groupedContracts[contractNo] = {
-            'contract_no': contractNo,
-            'contract_id': contractId,
-            'flats': contract['flats'].map((f) => f['flat']).toList(),
-            'cheques': [],
-            'invoices': {},
-          };
-        }
-
-        groupedContracts[contractNo]!['cheques'].add(cheque);
-
-        final month = (payment['received_date'] ?? '').substring(0, 7);
-        groupedContracts[contractNo]!['invoices'][month] =
-            (groupedContracts[contractNo]!['invoices'][month] ?? 0.0) + (payment['amount_incl']?.toDouble() ?? 0.0);
-      }
-
-      setState(() {
-        contracts = groupedContracts.values.toList();
-        isLoading = false;
-      });
-    } else {
-      setState(() => isLoading = false);
-      print('Failed to load data: ${response.body}');
-    }
-
-  }*/
-
   String _formatDateToDDMMMYYYY(DateTime date) {
     const monthNames = [
       'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',

@@ -138,6 +138,7 @@ class _ComplaintListScreenState extends State<ComplaintListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text("Complaints/Suggestions", style: GoogleFonts.poppins(fontWeight: FontWeight.normal,
             color:Colors.white)),
@@ -191,7 +192,7 @@ class _ComplaintListScreenState extends State<ComplaintListScreen> {
             ? Center(
           child: Platform.isIOS
               ? const CupertinoActivityIndicator(radius: 18)
-              : CircularProgressIndicator(
+              : CircularProgressIndicator.adaptive(
             valueColor: AlwaysStoppedAnimation<Color>(appbarColor),
           ),
         )

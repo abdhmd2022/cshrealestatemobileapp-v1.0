@@ -27,15 +27,83 @@ class MonthlyDetailScreen extends StatefulWidget {
   super.initState();
   _entries = widget.entries.map((e) => Map<String, dynamic>.from(e)).toList();
   monthKey = widget.monthKey;
+  _rebuildStatusChipOptions();  // ← derive chips from _entries
+  _applyFilters();              // ← produce _filteredEntries from active filters
   }
+
+  late List<Map<String, dynamic>> _filteredEntries;
+  final Set<String> _activeStatusKeys = {'all'};
+  List<Map<String, String>> _statusChipOptions = [];
+
 
   void _applyEntryUpdate(Map<String, dynamic> updated) {
     final id = updated['id'];
     final idx = _entries.indexWhere((e) => e['id'] == id);
     if (idx != -1) {
-      setState(() => _entries[idx] = Map<String, dynamic>.from(updated));
+      setState(() {
+        _entries[idx] = Map<String, dynamic>.from(updated);
+        // keep filters/chips in sync with current data
+        _rebuildStatusChipOptions();
+        _applyFilters();
+      });
     }
   }
+  void _rebuildStatusChipOptions() {
+    // Always have "Pending" if any record has null status
+    final hasPending = _entries.any((e) => e['status'] == null);
+
+    // Collect unique status names from data
+    final Set<String> names = {};
+    for (final e in _entries) {
+      final st = e['status'];
+      if (st is Map) {
+        final n = (st['name'] ?? '').toString().trim();
+        if (n.isNotEmpty) names.add(n);
+      }
+    }
+
+    final List<Map<String, String>> chips = [];
+
+    if (hasPending) {
+      chips.add({'key': 'pending', 'name': 'Pending'});
+    }
+
+    for (final n in names) {
+      chips.add({'key': _toKey(n), 'name': n});
+    }
+
+    // Keep currently selected keys if still present; otherwise fall back to 'all'
+    final existingKeys = chips.map((c) => c['key']!).toSet()..add('all');
+    if (!_activeStatusKeys.every(existingKeys.contains)) {
+      _activeStatusKeys
+        ..clear()
+        ..add('all');
+    }
+
+    _statusChipOptions = chips;
+  }
+
+  String _toKey(String name) =>
+      name.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]+'), '_').replaceAll(RegExp(r'^_|_$'), '');
+  void _applyFilters() {
+    // 'all' → no filtering
+    if (_activeStatusKeys.contains('all')) {
+      _filteredEntries = List<Map<String, dynamic>>.from(_entries);
+      return;
+    }
+
+    _filteredEntries = _entries.where((e) {
+      final st = e['status'];
+      if (st == null) {
+        // pending
+        return _activeStatusKeys.contains('pending');
+      }
+      final name = (st['name'] ?? '').toString();
+      final key  = _toKey(name);
+      return _activeStatusKeys.contains(key);
+    }).toList();
+  }
+
 
   Future<Map<String, dynamic>?> _fetchTenantById(int id) async {
     final headers = {
@@ -552,12 +620,12 @@ class MonthlyDetailScreen extends StatefulWidget {
                     // 2) Update parent list immediately
                     onUpdated(localEntry);
 
-                    ScaffoldMessenger.of(context).showSnackBar(
+                    /*ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                         content: Text('Status updated'),
                         duration: Duration(seconds: 1),
                       ),
-                    );
+                    );*/
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
@@ -635,18 +703,31 @@ class MonthlyDetailScreen extends StatefulWidget {
                           controller: controller,
                           children: [
                             // date/time row (unchanged look)
-                            Row(
-                              children: [
-                                const Icon(Icons.calendar_month,
-                                    size: 18, color: Colors.blueAccent),
-                                const SizedBox(width: 8),
-                                Text(
-                                  dateLabel,
-                                  style: GoogleFonts.poppins(
-                                      fontSize: 13.5, color: Colors.black87),
-                                ),
-                              ],
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                              decoration: BoxDecoration(
+                                color: Colors.blueAccent.withOpacity(0.08),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Icon(Icons.calendar_month, size: 16, color: Colors.blueAccent),
+                                  const SizedBox(width: 6),
+                                  Text(
+                                    dateLabel,
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 13.5,
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.blueAccent.shade700,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
+
 
                             const SizedBox(height: 14),
 
@@ -689,7 +770,7 @@ class MonthlyDetailScreen extends StatefulWidget {
                                         SizedBox(
                                           width: 20,
                                           height: 20,
-                                          child: CircularProgressIndicator(strokeWidth: 2),
+                                          child: CircularProgressIndicator.adaptive(strokeWidth: 2),
                                         ),
                                         SizedBox(width: 10),
                                         Text("Loading contact info...")
@@ -786,7 +867,7 @@ class MonthlyDetailScreen extends StatefulWidget {
 
   @override
   Widget build(BuildContext context) {
-    final grouped = groupByDay(_entries);
+    final grouped = groupByDay(_filteredEntries); // <-- use filtered list
     final monthLabel = DateFormat('MMMM, yyyy').format(
         DateFormat('yyyy-MM').parse(monthKey));
 
@@ -810,56 +891,62 @@ class MonthlyDetailScreen extends StatefulWidget {
       ),
       body: ListView(
         padding: const EdgeInsets.all(12),
-        children: grouped.entries.map((group) {
-          final day = group.key;
-          final feedbacks = group.value;
+        children: [
+          _statusFilterBar(),
+          const SizedBox(height: 12),
+          ...grouped.entries.map((group) {
+            final day = group.key;
+            final feedbacks = group.value;
 
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(bottom: 6),
-                child: Row(
-                  children: [
-                    Icon(Icons.calendar_today, size: 16,
-                        color: Colors.grey[600]),
-                    const SizedBox(width: 6),
-                    Text(
-                      day,
-                      style: GoogleFonts.poppins(fontSize: 15,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.black87),
-                    ),
-                  ],
-                ),
-              ),
-              ...feedbacks.map((entry) {
-                final type = entry['type'] ?? 'Unknown';
-                final desc = entry['description'] ?? 'No description';
-                final tenant = entry['tenant']?['name'] ??
-                    entry['landlord_id'] ?? "Unknown";
-                final createdAt = DateTime.tryParse(
-                    entry['created_at'] ?? '') ?? DateTime.now();
-                final dateLabel = DateFormat('dd-MMM-yyyy • hh:mm a').format(
-                    createdAt);
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 6),
+                  child: Row(
+                    children: [
+                      Icon(Icons.calendar_today, size: 16,
+                          color: Colors.grey[600]),
+                      const SizedBox(width: 6),
+                      Text(
 
-                final isComplaint = type == 'Complaint';
-                final bgColor = isComplaint ? Colors.red : Colors.teal
-                    .withOpacity(0.8);
-
-                return _buildEntryCard(
-                  context: context,
-                  entry: entry,
-                  appColor: bgColor, // you already compute this based on type
-                  onTap: () => _openDetailsSheet(context, entry,
-                    onUpdated: _applyEntryUpdate, // <— will refresh list instantly
+                        day,
+                        style: GoogleFonts.poppins(fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.black87),
+                      ),
+                    ],
                   ),
-                );
-              }).toList(),
-              const SizedBox(height: 24),
-            ],
-          );
-        }).toList(),
+                ),
+                ...feedbacks.map((entry) {
+                  final type = entry['type'] ?? 'Unknown';
+                  final desc = entry['description'] ?? 'No description';
+                  final tenant = entry['tenant']?['name'] ??
+                      entry['landlord_id'] ?? "Unknown";
+                  final createdAt = DateTime.tryParse(
+                      entry['created_at'] ?? '') ?? DateTime.now();
+                  final dateLabel = DateFormat('dd-MMM-yyyy • hh:mm a').format(
+                      createdAt);
+
+                  final isComplaint = type == 'Complaint';
+                  final bgColor = isComplaint ? Colors.red : Colors.teal
+                      .withOpacity(0.8);
+
+                  return _buildEntryCard(
+                    context: context,
+                    entry: entry,
+                    appColor: bgColor, // you already compute this based on type
+                    onTap: () => _openDetailsSheet(context, entry,
+                      onUpdated: _applyEntryUpdate, // <— will refresh list instantly
+                    ),
+                  );
+                }).toList(),
+                const SizedBox(height: 24),
+              ],
+            );
+          }).toList(),
+        ]
+
       ),
     );
   }
@@ -1050,6 +1137,8 @@ class MonthlyDetailScreen extends StatefulWidget {
         const SnackBar(content: Text('No statuses available')),
       );
       return null;
+      
+      
     }
 
     return showModalBottomSheet<Map<String, dynamic>>(
@@ -1119,8 +1208,123 @@ class MonthlyDetailScreen extends StatefulWidget {
     } catch (_) {}
     return [];
   }
+  Widget _statusFilterBar() {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.6), // glass effect
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.grey.shade200),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black12.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          )
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header row: Filter text + reset button
+          Row(
+            children: [
+              Text(
+                "Filter(s)",
+                style: GoogleFonts.poppins(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 14.5,
+                ),
+              ),
+              const Spacer(),
+              if (!_activeStatusKeys.contains('all'))
+                TextButton.icon(
+                  onPressed: () {
+                    setState(() {
+                      _activeStatusKeys
+                        ..clear()
+                        ..add('all');
+                      _applyFilters();
+                    });
+                  },
+                  style: TextButton.styleFrom(
+                    foregroundColor: appbar_color, // match appbar color
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    minimumSize: Size.zero,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
+                  icon: const Icon(Icons.refresh, size: 16),
+                  label: const Text("Reset"),
+                ),
+            ],
+          ),
+          const SizedBox(height: 10),
 
+          // Pills row
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: [
+                // ALL pill
+                _statusPill(
+                  keyId: 'all',
+                  label: 'All',
+                  count: _entries.length,
+                  icon: Icons.all_inclusive,
+                  color: appbar_color,
+                  selected: _activeStatusKeys.contains('all'),
+                  onTap: () {
+                    setState(() {
+                      _activeStatusKeys
+                        ..clear()
+                        ..add('all');
+                      _applyFilters();
+                    });
+                  },
+                ),
+                const SizedBox(width: 8),
 
+                // Dynamic pills
+                ..._statusChipOptions.map((c) {
+                  final keyId = c['key']!;
+                  final label = c['name']!;
+                  final style = _chipStyleFor(keyId, label);
+                  final selected = _activeStatusKeys.contains(keyId);
+
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 8),
+                    child: _statusPill(
+                      keyId: keyId,
+                      count: _countForKey(keyId),
+                      label: label,
+                      icon: style.icon,
+                      color: style.color,
+                      selected: selected,
+                      onTap: () {
+                        setState(() {
+                          if (selected) {
+                            _activeStatusKeys.remove(keyId);
+                            if (_activeStatusKeys.isEmpty) {
+                              _activeStatusKeys.add('all');
+                            }
+                          } else {
+                            _activeStatusKeys.remove('all');
+                            _activeStatusKeys.add(keyId);
+                          }
+                          _applyFilters();
+                        });
+                      },
+                    ),
+                  );
+                }),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
   Future<bool> _updateComplaintStatus({
     required int complaintId,
@@ -1140,9 +1344,46 @@ class MonthlyDetailScreen extends StatefulWidget {
       return false;
     }
   }
-
+// Counts the entries that match a given status key ("pending", "under_process", "closed", etc.)
+    int _countForKey(String keyId) {
+      int count = 0;
+      for (final e in _entries) {
+        final st = e['status'];
+        if (st == null) {
+          if (keyId == 'pending') count++;
+        } else {
+          final nameKey = _toKey((st['name'] ?? '').toString());
+          if (nameKey == keyId) count++;
+        }
+      }
+      return count;
+    }
 
   }
+
+
+// Color + icon per status (keeps things consistent)
+_ChipVisual _chipStyleFor(String keyId, String label) {
+  final l = label.toLowerCase();
+  if (keyId == 'pending' || l == 'pending') {
+    return _ChipVisual(Colors.orange, Icons.access_time);
+  }
+  if (l.contains('close')) {
+    return _ChipVisual(Colors.green, Icons.check_circle);
+  }
+  if (l.contains('process')) {
+    return _ChipVisual(Colors.orange, Icons.sync);
+  }
+  // default accent for unknowns
+  return _ChipVisual(Colors.blueGrey, Icons.info_outline);
+}
+
+class _ChipVisual {
+  final Color color;
+  final IconData icon;
+  _ChipVisual(this.color, this.icon);
+}
+
 class _StatusStyle {
   final Color color;
   final IconData icon;
@@ -1158,6 +1399,71 @@ _StatusStyle _statusStyle(String? category) {
   // fallback/unknown
   return _StatusStyle(Colors.orange, Icons.info_outline);
 }
+Widget _statusPill({
+  required String keyId,
+  required String label,
+  required IconData icon,
+  required Color color,
+  required bool selected,
+  required int count,
+  required VoidCallback onTap,
+}) {
+  return InkWell(
+    onTap: onTap,
+    borderRadius: BorderRadius.circular(999),
+    child: AnimatedContainer(
+      duration: const Duration(milliseconds: 160),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: selected ? color.withOpacity(0.35) : Colors.grey.shade300),
+        color: selected ? color.withOpacity(0.01) : Colors.white,
+        boxShadow: selected
+            ? [
+          BoxShadow(
+            color: color.withOpacity(0.10),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ]
+            : [],
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 16, color: selected ? color : Colors.blueGrey),
+          const SizedBox(width: 6),
+          Text(
+            label,
+            style: GoogleFonts.poppins(
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              color: selected ? color : Colors.black87,
+            ),
+          ),
+          const SizedBox(width: 8),
+          // count badge
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+            decoration: BoxDecoration(
+              color: selected ? color.withOpacity(0.09) : Colors.grey.shade100,
+              borderRadius: BorderRadius.circular(999),
+            ),
+            child: Text(
+              "$count",
+              style: GoogleFonts.poppins(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: selected ? color : Colors.blueGrey,
+              ),
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
 
 
 

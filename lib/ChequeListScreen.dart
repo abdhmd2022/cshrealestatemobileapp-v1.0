@@ -64,11 +64,11 @@ class _ChequeListScreenState extends State<ChequeListScreen> {
       final rentalReceipt = payment['rental_payments']?['receipt'];
       final salesReceipt = payment['sales_payments']?['receipt'];
       final contract = rentalReceipt?['contract'] ?? salesReceipt?['contract'];
-      final flats = contract?['flats'] ?? [];
-      final flatNames = flats.map((f) => f['flat']['name']).join(', ');
-      final buildingName = flats.isNotEmpty ? flats[0]['flat']['building']['name'] : '-';
-      final areaName = flats.isNotEmpty ? flats[0]['flat']['building']['area']['name'] : '-';
-      final emirateName = flats.isNotEmpty ? flats[0]['flat']['building']['area']['state']['name'] : '-';
+      List<dynamic> flats = contract?['flats'] ?? [];
+      // final flatNames = flats.map((f) => f['flat']['name']).join(', ');
+      String buildingName = flats.isNotEmpty ? flats[0]['flat']['building']['name'] : '';
+      String areaName = flats.isNotEmpty ? flats[0]['flat']['building']['area']['name'] : '';
+      String emirateName = flats.isNotEmpty ? flats[0]['flat']['building']['area']['state']['name'] : '';
 
       final isReceived = cheque['is_received'].toString().toLowerCase() == 'true';
       final isDeposited = cheque['is_deposited'].toString().toLowerCase() == 'true';
@@ -170,8 +170,10 @@ class _ChequeListScreenState extends State<ChequeListScreen> {
                             _buildDetailTile(Icons.credit_card, "Type", payment['payment_type'] ?? '-'),
                             if (statusLabel.isNotEmpty)
                               _buildDetailTile(Icons.calendar_today, statusLabel, statusDate),
+                            if(payment['description']!=null)
                             _buildDetailTile(Icons.text_snippet, "Description", payment['description'] ?? '-'),
 
+                            if(flats.isNotEmpty)
                             Padding(
                               padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 15),
                               child: Row(
@@ -221,7 +223,9 @@ class _ChequeListScreenState extends State<ChequeListScreen> {
                               ),
                             ),
 
+                            if(buildingName.isNotEmpty)
                             _buildDetailTile(Icons.business, "Building", buildingName),
+                            if(areaName.isNotEmpty ||emirateName.isNotEmpty )
                             _buildDetailTile(Icons.location_on, "Location", "$areaName, $emirateName"),
                           ],
                         ),
@@ -656,19 +660,23 @@ class _ChequeListScreenState extends State<ChequeListScreen> {
                                 style: GoogleFonts.poppins(fontSize: 13, color: Colors.grey[700])),
                           ],
                           Divider(height: 20, color: Colors.grey.shade300),
-                          Row(
-                            children: [
-                              Icon(Icons.apartment, size: 16, color: Colors.indigo),
-                              SizedBox(width: 6),
-                              Expanded(
-                                child: Text(
-                                  "${firstFlat?['name']} • ${building?['name']}",
-                                  style: GoogleFonts.poppins(fontSize: 13.5, fontWeight: FontWeight.w500),
+                          if(firstFlat?['name'] != null && building?['name'] != null)...[
+                            Row(
+                              children: [
+                                Icon(Icons.apartment, size: 16, color: Colors.indigo),
+                                SizedBox(width: 6),
+                                Expanded(
+                                  child: Text(
+                                    "${firstFlat?['name']} • ${building?['name']}",
+                                    style: GoogleFonts.poppins(fontSize: 13.5, fontWeight: FontWeight.w500),
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 6),
+                              ],
+                            ),
+                            SizedBox(height: 6),
+                          ],
+                    if(area?['name'] != null && state?['name'] != null)...[
+
                           Row(
                             children: [
                               Icon(Icons.location_on, size: 16, color: Colors.redAccent),
@@ -680,7 +688,7 @@ class _ChequeListScreenState extends State<ChequeListScreen> {
                                 ),
                               ),
                             ],
-                          ),
+                          ),],
 
                           if(dateLabel!='Pending')...[
                             SizedBox(height: 6),

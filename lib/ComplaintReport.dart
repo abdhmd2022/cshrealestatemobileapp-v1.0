@@ -370,7 +370,6 @@ child: Container(
         ),
       )
           : SingleChildScrollView(
-
         child: Column(
           children: [
             SizedBox(height: 5),

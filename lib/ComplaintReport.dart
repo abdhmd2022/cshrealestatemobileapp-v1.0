@@ -353,7 +353,7 @@ child: Container(
               context,
               MaterialPageRoute(builder: (_) => LandlordDashboardScreen()),
             );
-          },
+          }
         ),
         title: Text("Complaints/Suggestions", style: GoogleFonts.poppins(color: Colors.white)),
         centerTitle: true,

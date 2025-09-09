@@ -364,7 +364,7 @@ child: Container(
             ? CupertinoActivityIndicator(
           radius: 15.0, // Adjust size if needed
         )
-            : CircularProgressIndicator(
+            : CircularProgressIndicator.adaptive(
           valueColor: AlwaysStoppedAnimation<Color>(appbar_color), // Change color here
           strokeWidth: 4.0, // Adjust thickness if needed
         ),

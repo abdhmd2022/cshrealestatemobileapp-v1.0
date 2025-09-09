@@ -93,7 +93,6 @@ class _TenantProfileState extends State<TenantProfile> with TickerProviderStateM
       appBar: AppBar(
         title:  Text('Profile',
         style: (GoogleFonts.poppins(
-
           color: Colors.white
         )),),
         leading: GestureDetector(

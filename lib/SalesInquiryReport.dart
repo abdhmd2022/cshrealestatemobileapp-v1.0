@@ -464,8 +464,7 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
 
     while (page <= totalPages) {
       final url =
-          "$baseurl/reports/flat/available/date"
-          "?date=${DateFormat('yyyy-MM-dd').format(DateTime.now())}"
+          "$baseurl/reports/flat/available/date""?date=${DateFormat('yyyy-MM-dd').format(DateTime.now())}"
           "&status=$status"
           "&page=$page";
 

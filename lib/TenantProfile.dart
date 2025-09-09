@@ -104,10 +104,11 @@ class _TenantProfileState extends State<TenantProfile> with TickerProviderStateM
                 MaterialPageRoute(builder: (context) => TenantDashboard()),
               );
             },
-            child: const Icon(
+          child: const Icon(
           Icons.arrow_back,
           color: Colors.white,
-        )),
+        )
+      ),
         centerTitle: true,
         backgroundColor: appbar_color.withOpacity(0.9),
         elevation: 0,

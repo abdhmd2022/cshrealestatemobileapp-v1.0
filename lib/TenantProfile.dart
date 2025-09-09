@@ -93,7 +93,7 @@ class _TenantProfileState extends State<TenantProfile> with TickerProviderStateM
         title:  Text('Profile',
         style: (GoogleFonts.poppins(
           color: Colors.white
-        )),),
+        ))),
         leading: GestureDetector(
             onTap: ()
             {
@@ -204,7 +204,14 @@ class _TenantProfileState extends State<TenantProfile> with TickerProviderStateM
                                 style:  GoogleFonts.poppins(
                                   fontSize: 16,
                                   color: Colors.black54,
-                                ))])))))
+                                )
+                              )
+                            ]
+                          )
+                        )
+                      )
+                    )
+                  )
                 ],
               ),
             ),

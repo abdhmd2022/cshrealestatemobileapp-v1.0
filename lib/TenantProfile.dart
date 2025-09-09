@@ -96,11 +96,9 @@ class _TenantProfileState extends State<TenantProfile> with TickerProviderStateM
 
           color: Colors.white
         )),),
-
         leading: GestureDetector(
             onTap: ()
             {
-
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(builder: (context) => TenantDashboard()),
@@ -131,7 +129,6 @@ class _TenantProfileState extends State<TenantProfile> with TickerProviderStateM
                   topRight: Radius.circular(30),
                 ),
               ),
-
               child: Column(
                 children: [
                   CircleAvatar(
@@ -176,7 +173,6 @@ class _TenantProfileState extends State<TenantProfile> with TickerProviderStateM
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-
                   Expanded(
                     child: GestureDetector(
                       onTap: ()
@@ -210,64 +206,11 @@ class _TenantProfileState extends State<TenantProfile> with TickerProviderStateM
                                 style:  GoogleFonts.poppins(
                                   fontSize: 16,
                                   color: Colors.black54,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-
-                      ),
-                    ),
-                  )
-
-                  /*_buildStatCard('Apartments', flatsList.length.toString(), Colors.blue),
-
-                  Expanded(
-                    child: GestureDetector(
-                      onTap: ()
-                      {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => MaintenanceTicketReport()),
-                        );
-                      },
-                      child: Card(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                        elevation: 4,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 15),
-                          child: Column(
-                            children: [
-                              Text(
-                                ticketCount.toString(),
-                                style: GoogleFonts.poppins(
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.orange,
-                                ),
-                              ),
-                              const SizedBox(height: 5),
-                              Text(
-                                'Total Tickets',
-                                style: const GoogleFonts.poppins(
-                                  fontSize: 16,
-                                  color: Colors.black54,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-
-                      ),
-                    ),
-                  )*/
+                                ))])))))
                 ],
               ),
             ),
             const SizedBox(height: 20),
-
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Card(
@@ -286,7 +229,6 @@ class _TenantProfileState extends State<TenantProfile> with TickerProviderStateM
               ),
             ),
             const SizedBox(height: 20),
-
 
             // Profile Options
             Padding(
@@ -323,45 +265,7 @@ class _TenantProfileState extends State<TenantProfile> with TickerProviderStateM
                   ),
                 ],
               ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildStatCard(String title, String value, Color color) {
-    return Expanded(
-      child: Card(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(15),
-        ),
-        elevation: 4,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 15),
-          child: Column(
-            children: [
-              Text(
-                value,
-                style: GoogleFonts.poppins(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: color,
-                ),
-              ),
-              const SizedBox(height: 5),
-              Text(
-                title,
-                style:  GoogleFonts.poppins(
-                  fontSize: 16,
-                  color: Colors.black54,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
+            )])));
   }
 
   Widget _buildDetailRow(String label, String value) {

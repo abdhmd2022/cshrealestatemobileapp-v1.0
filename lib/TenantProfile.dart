@@ -10,9 +10,9 @@ import 'constants.dart';
 
 class TenantProfile extends StatefulWidget {
   @override
-  _TenantProfileState createState() =>
-      _TenantProfileState();
+  _TenantProfileState createState() => _TenantProfileState();
 }
+
 class _TenantProfileState extends State<TenantProfile> with TickerProviderStateMixin {
 
   int ticketCount = 0;

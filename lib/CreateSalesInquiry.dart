@@ -202,7 +202,6 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
     );
   }
 
-
   void _openAmenitiesSelector(BuildContext context) {
     TextEditingController searchController = TextEditingController();
     List<Map<String, dynamic>> filteredList = List.from(amenities);

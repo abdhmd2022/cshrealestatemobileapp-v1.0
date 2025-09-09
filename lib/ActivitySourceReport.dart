@@ -283,7 +283,8 @@ class _ActivitySourceReportState extends State<ActivitySourceReport>
               },
               style: ElevatedButton.styleFrom(backgroundColor: appbar_color),
               child: Text("Submit",style: GoogleFonts.poppins(color: Colors.white)),
-            )]);});}
+            )]);});
+  }
 
   Future<void> fetchActivitySources() async {
 
@@ -563,10 +564,6 @@ Widget _buildDecentButton(
             style: GoogleFonts.poppins(
               color: color,
               fontWeight: FontWeight.w600,
-            ),
-          ),
-        ],
-      ),
-    ),
+            ))]))
   );
 }

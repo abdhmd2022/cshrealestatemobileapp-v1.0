@@ -82,7 +82,6 @@ class _TenantProfileState extends State<TenantProfile> with TickerProviderStateM
   @override
   void initState() {
     super.initState();
-    // Initialize all tickets to be collapsed by default
 
     fetchTicketCount();
   }

@@ -78,7 +78,6 @@ class _UpdateInquiryScreenState extends State<UpdateInquiryScreen> {
 
       dynamic body = jsonEncode({
       "uuid": uuidValue,
-
       "id": id,
       "name": name,
       "mobile_no": contactno,

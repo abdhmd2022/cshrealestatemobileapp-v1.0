@@ -20,6 +20,8 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'dart:async';
 import 'dart:async' show unawaited;
 
+import 'UpdateSalesInquiry.dart';
+
 
 class SalesInquiryReport extends StatefulWidget {
   @override
@@ -46,6 +48,8 @@ class InquiryModel {
   final String lastFollowupRemarks;
   final String interest_type;
   final String lastFollowupDate;
+  final String property_type;
+
   // final String color;
   final List<Map<String, dynamic>> preferredAreas;
   final List<Map<String, dynamic>> preferredFlatTypes;
@@ -59,6 +63,8 @@ class InquiryModel {
     required this.created_by,
     required this.assigned_to,
     required this.description,
+    required this.property_type,
+
     //required this.color,
     required this.lastFollowupRemarks,
     required this.lastFollowupDate,
@@ -82,6 +88,7 @@ class InquiryModel {
   factory InquiryModel.fromJson(Map<String, dynamic> json) {
     final rawDate = json['created_at'] ?? '';
     final interest_type = json['interest_type'] ?? '';
+    final property_type = json['property_type'] ?? '';
 
     final formattedDate = _formatDate(rawDate);
     final areas = (json['preferred_areas'] as List<dynamic>?)
@@ -144,6 +151,8 @@ class InquiryModel {
       created_by: created_by ?? '',
       assigned_to: assigned_to ?? '',
       lastFollowupRemarks: lastFollowupRemarks,
+      property_type: property_type,
+
       lastFollowupDate: lastFollowupDate ,
       // color: leadStatusColor,
 
@@ -444,7 +453,6 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
     // default to rent
     return u.basicRent;
   }
-
 
   Future<List<Flat>> _fetchAvailableUnits({
     required String status,         // "Rent" or "Buy"
@@ -1437,6 +1445,40 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
+
+                          _buildDecentButton(
+                            'Edit',
+                            Icons.edit,
+                            Colors.teal,
+                                () {
+                                String name = inquiry.customerName;;
+                                String id = inquiry.inquiryNo;
+                                String contactno = inquiry.contactNo;
+                                String whatsapp_no = inquiry.whatsapp_no;
+                                String email = inquiry.email;
+                                String interest_type = inquiry.interest_type;
+                                String property_type = inquiry.property_type;
+                                Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                builder: (context) => UpdateInquiryScreen(
+                                name:name,
+                                id:id,
+                                    contactno:contactno,
+                                    whatsapp_no:whatsapp_no,
+                                    email:email,
+                                    property_type:property_type,
+                                    interest_type:interest_type
+
+                                ),
+                                ),
+                                );
+                          }
+                          ),
+
+                          SizedBox(width: 5),
+
+
                           // Show Follow Up and Transfer only if lead is Normal AND action is allowed
                           if (inquiry.leadStatusCategory == 'Normal' && !shouldRestrictAction(inquiry)) ...[
 
@@ -1488,7 +1530,6 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
                               ),
                               SizedBox(width: 5),
                             ]
-
                           ],
 
                           // View is always visible
@@ -1854,7 +1895,7 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
             ],
           ),
         );
-      
+
     }).toList();
   }
 

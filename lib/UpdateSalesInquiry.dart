@@ -87,6 +87,7 @@ class _UpdateInquiryScreenState extends State<UpdateInquiryScreen> {
       "interest_type": interestType,   // match API field name
       "property_type": propertyType,   // match API field name
       });
+
       print(body);
 
       final response = await http.put(

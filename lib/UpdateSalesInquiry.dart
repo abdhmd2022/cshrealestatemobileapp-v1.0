@@ -86,6 +86,7 @@ class _UpdateInquiryScreenState extends State<UpdateInquiryScreen> {
       "email": email,
       "interest_type": interestType,   // match API field name
       "property_type": propertyType,   // match API field name
+
       });
 
       print(body);

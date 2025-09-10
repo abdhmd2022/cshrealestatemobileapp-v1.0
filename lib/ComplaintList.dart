@@ -308,80 +308,13 @@ class _ComplaintListScreenState extends State<ComplaintListScreen> {
                   final description = comp['description'];
                   final created_at = comp['created_at'];
 
-                  return Card(
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                    elevation: 4,
-                    margin: EdgeInsets.only(bottom: 8),
-                    color:Colors.white,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(16.0),
-                      ),
-                      padding: const EdgeInsets.all(18.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // 🔹 Top: Type + Status
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  type == 'Complaint' ? "C - $comp_id" : "S - $comp_id",
-                                  style: GoogleFonts.poppins(
-                                    fontWeight: FontWeight.w600,
+                  return _buildEntryCard(
+                    context: context,
+                    entry: comp,
+                    appColor: comp["type"] == "Complaint" ? Colors.red : Colors.teal,
 
-                                    fontSize: 16,
-                                    color: Colors.black,
-                                  ),
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-
-                              _getRequestStatusBadge(type),
-                            ],
-                          ),
-
-                          SizedBox(height: 12),
-                          Divider(height: 1, color: Colors.grey.shade300),
-                          SizedBox(height: 12),
-
-
-                          Row(
-                            children: [
-                              Icon(Icons.calendar_month, size: 16, color: Colors.blueAccent),
-                              SizedBox(width: 6),
-                              Expanded(
-                                child: Text(
-                                  formatDate(created_at),
-                                  style: GoogleFonts.poppins(fontSize: 13),
-                                ),
-                              ),
-                            ],
-                          ),
-
-                          SizedBox(height: 6),
-
-                          // 📝 Description
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Icon(Icons.notes, size: 16, color: Colors.black),
-                              SizedBox(width: 6),
-                              Expanded(
-                                child: Text(
-                                  description,
-                                  style: GoogleFonts.poppins(fontSize: 13.2),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
                   );
+
 
 
 
@@ -428,4 +361,194 @@ Widget _getRequestStatusBadge(dynamic type) {
     ),
   );
 }
+Widget _buildEntryCard({
+  required BuildContext context,
+  required Map<String, dynamic> entry,
+  required Color appColor,
+}) {
+  final type = (entry['type'] ?? 'Unknown').toString();
+  final tenantName = entry['tenant']?['name']?.toString() ?? entry['landlord_id'].toString() ?? 'Unknown';
+  final desc = (entry['description'] ?? 'No description').toString();
+  final createdAt = DateTime.tryParse(entry['created_at'] ?? '') ?? DateTime.now();
+  final dateLabel = DateFormat('dd-MMM-yyyy • hh:mm a').format(createdAt);
 
+  return Container(
+    margin: const EdgeInsets.only(bottom: 14),
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(16),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withOpacity(0.06),
+          blurRadius: 10,
+          offset: const Offset(0, 4),
+        )
+      ],
+      border: Border.all(color: Colors.grey.shade200),
+    ),
+    padding: const EdgeInsets.fromLTRB(14, 12, 12, 12),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // ── Header Row: Avatar • Name/Date • Status ────────────────
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: appColor.withOpacity(0.25),
+                    blurRadius: 6,
+                    offset: const Offset(0, 3),
+                  )
+                ],
+              ),
+              child: CircleAvatar(
+                radius: 20,
+                backgroundColor: appColor,
+                child: Text(
+                  getInitials(tenantName).toUpperCase(),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    tenantName,
+                    style: GoogleFonts.poppins(
+                      fontSize: 14.5,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black87,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    dateLabel,
+                    style: GoogleFonts.poppins(
+                      fontSize: 12,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 10),
+
+            _statusChip(entry['status']), // 👈 status at top-right
+          ],
+        ),
+
+        const SizedBox(height: 10),
+
+        // ── Description ────────────────────────────────
+        Text(
+          desc,
+          style: GoogleFonts.poppins(
+            fontSize: 13.5,
+            height: 1.35,
+            color: Colors.black87,
+          ),
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+        ),
+
+        const SizedBox(height: 10),
+
+        // ── Footer Row: Type (Complaint/Suggestion) + Chevron ──────
+        Row(
+          children: [
+            _typeChip(type),
+            /*const Spacer(),
+              const Icon(Icons.chevron_right, color: Colors.grey),*/
+          ],
+        ),
+      ],
+    ),
+  );
+}
+String getInitials(String name) {
+  final parts = name.trim().split(" ");
+  return parts.length > 1
+      ? "${parts[0][0]}${parts[1][0]}"
+      : name.isNotEmpty ? name[0] : "?";
+}
+
+Widget _statusChip(dynamic status) {
+  // status may be null → show Pending
+  final bool has = status != null;
+  final String label = has ? (status['name']?.toString() ?? 'Unknown') : 'Pending';
+  final _StatusStyle s = _statusStyle(has ? status['category']?.toString() : null);
+
+  return Container(
+    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+    decoration: BoxDecoration(
+      color: s.color.withOpacity(0.10),
+      borderRadius: BorderRadius.circular(10),
+      border: Border.all(color: s.color.withOpacity(0.25)),
+    ),
+    child: Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(s.icon, size: 14, color: s.color),
+        const SizedBox(width: 6),
+        Text(
+          label,
+          style: GoogleFonts.poppins(fontSize: 12.5, fontWeight: FontWeight.w600, color: s.color),
+        ),
+      ],
+    ),
+  );
+}
+
+class _StatusStyle {
+  final Color color;
+  final IconData icon;
+  const _StatusStyle(this.color, this.icon);
+}
+
+_StatusStyle _statusStyle(String? category) {
+  final cat = (category ?? '').toLowerCase();
+
+  if (cat  == 'normal') return _StatusStyle(Colors.orange, Icons.sync);
+  if (cat  == 'close') return _StatusStyle(Colors.green, Icons.check_circle);
+
+  // fallback/unknown
+  return _StatusStyle(Colors.orange, Icons.info_outline);
+}
+
+Widget _typeChip(String type) {
+  final bool isSuggestion = type == 'Suggestion';
+  final color = isSuggestion ? Colors.teal : Colors.redAccent;
+  final icon  = isSuggestion ? Icons.lightbulb_outline : Icons.report_problem_outlined;
+
+  return Container(
+    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+    decoration: BoxDecoration(
+      color: color.withOpacity(0.10),
+      borderRadius: BorderRadius.circular(10),
+      border: Border.all(color: color.withOpacity(0.25)),
+    ),
+    child: Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, size: 14, color: color),
+        const SizedBox(width: 6),
+        Text(
+          type,
+          style: GoogleFonts.poppins(fontSize: 12.5, fontWeight: FontWeight.w600, color: color),
+        ),
+      ],
+    ),
+  );
+}

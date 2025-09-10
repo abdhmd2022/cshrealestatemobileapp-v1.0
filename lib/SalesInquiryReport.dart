@@ -2181,6 +2181,9 @@ class _PotentialMatchesSheetState extends State<_PotentialMatchesSheet> {
   void initState() {
     super.initState();
 
+
+
+
     _status = (widget.inquiry.interest_type.isNotEmpty)
         ? widget.inquiry.interest_type
         : 'Rent';

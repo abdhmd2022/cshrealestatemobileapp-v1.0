@@ -96,7 +96,6 @@ class _UpdateInquiryScreenState extends State<UpdateInquiryScreen> {
           "Authorization": "Bearer $Company_Token", // if token required
         },
           body:body
-
       );
 
       if (response.statusCode == 200) {
@@ -107,6 +106,7 @@ class _UpdateInquiryScreenState extends State<UpdateInquiryScreen> {
         throw Exception("Failed to update inquiry");
       }
     } catch (e) {
+
       print("⚠️ Error updating inquiry: $e");
       rethrow;
     }
@@ -116,27 +116,66 @@ class _UpdateInquiryScreenState extends State<UpdateInquiryScreen> {
   void initState() {
     super.initState();
 
-    setState(() {
-      /// Preload fields
-      nameController = TextEditingController(text: widget.name);
-      phoneController = TextEditingController(text: widget.contactno);
-      emailController = TextEditingController(text: widget.email);
-      whatsappController = TextEditingController(text: widget.whatsapp_no);
-      whatsappController = TextEditingController(text: widget.whatsapp_no);
-      /// Interest type preload
-      selectedInterestType = widget.interest_type.toLowerCase() == "buy" ? 1 : 0;
+    nameController = TextEditingController(text: widget.name);
+    emailController = TextEditingController(text: widget.email);
 
-      /// Property type preload
-      if (propertyTypes.contains(widget.property_type)) {
-        selectedPropertyType = widget.property_type;
+    // Don’t set phoneController directly with widget.contactno
+    // Instead split it
+    _splitPhone(widget.contactno, isWhatsapp: false);
+
+    // WhatsApp
+    if (widget.whatsapp_no == widget.contactno) {
+      _useContactAsWhatsapp = true;
+      whatsappController = TextEditingController(text: phoneController.text);
+      _selectedCountryCodeWhatsapp = _selectedCountryCode;
+      _selectedCountryFlagWhatsapp = _selectedCountryFlag;
+    } else {
+      _splitPhone(widget.whatsapp_no, isWhatsapp: true);
+    }
+
+    // Interest type preload
+    selectedInterestType =
+    widget.interest_type.toLowerCase() == "buy" ? 1 : 0;
+
+    // Property type preload
+    if (propertyTypes.contains(widget.property_type)) {
+      selectedPropertyType = widget.property_type;
+    }
+  }
+
+  /// Helper function to split code and number dynamically
+  void _splitPhone(String fullNumber, {required bool isWhatsapp}) {
+    if (fullNumber.startsWith("+")) {
+      final cleaned = fullNumber.replaceAll(RegExp(r'[^0-9]'), '');
+
+      // match against country list from package
+      for (final country in CountryService().getAll()) {
+        if (cleaned.startsWith(country.phoneCode)) {
+          final code = "+${country.phoneCode}";
+          final flag = country.flagEmoji;
+
+          final localNumber = cleaned.substring(country.phoneCode.length);
+
+          if (isWhatsapp) {
+            _selectedCountryCodeWhatsapp = code;
+            _selectedCountryFlagWhatsapp = flag;
+            whatsappController = TextEditingController(text: localNumber);
+          } else {
+            _selectedCountryCode = code;
+            _selectedCountryFlag = flag;
+            phoneController = TextEditingController(text: localNumber);
+          }
+          return;
+        }
       }
+    }
 
-      /// Logic: If contactno == whatsapp_no → auto use checkbox
-      if (widget.contactno == widget.whatsapp_no) {
-        _useContactAsWhatsapp = true;
-      }
-    });
-
+    // fallback → if nothing matched
+    if (isWhatsapp) {
+      whatsappController = TextEditingController(text: fullNumber);
+    } else {
+      phoneController = TextEditingController(text: fullNumber);
+    }
   }
 
   @override
@@ -558,13 +597,20 @@ class _UpdateInquiryScreenState extends State<UpdateInquiryScreen> {
     onPressed: () async {
     if (_formKey.currentState!.validate()) {
                     final updatedName = nameController.text.trim();
-                    final updatedContact = phoneController.text.trim();
                     final updatedEmail = emailController.text.trim();
-                    final updatedWhatsapp = _useContactAsWhatsapp
-                    ? updatedContact
-                        : whatsappController.text.trim();
+
                     final updatedInterestType = selectedInterestType == 1 ? "Buy" : "Rent";
                     final updatedPropertyType = selectedPropertyType ?? "";
+
+
+                    final updatedContact =
+                        "$_selectedCountryCode${phoneController.text.trim()}";
+
+                    final updatedWhatsapp = _useContactAsWhatsapp
+                        ? updatedContact
+                        : "$_selectedCountryCodeWhatsapp${whatsappController.text.trim()}";
+
+
 
                     try {
                     await updateInquiry(

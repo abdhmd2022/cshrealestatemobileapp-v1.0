@@ -193,7 +193,6 @@ class _UpdateInquiryScreenState extends State<UpdateInquiryScreen> {
           builder: (context) => SalesInquiryReport()
           )
           ),
-
           },
           child: const Icon(Icons.arrow_back, color: Colors.white),
         ),

@@ -192,8 +192,8 @@ class _UpdateInquiryScreenState extends State<UpdateInquiryScreen> {
           MaterialPageRoute(
           builder: (context) => SalesInquiryReport()
           )
-          ),
-          },
+         ),
+        },
           child: const Icon(Icons.arrow_back, color: Colors.white),
         ),
         title: Text("Update Inquiry",
@@ -207,11 +207,10 @@ class _UpdateInquiryScreenState extends State<UpdateInquiryScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-
                 /// Interest Type
                 Padding(
                   padding: const EdgeInsets.only(
-                      top: 10, left: 20, right: 20, bottom: 10),
+                  top: 10, left: 20, right: 20, bottom: 10),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [

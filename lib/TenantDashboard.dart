@@ -1178,7 +1178,6 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
                                         ),
                                       ),
                                     )
-
                               ),
                             ),
                         ],

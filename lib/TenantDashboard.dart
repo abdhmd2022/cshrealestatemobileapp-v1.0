@@ -810,10 +810,94 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
                           ],
                         ),
                       ),
+
+
                     ],
                   )
               )
             ),
+
+// 📌 Place this right after the Profile/Welcome section
+            Container(
+              width: double.infinity, // ✅ full width of screen
+              margin: const EdgeInsets.only(top: 8, bottom: 16  ),
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 8,
+                    offset: Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Center( // ✅ ensures wrap is centered inside full-width container
+                child: Wrap(
+                  spacing: 12,
+                  runSpacing: 12,
+                  alignment: WrapAlignment.center, // ✅ center aligned
+                  children: [
+                    if (hasPermissionInCategory('Maintenance'))
+                      _buildDashboardButton(
+                        Icons.build,
+                        'Maintenance',
+                        appbar_color,
+                            () => Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => MaintenanceTicketReport()),
+                        ),
+                      ),
+
+                    if (hasPermissionInCategory('Request'))
+                      _buildDashboardButton(
+                        Icons.credit_card,
+                        'Request',
+                        Colors.purpleAccent,
+                            () => Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => RequestListScreen()),
+                        ),
+                      ),
+
+                    if (hasPermissionInCategory('Available Units'))
+                      _buildDashboardButton(
+                        Icons.home,
+                        'Available Units',
+                        Colors.orangeAccent,
+                            () => Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => AvailableUnitsReport()),
+                        ),
+                      ),
+
+                    _buildDashboardButton(
+                      Icons.upload_file,
+                      'KYC Update',
+                      Colors.tealAccent,
+                          () => Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => DecentTenantKYCForm()),
+                      ),
+                    ),
+
+                    if (hasPermission('canCreateComplaintSuggestion') ||
+                        hasPermission('canViewComplaintSuggestions'))
+                      _buildDashboardButton(
+                        Icons.info_outline,
+                        'Complaints',
+                        Colors.redAccent,
+                            () => Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => ComplaintListScreen()),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+
 
             isLoading
                 ? Center(
@@ -1104,149 +1188,151 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
 
                 SizedBox(height: 10),
 
-                if (!is_landlord) ...[
-                  Container(
-                      height: 280,
-                      padding: EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [Colors.white, Colors.grey.shade100],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                        borderRadius: BorderRadius.circular(16),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black12,
-                            blurRadius: 10,
-                            offset: Offset(0, 4),
+                if(cleared + pending != 0)...[
+                  if (!is_landlord) ...[
+                    Container(
+                        height: 280,
+                        padding: EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [Colors.white, Colors.grey.shade100],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
                           ),
-                        ],
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text("Cheque Summary", style: GoogleFonts.poppins(fontSize: 17, fontWeight: FontWeight.bold)),
-                          SizedBox(height: 15),
+                          borderRadius: BorderRadius.circular(16),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black12,
+                              blurRadius: 10,
+                              offset: Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text("Cheque Summary", style: GoogleFonts.poppins(fontSize: 17, fontWeight: FontWeight.bold)),
+                            SizedBox(height: 15),
 
-                          Expanded(
-                              child: SizedBox(
-                                height: 220,
-                                child: Stack(
-                                  alignment: Alignment.center,
-                                  children: [
-                                    // Outer glow & shadow effect
-                                    Container(
-                                      decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        gradient: RadialGradient(
-                                          colors: [Colors.white, Colors.grey.shade200],
-                                          center: Alignment(-0.1, -0.1),
-                                          radius: 0.95,
-                                        ),
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: Colors.black26,
-                                            offset: Offset(0, 8),
-                                            blurRadius: 16,
-                                            spreadRadius: 1,
+                            Expanded(
+                                child: SizedBox(
+                                  height: 240,
+                                  child: Stack(
+                                    alignment: Alignment.center,
+                                    children: [
+                                      // Outer glow & shadow effect
+                                      Container(
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          gradient: RadialGradient(
+                                            colors: [Colors.white, Colors.grey.shade200],
+                                            center: Alignment(-0.1, -0.1),
+                                            radius: 0.95,
                                           ),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: Colors.black26,
+                                              offset: Offset(0, 8),
+                                              blurRadius: 16,
+                                              spreadRadius: 1,
+                                            ),
+                                          ],
+                                        ),
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(10.0),
+                                          child: PieChart(
+                                            PieChartData(
+                                              centerSpaceRadius: 30,
+                                              startDegreeOffset: -45,
+                                              sectionsSpace: 3,
+                                              centerSpaceColor: Colors.grey.shade50,
+                                              sections: [
+                                                PieChartSectionData(
+                                                  value: cleared.toDouble(),
+                                                  title: '$cleared\nCleared',
+                                                  radius: 75,
+                                                  titleStyle: GoogleFonts.poppins(
+                                                    fontSize: 12,
+                                                    fontWeight: FontWeight.w600,
+                                                    color: Colors.white,
+                                                    shadows: [Shadow(blurRadius: 2, color: Colors.black45)],
+                                                  ),
+                                                  gradient: LinearGradient(
+                                                    colors: [
+                                                      Colors.teal.shade700,
+                                                      Colors.teal.shade400,
+                                                    ],
+                                                    begin: Alignment.topLeft,
+                                                    end: Alignment.bottomRight,
+                                                  ),
+                                                ),
+                                                PieChartSectionData(
+                                                  value: pending.toDouble(),
+                                                  title: '$pending\nPending',
+                                                  radius: 75,
+                                                  titleStyle: GoogleFonts.poppins(
+                                                    fontSize: 12,
+                                                    fontWeight: FontWeight.w600,
+                                                    color: Colors.white,
+                                                    shadows: [Shadow(blurRadius: 2, color: Colors.black45)],
+                                                  ),
+                                                  gradient: LinearGradient(
+                                                    colors: [
+                                                      Colors.orange.shade700,
+                                                      Colors.orange.shade300,
+                                                    ],
+                                                    begin: Alignment.bottomLeft,
+                                                    end: Alignment.topRight,
+                                                  ),
+                                                ),
+                                              ],
+
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      // Center total label
+                                      Column(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            "Total",
+                                            style: GoogleFonts.poppins(
+                                              fontSize: 10,
+                                              fontWeight: FontWeight.w500,
+                                              color: Colors.grey.shade600,
+                                              letterSpacing: 0.5,
+                                            ),
+                                          ),
+                                          SizedBox(height: 2),
+                                          Text(
+                                            "${cleared + pending}",
+                                            style: GoogleFonts.poppins(
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.black87,
+                                              shadows: [
+                                                Shadow(
+                                                  color: Colors.black12,
+                                                  blurRadius: 2,
+                                                  offset: Offset(0.5, 0.5),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+
                                         ],
-                                      ),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(10.0),
-                                        child: PieChart(
-                                          PieChartData(
-                                            centerSpaceRadius: 30,
-                                            startDegreeOffset: -45,
-                                            sectionsSpace: 3,
-                                            centerSpaceColor: Colors.grey.shade50,
-                                            sections: [
-                                              PieChartSectionData(
-                                                value: cleared.toDouble(),
-                                                title: '$cleared\nCleared',
-                                                radius: 75,
-                                                titleStyle: GoogleFonts.poppins(
-                                                  fontSize: 12,
-                                                  fontWeight: FontWeight.w600,
-                                                  color: Colors.white,
-                                                  shadows: [Shadow(blurRadius: 2, color: Colors.black45)],
-                                                ),
-                                                gradient: LinearGradient(
-                                                  colors: [
-                                                    Colors.teal.shade700,
-                                                    Colors.teal.shade400,
-                                                  ],
-                                                  begin: Alignment.topLeft,
-                                                  end: Alignment.bottomRight,
-                                                ),
-                                              ),
-                                              PieChartSectionData(
-                                                value: pending.toDouble(),
-                                                title: '$pending\nPending',
-                                                radius: 75,
-                                                titleStyle: GoogleFonts.poppins(
-                                                  fontSize: 12,
-                                                  fontWeight: FontWeight.w600,
-                                                  color: Colors.white,
-                                                  shadows: [Shadow(blurRadius: 2, color: Colors.black45)],
-                                                ),
-                                                gradient: LinearGradient(
-                                                  colors: [
-                                                    Colors.orange.shade700,
-                                                    Colors.orange.shade300,
-                                                  ],
-                                                  begin: Alignment.bottomLeft,
-                                                  end: Alignment.topRight,
-                                                ),
-                                              ),
-                                            ],
-
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    // Center total label
-                                    Column(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      children: [
-                                        Text(
-                                          "Total",
-                                          style: GoogleFonts.poppins(
-                                            fontSize: 10,
-                                            fontWeight: FontWeight.w500,
-                                            color: Colors.grey.shade600,
-                                            letterSpacing: 0.5,
-                                          ),
-                                        ),
-                                        SizedBox(height: 2),
-                                        Text(
-                                          "${cleared + pending}",
-                                          style: GoogleFonts.poppins(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.black87,
-                                            shadows: [
-                                              Shadow(
-                                                color: Colors.black12,
-                                                blurRadius: 2,
-                                                offset: Offset(0.5, 0.5),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-
-                                      ],
-                                    )
-                                  ],
-                                ),
-                              )
-                          )
-                        ],
-                      )
-                  ),
-                  SizedBox(height: 10),
+                                      )
+                                    ],
+                                  ),
+                                )
+                            )
+                          ],
+                        )
+                    ),
+                    SizedBox(height: 10),
+                  ],
                 ],
 
                 if (is_landlord && buildingFlatCount.isNotEmpty) ...[
@@ -1451,32 +1537,7 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
               ],
             ),
 
-            if(hasPermissionInCategory('Maintenance'))...[
-              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                _buildDashboardButton(Icons.build, 'Maintenance', appbar_color, () => Navigator.push(context, MaterialPageRoute(builder: (_) => MaintenanceTicketReport()))),
-              ]),
-              SizedBox(height: 10),
-            ],
 
-            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-              if(hasPermissionInCategory('Request'))...[
-                _buildDashboardButton(Icons.credit_card, 'Request', Colors.purpleAccent, () => Navigator.push(context, MaterialPageRoute(builder: (_) => RequestListScreen()))),
-
-              ],
-              if(hasPermissionInCategory('Available Units'))...[
-                _buildDashboardButton(Icons.home, 'Available Units', Colors.orangeAccent, () => Navigator.push(context, MaterialPageRoute(builder: (_) => AvailableUnitsReport()))),
-              ]
-            ]),
-            SizedBox(height: 10),
-            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-              _buildDashboardButton(Icons.upload_file, 'KYC Update', Colors.tealAccent, () => Navigator.push(context, MaterialPageRoute(builder: (_) => DecentTenantKYCForm()))),
-
-            if(hasPermission('canCreateComplaintSuggestion') || hasPermission('canViewComplaintSuggestions'))...[
-              _buildDashboardButton(Icons.info_outline, 'Complaints/Suggestions', Colors.redAccent, () => Navigator.push(context, MaterialPageRoute(builder: (_) => ComplaintListScreen()))),
-
-              ]
-            ]),
-            SizedBox(height: 20),
           ],
         ),
       ),
@@ -1711,30 +1772,62 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
 
 
 
-  Widget _buildDashboardButton(IconData icon, String label, Color color, VoidCallback onTap) {
-    return Expanded(
-      child: GestureDetector(
-        onTap: onTap,
-        child: Container(
-          margin: EdgeInsets.symmetric(horizontal: 5),
-          height: 90,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 8, offset: Offset(0, 4))],
+  Widget _buildDashboardButton(
+      IconData icon, String label, Color color, VoidCallback onTap) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        double screenWidth = MediaQuery.of(context).size.width;
+        // Estimate how many buttons can fit in one row
+        int buttonsPerRow = (screenWidth ~/ 140).clamp(2, 4); // ✅ force 2–4 per row
+        double buttonWidth = (screenWidth / buttonsPerRow) - 24; // adjust for margins
+
+        return ConstrainedBox(
+          constraints: const BoxConstraints(
+            minWidth: 120,
+            minHeight: 110,
+            maxWidth: 200,  // ✅ prevent oversized buttons
+            maxHeight: 110,
           ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(icon, color: color, size: 32),
-              SizedBox(height: 8),
-              Text(label, textAlign: TextAlign.center, style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w600)),
-            ],
+          child: GestureDetector(
+            onTap: onTap,
+            child: Container(
+              width: buttonWidth, // ✅ dynamic width
+              height: buttonWidth, // ✅ keep square
+              margin: const EdgeInsets.all(6),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 8,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(icon, color: color, size: 34),
+                  const SizedBox(height: 10),
+                  Text(
+                    label,
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.poppins(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black87,
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
+
   Future<List<dynamic>> fetchAllValidAnnouncements() async {
     final prefs = await SharedPreferences.getInstance();
     final String? userBuildingName = prefs.getString('building'); // your key

@@ -1250,8 +1250,6 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
                     ],
                   ),
                 ),
-
-
                 if(cleared + pending == 0)...[
                   if (!is_landlord) ...[
                     Container(
@@ -1396,9 +1394,6 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
                     SizedBox(height: 10),
                   ],
                 ],
-
-
-
                 // invoice summary bar chart
                /* Container(
                     height: 275,
@@ -1492,8 +1487,6 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
                 SizedBox(height: 10),*/
               ],
             ),
-
-
           ],
         ),
       ),

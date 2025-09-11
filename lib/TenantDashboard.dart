@@ -52,7 +52,6 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
   Future<void> _onTapFetchFlat(int flatId, String category) async {
     setState(() => loadingTileIndex = flatId);
 
-
     final response = await http.get(
       Uri.parse('$baseurl/master/flat/$flatId'),
       headers: {"Authorization": "Bearer $Company_Token", "Content-Type": "application/json"},

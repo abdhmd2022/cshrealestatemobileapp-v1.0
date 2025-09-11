@@ -597,7 +597,6 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
 
@@ -1492,6 +1491,7 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
       ),
     );
   }
+
   Future<Map<String, dynamic>> fetchUserDetails({required bool isLandlord}) async {
     final String apiUrl = isLandlord
         ? '$baseurl/landlord/$user_id'

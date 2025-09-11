@@ -15,6 +15,7 @@ import 'ComplaintList.dart';
 import 'KYCUpdate.dart';
 import 'MaintenanceTicketReport.dart';
 import 'RequestList.dart';
+import 'TenantAnalyticsScreen.dart';
 
 class TenantDashboard extends StatefulWidget {
   @override
@@ -607,6 +608,8 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
     int cleared = 0;
     int pending = 0;
 
+
+
     if (selectedContractIndex >= 0 && selectedContractIndex < contracts.length) {
       selected = contracts[selectedContractIndex] ?? {};
       cheques = selected['cheques'] ?? [];
@@ -620,6 +623,20 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
       cleared = cheques.where((c) => c['is_received'] == 'true').length;
       pending = cheques.length - cleared;
     }
+
+    bool showAnalytics = false;
+
+// Tenant charts
+    if (!is_landlord && (cleared > 0 || pending > 0 || invoices.isNotEmpty)) {
+      showAnalytics = true;
+    }
+
+// Landlord charts
+    if (is_landlord && buildingFlatCount.isNotEmpty) {
+      showAnalytics = true;
+    }
+
+
 
     return Scaffold(
       key: _scaffoldKey,
@@ -817,89 +834,12 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
               )
             ),
 
-// 📌 Place this right after the Profile/Welcome section
-            Container(
-              width: double.infinity, // ✅ full width of screen
-              margin: const EdgeInsets.only(top: 8, bottom: 16  ),
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black12,
-                    blurRadius: 8,
-                    offset: Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: Center( // ✅ ensures wrap is centered inside full-width container
-                child: Wrap(
-                  spacing: 12,
-                  runSpacing: 12,
-                  alignment: WrapAlignment.center, // ✅ center aligned
-                  children: [
-                    if (hasPermissionInCategory('Maintenance'))
-                      _buildDashboardButton(
-                        Icons.build,
-                        'Maintenance',
-                        appbar_color,
-                            () => Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (_) => MaintenanceTicketReport()),
-                        ),
-                      ),
-
-                    if (hasPermissionInCategory('Request'))
-                      _buildDashboardButton(
-                        Icons.credit_card,
-                        'Request',
-                        Colors.purpleAccent,
-                            () => Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (_) => RequestListScreen()),
-                        ),
-                      ),
-
-                    if (hasPermissionInCategory('Available Units'))
-                      _buildDashboardButton(
-                        Icons.home,
-                        'Available Units',
-                        Colors.orangeAccent,
-                            () => Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (_) => AvailableUnitsReport()),
-                        ),
-                      ),
-
-                    _buildDashboardButton(
-                      Icons.upload_file,
-                      'KYC Update',
-                      Colors.tealAccent,
-                          () => Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (_) => DecentTenantKYCForm()),
-                      ),
-                    ),
-
-                    if (hasPermission('canCreateComplaintSuggestion') ||
-                        hasPermission('canViewComplaintSuggestions'))
-                      _buildDashboardButton(
-                        Icons.info_outline,
-                        'Complaints',
-                        Colors.redAccent,
-                            () => Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (_) => ComplaintListScreen()),
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-            ),
 
 
-            isLoading
+
+
+
+    isLoading
                 ? Center(
               child: Column(
             children: [
@@ -1186,9 +1126,133 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
                   ),
                 ),
 
-                SizedBox(height: 10),
 
-                if(cleared + pending != 0)...[
+                Container(
+                  width: double.infinity,
+                  margin: const EdgeInsets.only(top: 12, bottom: 12),
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black12,
+                        blurRadius: 8,
+                        offset: Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    children: [
+                      // 🔹 Full width Maintenance button
+                      Row(
+                        children: [
+                          if (hasPermissionInCategory('Maintenance'))
+                            Expanded(
+                              child: _buildDashboardButton(
+                                Icons.build,
+                                'Maintenance',
+                                appbar_color,
+                                    () => Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (_) => MaintenanceTicketReport()),
+                                ),
+                              ),
+                            ),
+                          if (showAnalytics)
+                            Expanded(
+                              child: _buildDashboardButton(
+                                Icons.bar_chart,
+                                'Analytics',
+                                Colors.indigo,
+                                    () => Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) => TenantAnalyticsScreen(
+                                          cleared: cleared,
+                                          pending: pending,
+                                          invoices: invoices,
+                                          buildingFlatCount: buildingFlatCount,
+                                          isLandlord: is_landlord,
+                                          contracts: contracts,   // ✅ pass contracts too
+                                          loadingTileIndex: loadingTileIndex,
+                                          onTapFetchFlat: _onTapFetchFlat, // ✅ pass fetch function
+                                        ),
+                                      ),
+                                    )
+
+                              ),
+                            ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+
+                      // 🔹 Two buttons in one row
+                      Row(
+                        children: [
+                          if (hasPermissionInCategory('Request'))
+                            Expanded(
+                              child: _buildDashboardButton(
+                                Icons.credit_card,
+                                'Request',
+                                Colors.purpleAccent,
+                                    () => Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (_) => RequestListScreen()),
+                                ),
+                              ),
+                            ),
+                          if (hasPermissionInCategory('Available Units'))
+                            Expanded(
+                              child: _buildDashboardButton(
+                                Icons.home,
+                                'Available Units',
+                                Colors.orangeAccent,
+                                    () => Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (_) => AvailableUnitsReport()),
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+
+                      // 🔹 Next row
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _buildDashboardButton(
+                              Icons.upload_file,
+                              'KYC Update',
+                              Colors.tealAccent,
+                                  () => Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (_) => DecentTenantKYCForm()),
+                              ),
+                            ),
+                          ),
+                          if (hasPermission('canCreateComplaintSuggestion') ||
+                              hasPermission('canViewComplaintSuggestions'))
+                            Expanded(
+                              child: _buildDashboardButton(
+                                Icons.info_outline,
+                                'Complaints',
+                                Colors.redAccent,
+                                    () => Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (_) => ComplaintListScreen()),
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+
+
+                if(cleared + pending == 0)...[
                   if (!is_landlord) ...[
                     Container(
                         height: 280,
@@ -1286,7 +1350,6 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
                                                   ),
                                                 ),
                                               ],
-
                                             ),
                                           ),
                                         ),
@@ -1321,7 +1384,6 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
                                               ],
                                             ),
                                           ),
-
                                         ],
                                       )
                                     ],
@@ -1335,113 +1397,7 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
                   ],
                 ],
 
-                if (is_landlord && buildingFlatCount.isNotEmpty) ...[
-                  Container(
-                    height: 260,
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(16),
-                      boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 8, offset: Offset(0, 4))],
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "Unit(s)",
-                          style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black87),
-                        ),
-                        const SizedBox(height: 16),
-                        Expanded(
-                          child: BarChart(
-                            BarChartData(
-                              alignment: BarChartAlignment.spaceAround,
-                              maxY: (buildingFlatCount.values.reduce((a, b) => a > b ? a : b)).toDouble(), // for headroom
-                              barTouchData: BarTouchData(
-                                enabled: true,
-                                touchCallback: (event, response) {
-                                  if (event is FlTapUpEvent && response != null && response.spot != null)
-                                    {
-                                      final index = response.spot!.touchedBarGroupIndex;
-                                      final buildingName = buildingFlatCount.keys.elementAt(index!);
 
-                                      _showUnitsPopup(context, buildingName);
-                                    }
-
-
-                                },
-                              ),
-
-                              titlesData: FlTitlesData(
-                                leftTitles: AxisTitles(
-                                  sideTitles: SideTitles(
-                                    showTitles: true,
-                                    reservedSize: 30,
-                                    getTitlesWidget: (value, meta) {
-                                      final label = value % 1 == 0 ? value.toInt().toString() : '';
-                                      return SideTitleWidget(
-                                        meta:meta,
-                                        child: Text(label, style: GoogleFonts.poppins(fontSize: 11)),
-                                      );
-                                    },
-                                  ),
-                                ),
-                                rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                                topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                                bottomTitles: AxisTitles(
-                                  sideTitles: SideTitles(
-                                    showTitles: true,
-                                    getTitlesWidget: (value, meta) {
-                                      final index = value.toInt();
-                                      if (index >= buildingFlatCount.length) return const SizedBox.shrink();
-                                      final label = buildingFlatCount.keys.elementAt(index);
-                                      return SideTitleWidget(
-                                        meta:meta,
-                                        child: Text(
-                                          label,
-                                          style: GoogleFonts.poppins(fontSize: 10),
-                                          textAlign: TextAlign.center,
-                                        ),
-                                      );
-                                    },
-                                    reservedSize: 60,
-                                  ),
-                                ),
-                              ),
-                              gridData: FlGridData(
-                                show: true,
-                                drawHorizontalLine: true,
-                                checkToShowHorizontalLine: (value) => value % 1 == 0,
-                                getDrawingHorizontalLine: (value) => FlLine(
-                                  color: Colors.grey.shade300,
-                                  strokeWidth: 1,
-                                ),
-                              ),
-                              borderData: FlBorderData(show: false),
-                              barGroups: buildingFlatCount.entries.toList().asMap().entries.map((entry) {
-                                final index = entry.key;
-                                final label = entry.value.key;
-                                final count = entry.value.value;
-                                return BarChartGroupData(
-                                  x: index,
-                                  barRods: [
-                                    BarChartRodData(
-                                      toY: count.toDouble(),
-                                      width: 20,
-                                      borderRadius: BorderRadius.circular(8),
-                                      color: appbar_color,
-                                    ),
-                                  ],
-                                );
-                              }).toList(),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(height: 10),
-                ],
 
                 // invoice summary bar chart
                /* Container(
@@ -1586,7 +1542,8 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
             future: fetchUserDetails(isLandlord: is_landlord),
             builder: (context, snapshot) {
               if (!snapshot.hasData) {
-                return const Center(child: CircularProgressIndicator());
+                return const Center(child: CircularProgressIndicator.adaptive(backgroundColor: Colors.white,
+                strokeWidth: 4,));
               }
 
               final user = snapshot.data!;
@@ -1770,63 +1727,85 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
     );
   }
 
+  Widget _buildFullWidthButton(
+      IconData icon, String label, Color color, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: double.infinity,
+        height: 90,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(14),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black12,
+              blurRadius: 6,
+              offset: const Offset(0, 3),
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, color: color, size: 34),
+            const SizedBox(height: 8),
+            Text(
+              label,
+              textAlign: TextAlign.center,
+              style: GoogleFonts.poppins(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: Colors.black87,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
 
   Widget _buildDashboardButton(
       IconData icon, String label, Color color, VoidCallback onTap) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        double screenWidth = MediaQuery.of(context).size.width;
-        // Estimate how many buttons can fit in one row
-        int buttonsPerRow = (screenWidth ~/ 140).clamp(2, 4); // ✅ force 2–4 per row
-        double buttonWidth = (screenWidth / buttonsPerRow) - 24; // adjust for margins
-
-        return ConstrainedBox(
-          constraints: const BoxConstraints(
-            minWidth: 120,
-            minHeight: 110,
-            maxWidth: 200,  // ✅ prevent oversized buttons
-            maxHeight: 110,
-          ),
-          child: GestureDetector(
-            onTap: onTap,
-            child: Container(
-              width: buttonWidth, // ✅ dynamic width
-              height: buttonWidth, // ✅ keep square
-              margin: const EdgeInsets.all(6),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black12,
-                    blurRadius: 8,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(icon, color: color, size: 34),
-                  const SizedBox(height: 10),
-                  Text(
-                    label,
-                    textAlign: TextAlign.center,
-                    style: GoogleFonts.poppins(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black87,
-                    ),
-                  ),
-                ],
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        height: 100,
+        margin: const EdgeInsets.symmetric(horizontal: 6),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(14),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black12,
+              blurRadius: 6,
+              offset: Offset(0, 3),
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, color: color, size: 34),
+            const SizedBox(height: 8),
+            Text(
+              label,
+              textAlign: TextAlign.center,
+              style: GoogleFonts.poppins(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: Colors.black87,
               ),
             ),
-          ),
-        );
-      },
+          ],
+        ),
+      ),
     );
   }
+
+
+
 
   Future<List<dynamic>> fetchAllValidAnnouncements() async {
     final prefs = await SharedPreferences.getInstance();

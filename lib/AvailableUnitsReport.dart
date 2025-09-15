@@ -934,7 +934,6 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
     });
   }
 
-
   void applyFilters() {
     if (allUnits.isEmpty) return;
 
@@ -1111,7 +1110,6 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
     );
   }
 
-// 1) Price chosen for SORT, based on the statusFilter
   int? _priceForSort(Flat u) {
     final sel = (statusFilter).trim().toLowerCase();
     if (sel == 'rent') return u.basicRent;           // only rent price matters
@@ -1120,8 +1118,6 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
     return _currentPrice(u);
   }
 
-
-// 2) Null-safe compare with "nulls last"
   int _compareSortPrice(Flat a, Flat b, {required bool ascending}) {
     final pa = _priceForSort(a);
     final pb = _priceForSort(b);
@@ -1137,7 +1133,6 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
     return ascending ? cmp : -cmp;
   }
 
-// 3) Public sorter: strictly by price according to statusFilter
   void _sortUnitsByPrice({required bool ascending}) {
     setState(() {
       // Pure price sort (no "best price" boost, no badge-based logic)

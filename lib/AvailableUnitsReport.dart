@@ -1284,7 +1284,6 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // Filter Button
                             TextButton.icon(
                               onPressed: () => _showFiltersDialog(context),
                               icon: Icon(Icons.filter_list, color: appbar_color),

@@ -1353,9 +1353,7 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
                                     )
                                   ],
                                 )
-
-                        ))
-                          ]
+                        ))]
                         ),
 
                         const SizedBox(height: 8),

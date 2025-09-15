@@ -96,7 +96,6 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
     return (u.status == "Buy") ? "Price" : "Rent";
   }
 
-// NEW: “best price” per flat type under current status
   bool _isBestPriceInFlatType(Flat unit) {
     // determine cohort (which units to compare against)
     final String unitStatus = (unit.status ?? '').toLowerCase();
@@ -125,7 +124,6 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
     final myPrice = _currentPrice(unit);
     return myPrice != null && myPrice == minPrice;
   }
-
 
   Future<void> fetchFlats() async {
     setState(() {
@@ -201,7 +199,6 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
         } while (currentPage <= totalPages);
       }
 
-      // Fetch for both statuses
       await fetchByStatus("Rent");
       await fetchByStatus("Buy");
 

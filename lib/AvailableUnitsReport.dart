@@ -1142,6 +1142,7 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
       selectedSortLabel = ascending ? "Price: Low → High" : "Price: High → Low";
     });
   }
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -1213,7 +1214,6 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
               Icons.arrow_back,
               color: Colors.white,
             ),),
-
         ),
 
         drawer: Sidebar(

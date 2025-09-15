@@ -38,14 +38,12 @@ class _TenantComplaintPageState extends State<TenantComplaint> with TickerProvid
       isUserEnable = true,
       isUserVisible = true,
       isRolesEnable = true,
-      _isLoading = false,
       isVisibleNoRoleFound = false;
 
   String name = "",email = "";
 
   bool selectAll = false;
   final _formKey = GlobalKey<FormState>();
-
 
   @override
   void initState() {
@@ -190,7 +188,6 @@ class _TenantComplaintPageState extends State<TenantComplaint> with TickerProvid
     });
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -222,7 +219,7 @@ class _TenantComplaintPageState extends State<TenantComplaint> with TickerProvid
             isRolesEnable: isRolesEnable,
             isUserEnable: isUserEnable,
             isUserVisible: isUserVisible,
-            ),
+        ),
 
       body: SingleChildScrollView(
         padding: EdgeInsets.symmetric(horizontal: 20, vertical: 22),
@@ -249,7 +246,9 @@ class _TenantComplaintPageState extends State<TenantComplaint> with TickerProvid
                     ],
                   ),
                 ),
+
                 SizedBox(height: 8),
+
                 DropdownButtonFormField<String>(
                   value: selectedType!.isNotEmpty ? selectedType : null,
                   hint: Text('Select Type'),
@@ -278,7 +277,6 @@ class _TenantComplaintPageState extends State<TenantComplaint> with TickerProvid
 
                 SizedBox(height: 25),
 
-                // Description Field
                 Text.rich(
                   TextSpan(
                     text: 'Description',
@@ -294,7 +292,9 @@ class _TenantComplaintPageState extends State<TenantComplaint> with TickerProvid
                     ],
                   ),
                 ),
+
                 SizedBox(height: 8),
+
                 TextFormField(
                   controller: _descriptionController,
                   maxLines: 4,
@@ -318,7 +318,6 @@ class _TenantComplaintPageState extends State<TenantComplaint> with TickerProvid
             ),
           ),
         ),
-
       ),
 
       bottomNavigationBar: SafeArea(
@@ -338,8 +337,7 @@ class _TenantComplaintPageState extends State<TenantComplaint> with TickerProvid
                   strokeWidth: 2,
                 ),
               )
-
-                  : Icon(Icons.send_rounded,color:Colors.white),
+                : Icon(Icons.send_rounded,color:Colors.white),
               style: ElevatedButton.styleFrom(
                 backgroundColor: appbar_color,
                 padding: EdgeInsets.symmetric(vertical: 16),

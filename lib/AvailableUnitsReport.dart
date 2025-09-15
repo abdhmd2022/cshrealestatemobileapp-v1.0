@@ -211,7 +211,6 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
             .cast<int>()
             .toList();
 
-
         if (prices.isNotEmpty) {
           double minPrice = prices.reduce((a, b) => a < b ? a : b).toDouble();
           double maxPrice = prices.reduce((a, b) => a > b ? a : b).toDouble();

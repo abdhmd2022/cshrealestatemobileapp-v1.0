@@ -73,7 +73,6 @@ class _TenantComplaintPageState extends State<TenantComplaint> with TickerProvid
     );
   }
 
-
   Future<void> _submitForm(BuildContext context) async {
     if (_formKey.currentState != null && _formKey.currentState!.validate()) {
       setState(() {
@@ -230,7 +229,7 @@ class _TenantComplaintPageState extends State<TenantComplaint> with TickerProvid
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Type Dropdown
+
                 Text.rich(
                   TextSpan(
                     text: 'Type',

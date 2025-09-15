@@ -1344,7 +1344,6 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
                                                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                                                 ),
                                               ),
-
                                           ]
                                       ).map((chip) => Padding(
                                         padding: const EdgeInsets.only(left: 6),

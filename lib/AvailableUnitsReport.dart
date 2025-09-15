@@ -73,13 +73,6 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
   RangeValues selectedPriceRange = const RangeValues(0, 2000000);
   List<String> selectedAmenities = [];
 
-  PdfColor _statusColor(String? status) {
-    final s = (status ?? '').toLowerCase();
-    if (s == 'buy') return PdfColors.blue600;
-    if (s == 'rent') return PdfColors.green600;
-    return PdfColors.grey600;
-  }
-
   Future<void> _initSharedPreferences() async {
     prefs = await SharedPreferences.getInstance();
 
@@ -102,9 +95,6 @@ class _AvailableUnitsReportPageState extends State<AvailableUnitsReport> with Ti
   String _priceLabelFor(Flat u) {
     return (u.status == "Buy") ? "Price" : "Rent";
   }
-
-
-
 
 // NEW: “best price” per flat type under current status
   bool _isBestPriceInFlatType(Flat unit) {

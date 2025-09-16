@@ -1520,20 +1520,19 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
                               SizedBox(width: 5),
 
                             ],
-
-
                           ],
-    if (inquiry.leadStatusCategory == 'Normal')...[
-      if(hasPermission('canInquiryTransfer'))...[
-        _buildDecentButton(
-          'Transfer',
-          Icons.swap_horiz,
-          Colors.orange,
-              () => _showTransferDialog(context, inquiry),
-        ),
-        SizedBox(width: 5),
-      ],
-    ],
+
+                          if (inquiry.leadStatusCategory == 'Normal')...[
+                            if(hasPermission('canInquiryTransfer'))...[
+                              _buildDecentButton(
+                                'Transfer',
+                                Icons.swap_horiz,
+                                Colors.orange,
+                                    () => _showTransferDialog(context, inquiry),
+                              ),
+                              SizedBox(width: 5),
+                            ],
+                          ],
 
                           // View is always visible
                           if(hasPermission('canViewLeadFollowUps'))...[

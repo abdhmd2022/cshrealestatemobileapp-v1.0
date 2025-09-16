@@ -1521,16 +1521,19 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
 
                             ],
 
-                            if(hasPermission('canInquiryTransfer'))...[
-                              _buildDecentButton(
-                                'Transfer',
-                                Icons.swap_horiz,
-                                Colors.orange,
-                                    () => _showTransferDialog(context, inquiry),
-                              ),
-                              SizedBox(width: 5),
-                            ]
+
                           ],
+    if (inquiry.leadStatusCategory == 'Normal')...[
+      if(hasPermission('canInquiryTransfer'))...[
+        _buildDecentButton(
+          'Transfer',
+          Icons.swap_horiz,
+          Colors.orange,
+              () => _showTransferDialog(context, inquiry),
+        ),
+        SizedBox(width: 5),
+      ],
+    ],
 
                           // View is always visible
                           if(hasPermission('canViewLeadFollowUps'))...[
@@ -1664,7 +1667,7 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
                 ),
                 SizedBox(height: 8),
                 Text(
-                  "You created this lead but it's assigned to $assignedToName.\n\nOnly the assigned person can take actions like follow-up or transfer.",
+                  "You created this lead but it's assigned to $assignedToName.\n\nOnly the assigned person can take actions like follow-up",
                   style: GoogleFonts.poppins(fontSize: 13, color: Colors.grey[800]),
                   textAlign: TextAlign.center,
                 ),

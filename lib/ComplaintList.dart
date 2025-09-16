@@ -367,7 +367,7 @@ Widget _buildEntryCard({
   required Color appColor,
 }) {
   final type = (entry['type'] ?? 'Unknown').toString();
-  final tenantName = entry['tenant']?['name']?.toString() ?? entry['landlord_id'].toString() ?? 'Unknown';
+  final tenantName = entry['tenant']?['name']?.toString() ?? entry['landlord']['name'].toString() ?? 'Unknown';
   final desc = (entry['description'] ?? 'No description').toString();
   final createdAt = DateTime.tryParse(entry['created_at'] ?? '') ?? DateTime.now();
   final dateLabel = DateFormat('dd-MMM-yyyy • hh:mm a').format(createdAt);

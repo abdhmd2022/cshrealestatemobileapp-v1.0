@@ -21,14 +21,25 @@ class MonthlyDetailScreen extends StatefulWidget {
   class _MonthlyDetailScreenState extends State<MonthlyDetailScreen> {
   late List<Map<String, dynamic>> _entries;
   late String monthKey;
+  late List<Map<String, dynamic>> _lastSearchFiltered = [];
+
+  late TextEditingController _searchController;
+  String _searchQuery = "";
 
   @override
   void initState() {
-  super.initState();
-  _entries = widget.entries.map((e) => Map<String, dynamic>.from(e)).toList();
-  monthKey = widget.monthKey;
-  _rebuildStatusChipOptions();  // ← derive chips from _entries
-  _applyFilters();              // ← produce _filteredEntries from active filters
+    super.initState();
+    _entries = widget.entries.map((e) => Map<String, dynamic>.from(e)).toList();
+    monthKey = widget.monthKey;
+    _searchController = TextEditingController();
+    _rebuildStatusChipOptions(source: _entries); // ✅ pass entries
+    _applyFilters();
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 
   late List<Map<String, dynamic>> _filteredEntries;
@@ -42,19 +53,17 @@ class MonthlyDetailScreen extends StatefulWidget {
     if (idx != -1) {
       setState(() {
         _entries[idx] = Map<String, dynamic>.from(updated);
-        // keep filters/chips in sync with current data
-        _rebuildStatusChipOptions();
+
+
         _applyFilters();
       });
     }
   }
-  void _rebuildStatusChipOptions() {
-    // Always have "Pending" if any record has null status
-    final hasPending = _entries.any((e) => e['status'] == null);
+  void _rebuildStatusChipOptions({required List<Map<String, dynamic>> source}) {
+    final hasPending = source.any((e) => e['status'] == null);
 
-    // Collect unique status names from data
     final Set<String> names = {};
-    for (final e in _entries) {
+    for (final e in source) {
       final st = e['status'];
       if (st is Map) {
         final n = (st['name'] ?? '').toString().trim();
@@ -72,37 +81,65 @@ class MonthlyDetailScreen extends StatefulWidget {
       chips.add({'key': _toKey(n), 'name': n});
     }
 
-    // Keep currently selected keys if still present; otherwise fall back to 'all'
-    final existingKeys = chips.map((c) => c['key']!).toSet()..add('all');
-    if (!_activeStatusKeys.every(existingKeys.contains)) {
+    _statusChipOptions = chips;
+
+    // keep active key if still valid, else reset to all
+    final availableKeys = chips.map((c) => c['key']!).toSet()..add('all');
+    if (!_activeStatusKeys.every(availableKeys.contains)) {
       _activeStatusKeys
         ..clear()
         ..add('all');
     }
-
-    _statusChipOptions = chips;
   }
 
   String _toKey(String name) =>
       name.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]+'), '_').replaceAll(RegExp(r'^_|_$'), '');
+
   void _applyFilters() {
-    // 'all' → no filtering
-    if (_activeStatusKeys.contains('all')) {
-      _filteredEntries = List<Map<String, dynamic>>.from(_entries);
-      return;
+    // 1) Start with all data
+    List<Map<String, dynamic>> searchFiltered = List<Map<String, dynamic>>.from(_entries);
+
+    // 2) Apply search filter first
+    if (_searchQuery.isNotEmpty) {
+      final q = _searchQuery.toLowerCase();
+      searchFiltered = searchFiltered.where((e) {
+        final id       = (e['id'] ?? '').toString().toLowerCase();
+        final type     = (e['type'] ?? '').toString().toLowerCase();
+        final tenant   = (e['tenant']?['name'] ?? '').toString().toLowerCase();
+        final landlord = (e['landlord']?['name'] ?? '').toString().toLowerCase();
+        final desc     = (e['description'] ?? '').toString().toLowerCase();
+
+        return id.contains(q) ||
+            type.contains(q) ||
+            tenant.contains(q) ||
+            landlord.contains(q) ||
+            desc.contains(q);
+      }).toList();
     }
 
-    _filteredEntries = _entries.where((e) {
-      final st = e['status'];
-      if (st == null) {
-        // pending
-        return _activeStatusKeys.contains('pending');
-      }
-      final name = (st['name'] ?? '').toString();
-      final key  = _toKey(name);
-      return _activeStatusKeys.contains(key);
-    }).toList();
+    // ✅ Save searchFiltered for chip counts
+    _lastSearchFiltered = searchFiltered;
+
+    // 3) Always build chips from searchFiltered
+    _rebuildStatusChipOptions(source: searchFiltered);
+
+    // 4) Apply status filter
+    if (_activeStatusKeys.contains('all')) {
+      _filteredEntries = searchFiltered;
+    } else {
+      _filteredEntries = searchFiltered.where((e) {
+        final st = e['status'];
+        if (st == null) {
+          return _activeStatusKeys.contains('pending');
+        }
+        final name = (st['name'] ?? '').toString();
+        final key  = _toKey(name);
+        return _activeStatusKeys.contains(key);
+      }).toList();
+    }
   }
+
+
 
   Map<String, List<Map<String, dynamic>>> groupByDay(
       List<Map<String, dynamic>> data) {
@@ -115,6 +152,7 @@ class MonthlyDetailScreen extends StatefulWidget {
       if (!grouped.containsKey(key)) grouped[key] = [];
       grouped[key]!.add(item);
     }
+
 
     for (var list in grouped.values) {
       list.sort((a, b) =>
@@ -600,65 +638,159 @@ class MonthlyDetailScreen extends StatefulWidget {
             monthLabel, style: GoogleFonts.poppins(color: Colors.white)),
         centerTitle: true,
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(12),
+      body:  Column(
         children: [
-          _statusFilterBar(),
-          const SizedBox(height: 12),
-          ...grouped.entries.map((group) {
-            final day = group.key;
-            final feedbacks = group.value;
 
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 6),
-                  child: Row(
-                    children: [
-                      Icon(Icons.calendar_today, size: 16,
-                          color: Colors.grey[600]),
-                      const SizedBox(width: 6),
-                      Text(
-
-                        day,
-                        style: GoogleFonts.poppins(fontSize: 15,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.black87),
-                      ),
-                    ],
-                  ),
+          Container(
+            margin: const EdgeInsets.fromLTRB(12, 12, 12, 8),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.9), // subtle glass effect
+              borderRadius: BorderRadius.circular(30),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 12,
+                  offset: const Offset(0, 4),
                 ),
-                ...feedbacks.map((entry) {
-                  final type = entry['type'] ?? 'Unknown';
-                  final desc = entry['description'] ?? 'No description';
-                  final tenant = entry['tenant']?['name'] ??
-                      entry['landlord_id'] ?? "Unknown";
-                  final createdAt = DateTime.tryParse(
-                      entry['created_at'] ?? '') ?? DateTime.now();
-                  final dateLabel = DateFormat('dd-MMM-yyyy • hh:mm a').format(
-                      createdAt);
-
-                  final isComplaint = type == 'Complaint';
-                  final bgColor = isComplaint ? Colors.red : Colors.teal
-                      .withOpacity(0.8);
-
-                  return _buildEntryCard(
-                    context: context,
-                    entry: entry,
-                    appColor: bgColor, // you already compute this based on type
-                    onTap: () => _openDetailsSheet(context, entry,
-                      onUpdated: _applyEntryUpdate, // <— will refresh list instantly
-                    ),
-                  );
-                }).toList(),
-                const SizedBox(height: 24),
               ],
-            );
-          }).toList(),
-        ]
+            ),
+            child: TextField(
+              controller: _searchController,
+              style: GoogleFonts.poppins(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: Colors.black87,
+              ),
+              cursorColor: appbar_color, // match your theme
+              decoration: InputDecoration(
+                contentPadding: const EdgeInsets.symmetric(vertical: 14),
+                prefixIcon: const Icon(
+                  Icons.search_rounded, // ✅ modern rounded search icon
+                  size: 22,
+                  color: Colors.grey,
+                ),
+                suffixIcon: _searchQuery.isNotEmpty
+                    ? IconButton(
+                  icon: const Icon(Icons.close_rounded, color: Colors.grey),
+                  onPressed: () {
+                    setState(() {
+                      _searchController.clear();
+                      _searchQuery = "";
+                      _applyFilters(); // 🔥 resets back to full data & chips
+                    });
+                  },
+                )
+                    : null,
 
+                hintText: "Search by Complaint/Suggestion No, Tenant, Landlord...",
+                hintStyle: GoogleFonts.poppins(
+                  fontSize: 13,
+                  color: Colors.grey.shade500,
+                ),
+                border: InputBorder.none,
+              ),
+              onChanged: (val) {
+                setState(() {
+                  _searchQuery = val.trim();
+                  _applyFilters();
+                });
+              },
+            ),
+          ),
+
+
+          // 🔘 Status filter bar (always visible)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: _statusFilterBar(),
+          ),
+          const SizedBox(height: 8),
+
+          Expanded(
+              child: _filteredEntries.isEmpty
+                  ? Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.inbox_outlined,
+                        size: 72, color: Colors.grey.withOpacity(0.5)),
+                    const SizedBox(height: 12),
+                    Text(
+                      "No Data Found",
+                      style: GoogleFonts.poppins(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.grey,
+                      ),
+                    ),
+                  ],
+                ),
+              )
+                  :
+
+              ListView(
+                  padding: const EdgeInsets.all(12),
+                  children: [
+
+                    ...grouped.entries.map((group) {
+                      final day = group.key;
+                      final feedbacks = group.value;
+
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 6),
+                            child: Row(
+                              children: [
+                                Icon(Icons.calendar_today, size: 16,
+                                    color: Colors.grey[600]),
+                                const SizedBox(width: 6),
+                                Text(
+
+                                  day,
+                                  style: GoogleFonts.poppins(fontSize: 15,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.black87),
+                                ),
+                              ],
+                            ),
+                          ),
+                          ...feedbacks.map((entry) {
+                            final type = entry['type'] ?? 'Unknown';
+                            final desc = entry['description'] ?? 'No description';
+                            final tenant = entry['tenant']?['name'] ??
+                                entry['landlord_id'] ?? "Unknown";
+                            final createdAt = DateTime.tryParse(
+                                entry['created_at'] ?? '') ?? DateTime.now();
+                            final dateLabel = DateFormat('dd-MMM-yyyy • hh:mm a').format(
+                                createdAt);
+
+                            final isComplaint = type == 'Complaint';
+                            final bgColor = isComplaint ? Colors.red : Colors.teal
+                                .withOpacity(0.8);
+
+                            return _buildEntryCard(
+                              context: context,
+                              entry: entry,
+                              appColor: bgColor, // you already compute this based on type
+                              onTap: () => _openDetailsSheet(context, entry,
+                                onUpdated: _applyEntryUpdate, // <— will refresh list instantly
+                              ),
+                            );
+                          }).toList(),
+                          const SizedBox(height: 24),
+                        ],
+                      );
+                    }).toList(),
+                  ]
+
+              ),
+          )
+        ],
       ),
+
+
     );
   }
 
@@ -668,8 +800,10 @@ class MonthlyDetailScreen extends StatefulWidget {
     required Color appColor,
     required VoidCallback onTap,
   }) {
+    final id = (entry['id'] ?? '0').toString();
+
     final type = (entry['type'] ?? 'Unknown').toString();
-    final tenantName = entry['tenant']?['name']?.toString() ?? entry['landlord_id'].toString() ?? 'Unknown';
+    final tenantName = entry['tenant']?['name']?.toString() ?? entry['landlord']['name'].toString() ?? 'Unknown';
     final desc = (entry['description'] ?? 'No description').toString();
     final createdAt = DateTime.tryParse(entry['created_at'] ?? '') ?? DateTime.now();
     final dateLabel = DateFormat('dd-MMM-yyyy • hh:mm a').format(createdAt);
@@ -739,12 +873,22 @@ class MonthlyDetailScreen extends StatefulWidget {
                       ),
                       const SizedBox(height: 2),
                       Text(
+                        type == "Complaint" ? "Complaint No: $id" : "Suggestion No: $id",
+                        style: GoogleFonts.poppins(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.blueGrey,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
                         dateLabel,
                         style: GoogleFonts.poppins(
                           fontSize: 12,
                           color: Colors.grey[600],
                         ),
                       ),
+
                     ],
                   ),
                 ),
@@ -979,11 +1123,12 @@ class MonthlyDetailScreen extends StatefulWidget {
                 _statusPill(
                   keyId: 'all',
                   label: 'All',
-                  count: _entries.length,
+                  count: _lastSearchFiltered.length, // ✅ dynamic count
                   icon: Icons.all_inclusive,
                   color: appbar_color,
                   selected: _activeStatusKeys.contains('all'),
                   onTap: () {
+
                     setState(() {
                       _activeStatusKeys
                         ..clear()
@@ -1012,18 +1157,13 @@ class MonthlyDetailScreen extends StatefulWidget {
                       selected: selected,
                       onTap: () {
                         setState(() {
-                          if (selected) {
-                            _activeStatusKeys.remove(keyId);
-                            if (_activeStatusKeys.isEmpty) {
-                              _activeStatusKeys.add('all');
-                            }
-                          } else {
-                            _activeStatusKeys.remove('all');
-                            _activeStatusKeys.add(keyId);
-                          }
+                          _activeStatusKeys
+                            ..clear()
+                            ..add(keyId);   // single selection
                           _applyFilters();
                         });
                       },
+
                     ),
                   );
                 }),
@@ -1052,11 +1192,12 @@ class MonthlyDetailScreen extends StatefulWidget {
     } catch (_) {
       return false;
     }
+
   }
 // Counts the entries that match a given status key ("pending", "under_process", "closed", etc.)
     int _countForKey(String keyId) {
       int count = 0;
-      for (final e in _entries) {
+      for (final e in _lastSearchFiltered) { // ✅ only count from search results
         final st = e['status'];
         if (st == null) {
           if (keyId == 'pending') count++;
@@ -1067,6 +1208,7 @@ class MonthlyDetailScreen extends StatefulWidget {
       }
       return count;
     }
+
   }
 
 

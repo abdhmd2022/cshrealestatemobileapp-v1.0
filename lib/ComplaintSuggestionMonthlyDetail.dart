@@ -1211,7 +1211,6 @@ class MonthlyDetailScreen extends StatefulWidget {
 
   }
 
-
 // Color + icon per status (keeps things consistent)
 _ChipVisual _chipStyleFor(String keyId, String label) {
   final l = label.toLowerCase();

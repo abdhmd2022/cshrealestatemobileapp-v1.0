@@ -21,7 +21,11 @@ import 'dart:async';
 import 'dart:async' show unawaited;
 
 import 'UpdateSalesInquiry.dart';
-
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:printing/printing.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
 
 class SalesInquiryReport extends StatefulWidget {
   @override
@@ -50,10 +54,12 @@ class InquiryModel {
   final String lastFollowupDate;
   final String property_type;
 
+
   // final String color;
   final List<Map<String, dynamic>> preferredAreas;
   final List<Map<String, dynamic>> preferredFlatTypes;
   final List<Map<String, dynamic>> preferredAmenities;
+  final String lastFollowupBy;
 
   InquiryModel({
     required this.customerName,
@@ -64,6 +70,7 @@ class InquiryModel {
     required this.assigned_to,
     required this.description,
     required this.property_type,
+    required this.lastFollowupBy,
 
     //required this.color,
     required this.lastFollowupRemarks,
@@ -86,6 +93,9 @@ class InquiryModel {
   });
 
   factory InquiryModel.fromJson(Map<String, dynamic> json) {
+    String lastFollowupBy = 'Unknown';
+
+
     final rawDate = json['created_at'] ?? '';
     final interest_type = json['interest_type'] ?? '';
     final property_type = json['property_type'] ?? '';
@@ -130,8 +140,9 @@ class InquiryModel {
       leadStatusName = lastFollowup['status']?['name'] ?? 'Unknown';
       leadStatusCategory = lastFollowup['status']?['category'] ?? 'Unknown';
       //leadStatusColor = lastFollowup['lead_status']?['color'] ?? 'Unknown';
-      lastFollowupRemarks = lastFollowup['remarks'] ?? 'null';
+      lastFollowupRemarks = lastFollowup['remarks'] ?? '';
       lastFollowupDate = _formatDate(lastFollowup['date'] ?? '');
+      lastFollowupBy      = lastFollowup['created_user']?['name'] ?? 'Unknown';
 
       print('Last Lead Status Name: $leadStatusName');
     } else {
@@ -152,6 +163,7 @@ class InquiryModel {
       assigned_to: assigned_to ?? '',
       lastFollowupRemarks: lastFollowupRemarks,
       property_type: property_type,
+      lastFollowupBy: lastFollowupBy,
 
       lastFollowupDate: lastFollowupDate ,
       // color: leadStatusColor,
@@ -1008,6 +1020,12 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
     print("Total Filtered Inquiries: ${filteredInquiries.length}"); // ✅ Debugging
   }
 
+  String _formatCurrencyRange_double(double min, double max) {
+    final f = NumberFormat.decimalPattern(); // adds commas like 50,000
+    return "AED ${f.format(min)} – AED ${f.format(max)}";
+  }
+
+
   void _openPotentialMatchesSheet(InquiryModel inquiry) {
     showModalBottomSheet(
       context: context,
@@ -1050,6 +1068,258 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
     );
   }
 
+  Future<void> _generatePdf(BuildContext context, {required bool share}) async {
+    final pdf = pw.Document();
+    final inquiries = filteredInquiries.isEmpty ? salesinquiry : filteredInquiries;
+
+    pdf.addPage(
+      pw.MultiPage(
+        pageTheme: pw.PageTheme(
+          margin: const pw.EdgeInsets.all(24),
+          theme: pw.ThemeData.withFont(
+            base: await PdfGoogleFonts.poppinsRegular(),
+            bold: await PdfGoogleFonts.poppinsBold(),
+          ),
+        ),
+        build: (context) => [
+          // 🔹 Report Header
+          pw.Center(
+            child: pw.Text(
+              "Sales Inquiries Report",
+              style: pw.TextStyle(
+                fontSize: 20,
+                fontWeight: pw.FontWeight.bold,
+                color: PdfColors.teal,
+              ),
+            ),
+          ),
+          pw.SizedBox(height: 16),
+
+          // 🔹 Inquiry Cards
+          ...inquiries.map((inq) {
+            return pw.Container(
+              margin: const pw.EdgeInsets.only(bottom: 18),
+              padding: const pw.EdgeInsets.all(14),
+              decoration: pw.BoxDecoration(
+                border: pw.Border.all(color: PdfColors.grey300, width: 0.8),
+                borderRadius: pw.BorderRadius.circular(10),
+              ),
+              child: pw.Column(
+                crossAxisAlignment: pw.CrossAxisAlignment.start,
+                children: [
+                  // Header Row
+                  pw.Row(
+                    mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                    children: [
+                      pw.Text("Inquiry #${inq.inquiryNo}",
+                          style: pw.TextStyle(
+                              fontSize: 13, fontWeight: pw.FontWeight.bold)),
+                      _statusChip(inq.status, _statusColor(inq.leadStatusCategory)),
+                    ],
+                  ),
+
+                  pw.SizedBox(height: 8),
+
+                  // Customer
+                  pw.Text("Customer",
+                      style: pw.TextStyle(
+                          fontWeight: pw.FontWeight.bold,
+                          fontSize: 11,
+                          color: PdfColors.grey700)),
+                  pw.Text(inq.customerName, style: const pw.TextStyle(fontSize: 12)),
+                  pw.SizedBox(height: 6),
+
+                  // Contact
+                  pw.Text("Contact No",
+                      style: pw.TextStyle(
+                          fontWeight: pw.FontWeight.bold,
+                          fontSize: 11,
+                          color: PdfColors.grey700)),
+                  pw.Text(inq.contactNo, style: const pw.TextStyle(fontSize: 11)),
+                  pw.SizedBox(height: 6),
+
+
+                  pw.Text("Email",
+                      style: pw.TextStyle(
+                          fontWeight: pw.FontWeight.bold,
+                          fontSize: 11,
+                          color: PdfColors.grey700)),
+                  pw.Text(inq.email, style: const pw.TextStyle(fontSize: 11)),
+                  pw.SizedBox(height: 8),
+
+                  // Details (chip-like text blocks)
+                  pw.Wrap(
+                    spacing: 6,
+                    runSpacing: 6,
+                    children: [
+                      _chipText("Interest Type: ${inq.interest_type}"),
+                      _chipText("Unit Type(s): ${inq.unitType}"),
+                    ],
+                  ),
+                  pw.SizedBox(height: 6),
+                  pw.Text("Location(s):", style: pw.TextStyle(
+                      fontWeight: pw.FontWeight.bold,
+                      fontSize: 11,
+                      color: PdfColors.grey700)),
+
+
+                  pw.SizedBox(height: 6),
+
+                  pw.Wrap(
+                    spacing: 4,
+                    runSpacing: 4,
+                    children: inq.preferredAreas.map((area) {
+                      final areaName = area["area"]["name"];
+                      final emirate = area["area"]["state"]["name"];
+                      return _chipText("$areaName, $emirate");
+                    }).toList(),
+                  ),
+                  pw.SizedBox(height: 6),
+
+                  // Budget Row
+                  pw.Text(
+                    "Budget: ${_formatCurrencyRange(inq.minPrice, inq.maxPrice)}",
+                    style: pw.TextStyle(
+                      fontSize: 11,
+                      fontWeight: pw.FontWeight.bold,
+                      color: PdfColors.blueGrey800,
+                    ),
+                  ),
+                  pw.SizedBox(height: 6),
+
+                  // Created & Assigned info
+                  pw.Row(
+                    children: [
+                      pw.Expanded(
+                        child: pw.Text(
+                          "Created By: ${inq.created_by}",
+                          style: pw.TextStyle(
+                            fontSize: 10,
+                            fontWeight: pw.FontWeight.normal,
+                            color: PdfColors.grey800,
+                          ),
+                        ),
+                      ),
+                      pw.Expanded(
+                        child: pw.Text(
+                          "Assigned To: ${inq.assigned_to.isEmpty ? "Unassigned" : inq.assigned_to}",
+                          style: pw.TextStyle(
+                            fontSize: 10,
+                            fontWeight: pw.FontWeight.normal,
+                            color: PdfColors.grey800,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  pw.SizedBox(height: 8),
+
+                  // Last Follow-up section
+                  if (inq.lastFollowupDate.isNotEmpty && inq.lastFollowupDate != "No follow-up date") ...[
+                    pw.SizedBox(height: 6),
+                    pw.Text(
+                      "Last Follow-up (${formatDate(inq.lastFollowupDate)}) by ${inq.lastFollowupBy}",
+                      style: pw.TextStyle(
+
+                        fontSize: 10,
+                        fontWeight: pw.FontWeight.bold,
+                        color: PdfColors.blueGrey800,
+                      ),
+                    ),
+                    if (inq.lastFollowupRemarks.isNotEmpty && inq.lastFollowupRemarks != "No remarks")
+                      pw.Text(
+                        inq.lastFollowupRemarks,
+                        style: pw.TextStyle(
+                          fontSize: 10,
+                          color: PdfColors.grey800,
+                        ),
+                      ),
+                  ]
+
+                ],
+              ),
+            );
+          }),
+        ],
+      ),
+    );
+
+    // Save / Share
+    if (kIsWeb) {
+      await Printing.sharePdf(
+        bytes: await pdf.save(),
+        filename: "sales_inquiries.pdf",
+      );
+    } else {
+      final output = await getTemporaryDirectory();
+      final file = File("${output.path}/sales_inquiries.pdf");
+      await file.writeAsBytes(await pdf.save());
+
+      if (share) {
+        await Share.shareXFiles([XFile(file.path)], text: "Sales Inquiries Report");
+      } else {
+        final downloadsDir = await getApplicationDocumentsDirectory();
+        final savedFile =
+        await file.copy("${downloadsDir.path}/sales_inquiries.pdf");
+
+        Fluttertoast.showToast(
+          msg: "PDF saved at: ${savedFile.path}",
+          backgroundColor: Colors.black,
+          textColor: Colors.white,
+        );
+      }
+    }
+  }
+
+  pw.Widget _chipText(String text) {
+    return pw.Container(
+      padding: const pw.EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      margin: const pw.EdgeInsets.only(right: 6, bottom: 6),
+      decoration: pw.BoxDecoration(
+        color: PdfColors.grey200, // subtle grey background
+        borderRadius: pw.BorderRadius.circular(6),
+      ),
+      child: pw.Text(
+        text,
+        style: pw.TextStyle(
+          fontSize: 10,
+          color: PdfColors.black,
+        ),
+      ),
+    );
+  }
+  pw.Widget _statusChip(String text, PdfColor color) {
+    return pw.Container(
+      padding: const pw.EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: pw.BoxDecoration(
+        borderRadius: pw.BorderRadius.circular(6),
+        border: pw.Border.all(color: color, width: 1),
+      ),
+      child: pw.Text(
+        text,
+        style: pw.TextStyle(
+          fontSize: 10,
+          fontWeight: pw.FontWeight.bold,
+          color: color,
+        ),
+      ),
+    );
+  }
+
+  PdfColor _statusColor(String category) {
+    switch (category.toLowerCase()) {
+      case "normal":
+        return PdfColors.green;
+      case "drop":
+        return PdfColors.red;
+      case "close":
+        return PdfColors.blue;
+      default:
+        return PdfColors.grey;
+    }
+  }
+
 
 
   @override
@@ -1058,6 +1328,47 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
       key: _scaffoldKey,
       backgroundColor: const Color(0xFFF2F4F8),
       appBar: AppBar(
+        actions: [
+          PopupMenuButton<String>(
+            color: Colors.white, // ✅ Makes popup background white
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16), // ✅ rounded corners
+            ),
+            onSelected: (value) {
+              if (value == 'share') {
+                _generatePdf(context, share: true);
+              } else if (value == 'download') {
+                _generatePdf(context, share: false);
+              }
+            },
+            itemBuilder: (context) => [
+              PopupMenuItem(
+                value: 'share',
+                child: Row(
+                  children: [
+                    Icon(Icons.share, color: Colors.teal),
+                    SizedBox(width: 8),
+                    Text("Share PDF"),
+                  ],
+                ),
+              ),
+              PopupMenuItem(
+                value: 'download',
+                child: Row(
+                  children: [
+                    Icon(Icons.download, color: Colors.blue),
+                    SizedBox(width: 8),
+                    Text("Download PDF"),
+                  ],
+                ),
+              ),
+            ],
+            icon: Icon(Icons.share, color: Colors.white),
+          )
+        ],
+
+
+
         elevation: 0,
         bottom: PreferredSize(
           preferredSize: Size.fromHeight(70.0),

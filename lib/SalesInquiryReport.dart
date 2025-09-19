@@ -1162,7 +1162,6 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
                       fontSize: 11,
                       color: PdfColors.grey700)),
 
-
                   pw.SizedBox(height: 6),
 
                   pw.Wrap(

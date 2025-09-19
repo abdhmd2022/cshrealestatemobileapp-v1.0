@@ -1160,7 +1160,8 @@ class _SalesInquiryReportState extends State<SalesInquiryReport> with TickerProv
                   pw.Text("Location(s):", style: pw.TextStyle(
                       fontWeight: pw.FontWeight.bold,
                       fontSize: 11,
-                      color: PdfColors.grey700)),
+                      color: PdfColors.grey700)
+                  ),
 
                   pw.SizedBox(height: 6),
 

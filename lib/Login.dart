@@ -1704,10 +1704,10 @@ class _LoginPageState extends State<Login> {
               ),
               const SizedBox(height: 30),
 
-        CupertinoSegmentedControl<String>(
+            CupertinoSegmentedControl<String>(
               padding: const EdgeInsets.all(4),
               groupValue: selectedRole,
-              selectedColor : appbar_color, // segment background when selected
+              selectedColor: appbar_color,
               unselectedColor: Colors.transparent,
               borderColor: Colors.grey,
               pressedColor: appbar_color.withOpacity(0.2),
@@ -1725,31 +1725,37 @@ class _LoginPageState extends State<Login> {
               },
             ),
 
+
+
           const SizedBox(height: 30),
               _buildGlassCard(context),
             ],
           ),
         ),
       ),
+
     );
   }
 
   Widget _buildSegmentLabel(String text) {
-     bool isSelected = selectedRole == text;
-    if(text == 'Management' && selectedRole == "Admin")
-      {
-        isSelected = true;
-      }
+    bool isSelected = selectedRole == text;
+    if (text == 'Management' && selectedRole == "Admin") {
+      isSelected = true;
+    }
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: Text(
-        textAlign: TextAlign.center,
-        text,
-        style: GoogleFonts.poppins(
-          fontWeight: FontWeight.w600,
-          fontSize: 14,
-
-          color: isSelected ? Colors.white : Colors.black.withOpacity(0.7),
+      child: IntrinsicWidth( // 👈 makes box size fit text
+        child: Center(
+          child: Text(
+            text,
+            textAlign: TextAlign.center,
+            style: GoogleFonts.poppins(
+              fontWeight: FontWeight.w600,
+              fontSize: 14,
+              color: isSelected ? Colors.white : Colors.black.withOpacity(0.7),
+            ),
+          ),
         ),
       ),
     );

@@ -1,10 +1,12 @@
+import 'dart:convert';
+
 import 'package:cshrealestatemobile/TenantDashboard.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'constants.dart';
 
-class TenantAnalyticsScreen extends StatelessWidget {
+class TenantAnalyticsScreen extends StatefulWidget {
   final int cleared;
   final int pending;
   final Map<String, double> invoices;
@@ -25,8 +27,77 @@ class TenantAnalyticsScreen extends StatelessWidget {
     required this.loadingTileIndex,
     required this.onTapFetchFlat,
   }) : super(key: key);
+
+  @override
+  State<TenantAnalyticsScreen> createState() => _TenantAnalyticsScreenState();
+}
+
+class _TenantAnalyticsScreenState extends State<TenantAnalyticsScreen> {
+
+
+  @override
+  void initState() {
+    super.initState();
+    for (var contract in widget.contracts) {
+      final cheques = contract['cheques'] ?? [];
+      for (var chq in cheques) {
+        debugPrint("Cheque ${chq['payment']?['instrument_no']} → ${_getChequeCategory(chq)}");
+      }
+    }
+  }
+
+  String _getChequeCategory(Map cheque) {
+    final payment = cheque['payment'] ?? {};
+    final chequeInfo = payment['cheque'] ?? {};
+
+    // Returned
+    if (payment['returned_on'] != null) {
+      return "Returned";
+    }
+
+    // Cleared
+    if (chequeInfo['cleared_on'] != null) {
+      return "Cleared";
+    }
+
+    // Deposited
+    if (chequeInfo['is_deposited']?.toString() == "true" &&
+        chequeInfo['cleared_on'] == null) {
+      return "Deposited";
+    }
+
+    // Received
+    if (chequeInfo['is_received']?.toString() == "true") {
+      return "Received";
+    }
+
+    return "Other";
+  }
+
+
+  Map<String, int> _buildChequeCounts() {
+    final Map<String, int> counts = {
+      "Received": 0,
+      "Deposited": 0,
+      "Cleared": 0,
+      "Returned": 0,
+    };
+
+    for (var contract in widget.contracts) {
+      final cheques = contract['cheques'] ?? [];
+      for (var chq in cheques) {
+        final cat = _getChequeCategory(chq);
+        if (counts.containsKey(cat)) {
+          counts[cat] = counts[cat]! + 1;
+        }
+      }
+    }
+    return counts;
+  }
+
+
   void _showUnitsPopup(BuildContext context, String buildingName) {
-    final units = contracts
+    final units = widget.contracts
         .expand((contract) => contract['flats'] as List)
         .where((flat) => flat['building']?['name'] == buildingName)
         .toList();
@@ -95,8 +166,8 @@ class TenantAnalyticsScreen extends StatelessWidget {
                           context: context,
                           flat: units[i],
                           badgeColor: Colors.blue,
-                          loadingFlatId: loadingTileIndex,
-                          onTapFetch: onTapFetchFlat,
+                          loadingFlatId: widget.loadingTileIndex,
+                          onTapFetch: widget.onTapFetchFlat,
                         ),
                       ),
                       const SizedBox(height: 20),
@@ -136,6 +207,11 @@ class TenantAnalyticsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final chequeCounts = _buildChequeCounts();
+    final totalCheques = chequeCounts.values.fold(0, (a, b) => a + b);
+
+
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -161,7 +237,7 @@ class TenantAnalyticsScreen extends StatelessWidget {
         child: Column(
           children: [
             // 🔹 Cheque Summary (Tenant + Landlord)
-            if (cleared > 0 || pending > 0)
+            if (widget.cleared > 0 || widget.pending > 0)
               Container(
                 height: 280,
                 padding: const EdgeInsets.all(16),
@@ -189,7 +265,7 @@ class TenantAnalyticsScreen extends StatelessWidget {
                             fontSize: 17, fontWeight: FontWeight.bold)),
                     const SizedBox(height: 15),
                     SizedBox(
-                      height: 200, // ✅ fixed height
+                      height: 200,
                       child: Stack(
                         alignment: Alignment.center,
                         children: [
@@ -198,56 +274,55 @@ class TenantAnalyticsScreen extends StatelessWidget {
                               centerSpaceRadius: 30,
                               startDegreeOffset: -45,
                               sectionsSpace: 3,
+                              pieTouchData: PieTouchData(
+                                touchCallback: (event, response) {
+                                  if (event is FlTapUpEvent &&
+                                      response != null &&
+                                      response.touchedSection != null) {
+                                    final index = response.touchedSection!.touchedSectionIndex;
+
+                                    if (index != null && index >= 0) {  // ✅ prevent -1
+                                      final category = chequeCounts.keys.elementAt(index);
+                                      _showChequePopup(context, category);
+                                    }
+                                  }
+                                },
+                              ),
+
                               sections: [
-                                PieChartSectionData(
-                                  value: cleared.toDouble(),
-                                  title: '$cleared\nCleared',
-                                  radius: 70,
-                                  titleStyle: GoogleFonts.poppins(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w600,
-                                    color: Colors.white,
-                                  ),
-                                  gradient: LinearGradient(
-                                    colors: [Colors.teal.shade700, Colors.teal.shade400],
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.bottomRight,
-                                  ),
-                                ),
-                                PieChartSectionData(
-                                  value: pending.toDouble(),
-                                  title: '$pending\nPending',
-                                  radius: 70,
-                                  titleStyle: GoogleFonts.poppins(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w600,
-                                    color: Colors.white,
-                                  ),
-                                  gradient: LinearGradient(
-                                    colors: [Colors.orange.shade700, Colors.orange.shade300],
-                                    begin: Alignment.bottomLeft,
-                                    end: Alignment.topRight,
-                                  ),
-                                ),
+                                _buildSection("Received", chequeCounts["Received"]!, [Colors.blue, Colors.blueAccent]),
+                                _buildSection("Deposited", chequeCounts["Deposited"]!, [Colors.orange, Colors.deepOrangeAccent]),
+                                _buildSection("Cleared", chequeCounts["Cleared"]!, [Colors.green, Colors.lightGreen]),
+                                _buildSection("Returned", chequeCounts["Returned"]!, [Colors.red.shade700, Colors.redAccent]),
                               ],
                             ),
                           ),
                           Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Text("Total",
-                                  style: GoogleFonts.poppins(
-                                      fontSize: 10, color: Colors.grey.shade600)),
-                              const SizedBox(height: 2),
                               Text(
-                                "${cleared + pending}",
+                                "Total",
                                 style: GoogleFonts.poppins(
+                                  fontSize: 10,
+                                  color: Colors.grey.shade600,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              GestureDetector(
+                                onTap: () => _showChequePopup(context, "All"), // ✅ open all cheques
+                                child: Text(
+                                  "$totalCheques",
+                                  style: GoogleFonts.poppins(
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
-                                    color: Colors.black87),
+                                    color: Colors.black87,
+                                  ),
+                                ),
                               ),
                             ],
                           ),
+
+
                         ],
                       ),
                     ),
@@ -350,7 +425,7 @@ class TenantAnalyticsScreen extends StatelessWidget {
               ),*/
 
             // 🔹 Unit Distribution (Landlord only)
-            if (isLandlord && buildingFlatCount.isNotEmpty)
+            if (widget.isLandlord && widget.buildingFlatCount.isNotEmpty)
               Container(
                 height: 260,
                 padding: const EdgeInsets.all(16),
@@ -381,14 +456,14 @@ class TenantAnalyticsScreen extends StatelessWidget {
                       child: BarChart(
                         BarChartData(
                           alignment: BarChartAlignment.spaceAround,
-                          maxY: (buildingFlatCount.values.reduce((a, b) => a > b ? a : b)).toDouble(),
+                          maxY: (widget.buildingFlatCount.values.reduce((a, b) => a > b ? a : b)).toDouble(),
                           barTouchData: BarTouchData(
                             enabled: true,
                             touchCallback: (event, response) {
                               if (event is FlTapUpEvent && response != null && response.spot != null) {
                                 final index = response.spot!.touchedBarGroupIndex;
-                                if (index != null && index >= 0 && index < buildingFlatCount.length) {
-                                  final buildingName = buildingFlatCount.keys.elementAt(index);
+                                if (index != null && index >= 0 && index < widget.buildingFlatCount.length) {
+                                  final buildingName = widget.buildingFlatCount.keys.elementAt(index);
                                   _showUnitsPopup(context, buildingName); // ✅ same popup
                                 }
                               }
@@ -402,8 +477,8 @@ class TenantAnalyticsScreen extends StatelessWidget {
                                 reservedSize: 40,
                                 getTitlesWidget: (value, meta) {
                                   int idx = value.toInt();
-                                  if (idx >= buildingFlatCount.length) return const SizedBox.shrink();
-                                  String label = buildingFlatCount.keys.elementAt(idx);
+                                  if (idx >= widget.buildingFlatCount.length) return const SizedBox.shrink();
+                                  String label = widget.buildingFlatCount.keys.elementAt(idx);
                                   return SideTitleWidget(
                                     meta: meta,
                                     child: Text(
@@ -426,7 +501,7 @@ class TenantAnalyticsScreen extends StatelessWidget {
                           ),
                           borderData: FlBorderData(show: false),
                           gridData: FlGridData(show: true),
-                          barGroups: buildingFlatCount.entries.toList().asMap().entries.map((entry) {
+                          barGroups: widget.buildingFlatCount.entries.toList().asMap().entries.map((entry) {
                             final index = entry.key;
                             final label = entry.value.key;
                             final count = entry.value.value;
@@ -494,5 +569,385 @@ class TenantAnalyticsScreen extends StatelessWidget {
       ),
     );
   }
+  Widget _buildStatusChip(String status) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(
+        color: _getCategoryColor(status).withOpacity(0.15),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: _getCategoryColor(status), width: 1),
+      ),
+      child: Text(
+        status,
+        style: GoogleFonts.poppins(
+          fontSize: 11,
+          fontWeight: FontWeight.w600,
+          color: _getCategoryColor(status),
+        ),
+      ),
+    );
+  }
 
+  void _showChequePopup(BuildContext context, String category) {
+    final cheques = widget.contracts
+        .expand((c) => c['cheques'] ?? [])
+        .where((chq) {
+      if (category == "All") return true; // ✅ include everything
+      return _getChequeCategory(chq) == category;
+    })
+        .toList();
+    if (category == "All") {
+      debugPrint("All selected → total cheques: ${cheques.length}");
+    }
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return DraggableScrollableSheet(
+          initialChildSize: 0.9,
+          minChildSize: 0.6,
+          maxChildSize: 0.95,
+          builder: (context, scrollController) {
+            return Container(
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+              ),
+              child: Stack(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
+                    child: Column(
+                      children: [
+                        // Header
+                        Center(
+                          child: Column(
+                            children: [
+                              CircleAvatar(
+                                radius: 36,
+                                backgroundColor: category == "All"
+                                    ? Colors.purple
+                                    : _getCategoryColor(category),
+                                child: Icon(Icons.payments,
+                                    color: Colors.white, size: 28),
+                              ),
+                              const SizedBox(height: 10),
+                              Text(
+                                category == "All"
+                                    ? "All Cheques"
+                                    : "$category Cheques",
+                                style: GoogleFonts.poppins(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                "${cheques.length} cheque(s)",
+                                style: GoogleFonts.poppins(
+                                    fontSize: 13,
+                                    color: Colors.grey.shade600),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        Divider(),
+
+                        // Cheque list
+                        Expanded(
+                          child: cheques.isEmpty
+                              ? Center(
+                            child: Text(
+
+                              "No cheques found",
+                              style: GoogleFonts.poppins(
+                                  fontSize: 14, color: Colors.grey),
+                            ),
+                          )
+                              : ListView.builder(
+                            controller: scrollController,
+                            itemCount: cheques.length,
+                            itemBuilder: (context, i) {
+                              final chq = cheques[i];
+                              final payment = chq['payment'] ?? {};
+                              final chequeInfo = payment['cheque'] ?? {};
+                              final status = _getChequeCategory(chq);
+
+                              return _buildExpandableChequeCard(chq, payment, chequeInfo, status, category);
+                            },
+
+
+
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // Close button
+                  Positioned(
+                    top: 20,
+                    right: 20,
+                    child: GestureDetector(
+                      onTap: () => Navigator.pop(context),
+                      child: Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.grey.shade200,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black12,
+                              blurRadius: 4,
+                            ),
+                          ],
+                        ),
+                        child: const Icon(Icons.close, size: 20),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+
+
+  Color _getCategoryColor(String category) {
+    switch (category) {
+      case "Received":
+        return Colors.blue;
+      case "Deposited":
+        return Colors.orange;
+      case "Cleared":
+        return Colors.green;
+      case "Returned":
+        return Colors.red;
+      default:
+        return Colors.grey;
+    }
+  }
+
+  Widget _buildExpandableChequeCard(
+      Map chq, Map payment, Map chequeInfo, String status, String category)
+  {
+    final contract = _findContractForCheque(chq);
+    final unit = (contract['flats'] as List?)?.isNotEmpty == true
+        ? contract['flats'][0]
+        : {};
+
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: ExpansionTile(
+        tilePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+        childrenPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        collapsedShape:
+        RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+
+        // 🔹 Summary Row (always visible)
+        leading: CircleAvatar(
+          backgroundColor: (category == "All"
+              ? _getCategoryColor(status)
+              : _getCategoryColor(category))
+              .withOpacity(0.15),
+          child: Icon(
+            Icons.description_outlined,
+            color: category == "All"
+                ? _getCategoryColor(status)
+                : _getCategoryColor(category),
+          ),
+        ),
+        title: Text(
+          "Cheque #${payment['instrument_no'] ?? '-'}",
+          style: GoogleFonts.poppins(
+            fontWeight: FontWeight.w600,
+            fontSize: 15,
+            color: Colors.black87,
+          ),
+        ),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Amount row with AED icon
+            Row(
+              children: [
+                Image.asset("assets/dirham.png",
+                    height: 13, width: 13),
+                const SizedBox(width: 4),
+                Text(
+                  "${payment['amount_incl'] ?? '-'}",
+                  style: GoogleFonts.poppins(
+                      fontSize: 12, color: Colors.grey.shade800),
+                ),
+              ],
+            ),
+            const SizedBox(height: 4),
+
+            // Bank
+            Text(
+              "Bank: ${chequeInfo['bank_name'] ?? '-'}",
+              style: GoogleFonts.poppins(
+                  fontSize: 12, color: Colors.grey.shade600),
+            ),
+
+            // Dates (with your formatDate function)
+            if (chequeInfo['date'] != null)
+              Text(
+                "Received on: ${formatDate(chequeInfo['date'])}",
+                style: GoogleFonts.poppins(
+                    fontSize: 12, color: Colors.grey.shade600),
+              ),
+            if (chequeInfo['deposited_on'] != null)
+              Text(
+                "Deposited on: ${formatDate(chequeInfo['deposited_on'])}",
+                style: GoogleFonts.poppins(
+                    fontSize: 12, color: Colors.grey.shade600),
+              ),
+            if (chequeInfo['cleared_on'] != null)
+              Text(
+                "Cleared on: ${formatDate(chequeInfo['cleared_on'])}",
+                style: GoogleFonts.poppins(
+                    fontSize: 12, color: Colors.grey.shade600),
+              ),
+            if (payment['returned_on'] != null ||
+                chequeInfo['returned_on'] != null)
+              Text(
+                "Returned on: ${formatDate(payment['returned_on'] ?? chequeInfo['returned_on'])}",
+                style: GoogleFonts.poppins(
+                    fontSize: 12,
+                    color: Colors.red.shade600,
+                    fontWeight: FontWeight.w500),
+              ),
+          ],
+        ),
+
+
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (category == "All") _buildStatusChip(status), // ✅ chip only in All
+            const Icon(Icons.keyboard_arrow_down, color: Colors.grey), // dropdown arrow
+          ],
+        ),
+
+        // 🔹 Expanded Details → as mini sub-cards
+        children: [
+          if (unit.isNotEmpty)
+            Container(
+              width: double.infinity,
+              margin: const EdgeInsets.only(bottom: 12),
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: Colors.grey.shade100,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(Icons.apartment_outlined,
+                          size: 18, color: Colors.grey.shade700),
+                      const SizedBox(width: 6),
+                      Text("Unit Details",
+                          style: GoogleFonts.poppins(
+                              fontSize: 14, fontWeight: FontWeight.w600)),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Text("Unit: ${unit['name']} - ${unit['flat_type']?['name'] ?? '-'}",
+                      style: GoogleFonts.poppins(fontSize: 13)),
+                  Text("Building: ${unit['building']?['name'] ?? '-'}, ${unit['building']?['area']['name'] ?? '-'}, ${unit['building']?['area']['state']['name'] ?? '-'}",
+                      style: GoogleFonts.poppins(
+                          fontSize: 13, color: Colors.grey.shade700)),
+                ],
+              ),
+            ),
+
+          if (contract.isNotEmpty)
+            Container(
+              width: double.infinity,
+              margin: const EdgeInsets.only(bottom: 8),
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: Colors.grey.shade100,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(Icons.assignment_outlined,
+                          size: 18, color: Colors.grey.shade700),
+                      const SizedBox(width: 6),
+                      Text("Contract Details",
+                          style: GoogleFonts.poppins(
+                              fontSize: 14, fontWeight: FontWeight.w600)),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Text("Contract #: ${contract['contract_no'] ?? '-'}",
+                      style: GoogleFonts.poppins(fontSize: 13)),
+                  Text("Type: ${contract['contract_type'] ?? '-'}",
+                      style: GoogleFonts.poppins(fontSize: 13)),
+                  Text("Expiry: ${formatDate(contract['expiry_date']) ?? '-'}",
+                      style: GoogleFonts.poppins(
+                          fontSize: 13, color: Colors.grey.shade700)),
+                ],
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+
+
+  Map<String, dynamic> _findContractForCheque(Map cheque) {
+    for (var contract in widget.contracts) {
+      final cheques = contract['cheques'] ?? [];
+      if (cheques.contains(cheque)) {
+        return contract;
+      }
+    }
+    return {};
+  }
+
+}
+PieChartSectionData _buildSection(String label, int count, List<Color> colors) {
+  return PieChartSectionData(
+    value: count.toDouble(),
+    title: "$count\n$label",
+    radius: 70,
+    titleStyle: GoogleFonts.poppins(
+      fontSize: 11,
+      fontWeight: FontWeight.w600,
+      color: Colors.white,
+    ),
+    gradient: LinearGradient(
+      colors: colors,
+      begin: Alignment.topLeft,
+
+      end: Alignment.bottomRight,
+    ),
+  );
 }

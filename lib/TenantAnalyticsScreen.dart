@@ -358,9 +358,9 @@ class _TenantAnalyticsScreenState extends State<TenantAnalyticsScreen> {
       backgroundColor: Colors.transparent,
       builder: (context) {
         return DraggableScrollableSheet(
-          initialChildSize: 0.9,
-          minChildSize: 0.6,
-          maxChildSize: 0.95,
+          initialChildSize: 0.7,
+          minChildSize: 0.7,
+          maxChildSize: 0.8,
           builder: (context, scrollController) {
             return Container(
               decoration: const BoxDecoration(
@@ -379,7 +379,7 @@ class _TenantAnalyticsScreenState extends State<TenantAnalyticsScreen> {
                             children: [
                               CircleAvatar(
                                 radius: 36,
-                                backgroundColor: type == "All" ? Colors.purple : _getTypeColor(type),
+                                backgroundColor: type == "All" ? Colors.teal : _getTypeColor(type),
                                 child: Icon(Icons.payments, color: Colors.white, size: 28),
                               ),
                               const SizedBox(height: 10),
@@ -1016,134 +1016,6 @@ class _TenantAnalyticsScreenState extends State<TenantAnalyticsScreen> {
     );
   }
 
-  void _showChequePopup(BuildContext context, String category) {
-    final cheques = widget.contracts
-        .expand((c) => c['cheques'] ?? [])
-        .where((chq) {
-      if (category == "All") return true; // ✅ include everything
-      return _getChequeCategory(chq) == category;
-    })
-        .toList();
-    if (category == "All") {
-      debugPrint("All selected → total cheques: ${cheques.length}");
-    }
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) {
-        return DraggableScrollableSheet(
-          initialChildSize: 0.1,
-          minChildSize: 0.5,
-          maxChildSize: 0.5,
-          builder: (context, scrollController) {
-            return Container(
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-              ),
-              child: Stack(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
-                    child: Column(
-                      children: [
-                        // Header
-                        Center(
-                          child: Column(
-                            children: [
-                              CircleAvatar(
-                                radius: 36,
-                                backgroundColor: category == "All"
-                                    ? Colors.purple
-                                    : _getCategoryColor(category),
-                                child: Icon(Icons.payments,
-                                    color: Colors.white, size: 28),
-                              ),
-                              const SizedBox(height: 10),
-                              Text(
-                                category == "All"
-                                    ? "All Cheques"
-                                    : "$category Cheques",
-                                style: GoogleFonts.poppins(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                "${cheques.length} cheque(s)",
-                                style: GoogleFonts.poppins(
-                                    fontSize: 13,
-                                    color: Colors.grey.shade600),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        Divider(),
-
-                        // Cheque list
-                        Expanded(
-                          child: cheques.isEmpty
-                              ? Center(
-                            child: Text(
-
-                              "No cheques found",
-                              style: GoogleFonts.poppins(
-                                  fontSize: 14, color: Colors.grey),
-                            ),
-                          )
-                              : ListView.builder(
-                            controller: scrollController,
-                            itemCount: cheques.length,
-                            itemBuilder: (context, i) {
-                              final chq = cheques[i];
-                              final payment = chq['payment'] ?? {};
-                              final chequeInfo = payment['cheque'] ?? {};
-                              final status = _getChequeCategory(chq);
-
-                              return _buildExpandableChequeCard(chq, payment, chequeInfo, status, category);
-                            },
-
-
-
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  // Close button
-                  Positioned(
-                    top: 20,
-                    right: 20,
-                    child: GestureDetector(
-                      onTap: () => Navigator.pop(context),
-                      child: Container(
-                        padding: const EdgeInsets.all(6),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.grey.shade200,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black12,
-                              blurRadius: 4,
-                            ),
-                          ],
-                        ),
-                        child: const Icon(Icons.close, size: 20),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            );
-          },
-        );
-      },
-    );
-  }
 
 
 

@@ -5,11 +5,13 @@ import 'package:cshrealestatemobile/constants.dart';
 import 'package:flutter/animation.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 import 'Sidebar.dart';
@@ -2173,25 +2175,54 @@ late int loaded_flat_id;
       // ✅ Ensure only valid images are uploaded
       _attachment = _attachment.where(isValidImage).toList();
 
+
       for (var file in _attachment) {
+        print("DEBUG -> file runtimeType: ${file.runtimeType}");
+
         if (file is File) {
-          // ✅ Mobile (iOS & Android) - Use file path
+          final originalSize = file.lengthSync(); // ✅ file is now File
+          print("📷 Original File Size: ${(originalSize / 1024).toStringAsFixed(2)} KB");
+
+          final dir = await getTemporaryDirectory();
+          final targetPath = "${dir.path}/${DateTime.now().millisecondsSinceEpoch}_compressed.jpg";
+
+          final compressedFile = await FlutterImageCompress.compressAndGetFile(
+            file.absolute.path,
+            targetPath,
+            quality: 70,
+          );
+
+          final finalFile = (compressedFile ?? file) as File;
+          final compressedSize = finalFile.lengthSync();
+          print("✅ Compressed File Size: ${(compressedSize / 1024).toStringAsFixed(2)} KB");
+
           request.files.add(
             await http.MultipartFile.fromPath(
               'images',
-              file.path,
-              filename: basename(file.path),
-              contentType: MediaType('image', getMimeType(file.path)),
+              finalFile.path,
+              filename: basename(finalFile.path),
+              contentType: MediaType('image', getMimeType(finalFile.path)),
             ),
           );
         } else if (file is Uint8List) {
-          // ✅ Web - Use in-memory file
+          final originalSize = file.lengthInBytes; // ✅ file is now Uint8List
+          print("📷 Original Memory Image Size: ${(originalSize / 1024).toStringAsFixed(2)} KB");
+
+          final compressedBytes = await FlutterImageCompress.compressWithList(
+            file,
+            quality: 70,
+            format: CompressFormat.jpeg,
+          );
+
+          final compressedSize = compressedBytes.lengthInBytes;
+          print("✅ Compressed Memory Image Size: ${(compressedSize / 1024).toStringAsFixed(2)} KB");
+
           request.files.add(
             http.MultipartFile.fromBytes(
               'images',
-              file,
+              compressedBytes,
               filename: 'web_image_${DateTime.now().millisecondsSinceEpoch}.png',
-              contentType: MediaType('image', 'png'), // Defaulting to PNG
+              contentType: MediaType('image', 'png'),
             ),
           );
         }

@@ -49,6 +49,7 @@ dependencies:
   fluttertoast:
   uuid:
   flutter_colorpicker:
+  flutter_image_compress:
   path:
   mime:
   google_fonts:

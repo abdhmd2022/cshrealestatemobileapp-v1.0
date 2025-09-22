@@ -285,12 +285,13 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
         'contract_no': contractNo,
         'contract_id': contractId,
         'contract_type': 'rental',
-        'expiry_date': contract['to_date'],  // ✅ Extract to_date as expiry date
+        'expiry_date': contract['to_date'],
         'flats': [],
-        'cheques': [],
+        'payments': [],   // ✅ only one place
         'invoices': {},
       };
 
+      // Flats
       final flatLinks = contract['flats'] ?? [];
       for (var link in flatLinks) {
         final flat = link['flat'];
@@ -299,29 +300,40 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
         }
       }
 
+      // Receipts → Payments
       final receipts = contract['receipts'] ?? [];
       for (var receipt in receipts) {
         final payments = receipt['payments'] ?? [];
         for (var paymentObj in payments) {
           final payment = paymentObj['payment'];
+          if (payment == null) continue;
+
           final cheque = payment['cheque'];
 
-          if (cheque != null) {
-            groupedContracts[contractNo]!['cheques'].add({
-              'payment': payment,
-              'date': cheque['date'],
-              'is_received': cheque['is_received'] == 'true',
-              'is_deposited': cheque['is_deposited'] == 'true',
-              'returned_on': payment['returned_on'],
-            });
+          // 🔹 Store normalized payment
+          groupedContracts[contractNo]!['payments'].add({
+            'payment_id': payment['id'],
+            'type': payment['payment_type'],
+            'instrument_no': payment['instrument_no'],
+            'amount': payment['amount_incl'],
+            'description': payment['description'],
+            'returned_on': payment['returned_on'],
+            'created_at': payment['created_at'],
+            // Cheque-specific fields
+            'date': cheque?['date'],
+            'bank_name': cheque?['bank_name'],
+            'is_received': cheque?['is_received'] ?? false,
+            'is_deposited': cheque?['is_deposited'] ?? false,
+            'deposited_on': cheque?['deposited_on'],
+            'cleared_on': cheque?['cleared_on'],
+          });
 
-            final dateStr = cheque['date'] ?? '';
-            final month = dateStr.isNotEmpty ? dateStr.substring(0, 7) : 'Unknown';
-
-            groupedContracts[contractNo]!['invoices'][month] =
-                (groupedContracts[contractNo]!['invoices'][month] ?? 0.0) +
-                    (payment['amount_incl']?.toDouble() ?? 0.0);
-          }
+          // 🔹 Invoices summary
+          final dateStr = cheque?['date'] ?? payment['created_at'] ?? '';
+          final month = dateStr.isNotEmpty ? dateStr.substring(0, 7) : 'Unknown';
+          groupedContracts[contractNo]!['invoices'][month] =
+              (groupedContracts[contractNo]!['invoices'][month] ?? 0.0) +
+                  (payment['amount_incl']?.toDouble() ?? 0.0);
         }
       }
     }
@@ -335,6 +347,9 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
       }
       isLoading = false;
     });
+
+    final pretty = const JsonEncoder.withIndent("  ").convert(contracts);
+    debugPrint(pretty);
   }
 
   void _processLandlordData(Map<String, dynamic> landlord) {
@@ -608,9 +623,13 @@ class _SalesDashboardScreenState extends State<TenantDashboard> {
 
 
 
+
     if (selectedContractIndex >= 0 && selectedContractIndex < contracts.length) {
       selected = contracts[selectedContractIndex] ?? {};
-      cheques = selected['cheques'] ?? [];
+       cheques = selected['payments']
+          ?.where((p) => p['type'] == 'Cheque')
+          .toList() ?? [];
+
       flats = selected['flats'] ?? [];
 
       final rawInvoices = selected['invoices'] ?? {};

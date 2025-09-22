@@ -2221,8 +2221,8 @@ late int loaded_flat_id;
             http.MultipartFile.fromBytes(
               'images',
               compressedBytes,
-              filename: 'web_image_${DateTime.now().millisecondsSinceEpoch}.png',
-              contentType: MediaType('image', 'png'),
+              filename: 'web_image_${DateTime.now().millisecondsSinceEpoch}.jpeg',
+              contentType: MediaType('image', 'jpeg'),
             ),
           );
         }

@@ -2175,7 +2175,6 @@ late int loaded_flat_id;
       // ✅ Ensure only valid images are uploaded
       _attachment = _attachment.where(isValidImage).toList();
 
-
       for (var file in _attachment) {
         print("DEBUG -> file runtimeType: ${file.runtimeType}");
 

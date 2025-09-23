@@ -23,6 +23,8 @@ import 'package:http_parser/http_parser.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server.dart';
+import 'dart:typed_data';
+import 'package:image/image.dart' as img;
 
 class MaintanceType {
   final int id;
@@ -2160,58 +2162,48 @@ late int loaded_flat_id;
      final mimeType = lookupMimeType(path);
      return mimeType?.split('/').last ?? 'jpeg'; // Default to JPEG
   }
-
-  Future<void> sendImageData(int id,BuildContext context) async {
+  Future<void> sendImageData(int id, BuildContext context) async {
     try {
       final String urll = "$baseurl/uploads/ticket/$id";
       final url = Uri.parse(urll);
 
       final request = http.MultipartRequest('POST', url);
-
       request.headers.addAll({
-        'Authorization': 'Bearer $Company_Token', // Authentication token
+        'Authorization': 'Bearer $Company_Token',
       });
 
-      // ✅ Ensure only valid images are uploaded
+      // ✅ Filter only valid images
       _attachment = _attachment.where(isValidImage).toList();
 
       for (var file in _attachment) {
         print("DEBUG -> file runtimeType: ${file.runtimeType}");
 
+        // ---- Case 1: File ----
         if (file is File) {
-          final originalSize = file.lengthSync(); // ✅ file is now File
+          final originalSize = file.lengthSync();
           print("📷 Original File Size: ${(originalSize / 1024).toStringAsFixed(2)} KB");
 
-          final dir = await getTemporaryDirectory();
-          final targetPath = "${dir.path}/${DateTime.now().millisecondsSinceEpoch}_compressed.jpg";
+          final compressedFile = await _compressFileWithImagePkg(file);
 
-          final compressedFile = await FlutterImageCompress.compressAndGetFile(
-            file.absolute.path,
-            targetPath,
-            quality: 70,
-          );
-
-          final finalFile = (compressedFile ?? file) as File;
-          final compressedSize = finalFile.lengthSync();
+          final compressedSize = compressedFile.lengthSync();
           print("✅ Compressed File Size: ${(compressedSize / 1024).toStringAsFixed(2)} KB");
 
           request.files.add(
             await http.MultipartFile.fromPath(
               'images',
-              finalFile.path,
-              filename: basename(finalFile.path),
-              contentType: MediaType('image', getMimeType(finalFile.path)),
+              compressedFile.path,
+              filename: basename(compressedFile.path),
+              contentType: MediaType('image', 'jpeg'),
             ),
           );
-        } else if (file is Uint8List) {
-          final originalSize = file.lengthInBytes; // ✅ file is now Uint8List
+        }
+
+        // ---- Case 2: Uint8List (e.g. Web image) ----
+        else if (file is Uint8List) {
+          final originalSize = file.lengthInBytes;
           print("📷 Original Memory Image Size: ${(originalSize / 1024).toStringAsFixed(2)} KB");
 
-          final compressedBytes = await FlutterImageCompress.compressWithList(
-            file,
-            quality: 70,
-            format: CompressFormat.jpeg,
-          );
+          final compressedBytes = await _compressBytesWithImagePkg(file);
 
           final compressedSize = compressedBytes.lengthInBytes;
           print("✅ Compressed Memory Image Size: ${(compressedSize / 1024).toStringAsFixed(2)} KB");
@@ -2232,7 +2224,6 @@ late int loaded_flat_id;
       var response = await http.Response.fromStream(streamedResponse);
 
       if (response.statusCode == 201) {
-
         setState(() {
           selectedMaintenanceType = [];
           selectedMaintenanceTypeIds = [];
@@ -2241,12 +2232,44 @@ late int loaded_flat_id;
           _attachment.clear();
         });
       } else {
-        print('Upload failed with status code: ${response.statusCode}');
+        print('❌ Upload failed with status code: ${response.statusCode}');
         print('Response body: ${response.body}');
       }
     } catch (e) {
       print('Error during upload: $e');
     }
+  }
+
+  /// 🔹 Compress File using `image` package
+  Future<File> _compressFileWithImagePkg(File file) async {
+    final bytes = await file.readAsBytes();
+    final originalImage = img.decodeImage(bytes);
+
+    if (originalImage == null) return file;
+
+    // Resize (optional: max width 1080)
+    final resized = img.copyResize(originalImage, width: 1080);
+
+    final compressedBytes = img.encodeJpg(resized, quality: 70);
+
+    final dir = await getTemporaryDirectory();
+    final targetPath = "${dir.path}/${DateTime.now().millisecondsSinceEpoch}_compressed.jpg";
+
+    final compressedFile = File(targetPath);
+    await compressedFile.writeAsBytes(compressedBytes);
+
+    return compressedFile;
+  }
+
+  /// 🔹 Compress Bytes (for Web Uint8List)
+  Future<Uint8List> _compressBytesWithImagePkg(Uint8List bytes) async {
+    final originalImage = img.decodeImage(bytes);
+    if (originalImage == null) return bytes;
+
+    final resized = img.copyResize(originalImage, width: 1080);
+
+    final compressedBytes = img.encodeJpg(resized, quality: 70);
+    return Uint8List.fromList(compressedBytes);
   }
 
 // Helper widget for attachment options

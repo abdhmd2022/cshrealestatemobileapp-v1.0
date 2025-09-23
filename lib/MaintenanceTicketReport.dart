@@ -576,326 +576,330 @@ class _MaintenanceTicketReportState extends State<MaintenanceTicketReport> with 
               });
             }
 
-            return Container(
-              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-              height: MediaQuery.of(contextt).size.height * 0.7,
-              color: Colors.white,
-              child: Column(
-                children: [
-                  // Header
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            return Padding(
+                padding: EdgeInsets.only(
+                  bottom: MediaQuery.of(contextt).viewInsets.bottom, // ⬅️ fixes keyboard issue
+                ),
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                  height: MediaQuery.of(contextt).size.height * 0.7,
+                  color: Colors.white,
+                  child: Column(
                     children: [
-                      Text(
-                        "Comments",
-                        style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.w600),
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.close, color: Colors.grey),
-                        onPressed: () => Navigator.pop(contextt),
-                      ),
-                    ],
-                  ),
-                  Divider(),
-
-                  // Comments List
-                  if(hasPermission('canViewTicketComment'))...[
-                    Expanded(
-                      child: filteredData.isEmpty
-                          ? Center(child: Text("No Comments Found", style: GoogleFonts.poppins()))
-                          : ListView.builder(
-                          controller: scrollController,
-                          itemCount: filteredData.length + (isLoadingMore ? 1 : 0),
-                          itemBuilder: (contextt, index) {
-                            if (isLoadingMore && index == filteredData.length) {
-                              return Center(
-                                child: Padding(
-                                  padding: EdgeInsets.all(8),
-                                  child: CircularProgressIndicator(),
-                                ),
-                              );
-                            }
-
-                            var item = filteredData[index];
-
-                            bool isCurrentUserComment = false;
-
-                            if (currentScope == 'user') {
-                              isCurrentUserComment = item['created_by'] != null;
-                            } else if (currentScope == 'tenant') {
-                              isCurrentUserComment = item['tenant_id'] != null;
-                            }
-                            else if (currentScope == 'landlord') {
-                              isCurrentUserComment = item['landlord_id'] != null;
-                            }
-
-
-                            String username;
-                            if (item['tenant_id'] != null) {
-                              username = item["tenant"]?["name"] ?? "Tenant";
-                            } else if (item['landlord_id'] != null) {
-                              if (currentScope == 'landlord' && item['landlord_id'] != null) {
-                                // It's *this* landlord's comment
-                                username = "You";
-                              } else {
-                                // Some other landlord (if relevant)
-                                username = "Landlord";
-
-                              }
-                            } else if (item["created_user"] != null) {
-                              username = item["created_user"]["name"] ?? "Admin";
-                            } else {
-                              username = "Admin";
-                            }
-
-                            // Get current message date (only date part)
-                            DateTime messageDate = DateTime.parse(item["created_at"]).toLocal();
-                            String messageDateString = "${messageDate.year}-${messageDate.month}-${messageDate.day}";
-
-                            // Check if we need to show a date separator
-                            bool showDateSeparator = false;
-                            if (index == 0) {
-                              showDateSeparator = true;
-                            } else {
-                              var previousItem = filteredData[index - 1];
-                              DateTime previousDate = DateTime.parse(previousItem["created_at"]).toLocal();
-                              String previousDateString = "${previousDate.year}-${previousDate.month}-${previousDate.day}";
-                              if (messageDateString != previousDateString) {
-                                showDateSeparator = true;
-                              }
-                            }
-
-                            List<Widget> widgets = [];
-
-                            if (showDateSeparator) {
-                              widgets.add(
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(vertical: 10),
-                                  child: Center(
-                                    child: Container(
-                                      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                                      decoration: BoxDecoration(
-                                        color: Colors.grey.shade300,
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                      child: Text(
-                                        getFormattedDateLabel(messageDate),
-                                        style: GoogleFonts.poppins(
-                                          fontSize: 13,
-                                          fontWeight: FontWeight.w500,
-                                          color: Colors.black87,
-                                        ),
-                                      ),
-
-                                    ),
-                                  ),
-                                ),
-                              );
-                            }
-
-                            widgets.add(
-                              Container(
-                                alignment: isCurrentUserComment ? Alignment.centerRight : Alignment.centerLeft,
-                                margin: EdgeInsets.symmetric(vertical: 6),
-                                child: Container(
-                                  constraints: BoxConstraints(
-                                    maxWidth: MediaQuery.of(contextt).size.width * 0.7,
-                                  ),
-                                  padding: EdgeInsets.all(12),
-                                  decoration: BoxDecoration(
-                                    color: isCurrentUserComment ? appbar_color.withOpacity(0.9) : Colors.grey.shade300,
-                                    borderRadius: BorderRadius.only(
-                                      topLeft: Radius.circular(16),
-                                      topRight: Radius.circular(16),
-                                      bottomLeft: isCurrentUserComment ? Radius.circular(16) : Radius.circular(0),
-                                      bottomRight: isCurrentUserComment ? Radius.circular(0) : Radius.circular(16),
-                                    ),
-                                  ),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        username,
-                                        style: GoogleFonts.poppins(
-                                          fontSize: 13,
-                                          color: isCurrentUserComment ? Colors.white70 : Colors.black87,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                      SizedBox(height: 4),
-                                      Text(
-                                        item["description"] ?? "",
-                                        style: GoogleFonts.poppins(
-                                          fontSize: 15,
-                                          color: isCurrentUserComment ? Colors.white : Colors.black87,
-                                        ),
-                                      ),
-                                      SizedBox(height: 4),
-                                      Text(
-                                        DateFormat('hh:mm a').format(DateTime.parse(item["created_at"]).toLocal()),
-
-                                        style: GoogleFonts.poppins(
-                                          fontSize: 10,
-                                          color: isCurrentUserComment ? Colors.white60 : Colors.black54,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            );
-
-                            return Column(
-                              children: widgets,
-                            );
-                          }
-
-                      ),
-                    ),
-                  ]
-                  else...[
-                    Expanded(
-                      child: Center(
-                        child: SingleChildScrollView(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                      // Header
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Icon(Icons.lock_outline, size: 48, color: Colors.grey),
-                          SizedBox(height: 10),
                           Text(
-                            "Access Denied",
-                            style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold),
+                            "Comments",
+                            style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.w600),
                           ),
-                          Text(
-                            "You don’t have permission to view comments.",
-                            style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey),
-                            textAlign: TextAlign.center,
+                          IconButton(
+                            icon: Icon(Icons.close, color: Colors.grey),
+                            onPressed: () => Navigator.pop(contextt),
                           ),
                         ],
                       ),
-                      )
-                      ),
-                    ),
-                  ],
+                      Divider(),
+
+                      // Comments List
+                      if(hasPermission('canViewTicketComment'))...[
+                        Expanded(
+                          child: filteredData.isEmpty
+                              ? Center(child: Text("No Comments Found", style: GoogleFonts.poppins()))
+                              : ListView.builder(
+                              controller: scrollController,
+                              itemCount: filteredData.length + (isLoadingMore ? 1 : 0),
+                              itemBuilder: (contextt, index) {
+                                if (isLoadingMore && index == filteredData.length) {
+                                  return Center(
+                                    child: Padding(
+                                      padding: EdgeInsets.all(8),
+                                      child: CircularProgressIndicator(),
+                                    ),
+                                  );
+                                }
+
+                                var item = filteredData[index];
+
+                                bool isCurrentUserComment = false;
+
+                                if (currentScope == 'user') {
+                                  isCurrentUserComment = item['created_by'] != null;
+                                } else if (currentScope == 'tenant') {
+                                  isCurrentUserComment = item['tenant_id'] != null;
+                                }
+                                else if (currentScope == 'landlord') {
+                                  isCurrentUserComment = item['landlord_id'] != null;
+                                }
 
 
-                  if(status!='Close')...[
+                                String username;
+                                if (item['tenant_id'] != null) {
+                                  username = item["tenant"]?["name"] ?? "Tenant";
+                                } else if (item['landlord_id'] != null) {
+                                  if (currentScope == 'landlord' && item['landlord_id'] != null) {
+                                    // It's *this* landlord's comment
+                                    username = "You";
+                                  } else {
+                                    // Some other landlord (if relevant)
+                                    username = "Landlord";
+
+                                  }
+                                } else if (item["created_user"] != null) {
+                                  username = item["created_user"]["name"] ?? "Admin";
+                                } else {
+                                  username = "Admin";
+                                }
+
+                                // Get current message date (only date part)
+                                DateTime messageDate = DateTime.parse(item["created_at"]).toLocal();
+                                String messageDateString = "${messageDate.year}-${messageDate.month}-${messageDate.day}";
+
+                                // Check if we need to show a date separator
+                                bool showDateSeparator = false;
+                                if (index == 0) {
+                                  showDateSeparator = true;
+                                } else {
+                                  var previousItem = filteredData[index - 1];
+                                  DateTime previousDate = DateTime.parse(previousItem["created_at"]).toLocal();
+                                  String previousDateString = "${previousDate.year}-${previousDate.month}-${previousDate.day}";
+                                  if (messageDateString != previousDateString) {
+                                    showDateSeparator = true;
+                                  }
+                                }
+
+                                List<Widget> widgets = [];
+
+                                if (showDateSeparator) {
+                                  widgets.add(
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(vertical: 10),
+                                      child: Center(
+                                        child: Container(
+                                          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                          decoration: BoxDecoration(
+                                            color: Colors.grey.shade300,
+                                            borderRadius: BorderRadius.circular(12),
+                                          ),
+                                          child: Text(
+                                            getFormattedDateLabel(messageDate),
+                                            style: GoogleFonts.poppins(
+                                              fontSize: 13,
+                                              fontWeight: FontWeight.w500,
+                                              color: Colors.black87,
+                                            ),
+                                          ),
+
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                }
+
+                                widgets.add(
+                                  Container(
+                                    alignment: isCurrentUserComment ? Alignment.centerRight : Alignment.centerLeft,
+                                    margin: EdgeInsets.symmetric(vertical: 6),
+                                    child: Container(
+                                      constraints: BoxConstraints(
+                                        maxWidth: MediaQuery.of(contextt).size.width * 0.7,
+                                      ),
+                                      padding: EdgeInsets.all(12),
+                                      decoration: BoxDecoration(
+                                        color: isCurrentUserComment ? appbar_color.withOpacity(0.9) : Colors.grey.shade300,
+                                        borderRadius: BorderRadius.only(
+                                          topLeft: Radius.circular(16),
+                                          topRight: Radius.circular(16),
+                                          bottomLeft: isCurrentUserComment ? Radius.circular(16) : Radius.circular(0),
+                                          bottomRight: isCurrentUserComment ? Radius.circular(0) : Radius.circular(16),
+                                        ),
+                                      ),
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            username,
+                                            style: GoogleFonts.poppins(
+                                              fontSize: 13,
+                                              color: isCurrentUserComment ? Colors.white70 : Colors.black87,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                          SizedBox(height: 4),
+                                          Text(
+                                            item["description"] ?? "",
+                                            style: GoogleFonts.poppins(
+                                              fontSize: 15,
+                                              color: isCurrentUserComment ? Colors.white : Colors.black87,
+                                            ),
+                                          ),
+                                          SizedBox(height: 4),
+                                          Text(
+                                            DateFormat('hh:mm a').format(DateTime.parse(item["created_at"]).toLocal()),
+
+                                            style: GoogleFonts.poppins(
+                                              fontSize: 10,
+                                              color: isCurrentUserComment ? Colors.white60 : Colors.black54,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                );
+
+                                return Column(
+                                  children: widgets,
+                                );
+                              }
+
+                          ),
+                        ),
+                      ]
+                      else...[
+                        Expanded(
+                          child: Center(
+                              child: SingleChildScrollView(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(Icons.lock_outline, size: 48, color: Colors.grey),
+                                    SizedBox(height: 10),
+                                    Text(
+                                      "Access Denied",
+                                      style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold),
+                                    ),
+                                    Text(
+                                      "You don’t have permission to view comments.",
+                                      style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ],
+                                ),
+                              )
+                          ),
+                        ),
+                      ],
+
+                      if(status!='Close')...[
+
+                        // Comment input area
+                        if(hasPermission('canCreateTicketComment'))...[
+                          SizedBox(height: 10),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: TextField(
+                                  controller: commentController,
+                                  maxLines: null,
+
+                                  style: GoogleFonts.poppins(color: Colors.black),
+                                  decoration: InputDecoration(
+                                    hintText: "Type your message...",
+                                    hintStyle: GoogleFonts.poppins(color: Colors.black54),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                      borderSide: BorderSide(color: Colors.grey.shade400),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                      borderSide: BorderSide(color: appbar_color),
+                                    ),
+                                    filled: true,
+                                    fillColor: Colors.white,
+                                    contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                                  ),
+                                ),
+                              ),
+                              SizedBox(width: 8),
+                              InkWell(
+                                borderRadius: BorderRadius.circular(50),
+                                onTap: isSubmitting
+                                    ? null
+                                    : () async {
+                                  if (commentController.text.trim().isEmpty) {
+                                    ScaffoldMessenger.of(contextt).showSnackBar(
+                                      SnackBar(
+                                        content: Text("Please enter a comment!", style: GoogleFonts.poppins()),
+                                        backgroundColor: Colors.red,
+                                        behavior: SnackBarBehavior.floating,
+                                        margin: EdgeInsets.all(16),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(12),
+                                        ),
+                                      ),
+                                    );
+                                    return;
+                                  }
+
+                                  setState(() => isSubmitting = true);
+
+                                  bool success = await saveComment(id, commentController.text.trim());
+
+                                  if (success) {
+                                    setState(() {
+                                      filteredData.add({
+                                        "description": commentController.text.trim(),
+                                        "created_at": DateTime.now().toIso8601String(),
+                                        currentScope == 'user'
+                                            ? "created_by"
+                                            : currentScope == 'tenant'
+
+                                            ? "tenant_id"
+                                            : currentScope == 'landlord'
+                                            ? "landlord_id"
+                                            : null: 1,
+                                        "tenant": currentScope == 'tenant' ? {"name": "You"} : null,
+                                        "created_user": currentScope == 'user' ? {"name": "You"} : null,
+                                        "landlord": currentScope == 'landlord' ? {"name": "You"} : null,
+                                      });
+
+                                      commentController.clear();
+                                    });
+
+                                    // 🔥 Smooth scroll to bottom after sending
+                                    Future.delayed(Duration(milliseconds: 100), () {
+                                      if (scrollController.hasClients) {
+                                        scrollController.animateTo(
+                                          scrollController.position.maxScrollExtent,
+                                          duration: Duration(milliseconds: 300),
+                                          curve: Curves.easeOut,
+                                        );
+                                      }
+                                    });
+                                  }
+
+                                  setState(() => isSubmitting = false);
+                                },
+                                child: CircleAvatar(
+                                  radius: 24,
+                                  backgroundColor: appbar_color,
+                                  child: isSubmitting
+                                      ? SizedBox(
+                                    width: 20,
+                                    height: 20,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2.5,
+                                      color: Colors.white,
+                                    ),
+                                  )
+                                      : Icon(Icons.send, color: Colors.white),
+                                ),
+                              ),
+                            ],
+                          )
+                        ]
+
+                      ],
 
 
-                    // Comment input area
-                    if(hasPermission('canCreateTicketComment'))...[
-                      SizedBox(height: 10),
-            Row(
-            children: [
-            Expanded(
-            child: TextField(
-            controller: commentController,
-            maxLines: null,
-
-            style: GoogleFonts.poppins(color: Colors.black),
-            decoration: InputDecoration(
-            hintText: "Type your message...",
-            hintStyle: GoogleFonts.poppins(color: Colors.black54),
-            border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(color: Colors.grey.shade400),
-            ),
-            focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(color: appbar_color),
-            ),
-            filled: true,
-            fillColor: Colors.white,
-            contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-            ),
-            ),
-            ),
-            SizedBox(width: 8),
-            InkWell(
-            borderRadius: BorderRadius.circular(50),
-            onTap: isSubmitting
-            ? null
-                : () async {
-            if (commentController.text.trim().isEmpty) {
-            ScaffoldMessenger.of(contextt).showSnackBar(
-            SnackBar(
-            content: Text("Please enter a comment!", style: GoogleFonts.poppins()),
-            backgroundColor: Colors.red,
-            behavior: SnackBarBehavior.floating,
-            margin: EdgeInsets.all(16),
-            shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-            ),
-            ),
+                      SizedBox(height: 20),
+                    ],
+                  ),
+                )
             );
-            return;
-            }
 
-            setState(() => isSubmitting = true);
-
-            bool success = await saveComment(id, commentController.text.trim());
-
-            if (success) {
-            setState(() {
-              filteredData.add({
-                "description": commentController.text.trim(),
-                "created_at": DateTime.now().toIso8601String(),
-                currentScope == 'user'
-                    ? "created_by"
-                    : currentScope == 'tenant'
-
-                    ? "tenant_id"
-                    : currentScope == 'landlord'
-                    ? "landlord_id"
-                    : null: 1,
-                "tenant": currentScope == 'tenant' ? {"name": "You"} : null,
-                "created_user": currentScope == 'user' ? {"name": "You"} : null,
-                "landlord": currentScope == 'landlord' ? {"name": "You"} : null,
-              });
-
-              commentController.clear();
-            });
-
-            // 🔥 Smooth scroll to bottom after sending
-            Future.delayed(Duration(milliseconds: 100), () {
-            if (scrollController.hasClients) {
-            scrollController.animateTo(
-            scrollController.position.maxScrollExtent,
-            duration: Duration(milliseconds: 300),
-            curve: Curves.easeOut,
-            );
-            }
-            });
-            }
-
-            setState(() => isSubmitting = false);
-            },
-            child: CircleAvatar(
-            radius: 24,
-            backgroundColor: appbar_color,
-            child: isSubmitting
-            ? SizedBox(
-            width: 20,
-            height: 20,
-            child: CircularProgressIndicator(
-            strokeWidth: 2.5,
-            color: Colors.white,
-            ),
-            )
-                : Icon(Icons.send, color: Colors.white),
-            ),
-            ),
-            ],
-            )
-            ]
-
-                  ],
-
-
-                  SizedBox(height: 20),
-                ],
-              ),
-            );
           },
         );
       },

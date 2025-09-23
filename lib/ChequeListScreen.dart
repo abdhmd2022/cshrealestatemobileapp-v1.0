@@ -654,11 +654,16 @@ class _ChequeListScreenState extends State<ChequeListScreen> {
                           SizedBox(height: 8),
                           Text("Type: ${payment['payment_type'] ?? 'N/A'}",
                               style: GoogleFonts.poppins(fontSize: 13, color: Colors.grey[800])),
-                          if (payment['description'] != null) ...[
+                          SizedBox(height: 4),
+
+                          Text("${payment['payment_type'] ?? 'N/A'} No: ${payment['instrument_no'] ?? 'N/A'}",
+                              style: GoogleFonts.poppins(fontSize: 13, color: Colors.grey[800])),
+
+                          /*if (payment['description'] != null) ...[
                             SizedBox(height: 4),
                             Text("Note: ${payment['description']}",
                                 style: GoogleFonts.poppins(fontSize: 13, color: Colors.grey[700])),
-                          ],
+                          ],*/
                           Divider(height: 20, color: Colors.grey.shade300),
                           if(firstFlat?['name'] != null && building?['name'] != null)...[
                             Row(

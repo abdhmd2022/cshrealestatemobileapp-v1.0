@@ -1203,6 +1203,24 @@ class _LoginPageState extends State<Login> {
     }).toList();
   }
 
+
+  Widget _buildLabel(String text, bool isSelected) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        if (isSelected) Icon(Icons.check, size: 16, color: Colors.white),
+        if (isSelected) const SizedBox(width: 4),
+        Text(
+          text,
+          style: TextStyle(
+            color: isSelected ? Colors.white : Colors.black,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ],
+    );
+  }
+
   /// Build flats list from landlord.flats fallback structure (as in your sample JSON)
   List<Map<String, dynamic>> _extractFlatsFromFlatArray({
     required List<dynamic> flatsArray,
@@ -1704,26 +1722,51 @@ class _LoginPageState extends State<Login> {
               ),
               const SizedBox(height: 30),
 
-            CupertinoSegmentedControl<String>(
-              padding: const EdgeInsets.all(4),
-              groupValue: selectedRole,
-              selectedColor: appbar_color,
-              unselectedColor: Colors.transparent,
-              borderColor: Colors.grey,
-              pressedColor: appbar_color.withOpacity(0.2),
-              children: {
-                'Tenant': _buildSegmentLabel('Tenant'),
-                'Admin': _buildSegmentLabel('Management'),
-                'Landlord': _buildSegmentLabel('Landlord'),
-              },
-              onValueChanged: (String value) {
+
+            SegmentedButton<String>(
+              showSelectedIcon: false, // 👈 prevents default black tick
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.resolveWith((states) {
+                  if (states.contains(MaterialState.selected)) {
+                    return appbar_color; // 👈 your custom selected background
+                  }
+                  return Colors.transparent; // unselected background
+                }),
+                side: MaterialStateProperty.all(
+                  const BorderSide(color: Colors.grey), // border
+                ),
+                shape: MaterialStateProperty.all(
+                  RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                ),
+              ),
+              segments: [
+                ButtonSegment(
+                  value: 'Tenant',
+                  label: _buildLabel('Tenant', selectedRole == 'Tenant'),
+                ),
+                ButtonSegment(
+                  value: 'Admin',
+                  label: _buildLabel('Management', selectedRole == 'Admin'), // 👈 shows "Management"
+                ),
+                ButtonSegment(
+                  value: 'Landlord',
+                  label: _buildLabel('Landlord', selectedRole == 'Landlord'),
+                ),
+              ],
+              selected: {selectedRole},
+              onSelectionChanged: (Set<String> newSelection) {
                 setState(() {
-                  selectedRole = value;
-                  isAdmin = value == "Admin";
-                  isLandlord = value == "Landlord";
+                  selectedRole = newSelection.first;
+                  isAdmin = selectedRole == "Admin";
+                  isLandlord = selectedRole == "Landlord";
                 });
               },
             ),
+
+
+
+
+
 
 
 

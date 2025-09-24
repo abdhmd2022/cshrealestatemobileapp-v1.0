@@ -1675,6 +1675,7 @@ class _LoginPageState extends State<Login> {
               end: Alignment.bottomRight,
             )*/
         ),
+
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
           child: Column(
@@ -1695,6 +1696,7 @@ class _LoginPageState extends State<Login> {
                     ),
                   ],
                 ),
+
                 child: Padding(
                   padding: const EdgeInsets.all(12.0),
                   child: Image.asset(
@@ -1723,52 +1725,48 @@ class _LoginPageState extends State<Login> {
               const SizedBox(height: 30),
 
 
-            SegmentedButton<String>(
-              showSelectedIcon: false, // 👈 prevents default black tick
-              style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.resolveWith((states) {
-                  if (states.contains(MaterialState.selected)) {
-                    return appbar_color; // 👈 your custom selected background
-                  }
-                  return Colors.transparent; // unselected background
-                }),
-                side: MaterialStateProperty.all(
-                  const BorderSide(color: Colors.grey), // border
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: SegmentedButton<String>(
+                showSelectedIcon: false,
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.resolveWith((states) {
+                    if (states.contains(MaterialState.selected)) {
+                      return appbar_color;
+                    }
+                    return Colors.transparent;
+                  }),
+                  side: MaterialStateProperty.all(
+                    const BorderSide(color: Colors.grey),
+                  ),
+                  shape: MaterialStateProperty.all(
+                    RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  ),
                 ),
-                shape: MaterialStateProperty.all(
-                  RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                ),
+                segments: [
+                  ButtonSegment(
+                    value: 'Tenant',
+                    label: _buildLabel('Tenant', selectedRole == 'Tenant'),
+                  ),
+                  ButtonSegment(
+                    value: 'Admin',
+                    label: _buildLabel('Management', selectedRole == 'Admin'),
+                  ),
+                  ButtonSegment(
+                    value: 'Landlord',
+                    label: _buildLabel('Landlord', selectedRole == 'Landlord'),
+                  ),
+                ],
+                selected: {selectedRole},
+                onSelectionChanged: (Set<String> newSelection) {
+                  setState(() {
+                    selectedRole = newSelection.first;
+                    isAdmin = selectedRole == "Admin";
+                    isLandlord = selectedRole == "Landlord";
+                  });
+                },
               ),
-              segments: [
-                ButtonSegment(
-                  value: 'Tenant',
-                  label: _buildLabel('Tenant', selectedRole == 'Tenant'),
-                ),
-                ButtonSegment(
-                  value: 'Admin',
-                  label: _buildLabel('Management', selectedRole == 'Admin'), // 👈 shows "Management"
-                ),
-                ButtonSegment(
-                  value: 'Landlord',
-                  label: _buildLabel('Landlord', selectedRole == 'Landlord'),
-                ),
-              ],
-              selected: {selectedRole},
-              onSelectionChanged: (Set<String> newSelection) {
-                setState(() {
-                  selectedRole = newSelection.first;
-                  isAdmin = selectedRole == "Admin";
-                  isLandlord = selectedRole == "Landlord";
-                });
-              },
             ),
-
-
-
-
-
-
-
 
           const SizedBox(height: 30),
               _buildGlassCard(context),

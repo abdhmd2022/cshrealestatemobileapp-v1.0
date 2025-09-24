@@ -661,7 +661,7 @@ class _ChequeListScreenState extends State<ChequeListScreen> {
 
                           /*if (payment['description'] != null) ...[
                             SizedBox(height: 4),
-                            Text("Note: ${payment['description']}",
+                            Text("Note: ${payment['description']}",??
                                 style: GoogleFonts.poppins(fontSize: 13, color: Colors.grey[700])),
                           ],*/
                           Divider(height: 20, color: Colors.grey.shade300),

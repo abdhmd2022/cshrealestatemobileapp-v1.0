@@ -633,7 +633,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
         });
       } else {
-        throw Exception('Failed to load data');
+        throw Exception('Failed to load data  ${response.body} ');
       }
     } catch (e) {
 
@@ -1015,7 +1015,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
         });
       } else {
-        throw Exception('Failed to load data');
+        throw Exception('Failed to load data  ${response.body}');
       }
     } catch (e) {
 
@@ -1054,7 +1054,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
           }
         });
       } else {
-        throw Exception('Failed to load data');
+        throw Exception('Failed to load data  ${response.body}');
       }
     } catch (e) {
 
@@ -1096,7 +1096,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
 
         });
       } else {
-        throw Exception('Failed to load data');
+        throw Exception('Failed to load data  ${response.body}');
       }
     } catch (e) {
 
@@ -1139,7 +1139,7 @@ class _CreateSaleInquiryPageState extends State<CreateSalesInquiry> {
              }
         });
       } else {
-        throw Exception('Failed to load data');
+        throw Exception('Failed to load data  ${response.body}');
       }
     } catch (e) {
 

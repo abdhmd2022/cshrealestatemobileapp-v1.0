@@ -70,5 +70,4 @@ class RegisteredCompany {
       'is_active': isActive,
     };
   }
-
 }

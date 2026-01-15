@@ -18,7 +18,7 @@ const String authTokenBase = r'!1--3*%*%*%*9$api$8*%*%*%*5--0!X19fIUBBUyQlYXMxOT
 
 const String OAuth_URL = "https://fincorego.ddns.net/oauth";
 
-const String client_id_constant = "a33184a282d39d8f61f90a3708c3a51924981e10";
+const String client_id_constant = "580587447f71610db9ff0a135d897ad3aec183a7";
 
 // const String client_id_constant = "3beca39997dc69a761afe408987e46589cb75a5e";
 

@@ -1207,14 +1207,25 @@ class _LoginPageState extends State<Login> {
   Widget _buildLabel(String text, bool isSelected) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        if (isSelected) Icon(Icons.check, size: 16, color: Colors.white),
-        if (isSelected) const SizedBox(width: 4),
-        Text(
-          text,
-          style: TextStyle(
-            color: isSelected ? Colors.white : Colors.black,
-            fontWeight: FontWeight.w600,
+        if (isSelected) ...[
+          Icon(Icons.check, size: 16, color: Colors.white),
+          const SizedBox(width: 4),
+        ],
+
+        /// This allows text to wrap into multiple lines
+        Flexible(
+          child: Text(
+            text,
+            textAlign: TextAlign.center,
+            softWrap: true,
+            maxLines: null, // unlimited lines
+            overflow: TextOverflow.visible,
+            style: TextStyle(
+              color: isSelected ? Colors.white : Colors.black,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ),
       ],

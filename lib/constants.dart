@@ -8,17 +8,19 @@ const String app_name = "Fincore RMS";
 
 const MaterialAccentColor appbar_color = Colors.blueAccent;
 
- late String company_name = 'Company';
+late String company_name = 'Company';
 
 const String authTokenBase = r'!1--3*%*%*%*9$api$8*%*%*%*5--0!X19fIUBBUyQlYXMxOTI4MzdfX18=KSgqL2FzZGFzZGlvQ0VEQUZf';
 
 // const String BASE_URL_config = "http://192.168.2.185:6551/api";
 
-//const String OAuth_URL = "http://192.168.2.185:4555";
+// const String OAuth_URL = "http://192.168.2.185:4555";
 
-const String OAuth_URL = "http://realestate.chaturvedigroup.com/oauth";
+const String OAuth_URL = "https://fincorego.ddns.net/oauth";
 
-const String client_id_constant = "3beca39997dc69a761afe408987e46589cb75a5e";
+const String client_id_constant = "a33184a282d39d8f61f90a3708c3a51924981e10";
+
+// const String client_id_constant = "3beca39997dc69a761afe408987e46589cb75a5e";
 
 const String client_password_constant = "internal@001";
 
